@@ -1,5 +1,4 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import Modal from "@/components/atoms/AtomModal";
 import LayoutEditorTop from "@/components/layout/editor/sidebar/top";
 import { AtomText, AtomWrapper } from "@whil/ui";
 import {
@@ -86,7 +85,6 @@ const AtomEditorScreen: FC<Props> = ({ children }) => {
 
   return (
     <>
-      <Modal />
       <AtomWrapper
         ref={divRef}
         className="CursorDefault"
