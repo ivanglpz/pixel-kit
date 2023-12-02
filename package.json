@@ -1,8 +1,5 @@
 {
   "name": "harmony",
-  "engines": {
-    "node": "20.9.0"
-  },
   "version": "0.1.0",
   "packageManager": "pnpm@8.6.0",
   "scripts": {
