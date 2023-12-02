@@ -142,7 +142,7 @@ const AtomEditorScreen: FC<Props> = ({ children }) => {
             justifyContent="center"
           >
             <AtomText color="white" textAlign="center">
-              Harmony Web Editor <br /> Loading...
+              Loading...
             </AtomText>
           </AtomWrapper>
         )}
