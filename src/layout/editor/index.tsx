@@ -1,6 +1,4 @@
-import AtomModalControls, {
-  controlsAtom,
-} from "@/components/atoms/AtomModalControls";
+import { controlsAtom } from "@/components/atoms/AtomModalControls";
 import LayoutEditorSidebarLeft from "@/components/layout/editor/sidebar/left";
 import LayoutEditorSidebarRight from "@/components/layout/editor/sidebar/right";
 import themeColors from "@/themes";
@@ -30,7 +28,6 @@ const LayoutEditor: FC<Props> = ({ children }) => {
         position: relative;
       `}
     >
-      <AtomModalControls />
       <AtomWrapper
         customCSS={(css) => css`
           grid-column: 1 / 4;
