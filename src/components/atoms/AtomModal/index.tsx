@@ -34,7 +34,7 @@ const WarningBrowserBraveModal = () => {
         className={css({
           display: "grid",
           gridTemplateColumns: "auto auto",
-          backgroundColor: "#242424",
+          backgroundColor: "#171717",
           padding: "4",
           gap: "4",
           borderRadius: "12px",
