@@ -15,9 +15,8 @@ const App = ({ Component, pageProps }: AppPropsWithLayout) => {
       <AtomSeo
         title="Pixel Kit"
         content="pixels, kit, design, editor, react, nextjs"
-        description="Pixel kit a open source design editor"
+        description="Pixel Kit is a powerful open-source editing tool designed to transform your ideas into stunning visual masterpieces. With an intuitive approach and advanced tools, this application provides a comprehensive experience for image editing, design creation, and PDF document generation"
         url="https://pixel-kit.vercel.app/"
-        image="/coverd.png"
       />
       <Toaster
         richColors

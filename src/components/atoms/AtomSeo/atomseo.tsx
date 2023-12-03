@@ -6,14 +6,22 @@ type Props = {
   title: string;
   description: string;
   url: string;
-  image: string;
+  image?: string;
   content: string;
 };
 
 const googleAnalytics = `${process.env.NEXT_PUBLIC_GOOGLE_ANALYTIS}`;
 const urlAnalytics = `https://www.googletagmanager.com/gtag/js?id=${googleAnalytics}`;
+const defaultImage =
+  "https://res.cloudinary.com/whil/image/upload/v1701621980/app/pixel-kit/images/tnzrsjyst8zrf7gs91eu.png";
 
-const AtomSeo: FC<Props> = ({ title, content, description, url, image }) => {
+const AtomSeo: FC<Props> = ({
+  title,
+  content,
+  description,
+  url,
+  image = defaultImage,
+}) => {
   return (
     <>
       <Script src={urlAnalytics} />
