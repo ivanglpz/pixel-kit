@@ -33,7 +33,7 @@ const AtomSeo: FC<Props> = ({ title, content, description, url, image }) => {
           name="google-site-verification"
           content="EANZjrV1t4rH8Z9sSXalLjIu6DXtsV7rNxkKtJGrxvE"
         />
-        <link rel="icon" type="image/png" href={`/icon.svg`} />
+        <link rel="icon" type="image/png" href={`/icon-pixel-kit.png`} />
         <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <link rel="manifest" href="/manifest.json" />

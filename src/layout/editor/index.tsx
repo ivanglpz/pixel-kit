@@ -1,17 +1,13 @@
-import { controlsAtom } from "@/components/atoms/AtomModalControls";
 import LayoutEditorSidebarLeft from "@/components/layout/editor/sidebar/left";
 import LayoutEditorSidebarRight from "@/components/layout/editor/sidebar/right";
 import themeColors from "@/themes";
-import { AtomButton, AtomText, AtomWrapper } from "@whil/ui";
-import { useSetAtom } from "jotai";
+import { AtomText, AtomWrapper } from "@whil/ui";
 import { FC, ReactNode } from "react";
-
 type Props = {
   children: ReactNode;
 };
 
 const LayoutEditor: FC<Props> = ({ children }) => {
-  const setControls = useSetAtom(controlsAtom);
   return (
     <AtomWrapper
       height="100%"
@@ -35,66 +31,33 @@ const LayoutEditor: FC<Props> = ({ children }) => {
           background-color: ${themeColors.dark};
           border-bottom: 1px solid rgba(255, 255, 255, 0.1);
           padding: 0.6em;
-          display: grid;
-          grid-template-columns: repeat(3, 1fr);
         `}
         alignItems="center"
-        justifyContent="center"
+        justifyContent="flex-start"
       >
-        <AtomWrapper></AtomWrapper>
-        <AtomWrapper alignItems="center" justifyContent="center">
-          <AtomText color="white" fontWeight={"bold"}>
-            Harmony
-          </AtomText>
-        </AtomWrapper>
-        <AtomWrapper width="100%" justifyContent="flex-end">
-          <AtomButton
-            padding="0.7em"
-            onClick={() => {
-              // setMounted(true);
-              setControls(true);
-            }}
-            customCSS={(css) => css`
-              border-radius: 0em;
-              border: 0px;
-              border-radius: 0px;
-              padding: 0;
-              margin: 0;
-              background-color: transparent;
-              cursor: pointer;
-            `}
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-            >
-              <path
-                d="M12.0001 7.88989L10.9301 9.74989C10.6901 10.1599 10.8901 10.4999 11.3601 10.4999H12.6301C13.1101 10.4999 13.3001 10.8399 13.0601 11.2499L12.0001 13.1099"
-                stroke="#ffffff"
-                stroke-width="1.5"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              />
-              <path
-                d="M8.30011 18.0399V16.8799C6.00011 15.4899 4.11011 12.7799 4.11011 9.89993C4.11011 4.94993 8.66011 1.06993 13.8001 2.18993C16.0601 2.68993 18.0401 4.18993 19.0701 6.25993C21.1601 10.4599 18.9601 14.9199 15.7301 16.8699V18.0299C15.7301 18.3199 15.8401 18.9899 14.7701 18.9899H9.26011C8.16011 18.9999 8.30011 18.5699 8.30011 18.0399Z"
-                stroke="#ffffff"
-                stroke-width="1.5"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              />
-              <path
-                d="M8.5 22C10.79 21.35 13.21 21.35 15.5 22"
-                stroke="#ffffff"
-                stroke-width="1.5"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              />
-            </svg>
-          </AtomButton>
-        </AtomWrapper>
+        <svg
+          width="25"
+          height="25  "
+          viewBox="0 0 60 60"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <mask id="path-1-inside-1_865_433" fill="white">
+            <path d="M43.5714 11H49V27.2857H43.5714V16.4286H16.4286V43.5714H27.2857V49H11V11H43.5714ZM32.7143 38.1429V32.7143H49V38.1429H43.5714V43.5714H38.1429V49H32.7143V38.1429ZM43.5714 43.5714V49H49V43.5714H43.5714Z" />
+          </mask>
+          <path
+            d="M43.5714 11H49V27.2857H43.5714V16.4286H16.4286V43.5714H27.2857V49H11V11H43.5714ZM32.7143 38.1429V32.7143H49V38.1429H43.5714V43.5714H38.1429V49H32.7143V38.1429ZM43.5714 43.5714V49H49V43.5714H43.5714Z"
+            fill="black"
+          />
+          <path
+            d="M49 11H86V-26H49V11ZM49 27.2857V64.2857H86V27.2857H49ZM43.5714 27.2857H6.57143V64.2857H43.5714V27.2857ZM43.5714 16.4286H80.5714V-20.5714H43.5714V16.4286ZM16.4286 16.4286V-20.5714H-20.5714V16.4286H16.4286ZM16.4286 43.5714H-20.5714V80.5714H16.4286V43.5714ZM27.2857 43.5714H64.2857V6.57143H27.2857V43.5714ZM27.2857 49V86H64.2857V49H27.2857ZM11 49H-26V86H11V49ZM11 11V-26H-26V11H11ZM32.7143 32.7143V-4.28571H-4.28571V32.7143H32.7143ZM49 32.7143H86V-4.28571H49V32.7143ZM49 38.1429V75.1429H86V38.1429H49ZM43.5714 38.1429V1.14286H6.57143V38.1429H43.5714ZM38.1429 43.5714V6.57143H1.14286V43.5714H38.1429ZM38.1429 49V86H75.1429V49H38.1429ZM32.7143 49H-4.28571V86H32.7143V49ZM43.5714 49H6.57143V86H43.5714V49ZM49 49V86H86V49H49ZM49 43.5714H86V6.57143H49V43.5714ZM43.5714 48H49V-26H43.5714V48ZM12 11V27.2857H86V11H12ZM49 -9.71429H43.5714V64.2857H49V-9.71429ZM80.5714 27.2857V16.4286H6.57143V27.2857H80.5714ZM43.5714 -20.5714H16.4286V53.4286H43.5714V-20.5714ZM-20.5714 16.4286V43.5714H53.4286V16.4286H-20.5714ZM16.4286 80.5714H27.2857V6.57143H16.4286V80.5714ZM-9.71429 43.5714V49H64.2857V43.5714H-9.71429ZM27.2857 12H11V86H27.2857V12ZM48 49V11H-26V49H48ZM11 48H43.5714V-26H11V48ZM69.7143 38.1429V32.7143H-4.28571V38.1429H69.7143ZM32.7143 69.7143H49V-4.28571H32.7143V69.7143ZM12 32.7143V38.1429H86V32.7143H12ZM49 1.14286H43.5714V75.1429H49V1.14286ZM6.57143 38.1429V43.5714H80.5714V38.1429H6.57143ZM43.5714 6.57143H38.1429V80.5714H43.5714V6.57143ZM1.14286 43.5714V49H75.1429V43.5714H1.14286ZM38.1429 12H32.7143V86H38.1429V12ZM69.7143 49V38.1429H-4.28571V49H69.7143ZM6.57143 43.5714V49H80.5714V43.5714H6.57143ZM43.5714 86H49V12H43.5714V86ZM86 49V43.5714H12V49H86ZM49 6.57143H43.5714V80.5714H49V6.57143Z"
+            fill="white"
+            mask="url(#path-1-inside-1_865_433)"
+          />
+        </svg>
+        <AtomText color="white" fontWeight={"bold"}>
+          Pixel Kit
+        </AtomText>
       </AtomWrapper>
       <LayoutEditorSidebarLeft />
       {children}
