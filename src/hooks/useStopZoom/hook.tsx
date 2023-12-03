@@ -1,9 +1,6 @@
-import isBrave from "@/utils/browser/browser";
 import { useEffect } from "react";
-
 const useStopZoom = () => {
   useEffect(() => {
-    isBrave();
     const handleWheel = (event: WheelEvent) => {
       if (event.ctrlKey) {
         event.preventDefault();
