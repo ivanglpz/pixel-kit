@@ -1,6 +1,7 @@
+@layer reset, base, tokens, recipes, utilities;
+
 @import url("./fonts.css");
 @import url("./editor/fonts.css");
-@import url("./normalize.css");
 
 body {
   display: flex;
@@ -9,6 +10,9 @@ body {
   cursor: url("/cursors/default.png"), auto;
   box-sizing: border-box;
   font-family: "Plus Jakarta Sans", sans-serif;
+}
+#__next {
+  width: 100%;
 }
 
 html,
