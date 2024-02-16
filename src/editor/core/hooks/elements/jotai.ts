@@ -2,7 +2,6 @@ import { elements } from "@/assets/default";
 import { atom } from "jotai";
 import { IElement, IPELMT, IParamsElement } from "../../elements/type";
 import elementSelectedAtom from "../element/jotai";
-import { groupoSelectedIdAtom } from "../groups/jotai";
 import { pageSelectedAtom } from "../pages/jotai";
 
 type IOBCElement = {
@@ -47,11 +46,7 @@ export const LayerOrderElements = atom(
     const elements = get(elementsAtom);
     return Object.values(elements)
       ?.sort((a, b) => Number(a?.view_position) - Number(b?.view_position))
-      ?.filter(
-        (item) =>
-          get(pageSelectedAtom)?.includes(`${item?.pageId}`) &&
-          item?.groupId === get(groupoSelectedIdAtom)
-      );
+      ?.filter((item) => get(pageSelectedAtom)?.includes(`${item?.pageId}`));
   },
   (get, set, args: IOBCElement) => args
 );

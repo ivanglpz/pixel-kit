@@ -2,7 +2,6 @@
 import { IParamsElement } from "@/editor/core/elements/type";
 import { useElement, useTool } from "@/editor/core/hooks";
 import useElements from "@/editor/core/hooks/elements/hook";
-import useGroups from "@/editor/core/hooks/groups/hook";
 import useSelect from "@/editor/core/hooks/select";
 import useCallStkcTime from "@/hooks/useCallTime";
 import themeColors from "@/themes";
@@ -14,7 +13,6 @@ const SidebarShadowFC: FC = () => {
   const { handleSetElement } = useElement();
   const { handleSetElements } = useElements();
   const { setTool } = useTool();
-  const { handleAddGroup } = useGroups();
   const { style } = SelectedChangeElement;
 
   const { setTimer } = useCallStkcTime({
@@ -22,7 +20,6 @@ const SidebarShadowFC: FC = () => {
       handleSetElement(SelectedChangeElement);
 
       if (SelectedChangeElement?.tool === "GROUP") {
-        handleAddGroup(SelectedChangeElement);
       } else {
         handleSetElements(SelectedChangeElement);
       }
@@ -302,8 +299,8 @@ const SidebarShadowFC: FC = () => {
           gap: 1em;
         `}
       >
-       
-      
+
+
       </AtomWrapper> */}
     </AtomWrapper>
   );

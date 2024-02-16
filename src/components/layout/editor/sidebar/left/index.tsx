@@ -2,7 +2,6 @@ import themeColors from "@/themes";
 import { AtomWrapper } from "@whil/ui";
 import { FC } from "react";
 import ElementsList from "./elements";
-import GroupsListComponent from "./groups/groups";
 import PagesComponent from "./pages/pages";
 
 const LayoutEditorSidebarLeft: FC = () => {
@@ -20,7 +19,6 @@ const LayoutEditorSidebarLeft: FC = () => {
       `}
     >
       <PagesComponent />
-      <GroupsListComponent />
       <ElementsList />
     </AtomWrapper>
   );
