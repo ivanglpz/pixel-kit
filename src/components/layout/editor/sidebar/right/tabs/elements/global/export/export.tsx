@@ -46,8 +46,8 @@ const SidebarExportFC: FC = () => {
         new Konva.Rect({
           x: 0,
           y: 0,
-          width: element?.width,
-          height: element?.height,
+          width: element?.width ?? 100,
+          height: element?.height ?? 100,
           fill: element?.style?.backgroundColor,
           stroke: element?.style?.stroke,
           strokeWidth: element?.style?.strokeWidth,
@@ -143,7 +143,7 @@ const SidebarExportFC: FC = () => {
           padding: 0.5em 0.7em;
         `}
       >
-        {element?.tool !== "LINE" ? (
+        {/* {element?.tool !== "LINE" ? (
           <>
             {url ? (
               <AtomImage
@@ -154,7 +154,7 @@ const SidebarExportFC: FC = () => {
               />
             ) : null}
           </>
-        ) : null}
+        ) : null} */}
 
         <AtomWrapper
           id="viewer-layout"

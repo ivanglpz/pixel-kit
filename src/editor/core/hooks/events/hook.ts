@@ -10,8 +10,6 @@ import groupAbsolutePosition from "../../helpers/group/position/position";
 import stageAbsolutePosition from "../../helpers/stage/position";
 import useElement from "../element/hook";
 import useElements from "../elements/hook";
-import useGroups from "../groups/hook";
-import { groupRefAtom } from "../groups/jotai";
 import usePages from "../pages/hook";
 import usePipe from "../pipe/hook";
 import useSelection from "../selection/hook";
@@ -41,14 +39,6 @@ const useEvent = () => {
     isSelected,
   } = useSelection();
 
-  const {
-    handleAddGroup,
-    groupSelectId,
-    groups,
-    handleDeleteGroup,
-    handleDeleteManyGroups,
-  } = useGroups();
-  const groupRef = useAtomValue(groupRefAtom);
   const { page } = usePages();
   const stageDataRef = useRef<Konva.Stage>(null);
 
@@ -97,16 +87,13 @@ const useEvent = () => {
       if (isCreatingElement) {
         setDraw(true);
         const createStartElement = eventElements?.[tool]?.start as IStartEvent;
-        const eventd =
-          tool === "GROUP"
-            ? stageAbsolutePosition(event)
-            : groupAbsolutePosition(groupRef);
+        const eventd = stageAbsolutePosition(event);
 
         const createdElement = createStartElement(
           eventd,
           Object.keys(elements).length,
           page,
-          groupSelectId as string
+          ""
         );
 
         handleSetElement(createdElement);
@@ -130,17 +117,9 @@ const useEvent = () => {
 
       if (eventsKeyboard === "STAGE_COPY_ELEMENT" && isSelected) {
         for (let index = 0; index < elementsIds.length; index++) {
-          const elemnt =
-            elements[elementsIds[index]] ?? groups[elementsIds[index]];
+          const elemnt = elements[elementsIds[index]];
           const id = v4();
           if (elemnt?.tool === "GROUP") {
-            handleAddGroup(
-              Object.assign({}, elemnt, {
-                id,
-                groupId: id,
-                view_position: Object.keys(groups).length + index + 1,
-              } as IPELMT)
-            );
           } else {
             handleSetElements(
               Object.assign({}, elemnt, {
@@ -187,18 +166,12 @@ const useEvent = () => {
       if (isCreatingElement) {
         const updateProgressElement = eventElements?.[tool]
           ?.progress as IEndEvent;
-        const evnt =
-          pipeline?.tool === "GROUP"
-            ? stageAbsolutePosition(e)
-            : groupAbsolutePosition(groupRef);
+        const evnt = stageAbsolutePosition(e);
         const updateElement = updateProgressElement(evnt, pipeline);
         handleSetElement(updateElement);
       }
       if (eventsKeyboard === "STAGE_COPY_ELEMENT" && pipeline?.id) {
-        const evnt =
-          pipeline?.tool === "GROUP"
-            ? stageAbsolutePosition(e)
-            : groupAbsolutePosition(groupRef);
+        const evnt = stageAbsolutePosition(e);
 
         const updateElement = Object.assign({}, pipeline, {
           x: evnt?.x,
@@ -230,38 +203,6 @@ const useEvent = () => {
       updateSelectionRect();
 
       const selBox = selectionRectRef?.current?.getClientRect?.();
-
-      const groupElements = layerRef?.current?.children?.filter(
-        (item) =>
-          item?.attrs?.tool === "GROUP" &&
-          item?.attrs?.groupId === groupSelectId
-      ) as Group[];
-
-      const elementsSel = groupElements?.[0]?.children?.filter?.(
-        (elementNode) => {
-          if (
-            elementNode?.attrs?.id === "select-rect-default" ||
-            elementNode?.attrs?.id === "group-style-background" ||
-            elementNode?.attrs?.isBlocked
-          )
-            return;
-          const elBox = elementNode.getClientRect();
-          if (Konva.Util.haveIntersection(selBox, elBox)) {
-            return elementNode;
-          }
-        }
-      );
-
-      setElementsIds(
-        elementsSel?.map((item) => `${item?.attrs?.id}`) as string[]
-      );
-
-      setSelected(Boolean(Number(elementsSel?.length)));
-      if (elementsSel?.length) {
-        trRef.current.nodes(elementsSel);
-      } else {
-        trRef.current.nodes([]);
-      }
     }
     if (eventsKeyboard === "STAGE_COPY_ELEMENT") {
       setEventsKeyboard("STAGE_WATCHING");
@@ -274,7 +215,6 @@ const useEvent = () => {
     }
     if (pipeline?.id) {
       if (pipeline?.tool === "GROUP") {
-        handleAddGroup(pipeline);
       } else {
         handleSetElements(pipeline);
       }
@@ -282,7 +222,6 @@ const useEvent = () => {
     }
     if (element?.id) {
       if (element?.tool === "GROUP") {
-        handleAddGroup(pipeline);
       } else {
         handleSetElements(element);
       }
@@ -304,13 +243,11 @@ const useEvent = () => {
         if (KEY === "DELETE") {
           if (!isSelected) {
             if (element?.tool === "GROUP") {
-              handleDeleteGroup(`${element?.id}`);
             } else {
               handleDeleteElement(`${element?.id}`);
             }
             handleElementEmpty();
           } else {
-            handleDeleteManyGroups(elementsIds);
             handleDeleteManyElements(elementsIds);
             handleElementEmpty();
             setSelected(false);
@@ -359,20 +296,8 @@ const useEvent = () => {
           image.onload = () => {
             const createStartElement = eventElements?.["IMAGE"]
               ?.start as IStartEvent;
-            const eventd = groupAbsolutePosition(groupRef);
-            const createdElement = createStartElement(
-              eventd,
-              Object.keys(elements).length,
-              page,
-              groupSelectId as string,
-              {
-                image: data?.target?.result as string,
-                width: image.width,
-                height: image.height,
-              }
-            );
+
             // handleSetElement(createdElement);
-            handleSetElements(createdElement);
           };
         };
         reader.readAsDataURL(file);
@@ -381,17 +306,6 @@ const useEvent = () => {
       if (clipboardText) {
         const createStartElement = eventElements?.["TEXT"]
           ?.start as IStartEvent;
-        const eventd = groupAbsolutePosition(groupRef);
-        const createdElement = createStartElement(
-          eventd,
-          Object.keys(elements).length,
-          page,
-          groupSelectId as string,
-          {
-            text: clipboardText,
-          }
-        );
-        handleSetElements(createdElement);
       }
 
       if (clipboardText.trim().startsWith("<svg")) {
@@ -421,19 +335,6 @@ const useEvent = () => {
         img.src = dataImage;
         const createStartElement = eventElements?.["IMAGE"]
           ?.start as IStartEvent;
-        const eventd = groupAbsolutePosition(groupRef);
-        const createdElement = createStartElement(
-          eventd,
-          Object.keys(elements).length,
-          page,
-          groupSelectId as string,
-          {
-            image: dataImage,
-            width: img.width,
-            height: img.height,
-          }
-        );
-        handleSetElements(createdElement);
       }
     };
     document.addEventListener("keydown", handleKeyDown);

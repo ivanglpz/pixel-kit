@@ -1,7 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useElement, useTool } from "@/editor/core/hooks";
 import useElements from "@/editor/core/hooks/elements/hook";
-import useGroups from "@/editor/core/hooks/groups/hook";
 import useSelect from "@/editor/core/hooks/select";
 import useCallStkcTime from "@/hooks/useCallTime";
 import themeColors from "@/themes";
@@ -13,7 +12,6 @@ const SidebarStrokeFC: FC = () => {
   const { handleSetElement } = useElement();
   const { handleSetElements } = useElements();
   const { setTool } = useTool();
-  const { handleAddGroup } = useGroups();
   const { style } = SelectedChangeElement;
 
   const [color, setColor] = useState(style?.stroke || "#000000");
@@ -34,7 +32,6 @@ const SidebarStrokeFC: FC = () => {
       handleSetElement(element);
 
       if (element?.tool === "GROUP") {
-        handleAddGroup(element);
       } else {
         handleSetElements(element);
       }

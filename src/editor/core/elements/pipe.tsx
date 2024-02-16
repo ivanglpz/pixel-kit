@@ -5,7 +5,6 @@ import { Group, Layer } from "react-konva";
 import { Portal } from "react-konva-utils";
 import { useTool } from "../hooks";
 import useElements from "../hooks/elements/hook";
-import useGroups from "../hooks/groups/hook";
 import usePipe from "../hooks/pipe/hook";
 import { IKeyTool } from "../hooks/tool/types";
 import { MapEls } from "./mp_el";
@@ -17,8 +16,6 @@ const AtomPipeComponent = memo(() => {
   const { isMoving } = useTool();
   const onChange = useCallback(() => {}, []);
 
-  const { group } = useGroups();
-
   return (
     <>
       {Object?.values?.(pipeline)?.length > 0 && (
@@ -27,24 +24,17 @@ const AtomPipeComponent = memo(() => {
             {[pipeline]?.map((item) => {
               const Component = MapEls?.[`${item?.tool}` as IKeyTool] as FCE;
               return (
-                <Group
-                  key={group?.id}
-                  x={group?.x}
-                  y={group?.y}
-                  width={group?.width}
-                  height={group?.height}
-                >
-                  <Component
-                    {...item}
-                    draggable={draggable}
-                    isMoving={isMoving}
-                    isSelected={item?.id === pipeline?.id}
-                    onChange={onChange}
-                    onSelect={onChange}
-                    elements={[]}
-                    element={pipeline}
-                  />
-                </Group>
+                <Component
+                  key={item.id}
+                  {...item}
+                  draggable={draggable}
+                  isMoving={isMoving}
+                  isSelected={item?.id === pipeline?.id}
+                  onChange={onChange}
+                  onSelect={onChange}
+                  elements={[]}
+                  element={pipeline}
+                />
               );
             })}
           </Portal>
