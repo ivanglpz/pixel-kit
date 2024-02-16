@@ -2,7 +2,7 @@ import Konva from "konva";
 import { KonvaEventObject } from "konva/lib/Node";
 import { Vector2d } from "konva/lib/types";
 
-const stageAbsolutePosition = (event: KonvaEventObject<MouseEvent>) => {
+const absolutePositionFromStage = (event: KonvaEventObject<MouseEvent>) => {
   // the function will return pointer position relative to the passed node
   const node = event?.target?.getStage?.() as Konva.Stage;
   const transform = node?.getAbsoluteTransform()?.copy?.();
@@ -15,4 +15,4 @@ const stageAbsolutePosition = (event: KonvaEventObject<MouseEvent>) => {
   // now we find a relative point
   return transform?.point?.(pos);
 };
-export default stageAbsolutePosition;
+export default absolutePositionFromStage;

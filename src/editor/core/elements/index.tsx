@@ -33,10 +33,8 @@ const AtomEditorMapper = memo(() => {
     (element: IElement | IParamsElement) => {
       if (!element.id) return;
       handleSetElement(element);
-      if (element?.tool === "GROUP") {
-      } else {
-        handleSetElements(element);
-      }
+
+      handleSetElements(element);
     },
     [isMoving, element, elements]
   );

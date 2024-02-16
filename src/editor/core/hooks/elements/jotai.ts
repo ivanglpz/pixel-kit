@@ -44,9 +44,7 @@ export const ReOrderElementsAtom = atom(null, (get, set) => {
 export const LayerOrderElements = atom(
   (get) => {
     const elements = get(elementsAtom);
-    return Object.values(elements)
-      ?.sort((a, b) => Number(a?.view_position) - Number(b?.view_position))
-      ?.filter((item) => get(pageSelectedAtom)?.includes(`${item?.pageId}`));
+    return Object.values(elements);
   },
   (get, set, args: IOBCElement) => args
 );
