@@ -7,19 +7,17 @@ import { Group } from "konva/lib/Group";
 import { MutableRefObject, memo, useCallback, useEffect } from "react";
 import { Layer, Rect, Transformer } from "react-konva";
 import { Portal } from "react-konva-utils";
-import { useElement, useSelection, useTool } from "../hooks";
-import useElements from "../hooks/elements/hook";
-import { CanvasElements } from "../hooks/elements/jotai";
+import { useSelectedShape, useSelection, useTool } from "../hooks";
+import useShapes from "../hooks/elements/hook";
 import { IKeyTool } from "../hooks/tool/types";
 import { MapEls } from "./mp_el";
 import AtomPipeComponent from "./pipe";
 import { FCE, IElement, IParamsElement } from "./type";
 
 const AtomEditorMapper = memo(() => {
-  const { elements, draggable, handleSetElements } = useElements();
-  const { element, handleSetElement } = useElement();
+  const { elements, draggable, handleSetElements } = useShapes();
+  const { element, handleSetElement } = useSelectedShape();
   const { isMoving } = useTool();
-  const mapped = useAtomValue(CanvasElements);
   const {
     selectionRectRef,
     trRef,
@@ -51,7 +49,7 @@ const AtomEditorMapper = memo(() => {
   return (
     <>
       <Layer ref={layerRef as MutableRefObject<Konva.Layer>}>
-        {mapped?.map((item) => {
+        {Object.values(elements)?.map((item) => {
           const Component = MapEls?.[`${item?.tool}` as IKeyTool] as FCE;
           const isSelected = item?.id === element?.id;
           return (

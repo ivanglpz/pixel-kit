@@ -1,6 +1,6 @@
 import { IParamsElement } from "@/editor/core/elements/type";
 import { useElement, useTool } from "@/editor/core/hooks";
-import useElements from "@/editor/core/hooks/elements/hook";
+import useShapes from "@/editor/core/hooks/elements/hook";
 import useSelect from "@/editor/core/hooks/select";
 import useCallStkcTime from "@/hooks/useCallTime";
 import themeColors from "@/themes";
@@ -14,7 +14,7 @@ type Props = {
 const SidebarIMG: FC<Props> = (props) => {
   const { SelectedChangeElement, handleSelectedChangeElement } = useSelect();
   const { handleSetElement } = useElement();
-  const { handleSetElements } = useElements();
+  const { handleSetElements } = useShapes();
   const { setTool } = useTool();
   const { width, height, style } = SelectedChangeElement;
 

@@ -12,8 +12,8 @@ import {
 } from "react";
 import { Stage } from "react-konva";
 import {
-  useElement,
   useEvent,
+  useSelectedShape,
   useSelection,
   useStage,
   useZoom,
@@ -29,7 +29,7 @@ const AtomEditorScreen: FC<Props> = ({ children }) => {
     useEvent();
 
   const { config } = useStage();
-  const { handleEmptyElement, element } = useElement();
+  const { handleEmptyElement, element } = useSelectedShape();
   const {
     setSelected,
     selectionRefsState: { trRef },
@@ -95,7 +95,7 @@ const AtomEditorScreen: FC<Props> = ({ children }) => {
           config.graphicMapped &&
           css`
             background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABkAAAAZCAYAAADE6YVjAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAxSURBVHgB7dYxDQAACANBwHbFQ7BAQqd/Ab21Kanju29k9ysMgYCAgICAgICcS8fvGhWuCe+rNdorAAAAAElFTkSuQmCC");
-            z-index: 999999999;
+            z-index: 2;
             background-position: 100% 100%;
             background-attachment: fixed;
             background-size: calc(10px * ${stage.scale});
@@ -133,7 +133,7 @@ const AtomEditorScreen: FC<Props> = ({ children }) => {
             justifyContent="center"
           >
             <AtomText color="white" textAlign="center">
-              Loading...
+              Pixel Kit is loading...
             </AtomText>
           </AtomWrapper>
         )}

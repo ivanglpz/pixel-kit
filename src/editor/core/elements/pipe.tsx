@@ -4,42 +4,39 @@ import { memo, useCallback } from "react";
 import { Group, Layer } from "react-konva";
 import { Portal } from "react-konva-utils";
 import { useTool } from "../hooks";
-import useElements from "../hooks/elements/hook";
-import usePipe from "../hooks/pipe/hook";
+import useShapes from "../hooks/elements/hook";
+import useTemporalShape from "../hooks/pipe/hook";
 import { IKeyTool } from "../hooks/tool/types";
 import { MapEls } from "./mp_el";
 import { FCE } from "./type";
 
 const AtomPipeComponent = memo(() => {
-  const { pipeline } = usePipe();
-  const { draggable } = useElements();
+  const { temporalShape } = useTemporalShape();
+  const { draggable } = useShapes();
   const { isMoving } = useTool();
   const onChange = useCallback(() => {}, []);
 
+  const Component = MapEls?.[`${temporalShape?.tool}` as IKeyTool] as FCE;
   return (
     <>
-      {Object?.values?.(pipeline)?.length > 0 && (
+      {Component ? (
         <Layer>
           <Portal selector=".top-layer" enabled={true}>
-            {[pipeline]?.map((item) => {
-              const Component = MapEls?.[`${item?.tool}` as IKeyTool] as FCE;
-              return (
-                <Component
-                  key={item.id}
-                  {...item}
-                  draggable={draggable}
-                  isMoving={isMoving}
-                  isSelected={item?.id === pipeline?.id}
-                  onChange={onChange}
-                  onSelect={onChange}
-                  elements={[]}
-                  element={pipeline}
-                />
-              );
-            })}
+            <Component
+              key={temporalShape.id}
+              {...temporalShape}
+              draggable={draggable}
+              isMoving={isMoving}
+              isSelected={true}
+              onChange={onChange}
+              onSelect={onChange}
+              elements={[]}
+              element={temporalShape}
+            />
+            );
           </Portal>
         </Layer>
-      )}
+      ) : null}
     </>
   );
 });

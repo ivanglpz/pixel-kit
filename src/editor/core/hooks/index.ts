@@ -1,4 +1,4 @@
-export { default as useElement } from "./element/hook";
+export { default as useSelectedShape } from "./element/hook";
 export { default as useEvent } from "./events/hook";
 export { default as useSelection } from "./selection/hook";
 export { default as useStage } from "./stage/hook";

@@ -2,8 +2,8 @@
 import { isPartialBorderRadius } from "@/editor/core/elements/BOX";
 import { IFCElement } from "@/editor/core/elements/type";
 import { useElement } from "@/editor/core/hooks";
-import useElements from "@/editor/core/hooks/elements/hook";
-import usePipe from "@/editor/core/hooks/pipe/hook";
+import useShapes from "@/editor/core/hooks/elements/hook";
+import useTemporalShape from "@/editor/core/hooks/pipe/hook";
 import { IKeyTool } from "@/editor/core/hooks/tool/types";
 import themeColors from "@/themes";
 import { AtomButton, AtomImage, AtomText, AtomWrapper } from "@whil/ui";
@@ -23,8 +23,8 @@ function downloadURI(uri: string, name: string) {
 
 const SidebarExportFC: FC = () => {
   const { element } = useElement();
-  const { elements } = useElements();
-  const { pipeline } = usePipe();
+  const { elements } = useShapes();
+  const { pipeline } = useTemporalShape();
   const [url, setUrl] = useState(null as unknown as Stage);
 
   const handleExportd = useCallback(() => {

@@ -7,6 +7,8 @@ import "@/styles/globals.css";
 import type { AppPropsWithLayout } from "next/app";
 import { Toaster } from "sonner";
 import { css } from "../../styled-system/css";
+import dynamic from "next/dynamic";
+
 const App = ({ Component, pageProps }: AppPropsWithLayout) => {
   useStopZoom();
   useBrowser();
@@ -33,4 +35,8 @@ const App = ({ Component, pageProps }: AppPropsWithLayout) => {
     </>
   );
 };
-export default App;
+const ComponentApp = dynamic(Promise.resolve(App), {
+  ssr: false,
+});
+
+export default ComponentApp;

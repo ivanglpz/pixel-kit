@@ -1,4 +1,4 @@
-import useElement from "@/editor/core/hooks/element/hook";
+import useSelectedShape from "@/editor/core/hooks/element/hook";
 import { IKeyTool } from "@/editor/core/hooks/tool/types";
 import themeColors from "@/themes";
 import { AtomWrapper } from "@whil/ui";
@@ -13,6 +13,7 @@ import SidebarResolutionsFC from "./tabs/elements/global/resolution/resolution";
 import SidebarShadowFC from "./tabs/elements/global/shadow/shadow";
 import SidebarStrokeFC from "./tabs/elements/global/stroke/stroke";
 import StageSidebarRight from "./tabs/stage";
+import { css } from "../../../../../../styled-system/css";
 
 type LayoutsTabs = {
   [key in IKeyTool]?: FC;
@@ -50,63 +51,23 @@ const propertiesElements = (tool: IKeyTool) => [
 ];
 
 const LayoutEditorSidebarRight: FC = () => {
-  const { element } = useElement();
+  const { element } = useSelectedShape();
   return (
-    <AtomWrapper
-      backgroundColor={`${themeColors.dark}`}
-      justifyContent="flex-start"
-      alignItems="flex-start"
-      width="100%"
-      height="inherit"
-      display="flex"
-      className="CursorDefault"
-      flexDirection="column"
-      customCSS={(css) => css`
-        border-left: 1px solid rgba(255, 255, 255, 0.25);
-
-        overflow: hidden;
-        overflow-x: hidden;
-        overflow-y: scroll;
-
-        ::-webkit-scrollbar {
-          width: 6px;
-        }
-        &:hover {
-          overflow-y: scroll;
-
-          ::-webkit-scrollbar {
-            width: 6px;
-          }
-          ::-webkit-scrollbar-thumb {
-            background: #ffffff67;
-            border-radius: 99px;
-          }
-          ::-webkit-scrollbar-thumb:hover {
-            background: ${themeColors.white};
-            box-shadow: 0 0 2px 1px rgba(0, 0, 0, 0.2);
-          }
-        }
-      `}
+    <aside
+      className={css({
+        backgroundColor: "#0d0e0e",
+        height: "auto",
+        position: "absolute",
+        top: 200,
+        left: 2,
+        zIndex: 3,
+        maxWidth: "200px",
+        width: "100%",
+        borderRadius: 8,
+      })}
     >
-      {element?.id ? (
-        <>
-          {propertiesElements?.(`${element?.tool as IKeyTool}`)?.map(
-            ({ Component }) => (
-              <>
-                {Component ? (
-                  <>
-                    <Component />
-                    <AtomWrapper width="100%" height="auto"></AtomWrapper>
-                  </>
-                ) : null}
-              </>
-            )
-          )}
-        </>
-      ) : (
-        <StageSidebarRight />
-      )}
-    </AtomWrapper>
+      <StageSidebarRight />
+    </aside>
   );
 };
 
