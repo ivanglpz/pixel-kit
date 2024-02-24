@@ -124,6 +124,7 @@ const LayoutEditorTop: FC = () => {
                 display: "flex",
                 justifyContent: "center",
                 alignItems: "center",
+                border: "container",
               })}
               onClick={() => {
                 setTool(item.keyMethod as IKeyTool);

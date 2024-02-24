@@ -30,8 +30,6 @@ const AtomPipeComponent = memo(() => {
               isSelected={true}
               onChange={onChange}
               onSelect={onChange}
-              elements={[]}
-              element={temporalShape}
             />
             );
           </Portal>

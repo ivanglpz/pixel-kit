@@ -69,13 +69,11 @@ const AtomEditorMapper = memo(() => {
                 trRef?.current?.nodes?.([]);
                 onChange(item);
               }}
-              element={element}
-              elements={[]}
             />
           );
         })}
       </Layer>
-      <Layer>
+      {/* <Layer>
         <Portal selector=".top-layer" enabled={true}>
           <Transformer
             ref={trRef as MutableRefObject<Konva.Transformer>}
@@ -94,7 +92,7 @@ const AtomEditorMapper = memo(() => {
             ref={selectionRectRef as MutableRefObject<Konva.Rect>}
           />
         </Portal>
-      </Layer>
+      </Layer> */}
       <AtomPipeComponent />
     </>
   );
