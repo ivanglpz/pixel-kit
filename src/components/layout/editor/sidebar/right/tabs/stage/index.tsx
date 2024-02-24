@@ -1,5 +1,5 @@
 import { useStage, useTool } from "@/editor/core/hooks";
-import useElements from "@/editor/core/hooks/elements/hook";
+import useShapes from "@/editor/core/hooks/elements/hook";
 import usePages from "@/editor/core/hooks/pages/hook";
 import { pageIdDefault } from "@/editor/core/hooks/pages/jotai";
 import themeColors from "@/themes";
@@ -10,7 +10,7 @@ const StageSidebarRight: FC = () => {
   const { config, handleConfig } = useStage();
   const { page, handleDeletePage, pages } = usePages();
   const { setTool } = useTool();
-  const { handleDeleteElementsByPage } = useElements();
+  const { handleDeleteElementsByPage } = useShapes();
 
   return (
     <AtomWrapper

@@ -5,15 +5,15 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { v4 } from "uuid";
 import { IPELMT } from "../../elements/type";
 import absolutePositionFromStage from "../../helpers/stage/position";
-import useElement from "../element/hook";
-import useElements from "../elements/hook";
+import useSelectedShape from "../element/hook";
+import useShapes from "../elements/hook";
 import usePages from "../pages/hook";
-import usePipe from "../pipe/hook";
+import useTemporalShape from "../pipe/hook";
 import useSelection from "../selection/hook";
 import useTool from "../tool/hook";
 import { IKeyTool } from "../tool/types";
 import eventElements from "./event";
-import { IEndEvent, IStageEvents, IStartEvent } from "./types";
+import { IStageEvents, IStartEvent } from "./types";
 
 const useEvent = () => {
   const { isCreatingElement, tool, setTool, disableKeyBoard } = useTool();
@@ -22,18 +22,19 @@ const useEvent = () => {
     handleSetElements: handleCreateElementInAllElements,
     handleDeleteElement: handleDeleteElement,
     handleDeleteManyElements,
-  } = useElements();
+  } = useShapes();
 
   const {
     element: elementSelected,
     handleSetElement: handleSelectElement,
     handleEmptyElement: handleCleanSelectedElement,
-  } = useElement();
+  } = useSelectedShape();
   const {
-    pipeline: elementWithPipeline,
-    handleSetElement: handlePipelineSetElement,
-    handleEmptyElement: handleCleanPipelineSelectedElement,
-  } = usePipe();
+    handleCleanTemporalShape,
+    handleCreateTemporalShape,
+    handleUpdateTemporalShape,
+    temporalShape,
+  } = useTemporalShape();
 
   const {
     selectionRefsState: { rectRef: selectionRectRef, layerRef, trRef },
@@ -49,213 +50,14 @@ const useEvent = () => {
   const [eventsKeyboard, setEventsKeyboard] =
     useState<IStageEvents>("STAGE_WATCHING");
 
-  const [elementsIds, setElementsIds] = useState<string[]>([]);
+  const handleMouseDown = (eventStage: KonvaEventObject<MouseEvent>) => {};
 
-  const updateSelectionRect = useCallback(() => {
-    if (selectionRectRef?.current) {
-      const node = selectionRectRef.current;
-      if (node) {
-        node.setAttrs({
-          visible: selection.current.visible,
-          x: Math.min(selection.current.x1, selection.current.x2),
-          y: Math.min(selection.current.y1, selection.current.y2),
-          width: Math.abs(selection.current.x1 - selection.current.x2),
-          height: Math.abs(selection.current.y1 - selection.current.y2),
-          fill: "rgba(0, 161, 255, 0.3)",
-        });
-        node.getLayer().batchDraw();
-      }
-    }
-  }, [selectionRectRef]);
+  const handleMouseMove = (eventStage: KonvaEventObject<MouseEvent>) => {};
 
-  const handleMouseDown = useCallback(
-    (eventStage: KonvaEventObject<MouseEvent>) => {
-      if (eventsKeyboard === "STAGE_WATCHING") {
-        const canSelectWithTheCursorElements =
-          !isCreatingElement &&
-          !drawing &&
-          !elementSelected?.id &&
-          !elementWithPipeline?.id &&
-          !isThereMoreSelectedElements;
-
-        // if (canSelectWithTheCursorElements) {
-        //   const { x, y } = absolutePositionFromStage(eventStage);
-        //   selection.current.visible = true;
-        //   selection.current.x1 = Number(x);
-        //   selection.current.y1 = Number(y);
-        //   selection.current.x2 = Number(x);
-        //   selection.current.y2 = Number(y);
-        //   updateSelectionRect();
-        // }
-        if (isCreatingElement) {
-          // setDraw(true);
-          const elementTemplateStartEvent = eventElements?.[tool]?.start;
-
-          const { x, y } = absolutePositionFromStage(eventStage);
-
-          const elementCreated = elementTemplateStartEvent?.(
-            { x, y },
-            Object.keys(AllElements).length,
-            page,
-            ""
-          );
-          if (elementCreated) {
-            handlePipelineSetElement(elementCreated);
-          }
-        }
-      }
-
-      if (eventsKeyboard === "STAGE_COPY_ELEMENT") {
-        // if (elementSelected?.id && !isThereMoreSelectedElements) {
-        //   const newElement: IPELMT = Object.assign({}, elementSelected, {
-        //     id: v4(),
-        //     groupId: "",
-        //     view_position: Object.keys(AllElements).length + 1,
-        //   } as IPELMT);
-        //   handlePipelineSetElement(newElement);
-        // }
-        // if (isThereMoreSelectedElements) {
-        //   for (let index = 0; index < elementsIds.length; index++) {
-        //     const element = AllElements[elementsIds[index]];
-        //     handleUpdateElement(
-        //       Object.assign({}, element, {
-        //         id: v4(),
-        //         view_position: Object.keys(AllElements).length + index + 1,
-        //       })
-        //     );
-        //   }
-        // }
-      }
-    },
-    [
-      isCreatingElement,
-      eventsKeyboard,
-      handlePipelineSetElement,
-      drawing,
-      elementSelected,
-      elementWithPipeline,
-      isThereMoreSelectedElements,
-      AllElements,
-    ]
-  );
-
-  const handleMouseMove = useCallback(
-    (eventStage: KonvaEventObject<MouseEvent>) => {
-      const { x, y } = absolutePositionFromStage(eventStage);
-
-      // if (!drawing) return;
-
-      if (eventsKeyboard === "STAGE_WATCHING") {
-        const canSelectWithTheCursorElements =
-          !drawing && !elementWithPipeline?.id && !isThereMoreSelectedElements;
-
-        // if (canSelectWithTheCursorElements) {
-        //   if (!selection.current.visible) return;
-        //   selection.current.x2 = Number(x);
-        //   selection.current.y2 = Number(y);
-        //   updateSelectionRect();
-        // }
-        if (elementWithPipeline.id) {
-          const elementTemplateProgressEvent = eventElements?.[tool]?.progress;
-          if (elementTemplateProgressEvent) {
-            const updateElement = elementTemplateProgressEvent(
-              { x, y },
-              elementWithPipeline
-            );
-            handlePipelineSetElement(updateElement);
-          }
-        }
-      }
-
-      // if (eventsKeyboard === "STAGE_COPY_ELEMENT") {
-      //   if (elementWithPipeline?.id) {
-      //     const updateElement = Object.assign({}, elementSelected, {
-      //       x,
-      //       y,
-      //     });
-      //     handlePipelineSetElement(updateElement);
-      //   }
-      // }
-    },
-    [
-      isCreatingElement,
-      eventsKeyboard,
-      drawing,
-      elementSelected,
-      elementWithPipeline,
-      isThereMoreSelectedElements,
-      AllElements,
-    ]
-  );
-
-  const handleMouseUp = useCallback(() => {
-    // if (selection.current.visible) {
-    //   selection.current.visible = false;
-    //   const { x1, x2, y1, y2 } = selection.current;
-    //   const moved = x1 !== x2 || y1 !== y2;
-    //   if (!moved) {
-    //     updateSelectionRect();
-    //     return;
-    //   }
-    //   updateSelectionRect();
-
-    //   const selBox = selectionRectRef?.current?.getClientRect?.();
-
-    //   const elementsLayer = layerRef?.current?.children;
-
-    //   const elementsSel = elementsLayer?.filter?.((elementNode) => {
-    //     if (
-    //       elementNode?.attrs?.id === "select-rect-default" ||
-    //       elementNode?.attrs?.id === "group-style-background" ||
-    //       elementNode?.attrs?.isBlocked
-    //     )
-    //       return;
-    //     const elBox = elementNode.getClientRect();
-    //     if (Konva.Util.haveIntersection(selBox, elBox)) {
-    //       return elementNode;
-    //     }
-    //   });
-
-    //   setElementsIds(
-    //     elementsSel?.map((item) => `${item?.attrs?.id}`) as string[]
-    //   );
-
-    //   setSelected(Boolean(Number(elementsSel?.length)));
-    //   if (elementsSel?.length) {
-    //     trRef.current.nodes(elementsSel);
-    //   } else {
-    //     trRef.current.nodes([]);
-    //   }
-    // }
-    if (eventsKeyboard === "STAGE_COPY_ELEMENT") {
-      setEventsKeyboard("STAGE_WATCHING");
-    }
-    if (drawing) {
-      setDraw(false);
-    }
-    if (tool !== "MOVE") {
-      setTool("MOVE");
-    }
-
-    if (elementWithPipeline?.id) {
-      handleCreateElementInAllElements(elementWithPipeline);
-      handleCleanSelectedElement();
-      handleCleanPipelineSelectedElement();
-    }
-  }, [
-    selection,
-    layerRef,
-    eventsKeyboard,
-    drawing,
-    tool,
-    elementWithPipeline,
-    elementSelected,
-  ]);
-
+  const handleMouseUp = () => {};
   const handleResetElement = (kl: IKeyTool) => {
-    setTool(kl);
-    handleCleanSelectedElement();
-    handleCleanPipelineSelectedElement();
+    // setTool(kl);
+    // handleCleanSelectedElement();
   };
 
   useEffect(() => {
@@ -268,11 +70,11 @@ const useEvent = () => {
             handleDeleteElement(`${elementSelected?.id}`);
             handleCleanSelectedElement();
           } else {
-            handleDeleteManyElements(elementsIds);
+            // handleDeleteManyElements(elementsIds);
             handleCleanSelectedElement();
             setSelected(false);
             trRef.current.nodes([]);
-            setElementsIds([]);
+            // setElementsIds([]);
           }
         }
         if (KEY === "ALT") {
@@ -407,7 +209,7 @@ const useEvent = () => {
       document.removeEventListener("paste", handlePaste);
       document.removeEventListener("keyup", handleKeyUp);
     };
-  }, [elementWithPipeline, disableKeyBoard, elementSelected, elementsIds]);
+  }, [disableKeyBoard, elementSelected]);
 
   useEffect(() => {
     const handleVisibilityChange = () => {

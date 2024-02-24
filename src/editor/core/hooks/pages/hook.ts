@@ -6,7 +6,7 @@ import pagesAtom, { pageSelectedAtom } from "./jotai";
 const usePages = () => {
   const [pages, setPages] = useAtom(pagesAtom);
   const [page, setPage] = useAtom(pageSelectedAtom);
-  const handleAddPage = () => {
+  const handleCreatePage = () => {
     const newPage = {
       id: v4(),
     };
@@ -14,7 +14,7 @@ const usePages = () => {
     setPages((prev) => [...prev, newPage]);
   };
 
-  const hnadleSelectPage = (id: string) => {
+  const handleSelectPage = (id: string) => {
     setPage(id);
   };
 
@@ -30,9 +30,9 @@ const usePages = () => {
   );
 
   return {
-    handleAddPage,
+    handleCreatePage,
     pages,
-    hnadleSelectPage,
+    handleSelectPage,
     handleDeletePage,
     page,
   };

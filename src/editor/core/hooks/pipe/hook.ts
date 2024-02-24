@@ -1,30 +1,28 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useAtom } from "jotai";
-import { useCallback } from "react";
 import { IElement, IParamsElement } from "../../elements/type";
 import pipeElement from "./jotai";
 
-const usePipe = () => {
-  const [pipeline, setElement] = useAtom(pipeElement);
+const useTemporalShape = () => {
+  const [temporalShape, setElement] = useAtom(pipeElement);
 
-  const handleChangeElement = useCallback((params: IElement) => {
+  const handleUpdateTemporalShape = (params: IElement) => {
     setElement((prev) => {
       return Object.assign({}, prev, params);
     });
-  }, []);
-  const handleSetElement = useCallback((element: IElement | IParamsElement) => {
+  };
+  const handleCreateTemporalShape = (element: IElement | IParamsElement) => {
     setElement(element);
-  }, []);
-  const handleEmptyElement = useCallback(() => {
-    setElement({} as IElement);
-  }, []);
+  };
 
+  const handleCleanTemporalShape = () => {
+    setElement({} as IElement);
+  };
   return {
-    pipeline,
-    handleChangeElement,
-    handleEmptyElement,
-    handleSetElement,
+    temporalShape,
+    handleUpdateTemporalShape,
+    handleCleanTemporalShape,
+    handleCreateTemporalShape,
   };
 };
-
-export default usePipe;
+export default useTemporalShape;

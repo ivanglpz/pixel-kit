@@ -1,26 +1,25 @@
-import themeColors from "@/themes";
-import { AtomWrapper } from "@whil/ui";
 import { FC } from "react";
-import ElementsList from "./elements";
 import PagesComponent from "./pages/pages";
+import { css } from "../../../../../../styled-system/css";
 
 const LayoutEditorSidebarLeft: FC = () => {
   return (
-    <AtomWrapper
-      backgroundColor={`${themeColors.dark}`}
-      justifyContent="flex-start"
-      alignItems="flex-start"
-      width="100%"
-      height="inherit"
-      display="flex"
-      flexDirection="column"
-      customCSS={(css) => css`
-        border-right: 1px solid rgba(255, 255, 255, 0.25);
-      `}
+    <aside
+      className={css({
+        height: "auto",
+        position: "absolute",
+        top: 5,
+        left: 5,
+        zIndex: 9,
+        maxWidth: "200px",
+        width: "100%",
+        display: "flex",
+        flexDirection: "column",
+        gap: "lg",
+      })}
     >
       <PagesComponent />
-      <ElementsList />
-    </AtomWrapper>
+    </aside>
   );
 };
 
