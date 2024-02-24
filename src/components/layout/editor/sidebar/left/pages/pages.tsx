@@ -42,6 +42,7 @@ const PagesComponent = () => {
             backgroundGradient: "primary",
             padding: "md",
             borderRadius: "md",
+            border: "container",
           })}
         >
           {icons.add}
@@ -71,7 +72,7 @@ const PagesComponent = () => {
               alignItems: "flex-start",
               borderWidth: 1,
               borderStyle: "solid",
-              borderColor: page === item.id ? "secondary" : "primary",
+              borderColor: page === item.id ? "secondary" : "container",
               borderRadius: "md",
               padding: "md",
             })}

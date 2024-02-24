@@ -1,8 +1,9 @@
 import LayoutEditorSidebarLeft from "@/components/layout/editor/sidebar/left";
-import LayoutEditorSidebarRight from "@/components/layout/editor/sidebar/right";
 
 import { FC, ReactNode } from "react";
 import { css } from "../../../styled-system/css";
+import LayoutEditorTop from "@/components/layout/editor/sidebar/top";
+import LayoutEditorSidebarRight from "@/components/layout/editor/sidebar/right";
 type Props = {
   children: ReactNode;
 };
@@ -17,10 +18,14 @@ const LayoutEditor: FC<Props> = ({ children }) => {
         overflow: "hidden",
         display: "flex",
         flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
       })}
     >
+      <LayoutEditorTop />
       <LayoutEditorSidebarLeft />
       {children}
+      <LayoutEditorSidebarRight />
     </main>
   );
 };

@@ -60,8 +60,6 @@ export type IFCElement = IParamsElement & {
   isRef?: boolean;
   onSelect: (item: IPELMT) => void;
   isMoving: boolean;
-  element?: IPELMT;
-  elements?: IPELMT[];
 };
 
 export type FCE = FC<IFCElement>;
