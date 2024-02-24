@@ -17,9 +17,12 @@ export type IStartEvent = (
     width?: number;
     height?: number;
   }
-) => IElement | IParamsElement;
+) => IElement;
 
-export type IEndEvent = (event: IRelativePosition, element: IPELMT) => IPELMT;
+export type IEndEvent = (
+  event: IRelativePosition,
+  element: IElement
+) => IElement;
 
 export type IEventElement = {
   [key in IKeyTool]?: {
@@ -28,4 +31,11 @@ export type IEventElement = {
   };
 };
 
-export type IStageEvents = "STAGE_COPY_ELEMENT" | "STAGE_WATCHING";
+export type IStageEvents =
+  | "STAGE_COPY_IMAGE_SHAPE"
+  | "STAGE_IDLE"
+  | "STAGE_TEMPORAL_CREATING_SHAPE"
+  | "STAGE_TEMPORAL_UPDATING_SHAPE"
+  | "STAGE_COPY_TEXT_SHAPE"
+  | "STAGE_COPY_SHAPE_SVG"
+  | "STAGE_DELETE_SHAPES";

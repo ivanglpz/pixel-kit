@@ -15,7 +15,7 @@ import AtomPipeComponent from "./pipe";
 import { FCE, IElement, IParamsElement } from "./type";
 
 const AtomEditorMapper = memo(() => {
-  const { elements, draggable, handleSetElements } = useShapes();
+  const { shapes } = useShapes();
   const { element, handleSetElement } = useSelectedShape();
   const { isMoving } = useTool();
   const {
@@ -30,11 +30,8 @@ const AtomEditorMapper = memo(() => {
   const onChange = useCallback(
     (element: IElement | IParamsElement) => {
       if (!element.id) return;
-      handleSetElement(element);
-
-      handleSetElements(element);
     },
-    [isMoving, element, elements]
+    [isMoving, element]
   );
 
   useEffect(() => {
@@ -49,14 +46,14 @@ const AtomEditorMapper = memo(() => {
   return (
     <>
       <Layer ref={layerRef as MutableRefObject<Konva.Layer>}>
-        {Object.values(elements)?.map((item) => {
+        {Object.values(shapes)?.map((item) => {
           const Component = MapEls?.[`${item?.tool}` as IKeyTool] as FCE;
           const isSelected = item?.id === element?.id;
           return (
             <Component
               {...item}
               key={item?.id}
-              draggable={draggable}
+              draggable={true}
               isMoving={isMoving}
               isSelected={isSelected}
               isRef={false}
@@ -73,26 +70,6 @@ const AtomEditorMapper = memo(() => {
           );
         })}
       </Layer>
-      {/* <Layer>
-        <Portal selector=".top-layer" enabled={true}>
-          <Transformer
-            ref={trRef as MutableRefObject<Konva.Transformer>}
-            boundBoxFunc={(oldBox, newBox) => {
-              if (newBox.width < 5 || newBox.height < 5) {
-                return oldBox;
-              }
-              return newBox;
-            }}
-          />
-          <Rect
-            id="select-rect-default"
-            fill="#8A9BA7"
-            stroke="#0D99FF"
-            strokeWidth={1}
-            ref={selectionRectRef as MutableRefObject<Konva.Rect>}
-          />
-        </Portal>
-      </Layer> */}
       <AtomPipeComponent />
     </>
   );

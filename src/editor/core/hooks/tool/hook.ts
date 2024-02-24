@@ -10,7 +10,7 @@ const useTool = () => {
 
   const isMoving = useMemo(() => tool === "MOVE", [tool]);
 
-  const isCreatingElement = useMemo(
+  const isGoingToCreateAShape = useMemo(
     () => tool !== "MOVE" && tool !== "WRITING",
     [tool]
   );
@@ -23,7 +23,7 @@ const useTool = () => {
     tool,
     setTool,
     isMoving,
-    isCreatingElement,
+    isGoingToCreateAShape,
     disableKeyBoard,
     isDrawing,
     isAddingElements,
