@@ -13,15 +13,18 @@ import useSelection from "../selection/hook";
 import useTool from "../tool/hook";
 import { IKeyTool } from "../tool/types";
 import eventElements from "./event";
-import { IStageEvents, IStartEvent } from "./types";
+import { IEndEvent, IStageEvents, IStartEvent } from "./types";
+import stageAbsolutePosition from "../../helpers/stage/position";
+import { create } from "domain";
 
 const useEvent = () => {
-  const { isCreatingElement, tool, setTool, disableKeyBoard } = useTool();
+  const { isGoingToCreateAShape, tool, setTool, disableKeyBoard } = useTool();
   const {
-    elements: AllElements,
-    handleSetElements: handleCreateElementInAllElements,
-    handleDeleteElement: handleDeleteElement,
-    handleDeleteManyElements,
+    handleCreateShape,
+    handleDeleteManyShapes,
+    handleDeleteShape,
+    handleDeleteShapesByPage,
+    shapes,
   } = useShapes();
 
   const {
@@ -47,17 +50,42 @@ const useEvent = () => {
   const stageDataRef = useRef<Konva.Stage>(null);
 
   const [drawing, setDraw] = useState(false);
-  const [eventsKeyboard, setEventsKeyboard] =
-    useState<IStageEvents>("STAGE_WATCHING");
+  const [eventStage, setEventStage] = useState<IStageEvents>("STAGE_IDLE");
 
-  const handleMouseDown = (eventStage: KonvaEventObject<MouseEvent>) => {};
+  const handleMouseDown = (event: KonvaEventObject<MouseEvent>) => {
+    if (isGoingToCreateAShape) {
+      setEventStage("STAGE_TEMPORAL_CREATING_SHAPE");
+      const createStartElement = eventElements?.[tool]?.start as IStartEvent;
+      const eventd = stageAbsolutePosition(event);
 
-  const handleMouseMove = (eventStage: KonvaEventObject<MouseEvent>) => {};
+      const createdElement = createStartElement(eventd, 1, page, "");
+      handleCreateTemporalShape(createdElement);
+    }
+  };
 
-  const handleMouseUp = () => {};
+  const handleMouseMove = (event: KonvaEventObject<MouseEvent>) => {
+    if (eventStage === "STAGE_TEMPORAL_CREATING_SHAPE" && temporalShape?.tool) {
+      const updateProgressElement = eventElements?.[temporalShape?.tool]
+        ?.progress as IEndEvent;
+
+      const eventd = stageAbsolutePosition(event);
+
+      const updateShape = updateProgressElement(eventd, temporalShape);
+      handleUpdateTemporalShape(updateShape);
+    }
+  };
+
+  const handleMouseUp = () => {
+    if (eventStage === "STAGE_TEMPORAL_CREATING_SHAPE" && temporalShape?.id) {
+      handleCreateShape(temporalShape);
+      handleCleanTemporalShape();
+      setEventStage("STAGE_IDLE");
+      setTool("MOVE");
+    }
+  };
   const handleResetElement = (kl: IKeyTool) => {
-    // setTool(kl);
-    // handleCleanSelectedElement();
+    setTool(kl);
+    handleCleanTemporalShape();
   };
 
   useEffect(() => {
@@ -67,7 +95,7 @@ const useEvent = () => {
       if (disableKeyBoard) {
         if (KEY === "DELETE") {
           if (!isThereMoreSelectedElements) {
-            handleDeleteElement(`${elementSelected?.id}`);
+            handleDeleteShape(`${elementSelected?.id}`);
             handleCleanSelectedElement();
           } else {
             // handleDeleteManyElements(elementsIds);
@@ -78,7 +106,7 @@ const useEvent = () => {
           }
         }
         if (KEY === "ALT") {
-          setEventsKeyboard("STAGE_COPY_ELEMENT");
+          // setEventsKeyboard("STAGE_COPY_ELEMENT");
         }
         if (KEY === "O") {
           handleResetElement("CIRCLE");
@@ -101,7 +129,7 @@ const useEvent = () => {
       }
     };
     const handleKeyUp = () => {
-      setEventsKeyboard("STAGE_WATCHING");
+      setEventStage("STAGE_IDLE");
     };
 
     const handlePaste = (event: globalThis.ClipboardEvent) => {
@@ -123,7 +151,7 @@ const useEvent = () => {
                 x: 0,
                 y: 0,
               },
-              Object.keys(AllElements).length,
+              Object.keys(shapes).length,
               page,
               "",
               {
@@ -132,7 +160,7 @@ const useEvent = () => {
                 height: image.height,
               }
             );
-            handleCreateElementInAllElements(createdElement);
+            handleCreateShape(createdElement);
           };
         };
         reader.readAsDataURL(file);
@@ -146,14 +174,14 @@ const useEvent = () => {
             x: 0,
             y: 0,
           },
-          Object.keys(AllElements).length,
+          Object.keys(shapes).length,
           page,
           "",
           {
             text: clipboardText,
           }
         );
-        handleCreateElementInAllElements(createdElement);
+        handleCreateShape(createdElement);
       }
 
       if (clipboardText.trim().startsWith("<svg")) {
@@ -188,7 +216,7 @@ const useEvent = () => {
             x: 0,
             y: 0,
           },
-          Object.keys(AllElements).length,
+          Object.keys(shapes).length,
           page,
           "",
           {
@@ -197,7 +225,7 @@ const useEvent = () => {
             height: img.height,
           }
         );
-        handleCreateElementInAllElements(createdElement);
+        handleCreateShape(createdElement);
       }
     };
     document.addEventListener("keydown", handleKeyDown);
@@ -213,13 +241,8 @@ const useEvent = () => {
 
   useEffect(() => {
     const handleVisibilityChange = () => {
-      if (document.hidden) {
-        setTool("MOVE");
-        setEventsKeyboard("STAGE_WATCHING");
-      } else {
-        setTool("MOVE");
-        setEventsKeyboard("STAGE_WATCHING");
-      }
+      setTool("MOVE");
+      setEventStage("STAGE_IDLE");
     };
 
     document.addEventListener("visibilitychange", handleVisibilityChange);

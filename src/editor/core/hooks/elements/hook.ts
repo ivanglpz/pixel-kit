@@ -6,30 +6,32 @@ import useTool from "../tool/hook";
 import elementsAtom from "./jotai";
 
 const useShapes = () => {
-  const [elements, setElements] = useAtom(elementsAtom);
+  const [shapes, setShapes] = useAtom(elementsAtom);
 
-  const { tool, isMoving } = useTool();
+  const handleCreateShape = useCallback((element: IElement) => {
+    if (element?.id) {
+      setShapes((prev) => {
+        return Object.assign({}, prev, { [`${element?.id}`]: element });
+      });
+    }
+  }, []);
 
-  const handleSetElements = useCallback(
-    (element: IElement | IParamsElement) => {
-      if (element?.id) {
-        setElements((prev) => {
-          return Object.assign({}, prev, { [`${element?.id}`]: element });
-        });
-      }
-    },
-    []
-  );
-
-  const handleDeleteElement = useCallback((id: string) => {
-    setElements((prev) => {
+  const handleUpdateShape = useCallback((element: IElement) => {
+    if (element?.id) {
+      setShapes((prev) => {
+        return Object.assign({}, prev, { [`${element?.id}`]: element });
+      });
+    }
+  }, []);
+  const handleDeleteShape = useCallback((id: string) => {
+    setShapes((prev) => {
       delete prev[id];
       const data = Object.assign({}, prev);
       return data;
     });
   }, []);
-  const handleDeleteManyElements = useCallback((ids: string[]) => {
-    setElements((prev) => {
+  const handleDeleteManyShapes = useCallback((ids: string[]) => {
+    setShapes((prev) => {
       for (const iterator of ids) {
         delete prev[iterator];
       }
@@ -38,8 +40,8 @@ const useShapes = () => {
     });
   }, []);
 
-  const handleDeleteElementsByPage = useCallback((pageId: string) => {
-    setElements((prev) => {
+  const handleDeleteShapesByPage = useCallback((pageId: string) => {
+    setShapes((prev) => {
       for (const iterator of Object.values(prev)) {
         if (pageId === iterator.pageId) {
           delete prev[`${iterator.id}`];
@@ -51,13 +53,12 @@ const useShapes = () => {
   }, []);
 
   return {
-    elements,
-    tool,
-    handleDeleteElementsByPage,
-    draggable: isMoving,
-    handleSetElements: handleSetElements,
-    handleDeleteElement,
-    handleDeleteManyElements,
+    shapes,
+    handleCreateShape,
+    handleDeleteShape,
+    handleDeleteManyShapes,
+    handleDeleteShapesByPage,
+    handleUpdateShape,
   };
 };
 

@@ -1,8 +1,8 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react/display-name */
-import { memo, useCallback } from "react";
-import { Group, Layer } from "react-konva";
-import { Portal } from "react-konva-utils";
+import { memo, useCallback, useMemo } from "react";
+import { Layer } from "react-konva";
+
 import { useTool } from "../hooks";
 import useShapes from "../hooks/elements/hook";
 import useTemporalShape from "../hooks/pipe/hook";
@@ -16,25 +16,26 @@ const AtomPipeComponent = memo(() => {
   const { isMoving } = useTool();
   const onChange = useCallback(() => {}, []);
 
-  const Component = MapEls?.[`${temporalShape?.tool}` as IKeyTool] as FCE;
+  const Component = useMemo(
+    () => MapEls?.[`${temporalShape?.tool}` as IKeyTool] as FCE,
+    [temporalShape]
+  );
+
   return (
     <>
-      {Component ? (
-        <Layer>
-          <Portal selector=".top-layer" enabled={true}>
-            <Component
-              key={temporalShape.id}
-              {...temporalShape}
-              draggable={draggable}
-              isMoving={isMoving}
-              isSelected={true}
-              onChange={onChange}
-              onSelect={onChange}
-            />
-            );
-          </Portal>
-        </Layer>
-      ) : null}
+      <Layer>
+        {temporalShape?.id ? (
+          <Component
+            key={temporalShape.id}
+            {...temporalShape}
+            draggable={draggable}
+            isMoving={isMoving}
+            isSelected={true}
+            onChange={onChange}
+            onSelect={onChange}
+          />
+        ) : null}
+      </Layer>
     </>
   );
 });

@@ -1,4 +1,3 @@
-import useSelectedShape from "@/editor/core/hooks/element/hook";
 import { FC } from "react";
 import { css } from "../../../../../../styled-system/css";
 import StageConfig from "./stage";
