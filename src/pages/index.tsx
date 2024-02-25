@@ -1,15 +1,8 @@
-import AtomEditorScreen from "@/editor/Stage";
-import AtomEditorMapper from "@/editor/core/elements";
+import PixelEditor from "@/editor";
 import { NextOnlyPage } from "next";
 
 const PageEditor: NextOnlyPage = () => {
-  return (
-    <AtomEditorScreen>
-      <AtomEditorMapper />
-    </AtomEditorScreen>
-  );
+  return <PixelEditor />;
 };
-
-PageEditor.Layout = "editor";
 
 export default PageEditor;
