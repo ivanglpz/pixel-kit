@@ -2,7 +2,7 @@
 import { FC, ReactNode, useEffect, useRef, useState } from "react";
 import { Stage } from "react-konva";
 import { useEvent, useStage, useZoom } from "../core/hooks";
-import { css } from "../../../styled-system/css";
+import { css } from "@stylespixelkit/css";
 
 type Props = {
   children: ReactNode;

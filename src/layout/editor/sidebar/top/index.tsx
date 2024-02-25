@@ -1,8 +1,8 @@
 import { useSelectedShape, useTool } from "@/editor/core/hooks";
 import { IKeyTool } from "@/editor/core/hooks/tool/types";
 import { FC } from "react";
-import { css } from "../../../../../../styled-system/css";
 import icons from "@/assets/index";
+import { css } from "@stylespixelkit/css";
 
 const METHODS = [
   {

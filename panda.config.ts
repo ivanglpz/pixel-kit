@@ -9,6 +9,7 @@ export default defineConfig({
 
   // Files to exclude
   exclude: [],
+  importMap: "@stylespixelkit",
 
   // Useful for theme customization
   theme: {

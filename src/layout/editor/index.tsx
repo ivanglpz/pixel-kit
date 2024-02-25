@@ -1,9 +1,9 @@
-import LayoutEditorSidebarLeft from "@/components/layout/editor/sidebar/left";
+import LayoutEditorSidebarLeft from "@/layout/editor/sidebar/left";
 
 import { FC, ReactNode } from "react";
 import { css } from "../../../styled-system/css";
-import LayoutEditorTop from "@/components/layout/editor/sidebar/top";
-import LayoutEditorSidebarRight from "@/components/layout/editor/sidebar/right";
+import LayoutEditorTop from "@/layout/editor/sidebar/top";
+import LayoutEditorSidebarRight from "@/layout/editor/sidebar/right";
 type Props = {
   children: ReactNode;
 };
