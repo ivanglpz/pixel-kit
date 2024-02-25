@@ -19,8 +19,8 @@ const circleElementStart = (
     visible: true,
     tool: "CIRCLE",
     rotate: 0,
-    height: 100,
-    width: 100,
+    height: 1,
+    width: 1,
     view_position: count + 1,
     style: {
       backgroundColor: "#ffffff",

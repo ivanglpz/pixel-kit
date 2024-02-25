@@ -47,7 +47,7 @@ const METHODS = [
 
 const LayoutEditorTop: FC = () => {
   const { tool, setTool } = useTool();
-  const { handleEmptyElement } = useSelectedShape();
+  const { handleCleanShapeSelected } = useSelectedShape();
 
   return (
     <div
@@ -128,7 +128,7 @@ const LayoutEditorTop: FC = () => {
               })}
               onClick={() => {
                 setTool(item.keyMethod as IKeyTool);
-                handleEmptyElement();
+                handleCleanShapeSelected();
               }}
             >
               {item?.icon}

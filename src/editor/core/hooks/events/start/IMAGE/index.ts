@@ -44,8 +44,8 @@ const imageElementStart = (
     view_position: count + 1,
     src: params?.image ?? "/logoharmony.png",
     rotate: 0,
-    height: params?.height ?? 100,
-    width: params?.width ?? 100,
+    height: params?.height ?? 1,
+    width: params?.width ?? 1,
   };
 };
 export default imageElementStart;

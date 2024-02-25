@@ -1,28 +1,29 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useAtom } from "jotai";
-import { IElement, IParamsElement } from "../../elements/type";
+import { IElement } from "../../elements/type";
 import elementSelectedAtom from "./jotai";
 
 const useSelectedShape = () => {
-  const [element, setElement] = useAtom(elementSelectedAtom);
+  const [shapeSelected, setElement] = useAtom(elementSelectedAtom);
 
-  const handleChangeElement = (params: IElement | IParamsElement) => {
+  const handleUpdteShapeSelected = (params: IElement) => {
     setElement((prev) => {
       return Object.assign({}, prev, params);
     });
   };
 
-  const handleSetElement = (element: IElement | IParamsElement) => {
+  const handleSetShapeSelected = (element: IElement) => {
     setElement(element);
   };
-  const handleEmptyElement = () => {
-    setElement({} as IElement | IParamsElement);
+
+  const handleCleanShapeSelected = () => {
+    setElement({} as IElement);
   };
   return {
-    element,
-    handleChangeElement,
-    handleEmptyElement,
-    handleSetElement,
+    shapeSelected,
+    handleUpdteShapeSelected,
+    handleCleanShapeSelected,
+    handleSetShapeSelected,
   };
 };
 

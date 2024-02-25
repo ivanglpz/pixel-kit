@@ -1,5 +1,5 @@
 import { IElement, IPELMT, IParamsElement } from "../../elements/type";
-import { IKeyTool } from "../tool/types";
+import { IKeyMethods, IKeyTool } from "../tool/types";
 
 export type IRelativePosition = {
   x: number;
@@ -31,6 +31,10 @@ export type IEventElement = {
   };
 };
 
+export type IShapeProgressEvent = {
+  [key in IKeyMethods]: (x: number, y: number, element: IElement) => IElement;
+};
+
 export type IStageEvents =
   | "STAGE_COPY_IMAGE_SHAPE"
   | "STAGE_IDLE"
@@ -38,4 +42,5 @@ export type IStageEvents =
   | "STAGE_TEMPORAL_UPDATING_SHAPE"
   | "STAGE_COPY_TEXT_SHAPE"
   | "STAGE_COPY_SHAPE_SVG"
-  | "STAGE_DELETE_SHAPES";
+  | "STAGE_DELETE_SHAPES"
+  | "STAGE_COPY_SHAPE";

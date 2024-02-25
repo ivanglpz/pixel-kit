@@ -20,8 +20,8 @@ const codeStartInitial = (
     tool: "CODE",
     visible: true,
     rotate: 0,
-    height: 300,
-    width: 500,
+    height: 1,
+    width: 1,
     view_position: count + 1,
     style: {
       stroke: "#ffffff",
