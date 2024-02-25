@@ -3,7 +3,7 @@ import { useCallback } from "react";
 import StageConfigAtom from "./jotai";
 import { IStageConfig } from "./types";
 
-const useStage = () => {
+const useStyleConfig = () => {
   const [config, setConfig] = useAtom(StageConfigAtom);
 
   const handleConfig = useCallback(
@@ -21,4 +21,4 @@ const useStage = () => {
   };
 };
 
-export default useStage;
+export default useStyleConfig;

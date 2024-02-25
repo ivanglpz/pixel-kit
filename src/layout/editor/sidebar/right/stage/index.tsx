@@ -1,9 +1,9 @@
-import { useStage, useTool } from "@/editor/core/hooks";
+import { useStyleConfig } from "@/editor/core/hooks";
 import { css } from "@stylespixelkit/css";
 import { FC } from "react";
 
 const StageConfig: FC = () => {
-  const { config, handleConfig } = useStage();
+  const { config, handleConfig } = useStyleConfig();
 
   return (
     <div
