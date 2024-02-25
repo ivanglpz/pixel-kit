@@ -2,17 +2,14 @@
 /* eslint-disable react/display-name */
 import { memo, useCallback, useMemo } from "react";
 import { Layer } from "react-konva";
-
 import { useTool } from "../hooks";
-import useShapes from "../hooks/elements/hook";
-import useTemporalShape from "../hooks/pipe/hook";
+import useTemporalShape from "../hooks/temporalShape/hook";
 import { IKeyTool } from "../hooks/tool/types";
 import { MapEls } from "./mp_el";
 import { FCE } from "./type";
 
 const AtomPipeComponent = memo(() => {
   const { temporalShape } = useTemporalShape();
-  const { draggable } = useShapes();
   const { isMoving } = useTool();
   const onChange = useCallback(() => {}, []);
 
@@ -28,7 +25,7 @@ const AtomPipeComponent = memo(() => {
           <Component
             key={temporalShape.id}
             {...temporalShape}
-            draggable={draggable}
+            draggable={true}
             isMoving={isMoving}
             isSelected={true}
             onChange={onChange}
