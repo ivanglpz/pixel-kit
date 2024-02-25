@@ -1,12 +1,12 @@
-import AtomEditorScreen from "@/editor/Stage";
-import AtomEditorMapper from "@/editor/core/elements";
+import PixelKitEditor from "@/editor/Stage";
+import PixelKitShapes from "@/editor/core/elements";
 import { NextOnlyPage } from "next";
 
 const PageEditor: NextOnlyPage = () => {
   return (
-    <AtomEditorScreen>
-      <AtomEditorMapper />
-    </AtomEditorScreen>
+    <PixelKitEditor>
+      <PixelKitShapes />
+    </PixelKitEditor>
   );
 };
 
