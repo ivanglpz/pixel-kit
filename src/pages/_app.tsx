@@ -1,4 +1,3 @@
-import WarningBrowserBraveModal from "@/components/atoms/AtomModal";
 import AtomSeo from "@/components/atoms/AtomSeo/atomseo";
 import useBrowser from "@/hooks/useBrowser/hook";
 import useStopZoom from "@/hooks/useStopZoom/hook";
@@ -27,7 +26,6 @@ const App = ({ Component, pageProps }: AppPropsWithLayout) => {
           zIndex: 99999999999999,
         })}
       />
-      <WarningBrowserBraveModal />
 
       <LayoutFC {...Component}>
         <Component {...pageProps} />

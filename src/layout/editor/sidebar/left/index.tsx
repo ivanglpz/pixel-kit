@@ -1,15 +1,15 @@
 import { FC } from "react";
-import { css } from "../../../../../../styled-system/css";
-import StageConfig from "./stage";
+import PagesComponent from "./pages/pages";
+import { css } from "@stylespixelkit/css";
 
-const LayoutEditorSidebarRight: FC = () => {
+const LayoutEditorSidebarLeft: FC = () => {
   return (
     <aside
       className={css({
         height: "auto",
         position: "absolute",
         top: 5,
-        right: 5,
+        left: 5,
         zIndex: 9,
         maxWidth: "200px",
         width: "100%",
@@ -18,9 +18,9 @@ const LayoutEditorSidebarRight: FC = () => {
         gap: "lg",
       })}
     >
-      <StageConfig />
+      <PagesComponent />
     </aside>
   );
 };
 
-export default LayoutEditorSidebarRight;
+export default LayoutEditorSidebarLeft;

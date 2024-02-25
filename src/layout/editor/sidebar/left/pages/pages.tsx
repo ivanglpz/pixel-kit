@@ -1,6 +1,6 @@
 import usePages from "@/editor/core/hooks/pages/hook";
 import icons from "@/assets/index";
-import { css } from "../../../../../../../styled-system/css";
+import { css } from "@stylespixelkit/css";
 
 const PagesComponent = () => {
   const { pages, handleSelectPage, page, handleCreatePage } = usePages();

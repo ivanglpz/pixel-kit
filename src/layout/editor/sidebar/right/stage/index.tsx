@@ -1,6 +1,6 @@
 import { useStage, useTool } from "@/editor/core/hooks";
+import { css } from "@stylespixelkit/css";
 import { FC } from "react";
-import { css } from "../../../../../../../styled-system/css";
 
 const StageConfig: FC = () => {
   const { config, handleConfig } = useStage();
