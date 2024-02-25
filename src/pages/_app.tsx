@@ -1,6 +1,3 @@
-import useBrowser from "@/hooks/useBrowser/hook";
-import useStopZoom from "@/hooks/useStopZoom/hook";
-import LayoutFC from "@/layout";
 import "@/styles/globals.css";
 import type { AppPropsWithLayout } from "next/app";
 import { Toaster } from "sonner";
@@ -9,8 +6,6 @@ import dynamic from "next/dynamic";
 import SeoComponent from "@/components/seo";
 
 const App = ({ Component, pageProps }: AppPropsWithLayout) => {
-  useStopZoom();
-  useBrowser();
   return (
     <>
       <SeoComponent
