@@ -2,10 +2,10 @@
 import Konva from "konva";
 import { KonvaEventObject } from "konva/lib/Node";
 import { useEffect, useRef, useState } from "react";
-import useSelectedShape from "../element/hook";
-import useShapes from "../elements/hook";
+import useSelectedShape from "../selectedShape/hook";
+import useShapes from "../shapes/hook";
 import usePages from "../pages/hook";
-import useTemporalShape from "../pipe/hook";
+import useTemporalShape from "../temporalShape/hook";
 import useTool from "../tool/hook";
 import { IStageEvents } from "./types";
 import stageAbsolutePosition from "../../helpers/stage/position";

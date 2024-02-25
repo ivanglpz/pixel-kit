@@ -1,14 +1,10 @@
 /* eslint-disable react/display-name */
 /* eslint-disable react-hooks/exhaustive-deps */
 "use client";
-import { useAtomValue, useSetAtom } from "jotai";
-import Konva from "konva";
-import { Group } from "konva/lib/Group";
-import { MutableRefObject, memo, useCallback, useEffect } from "react";
-import { Layer, Rect, Transformer } from "react-konva";
-import { Portal } from "react-konva-utils";
-import { useSelectedShape, useSelection, useTool } from "../hooks";
-import useShapes from "../hooks/elements/hook";
+import { memo, useCallback } from "react";
+import { Layer } from "react-konva";
+import { useSelectedShape, useTool } from "../hooks";
+import useShapes from "../hooks/shapes/hook";
 import { IKeyTool } from "../hooks/tool/types";
 import { MapEls } from "./mp_el";
 import AtomPipeComponent from "./pipe";
@@ -16,39 +12,22 @@ import { FCE, IElement, IParamsElement } from "./type";
 
 const AtomEditorMapper = memo(() => {
   const { shapes } = useShapes();
-  const { element, handleSetElement } = useSelectedShape();
+  const { shapeSelected, handleSetShapeSelected } = useSelectedShape();
   const { isMoving } = useTool();
-  const {
-    selectionRectRef,
-    trRef,
-    selectionRef,
-    setSelectionRefs,
-    layerRef,
-    setSelected,
-  } = useSelection();
 
   const onChange = useCallback(
     (element: IElement | IParamsElement) => {
       if (!element.id) return;
     },
-    [isMoving, element]
+    [isMoving, shapeSelected]
   );
-
-  useEffect(() => {
-    setSelectionRefs({
-      rectRef: selectionRectRef,
-      trRef,
-      selection: selectionRef,
-      layerRef,
-    });
-  }, []);
 
   return (
     <>
-      <Layer ref={layerRef as MutableRefObject<Konva.Layer>}>
+      <Layer>
         {Object.values(shapes)?.map((item) => {
           const Component = MapEls?.[`${item?.tool}` as IKeyTool] as FCE;
-          const isSelected = item?.id === element?.id;
+          const isSelected = item?.id === shapeSelected?.id;
           return (
             <Component
               {...item}
@@ -62,8 +41,6 @@ const AtomEditorMapper = memo(() => {
               }}
               onRef={(ref) => {}}
               onSelect={() => {
-                setSelected(false);
-                trRef?.current?.nodes?.([]);
                 onChange(item);
               }}
             />
