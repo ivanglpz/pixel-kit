@@ -1,5 +1,5 @@
-import { useSelectedShape, useTool } from "@/editor/core/hooks";
-import { IKeyTool } from "@/editor/core/hooks/tool/types";
+import { useSelectedShape, useTool } from "@/editor/hooks";
+import { IKeyTool } from "@/editor/hooks/tool/types";
 import { FC } from "react";
 import icons from "@/assets/index";
 import { css } from "@stylespixelkit/css";

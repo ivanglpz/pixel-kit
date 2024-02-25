@@ -1,4 +1,4 @@
-import { useStyleConfig } from "@/editor/core/hooks";
+import { useStyleConfig } from "@/editor/hooks";
 import { css } from "@stylespixelkit/css";
 import { FC } from "react";
 

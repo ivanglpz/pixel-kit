@@ -5,6 +5,4 @@ const PageEditor: NextOnlyPage = () => {
   return <PixelEditor />;
 };
 
-PageEditor.Layout = "editor";
-
 export default PageEditor;

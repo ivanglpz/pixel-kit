@@ -1,4 +1,4 @@
-import { IElement } from "@/editor/core/elements/type";
+import { IElement } from "@/editor/elements/type";
 import { IShapeProgressEvent } from "./types";
 
 const isNotNegative = (value: number) => {

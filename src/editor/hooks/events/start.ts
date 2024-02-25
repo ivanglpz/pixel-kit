@@ -1,4 +1,4 @@
-import { IElement } from "@/editor/core/elements/type";
+import { IElement } from "@/editor/elements/type";
 import { v4 as uuidv4 } from "uuid";
 import { IKeyMethods } from "../tool/types";
 

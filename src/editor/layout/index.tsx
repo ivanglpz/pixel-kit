@@ -1,14 +1,13 @@
-import LayoutEditorSidebarLeft from "@/layout/editor/sidebar/left";
-
+import { css } from "@stylespixelkit/css";
 import { FC, ReactNode } from "react";
-import { css } from "../../../styled-system/css";
-import LayoutEditorTop from "@/layout/editor/sidebar/top";
-import LayoutEditorSidebarRight from "@/layout/editor/sidebar/right";
+import LayoutEditorTop from "./sidebar/top";
+import LayoutEditorSidebarLeft from "./sidebar/left";
+import LayoutEditorSidebarRight from "./sidebar/right";
 type Props = {
   children: ReactNode;
 };
 
-const LayoutEditor: FC<Props> = ({ children }) => {
+const LayoutPixelEditor: FC<Props> = ({ children }) => {
   return (
     <main
       className={css({
@@ -30,4 +29,4 @@ const LayoutEditor: FC<Props> = ({ children }) => {
   );
 };
 
-export default LayoutEditor;
+export default LayoutPixelEditor;
