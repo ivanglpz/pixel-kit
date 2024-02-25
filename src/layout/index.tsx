@@ -1,9 +1,7 @@
 import { FC, ReactNode } from "react";
 import LayoutEditor from "./editor";
-import LayoutPublicHarmony from "./public";
 
 const Layouts = {
-  public: LayoutPublicHarmony,
   editor: LayoutEditor,
   default: ({ children }: { children: ReactNode }) => <>{children}</>,
 };

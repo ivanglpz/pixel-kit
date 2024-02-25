@@ -1,21 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import {
-  FC,
-  ReactNode,
-  useCallback,
-  useEffect,
-  useLayoutEffect,
-  useRef,
-  useState,
-} from "react";
+import { FC, ReactNode, useEffect, useRef, useState } from "react";
 import { Stage } from "react-konva";
-import {
-  useEvent,
-  useSelectedShape,
-  useSelection,
-  useStage,
-  useZoom,
-} from "../core/hooks";
+import { useEvent, useStage, useZoom } from "../core/hooks";
 import { css } from "../../../styled-system/css";
 
 type Props = {

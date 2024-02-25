@@ -1,7 +1,5 @@
 import { useSelectedShape, useTool } from "@/editor/core/hooks";
 import { IKeyTool } from "@/editor/core/hooks/tool/types";
-import themeColors from "@/themes";
-import { AtomButton, AtomIcon, AtomWrapper } from "@whil/ui";
 import { FC } from "react";
 import { css } from "../../../../../../styled-system/css";
 import icons from "@/assets/index";
