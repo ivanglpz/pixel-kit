@@ -2,16 +2,16 @@ import PixelKitShapes from "./elements";
 import useBrowser from "./hooks/useBrowser/hook";
 import useStopZoom from "./hooks/useStopZoom/hook";
 import LayoutPixelEditor from "./layout";
-import PixelKitEditorStage from "./stage";
+import PixelKitStage from "./stage";
 
 const PixelEditor = () => {
   useStopZoom();
   useBrowser();
   return (
     <LayoutPixelEditor>
-      <PixelKitEditorStage>
+      <PixelKitStage>
         <PixelKitShapes />
-      </PixelKitEditorStage>
+      </PixelKitStage>
     </LayoutPixelEditor>
   );
 };

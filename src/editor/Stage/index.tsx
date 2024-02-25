@@ -9,7 +9,7 @@ type Props = {
   children: ReactNode;
 };
 
-const PixelKitEditorStage: FC<Props> = ({ children }) => {
+const PixelKitStage: FC<Props> = ({ children }) => {
   const { onWheel, zoom: stage } = useZoom();
   const { handleMouseDown, handleMouseUp, handleMouseMove, stageDataRef } =
     useEvent();
@@ -90,4 +90,4 @@ const PixelKitEditorStage: FC<Props> = ({ children }) => {
   );
 };
 
-export default PixelKitEditorStage;
+export default PixelKitStage;
