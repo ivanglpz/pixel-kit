@@ -1,4 +1,4 @@
-import usePages from "@/editor/core/hooks/pages/hook";
+import usePages from "@/editor/hooks/pages/hook";
 import icons from "@/assets/index";
 import { css } from "@stylespixelkit/css";
 

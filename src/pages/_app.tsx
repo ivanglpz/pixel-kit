@@ -27,9 +27,7 @@ const App = ({ Component, pageProps }: AppPropsWithLayout) => {
         })}
       />
 
-      <LayoutFC {...Component}>
-        <Component {...pageProps} />
-      </LayoutFC>
+      <Component {...pageProps} />
     </>
   );
 };

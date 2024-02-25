@@ -8,10 +8,10 @@ import usePages from "../pages/hook";
 import useTemporalShape from "../temporalShape/hook";
 import useTool from "../tool/hook";
 import { IStageEvents } from "./types";
-import stageAbsolutePosition from "../../helpers/stage/position";
 import { shapeProgressEvent } from "./progress";
 import { shapeStart } from "./start";
 import { IKeyMethods, IKeyTool } from "../tool/types";
+import stageAbsolutePosition from "../../helpers/position";
 
 const useEvent = () => {
   const { isGoingToCreateAShape, tool, setTool, isNotWriting } = useTool();

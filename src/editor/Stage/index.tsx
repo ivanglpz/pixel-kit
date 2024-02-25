@@ -1,15 +1,15 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { FC, ReactNode } from "react";
 import { Stage } from "react-konva";
-import { useEvent, useStyleConfig, useZoom } from "../core/hooks";
+import { useEvent, useStyleConfig, useZoom } from "../hooks";
 import { css } from "@stylespixelkit/css";
-import useScreen from "../core/hooks/screen";
+import useScreen from "../hooks/screen";
 
 type Props = {
   children: ReactNode;
 };
 
-const PixelKitEditor: FC<Props> = ({ children }) => {
+const PixelKitEditorStage: FC<Props> = ({ children }) => {
   const { onWheel, zoom: stage } = useZoom();
   const { handleMouseDown, handleMouseUp, handleMouseMove, stageDataRef } =
     useEvent();
@@ -90,4 +90,4 @@ const PixelKitEditor: FC<Props> = ({ children }) => {
   );
 };
 
-export default PixelKitEditor;
+export default PixelKitEditorStage;
