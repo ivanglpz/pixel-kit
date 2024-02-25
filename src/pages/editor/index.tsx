@@ -1,13 +1,8 @@
-import PixelKitEditor from "@/editor/Stage";
-import PixelKitShapes from "@/editor/core/elements";
+import PixelEditor from "@/editor";
 import { NextOnlyPage } from "next";
 
 const PageEditor: NextOnlyPage = () => {
-  return (
-    <PixelKitEditor>
-      <PixelKitShapes />
-    </PixelKitEditor>
-  );
+  return <PixelEditor />;
 };
 
 PageEditor.Layout = "editor";

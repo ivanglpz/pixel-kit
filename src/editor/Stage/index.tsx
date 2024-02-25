@@ -1,8 +1,9 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { FC, ReactNode, useEffect, useRef, useState } from "react";
+import { FC, ReactNode } from "react";
 import { Stage } from "react-konva";
 import { useEvent, useStage, useZoom } from "../core/hooks";
 import { css } from "@stylespixelkit/css";
+import useScreen from "../core/hooks/screen";
 
 type Props = {
   children: ReactNode;
@@ -14,47 +15,7 @@ const PixelKitEditor: FC<Props> = ({ children }) => {
     useEvent();
 
   const { config } = useStage();
-
-  const divRef = useRef<HTMLDivElement>(null);
-  const [dimensions, setDimensions] = useState({
-    width: 0,
-    height: 0,
-  });
-
-  const [show, setShow] = useState(false);
-
-  const handleResize = () => {
-    setShow(false);
-    const divElement = divRef.current;
-    if (divElement) {
-      const { width, height } = divElement.getBoundingClientRect();
-      setDimensions({
-        width,
-        height,
-      });
-      setTimeout(() => {
-        setShow(true);
-      }, 500);
-    }
-  };
-
-  useEffect(() => {
-    window.addEventListener("resize", handleResize);
-    return () => {
-      window.removeEventListener("resize", handleResize);
-    };
-  }, []);
-
-  useEffect(() => {
-    const divElement = divRef.current;
-    if (!divElement) return;
-
-    const resizeObserver = new ResizeObserver(handleResize);
-    resizeObserver.observe(divElement);
-    return () => {
-      resizeObserver.unobserve(divElement);
-    };
-  }, []);
+  const { height, ref: divRef, show, width } = useScreen();
 
   return (
     <main
@@ -79,8 +40,8 @@ const PixelKitEditor: FC<Props> = ({ children }) => {
       {show ? (
         <Stage
           ref={stageDataRef}
-          width={dimensions.width}
-          height={dimensions.height}
+          width={width}
+          height={height}
           onWheel={onWheel}
           scaleX={stage.scale}
           scaleY={stage.scale}

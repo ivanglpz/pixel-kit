@@ -15,7 +15,7 @@ const urlAnalytics = `https://www.googletagmanager.com/gtag/js?id=${googleAnalyt
 const defaultImage =
   "https://res.cloudinary.com/whil/image/upload/v1701621980/app/pixel-kit/images/tnzrsjyst8zrf7gs91eu.png";
 
-const AtomSeo: FC<Props> = ({
+const SeoComponent: FC<Props> = ({
   title,
   content,
   description,
@@ -37,10 +37,7 @@ const AtomSeo: FC<Props> = ({
       <Head>
         <title>{title}</title>
         <meta charSet="UTF-8" />
-        <meta
-          name="google-site-verification"
-          content="EANZjrV1t4rH8Z9sSXalLjIu6DXtsV7rNxkKtJGrxvE"
-        />
+
         <link rel="icon" type="image/png" href={`/icon-pixel-kit.png`} />
         <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -89,4 +86,4 @@ const AtomSeo: FC<Props> = ({
   );
 };
 
-export default AtomSeo;
+export default SeoComponent;
