@@ -1,9 +1,9 @@
 {
-  "name": "harmony",
+  "name": "pixel-kit",
   "engines": {
-    "node": "20"
+    "node": ">=18"
   },
-  "version": "0.1.0",
+  "version": "0.2.0",
   "packageManager": "pnpm@8.6.0",
   "scripts": {
     "prepare": "panda codegen",
@@ -14,26 +14,20 @@
   },
   "dependencies": {
     "@emotion/react": "11.10.6",
-    "@whil/ui": "^0.0.6",
     "canvas": "2.11.2",
     "eslint": "8.38.0",
     "eslint-config-next": "13.3.0",
     "jotai": "^2.0.4",
-    "jspdf": "^2.5.1",
     "konva": "^9.0.1",
-    "lucy-nxtjs": "^0.0.73",
     "next": "13.3.0",
-    "next-plausible": "^3.11.1",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-hook-form": "^7.43.9",
     "react-konva": "^18.2.7",
     "react-konva-utils": "^1.0.4",
-    "react-toastify": "^9.1.2",
     "sonner": "^1.2.4",
     "typescript": "5.0.4",
-    "uuid": "^9.0.0",
-    "yup": "^1.1.1"
+    "uuid": "^9.0.0"
   },
   "devDependencies": {
     "@pandacss/dev": "0.32.1",
