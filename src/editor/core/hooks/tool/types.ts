@@ -10,3 +10,8 @@ export type IKeyTool =
   | "DRAW"
   | "WRITING"
   | "CODE";
+
+export type IKeyMethods = Exclude<
+  IKeyTool,
+  "GROUP" | "MOVE" | "FRAME" | "WRITING"
+>;

@@ -41,8 +41,8 @@ const textElementStart = (
       fontSize: 12,
     },
     view_position: count + 1,
-    height: 100,
-    width: 100,
+    height: 1,
+    width: 1,
   };
 };
 export default textElementStart;

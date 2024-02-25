@@ -32,8 +32,8 @@ const lineElementStart = (
     },
     view_position: count + 1,
     rotate: 0,
-    height: 100,
-    width: 400,
+    height: 1,
+    width: 1,
   };
 };
 export default lineElementStart;

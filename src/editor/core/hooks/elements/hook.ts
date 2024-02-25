@@ -1,8 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useAtom } from "jotai";
 import { useCallback } from "react";
-import { IElement, IParamsElement } from "../../elements/type";
-import useTool from "../tool/hook";
+import { IElement } from "../../elements/type";
 import elementsAtom from "./jotai";
 
 const useShapes = () => {
@@ -23,14 +22,14 @@ const useShapes = () => {
       });
     }
   }, []);
-  const handleDeleteShape = useCallback((id: string) => {
+  const handleDeleteShapeInShapes = useCallback((id: string) => {
     setShapes((prev) => {
       delete prev[id];
       const data = Object.assign({}, prev);
       return data;
     });
   }, []);
-  const handleDeleteManyShapes = useCallback((ids: string[]) => {
+  const handleDeleteManyShapesInShapes = useCallback((ids: string[]) => {
     setShapes((prev) => {
       for (const iterator of ids) {
         delete prev[iterator];
@@ -55,8 +54,8 @@ const useShapes = () => {
   return {
     shapes,
     handleCreateShape,
-    handleDeleteShape,
-    handleDeleteManyShapes,
+    handleDeleteShapeInShapes,
+    handleDeleteManyShapesInShapes,
     handleDeleteShapesByPage,
     handleUpdateShape,
   };

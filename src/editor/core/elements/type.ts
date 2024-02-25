@@ -1,6 +1,6 @@
 import { Group } from "konva/lib/Group";
 import { FC, MutableRefObject } from "react";
-import { IKeyTool } from "../hooks/tool/types";
+import { IKeyMethods, IKeyTool } from "../hooks/tool/types";
 
 export type IStyleElement = {
   backgroundColor?: string;
@@ -30,7 +30,7 @@ export type IStyleElement = {
 
 export type IElement = {
   id: string;
-  tool: IKeyTool;
+  tool: IKeyMethods;
   x: number;
   y: number;
   width?: number;
@@ -40,7 +40,6 @@ export type IElement = {
   resolution?: "portrait" | "landscape";
   isBlocked: boolean;
   pageId: string;
-  groupId: string;
   points?: number[];
   src?: string;
   rotate?: number;
