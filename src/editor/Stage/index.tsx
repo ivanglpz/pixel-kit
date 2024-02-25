@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { FC, ReactNode } from "react";
 import { Stage } from "react-konva";
-import { useEvent, useStage, useZoom } from "../core/hooks";
+import { useEvent, useStyleConfig, useZoom } from "../core/hooks";
 import { css } from "@stylespixelkit/css";
 import useScreen from "../core/hooks/screen";
 
@@ -14,7 +14,7 @@ const PixelKitEditor: FC<Props> = ({ children }) => {
   const { handleMouseDown, handleMouseUp, handleMouseMove, stageDataRef } =
     useEvent();
 
-  const { config } = useStage();
+  const { config } = useStyleConfig();
   const { height, ref: divRef, show, width } = useScreen();
 
   return (
