@@ -8,7 +8,7 @@ type Props = {
   children: ReactNode;
 };
 
-const AtomEditorScreen: FC<Props> = ({ children }) => {
+const PixelKitEditor: FC<Props> = ({ children }) => {
   const { onWheel, zoom: stage } = useZoom();
   const { handleMouseDown, handleMouseUp, handleMouseMove, stageDataRef } =
     useEvent();
@@ -129,4 +129,4 @@ const AtomEditorScreen: FC<Props> = ({ children }) => {
   );
 };
 
-export default AtomEditorScreen;
+export default PixelKitEditor;

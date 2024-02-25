@@ -10,7 +10,7 @@ import { MapEls } from "./mp_el";
 import AtomPipeComponent from "./pipe";
 import { FCE, IElement, IParamsElement } from "./type";
 
-const AtomEditorMapper = memo(() => {
+const PixelKitShapes = memo(() => {
   const { shapes } = useShapes();
   const { shapeSelected, handleSetShapeSelected } = useSelectedShape();
   const { isMoving } = useTool();
@@ -52,4 +52,4 @@ const AtomEditorMapper = memo(() => {
   );
 });
 
-export default AtomEditorMapper;
+export default PixelKitShapes;
