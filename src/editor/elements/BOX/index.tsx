@@ -144,7 +144,7 @@ const ShapeBox = memo((item: IShapeWithEvents) => {
           },
         }}
       >
-        {sidebarElement && sidebarElement instanceof Element
+        {sidebarElement && sidebarElement instanceof Element && isSelected
           ? createPortal(
               <ShapeConfig
                 id={box.id}
