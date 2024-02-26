@@ -1,4 +1,4 @@
-import { IElement, IPELMT, IParamsElement } from "../../elements/type";
+import { IShape, IPELMT, IParamsElement } from "../../elements/type";
 import { IKeyMethods, IKeyTool } from "../tool/types";
 
 export type IRelativePosition = {
@@ -17,12 +17,9 @@ export type IStartEvent = (
     width?: number;
     height?: number;
   }
-) => IElement;
+) => IShape;
 
-export type IEndEvent = (
-  event: IRelativePosition,
-  element: IElement
-) => IElement;
+export type IEndEvent = (event: IRelativePosition, element: IShape) => IShape;
 
 export type IEventElement = {
   [key in IKeyTool]?: {
@@ -32,7 +29,7 @@ export type IEventElement = {
 };
 
 export type IShapeProgressEvent = {
-  [key in IKeyMethods]: (x: number, y: number, element: IElement) => IElement;
+  [key in IKeyMethods]: (x: number, y: number, element: IShape) => IShape;
 };
 
 export type IStageEvents =

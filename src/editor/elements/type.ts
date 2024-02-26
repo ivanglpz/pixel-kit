@@ -1,34 +1,7 @@
-import { Group } from "konva/lib/Group";
-import { FC, MutableRefObject } from "react";
-import { IKeyMethods, IKeyTool } from "../hooks/tool/types";
+import { FC } from "react";
+import { IKeyMethods } from "../hooks/tool/types";
 
-export type IStyleElement = {
-  backgroundColor?: string;
-  fontSize?: number;
-  fontStyle?: string;
-  fontFamily?: string;
-  textDecoration?: string;
-  fontWeight?: number;
-  shadowBlur?: number;
-  shadowColor?: string;
-  shadowOffset?: {
-    x?: number;
-    y?: number;
-  };
-  shadowOpacity?: number;
-  borderRadius?: number;
-  isAllBorderRadius?: boolean;
-  borderRadiusTopLeft?: number;
-  zIndex?: number;
-  borderRadiusTopRight?: number;
-  borderRadiusBottomRight?: number;
-  borderRadiusBottomLeft?: number;
-  colorText?: string;
-  stroke?: string;
-  strokeWidth?: number;
-};
-
-export type IElement = {
+export type IShape = {
   id: string;
   tool: IKeyMethods;
   x: number;
@@ -44,21 +17,42 @@ export type IElement = {
   src?: string;
   rotate?: number;
   view_position: number;
-  style?: IStyleElement;
+  backgroundColor?: string;
+  fontSize?: number;
+  fontStyle?: string;
+  fontFamily?: string;
+  textDecoration?: string;
+  fontWeight?: number;
+  shadowBlur?: number;
+  shadowColor?: string;
+  shadowOffsetX?: number;
+  shadowOffsetY: number;
+  shadowOpacity?: number;
+  borderRadius?: number;
+  isAllBorderRadius?: boolean;
+  borderRadiusTopLeft?: number;
+  zIndex?: number;
+  borderRadiusTopRight?: number;
+  borderRadiusBottomRight?: number;
+  borderRadiusBottomLeft?: number;
+  colorText?: string;
+  stroke?: string;
+  strokeWidth?: number;
 };
 
-export type IParamsElement = Partial<IElement>;
+export type IParamsElement = Partial<IShape>;
 
-export type IPELMT = IParamsElement | IElement;
+export type IPELMT = IParamsElement | IShape;
 
-export type IFCElement = IParamsElement & {
+export type IShapeWithEvents = {
+  shape: IShape;
   draggable: boolean;
-  onChange: (item: IPELMT) => void;
   isSelected: boolean;
-  onRef?: (ref: MutableRefObject<Group | undefined>) => void;
-  isRef?: boolean;
-  onSelect: (item: IPELMT) => void;
-  isMoving: boolean;
+  onDragStart: (item: IShape) => void;
+  onDragMove: (item: IShape) => void;
+  onDragStop: (item: IShape) => void;
+  onTransformStop: (item: IShape) => void;
+  onClick: (item: IShape) => void;
 };
 
-export type FCE = FC<IFCElement>;
+export type FCShapeWEvents = FC<IShapeWithEvents>;

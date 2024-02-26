@@ -1,9 +1,9 @@
 import Konva from "konva";
 import { MutableRefObject, useEffect, useRef } from "react";
 import { Line, Transformer } from "react-konva";
-import { IFCElement } from "../type";
+import { IShapeWithEvents } from "../type";
 
-const AtomElementDraw = (item: IFCElement) => {
+const AtomElementDraw = (item: IShapeWithEvents) => {
   const { draggable, isSelected, rotate, onChange, onSelect } = item;
   const shapeRef = useRef<Konva.Line>();
   const trRef = useRef<Konva.Transformer>();

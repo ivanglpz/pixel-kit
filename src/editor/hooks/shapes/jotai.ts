@@ -1,8 +1,8 @@
 import { atom } from "jotai";
-import { IElement, IParamsElement } from "../../elements/type";
+import { IShape } from "../../elements/type";
 
 type IOBCElement = {
-  [key: string]: IElement | IParamsElement;
+  [key: string]: IShape;
 };
 
 const elementsAtom = atom({} as IOBCElement);

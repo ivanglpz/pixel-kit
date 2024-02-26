@@ -3,9 +3,9 @@ import Konva from "konva";
 import { MutableRefObject, useCallback, useEffect, useRef } from "react";
 import { Image as KonvaImg, Transformer } from "react-konva";
 import { isPartialBorderRadius } from "../BOX";
-import { IFCElement } from "../type";
+import { IShapeWithEvents } from "../type";
 
-const AtomElementImage = (item: IFCElement) => {
+const AtomElementImage = (item: IShapeWithEvents) => {
   const { x, y } = item;
 
   const image = useCallback(() => {

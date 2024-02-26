@@ -1,23 +1,23 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useAtom, useSetAtom } from "jotai";
-import { IElement, IParamsElement } from "../../elements/type";
+import { IShape, IParamsElement } from "../../elements/type";
 import pipeElement from "./jotai";
 
 const useTemporalShape = () => {
   const [temporalShape, setElement] = useAtom(pipeElement);
   const setTemporalShape = useSetAtom(pipeElement);
 
-  const handleUpdateTemporalShape = (params: IElement) => {
+  const handleUpdateTemporalShape = (params: IShape) => {
     setElement((prev) => {
       return Object.assign({}, prev, params);
     });
   };
-  const handleCreateTemporalShape = (value: IElement) => {
+  const handleCreateTemporalShape = (value: IShape) => {
     setTemporalShape(value);
   };
 
   const handleCleanTemporalShape = () => {
-    setElement({} as IElement);
+    setElement({} as IShape);
   };
   return {
     temporalShape,

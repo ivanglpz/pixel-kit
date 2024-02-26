@@ -1,6 +1,6 @@
 import { atom } from "jotai";
-import { IElement, IParamsElement } from "../../elements/type";
+import { IShape, IParamsElement } from "../../elements/type";
 
-const elementSelectedAtom = atom<IElement | IParamsElement>({});
+const elementSelectedAtom = atom<IShape | IParamsElement>({});
 
 export default elementSelectedAtom;

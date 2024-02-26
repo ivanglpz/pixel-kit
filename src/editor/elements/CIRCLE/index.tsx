@@ -1,9 +1,9 @@
 import Konva from "konva";
 import { MutableRefObject, useEffect, useMemo, useRef } from "react";
 import { Rect, Transformer } from "react-konva";
-import { IFCElement } from "../type";
+import { IShapeWithEvents } from "../type";
 
-const AtomElementCircle = (item: IFCElement) => {
+const AtomElementCircle = (item: IShapeWithEvents) => {
   const { draggable, onChange, rotate, onSelect, isSelected } = item;
   const shapeRef = useRef<Konva.Rect>();
   const trRef = useRef<Konva.Transformer>();
