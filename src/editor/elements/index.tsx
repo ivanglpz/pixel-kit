@@ -15,7 +15,9 @@ const PixelKitShapes = memo(() => {
   const { shapeSelected, handleSetShapeSelected } = useSelectedShape();
   const { isMoving } = useTool();
 
-  const onClick = (element: IShape) => {};
+  const onClick = (element: IShape) => {
+    handleSetShapeSelected(element);
+  };
 
   return (
     <>
@@ -30,7 +32,7 @@ const PixelKitShapes = memo(() => {
               key={`pixel-kit-shapes-${item?.id}`}
               shape={item}
               draggable={isMoving}
-              isSelected={true}
+              isSelected={isSelected}
               onClick={onClick}
               onDragStart={() => {}}
               onDragMove={() => {}}
