@@ -2,9 +2,9 @@ import Konva from "konva";
 import { MutableRefObject, useEffect, useRef } from "react";
 import { Rect, Transformer } from "react-konva";
 import { isPartialBorderRadius } from "../BOX";
-import { IFCElement } from "../type";
+import { IShapeWithEvents } from "../type";
 
-const AtomEditorElementBox = (item: IFCElement) => {
+const AtomEditorElementBox = (item: IShapeWithEvents) => {
   const { rotate, draggable, onChange, onSelect, isSelected } = item;
   const shapeRef = useRef<Konva.Rect>();
   const trRef = useRef<Konva.Transformer>();

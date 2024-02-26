@@ -17,6 +17,7 @@ const LayoutEditorSidebarRight: FC = () => {
         flexDirection: "column",
         gap: "lg",
       })}
+      id="pixel-kit-sidebar-right"
     >
       <StageConfig />
     </aside>

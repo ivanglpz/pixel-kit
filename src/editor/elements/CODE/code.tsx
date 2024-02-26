@@ -1,9 +1,9 @@
 import Konva from "konva";
 import { LegacyRef, MutableRefObject, useEffect, useRef } from "react";
 import { Group, Rect, Transformer } from "react-konva";
-import { IFCElement } from "../type";
+import { IShapeWithEvents } from "../type";
 
-const AtomCodeElement = (item: IFCElement) => {
+const AtomCodeElement = (item: IShapeWithEvents) => {
   const { draggable, onChange, onSelect, isSelected, isRef, onRef } = item;
   const groupRef = useRef<Konva.Group | undefined>();
   const trRef = useRef<Konva.Transformer>();

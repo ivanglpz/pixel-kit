@@ -1,9 +1,9 @@
 import Konva from "konva";
 import { MutableRefObject, useEffect, useRef } from "react";
 import { Text, Transformer } from "react-konva";
-import { IFCElement } from "../type";
+import { IShapeWithEvents } from "../type";
 
-const AtomElementText = (item: IFCElement) => {
+const AtomElementText = (item: IShapeWithEvents) => {
   const {
     x,
     y,

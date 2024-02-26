@@ -25,7 +25,7 @@ const StageConfig: FC = () => {
             fontWeight: "bold",
           })}
         >
-          Appearance
+          Canvas Appearance
         </p>
         <p
           className={css({

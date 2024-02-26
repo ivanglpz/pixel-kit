@@ -1,13 +1,13 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useAtom } from "jotai";
 import { useCallback } from "react";
-import { IElement } from "../../elements/type";
+import { IShape } from "../../elements/type";
 import elementsAtom from "./jotai";
 
 const useShapes = () => {
   const [shapes, setShapes] = useAtom(elementsAtom);
 
-  const handleCreateShape = useCallback((element: IElement) => {
+  const handleCreateShape = useCallback((element: IShape) => {
     if (element?.id) {
       setShapes((prev) => {
         return Object.assign({}, prev, { [`${element?.id}`]: element });
@@ -15,7 +15,7 @@ const useShapes = () => {
     }
   }, []);
 
-  const handleUpdateShape = useCallback((element: IElement) => {
+  const handleUpdateShape = useCallback((element: IShape) => {
     if (element?.id) {
       setShapes((prev) => {
         return Object.assign({}, prev, { [`${element?.id}`]: element });
