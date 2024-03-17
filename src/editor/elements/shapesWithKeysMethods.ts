@@ -1,8 +1,9 @@
 import { IKeyTool } from "../hooks/tool/types";
-import ShapeBox from "./BOX";
+import ShapeBox from "./box";
 import AtomElementCircle from "./CIRCLE";
 import AtomCodeElement from "./CODE/code";
 import AtomElementDraw from "./DRAW";
+import ShapeExport from "./export";
 import AtomElementImage from "./IMAGE";
 import AtomElementLine from "./LINE";
 import AtomElementText from "./TEXT";
@@ -20,4 +21,5 @@ export const ShapesWithKeysMethods: IMapperElements = {
   IMAGE: AtomElementImage,
   DRAW: AtomElementDraw,
   CODE: AtomCodeElement,
+  EXPORT: ShapeExport,
 };

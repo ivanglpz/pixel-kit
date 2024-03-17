@@ -50,6 +50,7 @@ export const shapeProgressEvent: IShapeProgressEvent = {
   IMAGE: shapeBoxProgress,
   TEXT: shapeBoxProgress,
   LINE: shapeBoxProgress,
+  EXPORT: shapeBoxProgress,
 };
 
 // export const shapeLineProgress = (

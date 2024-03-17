@@ -11,7 +11,7 @@ const METHODS = [
   },
   {
     icon: icons.group,
-    keyMethod: "GROUP",
+    keyMethod: "EXPORT",
   },
   {
     icon: icons.box,
@@ -37,13 +37,13 @@ const METHODS = [
     icon: icons.code,
     keyMethod: "CODE",
   },
-  // {
-  //   icon: icons.peentool,
-  //   keyMethod: "DRAW",
-  // },
+  {
+    icon: icons.peentool,
+    keyMethod: "DRAW",
+  },
 ];
 
-const LayoutEditorTop: FC = () => {
+const ToolsTop: FC = () => {
   const { tool, setTool } = useTool();
   const { handleCleanShapeSelected } = useSelectedShape();
 
@@ -138,4 +138,4 @@ const LayoutEditorTop: FC = () => {
   );
 };
 
-export default LayoutEditorTop;
+export default ToolsTop;

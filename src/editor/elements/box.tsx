@@ -1,11 +1,11 @@
 import Konva from "konva";
 import { MutableRefObject, memo, useEffect, useRef, useState } from "react";
 import { Rect, Transformer } from "react-konva";
-import { IShape, IShapeWithEvents } from "../type";
+import { IShape, IShapeWithEvents } from "./type";
 import { KonvaEventObject } from "konva/lib/Node";
 import { Html } from "react-konva-utils";
 import { createPortal } from "react-dom";
-import ShapeConfig from "@/editor/layout/sidebar/right/shape/config";
+import ShapeConfig from "../layout/right/shape/config";
 // eslint-disable-next-line react/display-name
 const ShapeBox = memo((item: IShapeWithEvents) => {
   const {
@@ -36,6 +36,7 @@ const ShapeBox = memo((item: IShapeWithEvents) => {
     stroke,
     strokeWidth,
     backgroundColor,
+    borderRadius,
   } = box;
 
   const shapeRef = useRef<Konva.Rect>();
@@ -152,14 +153,9 @@ const ShapeBox = memo((item: IShapeWithEvents) => {
                 shadowColor={box.shadowColor}
                 strokeColor={box.stroke}
                 fillColor={`${box.backgroundColor}`}
-                onChangeFillColor={(fillColor) => {
-                  handleChangeWithKey("backgroundColor", fillColor);
-                }}
-                onChangeShadowColor={(shadowColor) => {
-                  handleChangeWithKey("shadowColor", shadowColor);
-                }}
-                onChangeStrokeColor={(strokeColor) => {
-                  handleChangeWithKey("stroke", strokeColor);
+                borderRadius={box.borderRadius || 0}
+                onChange={(key, value) => {
+                  handleChangeWithKey(key, value);
                 }}
               />,
               sidebarElement
@@ -178,7 +174,7 @@ const ShapeBox = memo((item: IShapeWithEvents) => {
         shadowOffsetX={shadowOffsetX}
         shadowOffsetY={shadowOffsetY}
         shadowBlur={shadowBlur}
-        cornerRadius={200}
+        cornerRadius={borderRadius}
         fill={backgroundColor}
         ref={shapeRef as MutableRefObject<Konva.Rect>}
         draggable={draggable}

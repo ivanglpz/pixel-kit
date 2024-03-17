@@ -2,7 +2,7 @@
 import Konva from "konva";
 import { MutableRefObject, useCallback, useEffect, useRef } from "react";
 import { Image as KonvaImg, Transformer } from "react-konva";
-import { isPartialBorderRadius } from "../BOX";
+import { isPartialBorderRadius } from "../box";
 import { IShapeWithEvents } from "../type";
 
 const AtomElementImage = (item: IShapeWithEvents) => {

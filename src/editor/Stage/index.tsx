@@ -1,9 +1,11 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { FC, ReactNode } from "react";
+import { FC, ReactNode, useRef } from "react";
 import { Stage } from "react-konva";
 import { useEvent, useStyleConfig, useZoom } from "../hooks";
 import { css } from "@stylespixelkit/css";
 import useScreen from "../hooks/screen";
+import { useReference } from "../hooks/reference";
+import Konva from "konva";
 
 type Props = {
   children: ReactNode;
@@ -11,9 +13,13 @@ type Props = {
 
 const PixelKitStage: FC<Props> = ({ children }) => {
   const { onWheel, zoom: stage } = useZoom();
-  const { handleMouseDown, handleMouseUp, handleMouseMove, stageDataRef } =
-    useEvent();
+  const ref = useRef<Konva.Stage>(null);
+  useReference({
+    type: "STAGE",
+    ref,
+  });
 
+  const { handleMouseDown, handleMouseUp, handleMouseMove } = useEvent();
   const { config } = useStyleConfig();
   const { height, ref: divRef, show, width } = useScreen();
 
@@ -39,7 +45,7 @@ const PixelKitStage: FC<Props> = ({ children }) => {
     >
       {show ? (
         <Stage
-          ref={stageDataRef}
+          ref={ref}
           width={width}
           height={height}
           onWheel={onWheel}

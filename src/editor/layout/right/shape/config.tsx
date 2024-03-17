@@ -1,9 +1,11 @@
 import PixelKitInputColor from "@/editor/components/input-color";
+import { InputSlider } from "@/editor/components/input-slider";
+import { IShape } from "@/editor/elements/type";
 // import { IShape } from "@/editor/elements/type";
 import { IKeyMethods } from "@/editor/hooks/tool/types";
 import { css } from "@stylespixelkit/css";
 
-type TChange = (value: string) => void;
+type TChange = (key: keyof IShape, value: string | number) => void;
 
 type Props = {
   id: string;
@@ -11,20 +13,18 @@ type Props = {
   fillColor: string | undefined;
   strokeColor: string | undefined;
   shadowColor: string | undefined;
-  onChangeFillColor: TChange;
-  onChangeStrokeColor: TChange;
-  onChangeShadowColor: TChange;
+  borderRadius: number;
+  onChange: TChange;
 };
 
 const ShapeConfig = ({
   fillColor,
-  onChangeFillColor,
-  onChangeShadowColor,
-  onChangeStrokeColor,
   id,
   tool,
   strokeColor,
   shadowColor,
+  onChange,
+  borderRadius,
 }: Props) => {
   return (
     <div
@@ -61,7 +61,7 @@ const ShapeConfig = ({
       <PixelKitInputColor
         keyInput={`pixel-kit-shape-fill-${id}-${tool}`}
         color={fillColor}
-        onChangeColor={onChangeFillColor}
+        onChangeColor={(e) => onChange("backgroundColor", e)}
       />
       <p
         className={css({
@@ -75,7 +75,7 @@ const ShapeConfig = ({
       <PixelKitInputColor
         keyInput={`pixel-kit-shape-stroke-${id}-${tool}`}
         color={strokeColor}
-        onChangeColor={onChangeStrokeColor}
+        onChangeColor={(e) => onChange("stroke", e)}
       />
       <p
         className={css({
@@ -89,7 +89,20 @@ const ShapeConfig = ({
       <PixelKitInputColor
         keyInput={`pixel-kit-shape-shadow-${id}-${tool}`}
         color={shadowColor}
-        onChangeColor={onChangeShadowColor}
+        onChangeColor={(e) => onChange("shadowColor", e)}
+      />
+      <p
+        className={css({
+          color: "text",
+          fontWeight: "600",
+          fontSize: "sm",
+        })}
+      >
+        Border radius
+      </p>
+      <InputSlider
+        onChange={(e) => onChange("borderRadius", e)}
+        value={borderRadius}
       />
     </div>
   );

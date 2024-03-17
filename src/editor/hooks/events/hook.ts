@@ -28,7 +28,6 @@ const useEvent = () => {
   } = useTemporalShape();
 
   const { page } = usePages();
-  const stageDataRef = useRef<Konva.Stage>(null);
 
   const [eventStage, setEventStage] = useState<IStageEvents>("STAGE_IDLE");
 
@@ -215,7 +214,6 @@ const useEvent = () => {
     handleMouseDown,
     handleMouseMove,
     handleMouseUp,
-    stageDataRef,
   };
 };
 

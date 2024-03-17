@@ -6,12 +6,9 @@ export type IKeyTool =
   | "IMAGE"
   | "TEXT"
   | "FRAME"
-  | "GROUP"
+  | "EXPORT"
   | "DRAW"
   | "WRITING"
   | "CODE";
 
-export type IKeyMethods = Exclude<
-  IKeyTool,
-  "GROUP" | "MOVE" | "FRAME" | "WRITING"
->;
+export type IKeyMethods = Exclude<IKeyTool, "MOVE" | "FRAME" | "WRITING">;

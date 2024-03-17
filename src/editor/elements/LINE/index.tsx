@@ -1,7 +1,7 @@
 import Konva from "konva";
 import { MutableRefObject, useEffect, useRef } from "react";
 import { Rect, Transformer } from "react-konva";
-import { isPartialBorderRadius } from "../BOX";
+import { isPartialBorderRadius } from "../box";
 import { IShapeWithEvents } from "../type";
 
 const AtomEditorElementBox = (item: IShapeWithEvents) => {
