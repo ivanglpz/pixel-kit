@@ -1,4 +1,4 @@
-import { IElement } from "@/editor/elements/type";
+import { IShape } from "@/editor/elements/type";
 import { IShapeProgressEvent } from "./types";
 
 const isNotNegative = (value: number) => {
@@ -8,8 +8,8 @@ const isNotNegative = (value: number) => {
 export const shapeBoxProgress = (
   x: number,
   y: number,
-  element: IElement
-): IElement => {
+  element: IShape
+): IShape => {
   const isHeight = isNotNegative(x - Number(element?.x));
   const isWidth = isNotNegative(y - Number(element?.y));
   return Object.assign({}, element, {
@@ -20,8 +20,8 @@ export const shapeBoxProgress = (
 export const shapeCircleProgress = (
   x: number,
   y: number,
-  element: IElement
-): IElement => {
+  element: IShape
+): IShape => {
   return Object.assign({}, element, {
     width: isNotNegative(x - Number(element?.x)),
     height: isNotNegative(x - Number(element?.x)),
@@ -30,8 +30,8 @@ export const shapeCircleProgress = (
 export const shapeDrawProgress = (
   x: number,
   y: number,
-  element: IElement
-): IElement => {
+  element: IShape
+): IShape => {
   if (!element?.points) {
     return element;
   }
@@ -50,6 +50,7 @@ export const shapeProgressEvent: IShapeProgressEvent = {
   IMAGE: shapeBoxProgress,
   TEXT: shapeBoxProgress,
   LINE: shapeBoxProgress,
+  EXPORT: shapeBoxProgress,
 };
 
 // export const shapeLineProgress = (
