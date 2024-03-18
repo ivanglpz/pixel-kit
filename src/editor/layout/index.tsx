@@ -1,9 +1,10 @@
 import { css } from "@stylespixelkit/css";
 import { FC, ReactNode } from "react";
 import ToolsTop from "./Tools";
-import { QueueFiles } from "./QueueFiles";
+import { ClipboardFiles } from "./ClipboardFiles";
 import LayoutEditorSidebarLeft from "./left";
 import LayoutEditorSidebarRight from "./right";
+
 type Props = {
   children: ReactNode;
 };
@@ -25,7 +26,7 @@ const LayoutPixelEditor: FC<Props> = ({ children }) => {
       <LayoutEditorSidebarLeft />
       <ToolsTop />
       {children}
-      <QueueFiles />
+      <ClipboardFiles />
       <LayoutEditorSidebarRight />
     </main>
   );
