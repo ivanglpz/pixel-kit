@@ -1,17 +1,14 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-/* eslint-disable react/display-name */
-import { memo, useMemo } from "react";
 import { Layer } from "react-konva";
 import useTemporalShape from "../hooks/temporalShape/hook";
-import { IKeyTool } from "../hooks/tool/types";
-import { FCShapeWEvents } from "./type.shape";
-import { Shapes } from "./shapes";
+import { useMemo } from "react";
+import { FCShapeWEvents } from "../shapes/type.shape";
+import { Shapes } from "../shapes/shapes";
 
-const PixelTemporalShape = memo(() => {
+export const LayerPipe = () => {
   const { temporalShape } = useTemporalShape();
 
   const Component = useMemo(
-    () => Shapes?.[`${temporalShape?.tool}` as IKeyTool] as FCShapeWEvents,
+    () => Shapes?.[`${temporalShape?.tool}`] as FCShapeWEvents,
     [temporalShape]
   );
 
@@ -34,5 +31,4 @@ const PixelTemporalShape = memo(() => {
       </Layer>
     </>
   );
-});
-export default PixelTemporalShape;
+};

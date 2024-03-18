@@ -24,7 +24,7 @@ export type IShape = {
   shadowBlur?: number;
   shadowColor?: string;
   shadowOffsetX?: number;
-  shadowOffsetY: number;
+  shadowOffsetY?: number;
   shadowOpacity?: number;
   borderRadius?: number;
   isAllBorderRadius?: boolean;
