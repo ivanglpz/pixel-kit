@@ -1,12 +1,16 @@
 import Konva from "konva";
 import { MutableRefObject, memo, useEffect, useRef, useState } from "react";
-import { Rect, Text, Transformer } from "react-konva";
-import { IShape, IShapeWithEvents } from "./type.shape";
+import { Rect, Transformer } from "react-konva";
+import { IShapeWithEvents } from "./type.shape";
 import { KonvaEventObject } from "konva/lib/Node";
-import { Html } from "react-konva-utils";
-import { createPortal } from "react-dom";
-import ShapeConfig from "../layout/right/shape/config";
-import { ExportStage } from "../layout/right/export";
+import { PortalConfigShape } from "./config.shape";
+
+import {
+  ShapeEventDragStart,
+  shapeEventClick,
+  shapeEventDragMove,
+  shapeEventDragStop,
+} from "./events.shape";
 // eslint-disable-next-line react/display-name
 const ShapeExport = memo((item: IShapeWithEvents) => {
   const {
@@ -42,47 +46,6 @@ const ShapeExport = memo((item: IShapeWithEvents) => {
 
   const shapeRef = useRef<Konva.Rect>();
   const trRef = useRef<Konva.Transformer>();
-
-  const shapeClick = (evt: KonvaEventObject<MouseEvent>) => {
-    setBox((prev) => {
-      onClick(prev);
-      return prev;
-    });
-  };
-  const shapeDragStart = (evt: KonvaEventObject<DragEvent>) => {
-    setBox((prev) => {
-      const payload = {
-        ...prev,
-        x: evt.target.x(),
-        y: evt.target.y(),
-      };
-      onDragStart(payload);
-      return payload;
-    });
-  };
-  const shapeDragMove = (evt: KonvaEventObject<DragEvent>) => {
-    setBox((prev) => {
-      const payload = {
-        ...prev,
-        x: evt.target.x(),
-        y: evt.target.y(),
-      };
-      onDragMove(payload);
-
-      return payload;
-    });
-  };
-  const shapeDragStop = (evt: KonvaEventObject<DragEvent>) => {
-    setBox((prev) => {
-      const payload = {
-        ...prev,
-        x: evt.target.x(),
-        y: evt.target.y(),
-      };
-      onDragStop(payload);
-      return payload;
-    });
-  };
 
   const shapeTransformEnd = (evt: KonvaEventObject<Event>) => {
     setBox((prev) => {
@@ -121,56 +84,13 @@ const ShapeExport = memo((item: IShapeWithEvents) => {
     setBox(item.shape);
   }, [item.shape]);
 
-  const sidebarElement = document.getElementById("pixel-kit-sidebar-right");
-
-  const handleChangeWithKey = (
-    keyProp: keyof IShape,
-    value: string | number
-  ) => {
-    setBox((prev) => {
-      return {
-        ...prev,
-        [keyProp]: value,
-      };
-    });
-  };
-
   return (
     <>
-      <Html
-        divProps={{
-          style: {
-            position: "absolute",
-            top: 10,
-            left: 10,
-          },
-        }}
-      >
-        {sidebarElement && sidebarElement instanceof Element && isSelected
-          ? createPortal(
-              <>
-                <ShapeConfig
-                  id={box.id}
-                  tool={box.tool}
-                  shadowColor={box.shadowColor}
-                  strokeColor={box.stroke}
-                  fillColor={`${box.backgroundColor}`}
-                  borderRadius={borderRadius || 0}
-                  onChange={(key, value) => {
-                    handleChangeWithKey(key, value);
-                  }}
-                />
-                <ExportStage
-                  x={box.x}
-                  y={box.y}
-                  height={box.height || 0}
-                  width={box.width || 0}
-                />
-              </>,
-              sidebarElement
-            )
-          : null}
-      </Html>
+      <PortalConfigShape
+        isSelected={isSelected}
+        setShape={setBox}
+        shape={box}
+      />
       <Rect
         id={box?.id}
         x={x}
@@ -193,10 +113,10 @@ const ShapeExport = memo((item: IShapeWithEvents) => {
         draggable={draggable}
         stroke={stroke}
         strokeWidth={5}
-        onClick={shapeClick}
-        onDragStart={shapeDragStart}
-        onDragMove={shapeDragMove}
-        onDragEnd={shapeDragStop}
+        onClick={(e) => setBox(shapeEventClick(e, onClick))}
+        onDragStart={(e) => setBox(ShapeEventDragStart(e, onDragStart))}
+        onDragMove={(e) => setBox(shapeEventDragMove(e, onDragMove))}
+        onDragEnd={(e) => setBox(shapeEventDragStop(e, onDragStop))}
         onTransformEnd={shapeTransformEnd}
       />
       {isSelected && (
