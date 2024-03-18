@@ -1,7 +1,6 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import { useAtom, useSetAtom } from "jotai";
-import { IShape, IParamsElement } from "../../elements/type";
 import pipeElement from "./jotai";
+import { IShape } from "@/editor/shapes/type.shape";
 
 const useTemporalShape = () => {
   const [temporalShape, setElement] = useAtom(pipeElement);

@@ -1,6 +1,6 @@
 import { css } from "@stylespixelkit/css";
 
-export const QueueFiles = () => {
+export const ClipboardFiles = () => {
   return (
     <div
       className={css({
@@ -18,6 +18,9 @@ export const QueueFiles = () => {
           borderRadius: "lg",
           gap: "md",
           border: "container",
+          maxHeight: "10rem",
+          width: "100%",
+          maxWidth: "22rem",
         })}
       >
         <section
@@ -36,15 +39,13 @@ export const QueueFiles = () => {
               fontSize: "smaller",
             })}
           >
-            Queue Files
+            Clipboard Files
           </p>
         </section>
         <div
           className={`${css({
             height: "100%",
             width: "100%",
-            maxHeight: "7rem",
-            maxWidth: "50rem",
             overflow: "hidden",
             overflowX: "hidden",
             display: "flex",

@@ -1,8 +1,8 @@
 import PixelKitInputColor from "@/editor/components/input-color";
 import { InputSlider } from "@/editor/components/input-slider";
-import { IShape } from "@/editor/elements/type";
 // import { IShape } from "@/editor/elements/type";
 import { IKeyMethods } from "@/editor/hooks/tool/types";
+import { IShape } from "@/editor/shapes/type.shape";
 import { css } from "@stylespixelkit/css";
 
 type TChange = (key: keyof IShape, value: string | number) => void;

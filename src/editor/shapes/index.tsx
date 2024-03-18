@@ -7,7 +7,7 @@ import { useSelectedShape, useTool } from "../hooks";
 import useShapes from "../hooks/shapes/hook";
 import { IKeyTool } from "../hooks/tool/types";
 import { FCShapeWEvents, IShape } from "./type.shape";
-import PixelTemporalShape from "./pipe";
+import PixelTemporalShape from "./pipe.shape";
 import { Shapes } from "./shapes";
 
 const PixelKitShapes = memo(() => {

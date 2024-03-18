@@ -57,7 +57,11 @@ const ToolsTop: FC = () => {
         backgroundColor: "primary",
         display: "flex",
         flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
         borderRadius: "lg",
+        width: "100%",
+        maxWidth: "22rem",
         gap: "md",
         border: "container",
       })}

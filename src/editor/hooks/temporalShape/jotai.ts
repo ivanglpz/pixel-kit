@@ -1,5 +1,5 @@
+import { IShape } from "@/editor/shapes/type.shape";
 import { atom } from "jotai";
-import { IShape, IParamsElement } from "../../elements/type";
 
 const pipeElement = atom<IShape>({} as IShape);
 
