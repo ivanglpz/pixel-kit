@@ -1,12 +1,11 @@
 import Konva from "konva";
 import { MutableRefObject, useEffect, useRef } from "react";
-import { Rect, Transformer } from "react-konva";
-import { isPartialBorderRadius } from "../box";
-import { IShapeWithEvents } from "../type";
+import { Line, Transformer } from "react-konva";
+import { IShapeWithEvents } from "./type.shape";
 
-const AtomEditorElementBox = (item: IShapeWithEvents) => {
-  const { rotate, draggable, onChange, onSelect, isSelected } = item;
-  const shapeRef = useRef<Konva.Rect>();
+const AtomElementDraw = (item: IShapeWithEvents) => {
+  const { draggable, isSelected, rotate, onChange, onSelect } = item;
+  const shapeRef = useRef<Konva.Line>();
   const trRef = useRef<Konva.Transformer>();
 
   useEffect(() => {
@@ -16,29 +15,29 @@ const AtomEditorElementBox = (item: IShapeWithEvents) => {
         trRef.current?.getLayer()?.batchDraw();
       }
     }
-  }, [isSelected, item, trRef, shapeRef]);
+  }, [isSelected]);
 
   return (
     <>
-      <Rect
+      <Line
         {...item}
         id={item?.id}
-        x={item?.x}
-        y={item?.y}
-        width={item?.width}
-        fill={item.style?.stroke}
+        points={item?.points}
+        stroke={item?.style?.stroke}
         shadowColor={item?.style?.shadowColor}
         shadowOpacity={item?.style?.shadowOpacity}
         shadowOffsetX={item?.style?.shadowOffset?.x}
         shadowOffsetY={item?.style?.shadowOffset?.y}
         shadowBlur={item?.style?.shadowBlur}
-        height={item?.style?.strokeWidth}
-        cornerRadius={isPartialBorderRadius(item)?.cornerRadius}
-        ref={shapeRef as MutableRefObject<Konva.Rect>}
+        strokeWidth={item?.style?.strokeWidth}
+        globalCompositeOperation="source-over"
+        lineCap="round"
+        lineJoin="round"
+        // rotation={rotate}
         draggable={draggable}
+        ref={shapeRef as MutableRefObject<Konva.Line>}
         onClick={() => onSelect(item)}
         onTap={() => onSelect(item)}
-        rotation={rotate}
         onDragEnd={(e) => {
           onChange({
             ...item,
@@ -46,33 +45,12 @@ const AtomEditorElementBox = (item: IShapeWithEvents) => {
             y: e.target.y(),
           });
         }}
-        onTransform={(e) => {
-          const rotate = e.target.rotation();
-          if (shapeRef?.current) {
-            1;
-            const node = shapeRef.current;
-            const scaleX = node.scaleX();
-            const scaleY = node.scaleY();
-            node.scaleX(1);
-            node.scaleY(1);
-            onChange({
-              ...item,
-              x: node.x(),
-              y: node.y(),
-              rotate,
-              width: Math.max(5, node.width() * scaleX),
-              height: Math.max(node.height() * scaleY),
-            });
-          }
-        }}
         onTransformEnd={(e) => {
           const rotate = e.target.rotation();
           if (shapeRef?.current) {
             const node = shapeRef.current;
             const scaleX = node.scaleX();
             const scaleY = node.scaleY();
-            node.scaleX(1);
-            node.scaleY(1);
             onChange({
               ...item,
               x: node.x(),
@@ -87,14 +65,14 @@ const AtomEditorElementBox = (item: IShapeWithEvents) => {
       {isSelected && (
         <Transformer
           ref={trRef as MutableRefObject<Konva.Transformer>}
-          // keepRatio={false}
-          // enabledAnchors={["middle-right", "middle-left"]}
-          // enabledAnchors={[
-          //   "top-left",
-          //   "top-right",
-          //   "bottom-left",
-          //   "bottom-right",
-          // ]}
+          keepRatio
+          ignoreStroke
+          enabledAnchors={[
+            "top-right",
+            "top-left",
+            "bottom-left",
+            "bottom-right",
+          ]}
           boundBoxFunc={(oldBox, newBox) => {
             if (newBox.width < 5 || newBox.height < 5) {
               return oldBox;
@@ -107,4 +85,4 @@ const AtomEditorElementBox = (item: IShapeWithEvents) => {
   );
 };
 
-export default AtomEditorElementBox;
+export default AtomElementDraw;

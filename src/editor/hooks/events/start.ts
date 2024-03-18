@@ -5,8 +5,6 @@ import { IKeyMethods } from "../tool/types";
 type ShapeStartProps = {
   x: number;
   y: number;
-  count: number;
-  pageId: string;
   tool: IKeyMethods;
   text?: string;
   image?: string;
@@ -15,19 +13,17 @@ type ShapeStartProps = {
 };
 
 export const shapeStart = (props: ShapeStartProps): IShape => {
-  const { count, pageId, tool, x, y, image, height, text, width } = props;
+  const { tool, x, y, image, height, text, width } = props;
   return {
     id: uuidv4(),
     x,
     y,
-    pageId,
     isBlocked: false,
     tool: tool,
     visible: true,
     rotate: 0,
     height: height ?? 1,
     width: width ?? 1,
-    view_position: count + 1,
     stroke: "#ffffff",
     strokeWidth: 0,
     backgroundColor: "#ffffff",

@@ -1,14 +1,13 @@
 import Konva from "konva";
 import { MutableRefObject, memo, useEffect, useRef, useState } from "react";
-import { Rect, Text, Transformer } from "react-konva";
-import { IShape, IShapeWithEvents } from "./type";
+import { Rect, Transformer } from "react-konva";
+import { IShape, IShapeWithEvents } from "./type.shape";
 import { KonvaEventObject } from "konva/lib/Node";
 import { Html } from "react-konva-utils";
 import { createPortal } from "react-dom";
 import ShapeConfig from "../layout/right/shape/config";
-import { ExportStage } from "../layout/right/export";
 // eslint-disable-next-line react/display-name
-const ShapeExport = memo((item: IShapeWithEvents) => {
+const ShapeBox = memo((item: IShapeWithEvents) => {
   const {
     draggable,
     isSelected,
@@ -148,25 +147,17 @@ const ShapeExport = memo((item: IShapeWithEvents) => {
       >
         {sidebarElement && sidebarElement instanceof Element && isSelected
           ? createPortal(
-              <>
-                <ShapeConfig
-                  id={box.id}
-                  tool={box.tool}
-                  shadowColor={box.shadowColor}
-                  strokeColor={box.stroke}
-                  fillColor={`${box.backgroundColor}`}
-                  borderRadius={borderRadius || 0}
-                  onChange={(key, value) => {
-                    handleChangeWithKey(key, value);
-                  }}
-                />
-                <ExportStage
-                  x={box.x}
-                  y={box.y}
-                  height={box.height || 0}
-                  width={box.width || 0}
-                />
-              </>,
+              <ShapeConfig
+                id={box.id}
+                tool={box.tool}
+                shadowColor={box.shadowColor}
+                strokeColor={box.stroke}
+                fillColor={`${box.backgroundColor}`}
+                borderRadius={box.borderRadius || 0}
+                onChange={(key, value) => {
+                  handleChangeWithKey(key, value);
+                }}
+              />,
               sidebarElement
             )
           : null}
@@ -184,15 +175,11 @@ const ShapeExport = memo((item: IShapeWithEvents) => {
         shadowOffsetY={shadowOffsetY}
         shadowBlur={shadowBlur}
         cornerRadius={borderRadius}
-        dashEnabled
-        fillEnabled={false}
-        dash={[25, 25]}
-        hitStrokeWidth={100}
         fill={backgroundColor}
         ref={shapeRef as MutableRefObject<Konva.Rect>}
         draggable={draggable}
         stroke={stroke}
-        strokeWidth={5}
+        strokeWidth={strokeWidth}
         onClick={shapeClick}
         onDragStart={shapeDragStart}
         onDragMove={shapeDragMove}
@@ -215,4 +202,10 @@ const ShapeExport = memo((item: IShapeWithEvents) => {
   );
 });
 
-export default ShapeExport;
+export const isPartialBorderRadius = (item: IShapeWithEvents) => {
+  return {
+    cornerRadius: [],
+  };
+};
+
+export default ShapeBox;

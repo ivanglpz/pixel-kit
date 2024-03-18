@@ -1,10 +1,8 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import Konva from "konva";
 import { KonvaEventObject } from "konva/lib/Node";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import useSelectedShape from "../selectedShape/hook";
 import useShapes from "../shapes/hook";
-import usePages from "../pages/hook";
 import useTemporalShape from "../temporalShape/hook";
 import useTool from "../tool/hook";
 import { IStageEvents } from "./types";
@@ -27,8 +25,6 @@ const useEvent = () => {
     temporalShape,
   } = useTemporalShape();
 
-  const { page } = usePages();
-
   const [eventStage, setEventStage] = useState<IStageEvents>("STAGE_IDLE");
 
   const handleMouseDown = (event: KonvaEventObject<MouseEvent>) => {
@@ -36,8 +32,6 @@ const useEvent = () => {
       setEventStage("STAGE_TEMPORAL_CREATING_SHAPE");
       const { x, y } = stageAbsolutePosition(event);
       const createStartElement = shapeStart({
-        count: 1,
-        pageId: page,
         tool,
         x,
         y,
@@ -119,8 +113,6 @@ const useEvent = () => {
           image.onload = () => {
             if (typeof data?.target?.result !== "string") return;
             const createStartElement = shapeStart({
-              count: 1,
-              pageId: page,
               tool: "IMAGE",
               x: 0,
               y: 0,
@@ -137,8 +129,6 @@ const useEvent = () => {
 
       if (clipboardText && !clipboardText.trim().startsWith("<svg")) {
         const createStartElement = shapeStart({
-          count: 1,
-          pageId: page,
           tool: "TEXT",
           x: 0,
           y: 0,
@@ -168,8 +158,6 @@ const useEvent = () => {
 
           ctx?.drawImage(img, 0, 0);
           const createStartElement = shapeStart({
-            count: 1,
-            pageId: page,
             tool: "IMAGE",
             x: 0,
             y: 0,

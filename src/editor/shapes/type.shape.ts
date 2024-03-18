@@ -12,11 +12,9 @@ export type IShape = {
   visible: boolean;
   resolution?: "portrait" | "landscape";
   isBlocked: boolean;
-  pageId: string;
   points?: number[];
   src?: string;
   rotate?: number;
-  view_position: number;
   backgroundColor?: string;
   fontSize?: number;
   fontStyle?: string;
@@ -39,10 +37,6 @@ export type IShape = {
   stroke?: string;
   strokeWidth?: number;
 };
-
-export type IParamsElement = Partial<IShape>;
-
-export type IPELMT = IParamsElement | IShape;
 
 export type IShapeWithEvents = {
   shape: IShape;
