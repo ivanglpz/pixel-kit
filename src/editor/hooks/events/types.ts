@@ -1,4 +1,4 @@
-import { IShape, IPELMT, IParamsElement } from "../../elements/type";
+import { IShape } from "@/editor/shapes/type.shape";
 import { IKeyMethods, IKeyTool } from "../tool/types";
 
 export type IRelativePosition = {
@@ -8,9 +8,6 @@ export type IRelativePosition = {
 
 export type IStartEvent = (
   event: IRelativePosition,
-  count: number,
-  pageId: string,
-  groupId: string,
   params?: {
     text?: string;
     image?: string;

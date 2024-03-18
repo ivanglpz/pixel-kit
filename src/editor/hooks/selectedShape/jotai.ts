@@ -1,6 +1,6 @@
+import { IShape } from "@/editor/shapes/type.shape";
 import { atom } from "jotai";
-import { IShape, IParamsElement } from "../../elements/type";
 
-const elementSelectedAtom = atom<IShape | IParamsElement>({});
+const elementSelectedAtom = atom<IShape>({} as IShape);
 
 export default elementSelectedAtom;

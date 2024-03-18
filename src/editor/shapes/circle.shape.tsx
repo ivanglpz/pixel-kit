@@ -4,7 +4,7 @@ import { Rect, Transformer } from "react-konva";
 import { IShapeWithEvents } from "./type.shape";
 
 const AtomElementCircle = (item: IShapeWithEvents) => {
-  const { draggable, onChange, rotate, onSelect, isSelected } = item;
+  const { draggable, isSelected } = item;
   const shapeRef = useRef<Konva.Rect>();
   const trRef = useRef<Konva.Transformer>();
 
@@ -17,78 +17,79 @@ const AtomElementCircle = (item: IShapeWithEvents) => {
     }
   }, [isSelected, item, trRef, shapeRef]);
 
-  const borderRadius = useMemo(
-    () => Number(item?.width) + Number(item?.height) / 2,
-    [item]
-  );
+  // const borderRadius = useMemo(
+  //   () => Number(item?.width) + Number(item?.height) / 2,
+  //   [item]
+  // );
+  return null;
 
-  return (
-    <>
-      <Rect
-        {...item}
-        id={item?.id}
-        key={item.id}
-        x={item?.x}
-        y={item?.y}
-        name={item.id}
-        width={item?.width}
-        shadowColor={item?.style?.shadowColor}
-        shadowOpacity={item?.style?.shadowOpacity}
-        shadowOffsetX={item?.style?.shadowOffset?.x}
-        shadowOffsetY={item?.style?.shadowOffset?.y}
-        shadowBlur={item?.style?.shadowBlur}
-        height={item?.width}
-        cornerRadius={borderRadius}
-        stroke={item?.style?.stroke}
-        strokeWidth={item?.style?.strokeWidth}
-        rotation={rotate}
-        fill={item?.style?.backgroundColor}
-        ref={shapeRef as MutableRefObject<Konva.Rect>}
-        draggable={draggable}
-        onClick={() => onSelect(item)}
-        onTap={() => onSelect(item)}
-        onDragEnd={(e) => {
-          onChange({
-            ...item,
-            x: e.target.x(),
-            y: e.target.y(),
-          });
-        }}
-        onTransformEnd={(e) => {
-          const rotate = e.target.rotation();
-          if (shapeRef?.current) {
-            const node = shapeRef.current;
-            const scaleX = node.scaleX();
-            const scaleY = node.scaleY();
-            node.scaleX(1);
-            node.scaleY(1);
+  // return (
+  //   <>
+  //     <Rect
+  //       {...item}
+  //       id={item?.id}
+  //       key={item.id}
+  //       x={item?.x}
+  //       y={item?.y}
+  //       name={item.id}
+  //       width={item?.width}
+  //       shadowColor={item?.style?.shadowColor}
+  //       shadowOpacity={item?.style?.shadowOpacity}
+  //       shadowOffsetX={item?.style?.shadowOffset?.x}
+  //       shadowOffsetY={item?.style?.shadowOffset?.y}
+  //       shadowBlur={item?.style?.shadowBlur}
+  //       height={item?.width}
+  //       cornerRadius={borderRadius}
+  //       stroke={item?.style?.stroke}
+  //       strokeWidth={item?.style?.strokeWidth}
+  //       rotation={rotate}
+  //       fill={item?.style?.backgroundColor}
+  //       ref={shapeRef as MutableRefObject<Konva.Rect>}
+  //       draggable={draggable}
+  //       onClick={() => onSelect(item)}
+  //       onTap={() => onSelect(item)}
+  //       onDragEnd={(e) => {
+  //         onChange({
+  //           ...item,
+  //           x: e.target.x(),
+  //           y: e.target.y(),
+  //         });
+  //       }}
+  //       onTransformEnd={(e) => {
+  //         const rotate = e.target.rotation();
+  //         if (shapeRef?.current) {
+  //           const node = shapeRef.current;
+  //           const scaleX = node.scaleX();
+  //           const scaleY = node.scaleY();
+  //           node.scaleX(1);
+  //           node.scaleY(1);
 
-            onChange({
-              ...item,
-              x: node.x(),
-              y: node.y(),
-              rotate,
-              width: Math.max(5, node.width() * scaleX),
-              height: Math.max(node.height() * scaleY),
-            });
-          }
-        }}
-      />
-      {isSelected && (
-        <Transformer
-          ref={trRef as MutableRefObject<Konva.Transformer>}
-          keepRatio={true}
-          boundBoxFunc={(oldBox, newBox) => {
-            // limit resize
-            if (newBox.width < 5 || newBox.height < 5) {
-              return oldBox;
-            }
-            return newBox;
-          }}
-        />
-      )}
-    </>
-  );
+  //           onChange({
+  //             ...item,
+  //             x: node.x(),
+  //             y: node.y(),
+  //             rotate,
+  //             width: Math.max(5, node.width() * scaleX),
+  //             height: Math.max(node.height() * scaleY),
+  //           });
+  //         }
+  //       }}
+  //     />
+  //     {isSelected && (
+  //       <Transformer
+  //         ref={trRef as MutableRefObject<Konva.Transformer>}
+  //         keepRatio={true}
+  //         boundBoxFunc={(oldBox, newBox) => {
+  //           // limit resize
+  //           if (newBox.width < 5 || newBox.height < 5) {
+  //             return oldBox;
+  //           }
+  //           return newBox;
+  //         }}
+  //       />
+  //     )}
+  //   </>
+  // );
 };
 
 export default AtomElementCircle;

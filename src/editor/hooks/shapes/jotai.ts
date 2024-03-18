@@ -1,5 +1,5 @@
+import { IShape } from "@/editor/shapes/type.shape";
 import { atom } from "jotai";
-import { IShape } from "../../elements/type";
 
 type IOBCElement = {
   [key: string]: IShape;

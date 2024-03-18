@@ -1,8 +1,8 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useAtom } from "jotai";
 import { useCallback } from "react";
-import { IShape } from "../../elements/type";
 import elementsAtom from "./jotai";
+import { IShape } from "@/editor/shapes/type.shape";
 
 const useShapes = () => {
   const [shapes, setShapes] = useAtom(elementsAtom);
@@ -39,24 +39,11 @@ const useShapes = () => {
     });
   }, []);
 
-  const handleDeleteShapesByPage = useCallback((pageId: string) => {
-    setShapes((prev) => {
-      for (const iterator of Object.values(prev)) {
-        if (pageId === iterator.pageId) {
-          delete prev[`${iterator.id}`];
-        }
-      }
-      const data = Object.assign({}, prev);
-      return data;
-    });
-  }, []);
-
   return {
     shapes,
     handleCreateShape,
     handleDeleteShapeInShapes,
     handleDeleteManyShapesInShapes,
-    handleDeleteShapesByPage,
     handleUpdateShape,
   };
 };
