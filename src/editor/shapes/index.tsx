@@ -6,9 +6,9 @@ import { Layer } from "react-konva";
 import { useSelectedShape, useTool } from "../hooks";
 import useShapes from "../hooks/shapes/hook";
 import { IKeyTool } from "../hooks/tool/types";
-import { FCShapeWEvents, IShape } from "./type";
-import PixelTemporalShape from "./temporalShape";
-import { ShapesWithKeysMethods } from "./shapesWithKeysMethods";
+import { FCShapeWEvents, IShape } from "./type.shape";
+import PixelTemporalShape from "./pipe";
+import { Shapes } from "./shapes";
 
 const PixelKitShapes = memo(() => {
   const { shapes } = useShapes();
@@ -23,7 +23,7 @@ const PixelKitShapes = memo(() => {
     <>
       <Layer>
         {Object.values(shapes)?.map((item) => {
-          const Component = ShapesWithKeysMethods?.[
+          const Component = Shapes?.[
             `${item?.tool}` as IKeyTool
           ] as FCShapeWEvents;
           const isSelected = item?.id === shapeSelected?.id;

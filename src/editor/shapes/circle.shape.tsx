@@ -1,21 +1,11 @@
 import Konva from "konva";
-import { MutableRefObject, useEffect, useRef } from "react";
-import { Text, Transformer } from "react-konva";
-import { IShapeWithEvents } from "../type";
+import { MutableRefObject, useEffect, useMemo, useRef } from "react";
+import { Rect, Transformer } from "react-konva";
+import { IShapeWithEvents } from "./type.shape";
 
-const AtomElementText = (item: IShapeWithEvents) => {
-  const {
-    x,
-    y,
-    draggable,
-    onChange,
-    onSelect,
-    isSelected,
-    width,
-    height,
-    style,
-  } = item;
-  const shapeRef = useRef<Konva.Text>();
+const AtomElementCircle = (item: IShapeWithEvents) => {
+  const { draggable, onChange, rotate, onSelect, isSelected } = item;
+  const shapeRef = useRef<Konva.Rect>();
   const trRef = useRef<Konva.Transformer>();
 
   useEffect(() => {
@@ -25,30 +15,35 @@ const AtomElementText = (item: IShapeWithEvents) => {
         trRef.current?.getLayer()?.batchDraw();
       }
     }
-  }, [isSelected]);
+  }, [isSelected, item, trRef, shapeRef]);
+
+  const borderRadius = useMemo(
+    () => Number(item?.width) + Number(item?.height) / 2,
+    [item]
+  );
 
   return (
     <>
-      <Text
+      <Rect
         {...item}
-        x={x}
-        y={y}
         id={item?.id}
-        width={width}
-        height={height}
-        fontSize={item?.style?.fontSize}
+        key={item.id}
+        x={item?.x}
+        y={item?.y}
+        name={item.id}
+        width={item?.width}
         shadowColor={item?.style?.shadowColor}
         shadowOpacity={item?.style?.shadowOpacity}
         shadowOffsetX={item?.style?.shadowOffset?.x}
         shadowOffsetY={item?.style?.shadowOffset?.y}
         shadowBlur={item?.style?.shadowBlur}
-        fontFamily={`${item?.style?.fontFamily}-${item?.style?.fontStyle}-${item?.style?.fontWeight}`}
-        textDecoration={item?.style?.textDecoration}
-        fill={style?.backgroundColor}
-        stroke={style?.stroke ?? "black"}
-        strokeWidth={style?.strokeWidth ?? 0}
-        text={item?.text ?? item?.id?.slice?.(0, 4)}
-        ref={shapeRef as MutableRefObject<Konva.Text>}
+        height={item?.width}
+        cornerRadius={borderRadius}
+        stroke={item?.style?.stroke}
+        strokeWidth={item?.style?.strokeWidth}
+        rotation={rotate}
+        fill={item?.style?.backgroundColor}
+        ref={shapeRef as MutableRefObject<Konva.Rect>}
         draggable={draggable}
         onClick={() => onSelect(item)}
         onTap={() => onSelect(item)}
@@ -60,13 +55,14 @@ const AtomElementText = (item: IShapeWithEvents) => {
           });
         }}
         onTransformEnd={(e) => {
+          const rotate = e.target.rotation();
           if (shapeRef?.current) {
-            const rotate = e.target.rotation();
             const node = shapeRef.current;
             const scaleX = node.scaleX();
             const scaleY = node.scaleY();
             node.scaleX(1);
             node.scaleY(1);
+
             onChange({
               ...item,
               x: node.x(),
@@ -81,8 +77,9 @@ const AtomElementText = (item: IShapeWithEvents) => {
       {isSelected && (
         <Transformer
           ref={trRef as MutableRefObject<Konva.Transformer>}
-          keepRatio={false}
+          keepRatio={true}
           boundBoxFunc={(oldBox, newBox) => {
+            // limit resize
             if (newBox.width < 5 || newBox.height < 5) {
               return oldBox;
             }
@@ -94,4 +91,4 @@ const AtomElementText = (item: IShapeWithEvents) => {
   );
 };
 
-export default AtomElementText;
+export default AtomElementCircle;

@@ -2,20 +2,16 @@
 /* eslint-disable react/display-name */
 import { memo, useMemo } from "react";
 import { Layer } from "react-konva";
-import { useTool } from "../hooks";
 import useTemporalShape from "../hooks/temporalShape/hook";
 import { IKeyTool } from "../hooks/tool/types";
-import { FCShapeWEvents } from "./type";
-import { ShapesWithKeysMethods } from "./shapesWithKeysMethods";
+import { FCShapeWEvents } from "./type.shape";
+import { Shapes } from "./shapes";
 
 const PixelTemporalShape = memo(() => {
   const { temporalShape } = useTemporalShape();
 
   const Component = useMemo(
-    () =>
-      ShapesWithKeysMethods?.[
-        `${temporalShape?.tool}` as IKeyTool
-      ] as FCShapeWEvents,
+    () => Shapes?.[`${temporalShape?.tool}` as IKeyTool] as FCShapeWEvents,
     [temporalShape]
   );
 

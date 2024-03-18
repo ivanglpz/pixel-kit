@@ -1,11 +1,21 @@
 import Konva from "konva";
 import { MutableRefObject, useEffect, useRef } from "react";
-import { Line, Transformer } from "react-konva";
-import { IShapeWithEvents } from "../type";
+import { Text, Transformer } from "react-konva";
+import { IShapeWithEvents } from "./type.shape";
 
-const AtomElementDraw = (item: IShapeWithEvents) => {
-  const { draggable, isSelected, rotate, onChange, onSelect } = item;
-  const shapeRef = useRef<Konva.Line>();
+const AtomElementText = (item: IShapeWithEvents) => {
+  const {
+    x,
+    y,
+    draggable,
+    onChange,
+    onSelect,
+    isSelected,
+    width,
+    height,
+    style,
+  } = item;
+  const shapeRef = useRef<Konva.Text>();
   const trRef = useRef<Konva.Transformer>();
 
   useEffect(() => {
@@ -19,23 +29,27 @@ const AtomElementDraw = (item: IShapeWithEvents) => {
 
   return (
     <>
-      <Line
+      <Text
         {...item}
+        x={x}
+        y={y}
         id={item?.id}
-        points={item?.points}
-        stroke={item?.style?.stroke}
+        width={width}
+        height={height}
+        fontSize={item?.style?.fontSize}
         shadowColor={item?.style?.shadowColor}
         shadowOpacity={item?.style?.shadowOpacity}
         shadowOffsetX={item?.style?.shadowOffset?.x}
         shadowOffsetY={item?.style?.shadowOffset?.y}
         shadowBlur={item?.style?.shadowBlur}
-        strokeWidth={item?.style?.strokeWidth}
-        globalCompositeOperation="source-over"
-        lineCap="round"
-        lineJoin="round"
-        // rotation={rotate}
+        fontFamily={`${item?.style?.fontFamily}-${item?.style?.fontStyle}-${item?.style?.fontWeight}`}
+        textDecoration={item?.style?.textDecoration}
+        fill={style?.backgroundColor}
+        stroke={style?.stroke ?? "black"}
+        strokeWidth={style?.strokeWidth ?? 0}
+        text={item?.text ?? item?.id?.slice?.(0, 4)}
+        ref={shapeRef as MutableRefObject<Konva.Text>}
         draggable={draggable}
-        ref={shapeRef as MutableRefObject<Konva.Line>}
         onClick={() => onSelect(item)}
         onTap={() => onSelect(item)}
         onDragEnd={(e) => {
@@ -46,11 +60,13 @@ const AtomElementDraw = (item: IShapeWithEvents) => {
           });
         }}
         onTransformEnd={(e) => {
-          const rotate = e.target.rotation();
           if (shapeRef?.current) {
+            const rotate = e.target.rotation();
             const node = shapeRef.current;
             const scaleX = node.scaleX();
             const scaleY = node.scaleY();
+            node.scaleX(1);
+            node.scaleY(1);
             onChange({
               ...item,
               x: node.x(),
@@ -65,14 +81,7 @@ const AtomElementDraw = (item: IShapeWithEvents) => {
       {isSelected && (
         <Transformer
           ref={trRef as MutableRefObject<Konva.Transformer>}
-          keepRatio
-          ignoreStroke
-          enabledAnchors={[
-            "top-right",
-            "top-left",
-            "bottom-left",
-            "bottom-right",
-          ]}
+          keepRatio={false}
           boundBoxFunc={(oldBox, newBox) => {
             if (newBox.width < 5 || newBox.height < 5) {
               return oldBox;
@@ -85,4 +94,4 @@ const AtomElementDraw = (item: IShapeWithEvents) => {
   );
 };
 
-export default AtomElementDraw;
+export default AtomElementText;

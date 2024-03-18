@@ -1,5 +1,4 @@
 import { FC } from "react";
-import PagesComponent from "./pages/pages";
 import { css } from "@stylespixelkit/css";
 
 const LayoutEditorSidebarLeft: FC = () => {
@@ -17,9 +16,7 @@ const LayoutEditorSidebarLeft: FC = () => {
         flexDirection: "column",
         gap: "lg",
       })}
-    >
-      <PagesComponent />
-    </aside>
+    ></aside>
   );
 };
 
