@@ -1,6 +1,6 @@
-import { IShape } from "@/editor/elements/type";
 import { v4 as uuidv4 } from "uuid";
 import { IKeyMethods } from "../tool/types";
+import { IShape } from "@/editor/shapes/type.shape";
 
 type ShapeStartProps = {
   x: number;
