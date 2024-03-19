@@ -1,5 +1,6 @@
 import { FC } from "react";
 import { css } from "@stylespixelkit/css";
+import { ImageConfiguration } from "./image";
 
 const LayoutEditorSidebarLeft: FC = () => {
   return (
@@ -16,7 +17,9 @@ const LayoutEditorSidebarLeft: FC = () => {
         flexDirection: "column",
         gap: "lg",
       })}
-    ></aside>
+    >
+      <ImageConfiguration />
+    </aside>
   );
 };
 
