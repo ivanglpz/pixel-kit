@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { FC, ReactNode, useRef } from "react";
+import { FC, ReactNode, useEffect, useRef } from "react";
 import { Stage } from "react-konva";
 import { useEvent, useStyleConfig } from "../hooks";
 import { css } from "@stylespixelkit/css";
