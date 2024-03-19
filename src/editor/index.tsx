@@ -1,7 +1,7 @@
 import useBrowser from "./hooks/useBrowser/hook";
 import useStopZoom from "./hooks/useStopZoom/hook";
+import { PixelKitLayers } from "./layers";
 import LayoutPixelEditor from "./layout";
-import PixelKitShapes from "./shapes";
 import PixelKitStage from "./Stage";
 
 const PixelEditor = () => {
@@ -10,7 +10,7 @@ const PixelEditor = () => {
   return (
     <LayoutPixelEditor>
       <PixelKitStage>
-        <PixelKitShapes />
+        <PixelKitLayers />
       </PixelKitStage>
     </LayoutPixelEditor>
   );

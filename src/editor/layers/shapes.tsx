@@ -1,16 +1,10 @@
-/* eslint-disable react/display-name */
-/* eslint-disable react-hooks/exhaustive-deps */
-"use client";
-import { memo } from "react";
 import { Layer } from "react-konva";
 import { useSelectedShape, useTool } from "../hooks";
 import useShapes from "../hooks/shapes/hook";
-import { IKeyTool } from "../hooks/tool/types";
-import { FCShapeWEvents, IShape } from "./type.shape";
-import PixelTemporalShape from "./pipe.shape";
-import { Shapes } from "./shapes";
+import { FCShapeWEvents, IShape } from "../shapes/type.shape";
+import { Shapes } from "../shapes/shapes";
 
-const PixelKitShapes = memo(() => {
+export const LayerShapes = () => {
   const { shapes } = useShapes();
   const { shapeSelected, handleSetShapeSelected } = useSelectedShape();
   const { isMoving } = useTool();
@@ -23,9 +17,7 @@ const PixelKitShapes = memo(() => {
     <>
       <Layer>
         {Object.values(shapes)?.map((item) => {
-          const Component = Shapes?.[
-            `${item?.tool}` as IKeyTool
-          ] as FCShapeWEvents;
+          const Component = Shapes?.[item?.tool] as FCShapeWEvents;
           const isSelected = item?.id === shapeSelected?.id;
           return (
             <Component
@@ -42,9 +34,6 @@ const PixelKitShapes = memo(() => {
           );
         })}
       </Layer>
-      <PixelTemporalShape />
     </>
   );
-});
-
-export default PixelKitShapes;
+};
