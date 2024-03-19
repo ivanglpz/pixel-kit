@@ -26,7 +26,7 @@ const LayoutPixelEditor: FC<Props> = ({ children }) => {
       <LayoutEditorSidebarLeft />
       <ToolsTop />
       {children}
-      <ClipboardFiles />
+      {/* <ClipboardFiles /> */}
       <LayoutEditorSidebarRight />
     </main>
   );
