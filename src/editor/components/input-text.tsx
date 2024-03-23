@@ -19,6 +19,7 @@ export const InputText = ({ onChange, value }: Props) => {
         padding: "sm",
         height: "30px",
         borderRadius: "md",
+        fontSize: "sm",
       })}
     />
   );

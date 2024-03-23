@@ -15,6 +15,11 @@ export type IShape = {
   points?: number[];
   src?: string;
   rotate?: number;
+  fillEnabled?: boolean;
+  dashEnabled?: boolean;
+  strokeEnabled?: boolean;
+  shadowEnabled?: boolean;
+  dash: number;
   backgroundColor?: string;
   fontSize?: number;
   fontStyle?: string;
