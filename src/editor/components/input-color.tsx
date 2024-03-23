@@ -59,6 +59,7 @@ const PixelKitInputColor: FC<Props> = ({ color, onChangeColor, keyInput }) => {
           padding: "sm",
           height: "30px",
           borderRadius: "md",
+          fontSize: "sm",
         })}
       />
     </div>

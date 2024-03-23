@@ -43,6 +43,11 @@ const ShapeBox = memo((item: IShapeWithEvents) => {
     strokeWidth,
     backgroundColor,
     borderRadius,
+    fillEnabled,
+    shadowEnabled,
+    strokeEnabled,
+    dash,
+    dashEnabled,
   } = box;
 
   const shapeRef = useRef<Konva.Rect>();
@@ -97,6 +102,7 @@ const ShapeBox = memo((item: IShapeWithEvents) => {
         x={x}
         y={y}
         width={width}
+        fillEnabled={fillEnabled ?? true}
         height={height}
         rotationDeg={rotate}
         shadowColor={shadowColor}
@@ -104,6 +110,10 @@ const ShapeBox = memo((item: IShapeWithEvents) => {
         shadowOffsetX={shadowOffsetX}
         shadowOffsetY={shadowOffsetY}
         shadowBlur={shadowBlur}
+        strokeEnabled={strokeEnabled ?? true}
+        shadowEnabled={shadowEnabled ?? true}
+        dashEnabled={dashEnabled ?? true}
+        dash={[dash, dash, dash, dash]}
         cornerRadius={borderRadius}
         fill={backgroundColor}
         ref={shapeRef as MutableRefObject<Konva.Rect>}
