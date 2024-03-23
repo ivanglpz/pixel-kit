@@ -3,6 +3,7 @@ import useTemporalShape from "../hooks/temporalShape/hook";
 import { useMemo } from "react";
 import { FCShapeWEvents } from "../shapes/type.shape";
 import { Shapes } from "../shapes/shapes";
+import useScreen from "../hooks/screen";
 
 export const LayerPipe = () => {
   const { temporalShape } = useTemporalShape();
@@ -11,23 +12,26 @@ export const LayerPipe = () => {
     () => Shapes?.[`${temporalShape?.tool}`] as FCShapeWEvents,
     [temporalShape]
   );
+  const { width, height } = useScreen();
+
+  if (!temporalShape?.id) return null;
 
   return (
     <>
       <Layer>
-        {temporalShape?.id ? (
-          <Component
-            key={`pixel-kit-temporal-shape-${temporalShape.id}`}
-            shape={temporalShape}
-            draggable={true}
-            isSelected={true}
-            onClick={() => {}}
-            onDragMove={() => {}}
-            onDragStart={() => {}}
-            onDragStop={() => {}}
-            onTransformStop={() => {}}
-          />
-        ) : null}
+        <Component
+          screenHeight={height}
+          screenWidth={width}
+          key={`pixel-kit-temporal-shape-${temporalShape.id}`}
+          shape={temporalShape}
+          draggable={true}
+          isSelected={true}
+          onClick={() => {}}
+          onDragMove={() => {}}
+          onDragStart={() => {}}
+          onDragStop={() => {}}
+          onTransformStop={() => {}}
+        />
       </Layer>
     </>
   );

@@ -52,6 +52,8 @@ export type IShapeWithEvents = {
   onDragStop: (item: IShape) => void;
   onTransformStop: (item: IShape) => void;
   onClick: (item: IShape) => void;
+  screenWidth: number;
+  screenHeight: number;
 };
 
 export type FCShapeWEvents = FC<IShapeWithEvents>;
