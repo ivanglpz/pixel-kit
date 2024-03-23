@@ -11,6 +11,8 @@ export const LayerImage = () => {
   return (
     <Layer>
       <ShapeImage
+        screenHeight={height}
+        screenWidth={width}
         isSelected={false}
         draggable={false}
         onClick={() => {}}
@@ -25,6 +27,7 @@ export const LayerImage = () => {
           isBlocked: true,
           tool: "IMAGE",
           visible: true,
+          dash: 0,
         }}
       />
     </Layer>

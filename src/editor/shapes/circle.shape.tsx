@@ -130,7 +130,7 @@ export const ShapeCircle = memo((item: IShapeWithEvents) => {
         }}
         onTransformEnd={shapeTransformEnd}
       />
-      <Transform isSelected={isSelected} ref={trRef} />
+      <Transform isSelected={isSelected} ref={trRef} keepRatio />
     </>
   );
 });
