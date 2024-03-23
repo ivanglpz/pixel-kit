@@ -36,6 +36,7 @@ export const shapeStart = (props: ShapeStartProps): IShape => {
     borderRadius: 0,
     borderRadiusBottomLeft: 0,
     borderRadiusBottomRight: 0,
+    dash: 50,
     borderRadiusTopLeft: 0,
     borderRadiusTopRight: 0,
     colorText: "black",

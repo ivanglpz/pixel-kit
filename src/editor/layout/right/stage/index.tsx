@@ -20,12 +20,12 @@ const StageConfig: FC = () => {
       <div>
         <p
           className={css({
-            fontSize: "md",
+            fontSize: "sm",
             color: "text",
             fontWeight: "bold",
           })}
         >
-          Canvas Appearance
+          Canvas
         </p>
         <p
           className={css({
@@ -109,6 +109,7 @@ const StageConfig: FC = () => {
               padding: "sm",
               height: "30px",
               borderRadius: "md",
+              fontSize: "sm",
             })}
           />
         </div>
