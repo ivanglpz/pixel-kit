@@ -18,28 +18,42 @@ import {
   ShapeEventDragStart,
   shapeEventDragStop,
 } from "./events.shape";
+import { Transform } from "./transformer";
 
 export const ShapeImage = memo((item: IShapeWithEvents) => {
-  const { draggable, onClick, onDragMove, onDragStart, onDragStop } = item;
+  const {
+    draggable,
+    onClick,
+    onDragMove,
+    onDragStart,
+    onDragStop,
+    screenHeight,
+    screenWidth,
+  } = item;
   const [image, setImage] = useState(() => {
     return item.shape;
   });
   const {
-    x,
-    y,
-    id,
     width,
     height,
-    backgroundColor,
-    shadowBlur,
-    stroke,
     shadowColor,
     shadowOpacity,
+    rotate,
+    x,
+    y,
     shadowOffsetY,
     shadowOffsetX,
+    shadowBlur,
+    stroke,
     strokeWidth,
-    src,
+    backgroundColor,
     borderRadius,
+    fillEnabled,
+    shadowEnabled,
+    strokeEnabled,
+    dash,
+    src,
+    dashEnabled,
   } = image;
 
   const imageInstance = useMemo(() => {
@@ -78,42 +92,37 @@ export const ShapeImage = memo((item: IShapeWithEvents) => {
         shape={image}
       />
       <KonvaImage
+        id={image?.id}
         x={x}
-        id={id}
         y={y}
         width={width}
+        fillEnabled={fillEnabled ?? true}
         height={height}
-        cornerRadius={borderRadius}
-        image={imageInstance}
-        fill={backgroundColor}
-        shadowBlur={shadowBlur}
-        stroke={stroke}
+        rotationDeg={rotate}
         shadowColor={shadowColor}
         shadowOpacity={shadowOpacity}
         shadowOffsetX={shadowOffsetX}
         shadowOffsetY={shadowOffsetY}
-        strokeWidth={strokeWidth}
-        rotation={0}
+        shadowBlur={shadowBlur}
+        strokeEnabled={strokeEnabled ?? true}
+        shadowEnabled={shadowEnabled ?? true}
+        dashEnabled={dashEnabled ?? true}
+        dash={[dash, dash, dash, dash]}
+        cornerRadius={borderRadius}
+        fill={backgroundColor}
         ref={shapeRef as MutableRefObject<Konva.Image>}
         draggable={draggable}
+        stroke={stroke}
+        strokeWidth={strokeWidth}
+        image={imageInstance}
         onClick={(e) => setImage(shapeEventClick(e, onClick))}
         onDragStart={(e) => setImage(ShapeEventDragStart(e, onDragStart))}
-        onDragMove={(e) => setImage(shapeEventDragMove(e, onDragMove))}
+        onDragMove={(e) =>
+          setImage(shapeEventDragMove(e, onDragMove, screenWidth, screenHeight))
+        }
         onDragEnd={(e) => setImage(shapeEventDragStop(e, onDragStop))}
       />
-      {isSelected && (
-        <Transformer
-          ref={trRef as MutableRefObject<Konva.Transformer>}
-          keepRatio={false}
-          boundBoxFunc={(oldBox, newBox) => {
-            // limit resize
-            if (newBox.width < 5 || newBox.height < 5) {
-              return oldBox;
-            }
-            return newBox;
-          }}
-        />
-      )}
+      <Transform isSelected={isSelected} ref={trRef} />
     </>
   );
 });

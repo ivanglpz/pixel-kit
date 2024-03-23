@@ -3,6 +3,7 @@ import { useSelectedShape, useTool } from "../hooks";
 import useShapes from "../hooks/shapes/hook";
 import { FCShapeWEvents, IShape } from "../shapes/type.shape";
 import { Shapes } from "../shapes/shapes";
+import useScreen from "../hooks/screen";
 
 export const LayerShapes = () => {
   const { shapes } = useShapes();
@@ -13,6 +14,8 @@ export const LayerShapes = () => {
     handleSetShapeSelected(element);
   };
 
+  const { width, height } = useScreen();
+
   return (
     <>
       <Layer>
@@ -21,9 +24,11 @@ export const LayerShapes = () => {
           const isSelected = item?.id === shapeSelected?.id;
           return (
             <Component
+              screenHeight={height}
+              screenWidth={width}
               key={`pixel-kit-shapes-${item?.id}`}
               shape={item}
-              draggable={isMoving}
+              draggable={isSelected}
               isSelected={isSelected}
               onClick={onClick}
               onDragStart={() => {}}
