@@ -22,11 +22,12 @@ export const LayerImage = () => {
         onTransformStop={() => {}}
         shape={{
           ...calculateDimension(width, height, img?.width, img?.height),
-          id: "",
+          id: "main-image-render-stage",
           src: img?.base64,
           isBlocked: true,
           tool: "IMAGE",
           visible: true,
+          fillEnabled: false,
           dash: 0,
         }}
       />
