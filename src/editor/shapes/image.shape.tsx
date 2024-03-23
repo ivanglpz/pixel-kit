@@ -122,7 +122,7 @@ export const ShapeImage = memo((item: IShapeWithEvents) => {
         }
         onDragEnd={(e) => setImage(shapeEventDragStop(e, onDragStop))}
       />
-      <Transform isSelected={isSelected} ref={trRef} />
+      <Transform isSelected={isSelected} ref={trRef} keepRatio />
     </>
   );
 });

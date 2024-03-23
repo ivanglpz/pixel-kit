@@ -4,15 +4,16 @@ import Konva from "konva";
 
 type Props = {
   isSelected: boolean;
+  keepRatio?: boolean;
 };
 
 // eslint-disable-next-line react/display-name
 export const Transform = forwardRef((props: Props, ref) => {
   const refT = ref as MutableRefObject<Konva.Transformer>;
-  const { isSelected } = props;
+  const { isSelected, keepRatio = false } = props;
 
   if (!isSelected) return null;
   if (!refT) return null;
 
-  return <Transformer ref={refT} keepRatio={false} />;
+  return <Transformer ref={refT} keepRatio={keepRatio} />;
 });
