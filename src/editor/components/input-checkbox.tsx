@@ -22,6 +22,9 @@ export const InputCheckbox = ({ text, value, onCheck }: Props) => {
         name="scales"
         checked={value}
         onChange={() => onCheck(!value)}
+        className={css({
+          accentColor: "secondary",
+        })}
       />
       <label
         htmlFor={text}

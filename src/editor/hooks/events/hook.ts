@@ -19,8 +19,7 @@ const useEvent = () => {
 
   const { shapeSelected, handleCleanShapeSelected, handleSetShapeSelected } =
     useSelectedShape();
-  const { color, thickness, lineJoin, lineCap, dash, dashEnable } =
-    useBeforeStartDrawing();
+  const { state } = useBeforeStartDrawing();
   const {
     handleCleanTemporalShape,
     handleCreateTemporalShape,
@@ -51,12 +50,9 @@ const useEvent = () => {
         tool,
         x: 0,
         y: 0,
-        stroke: color,
-        lineCap,
-        lineJoin,
-        dash,
-        dashEnable,
-        strokeWidth: thickness,
+        ...state,
+        strokeWidth: state.thickness,
+        stroke: state.color,
         points: [x, y, x, y],
       });
 
