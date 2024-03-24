@@ -16,6 +16,7 @@ export const InputSlider = ({ onChange, value }: Props) => {
       onChange={(e) => onChange(Number(e.target.value))}
       className={css({
         accentColor: tokens.colors.blue,
+        width: "100%",
       })}
     />
   );

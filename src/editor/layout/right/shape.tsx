@@ -27,7 +27,7 @@ const calculateScale = (
   return scale;
 };
 
-const LayoutShapeConfig = (props: Props) => {
+export const LayoutShapeConfig = (props: Props) => {
   const {
     backgroundColor,
     id,
@@ -281,5 +281,3 @@ const LayoutShapeConfig = (props: Props) => {
     </section>
   );
 };
-
-export default LayoutShapeConfig;

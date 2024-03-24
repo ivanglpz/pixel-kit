@@ -1,5 +1,6 @@
 import { FC } from "react";
 import { IKeyMethods } from "../hooks/tool/types";
+import { LineCap, LineJoin } from "konva/lib/Shape";
 
 export type IShape = {
   id: string;
@@ -15,6 +16,8 @@ export type IShape = {
   points?: number[];
   src?: string;
   rotate?: number;
+  lineCap?: LineCap;
+  lineJoin?: LineJoin;
   fillEnabled?: boolean;
   dashEnabled?: boolean;
   strokeEnabled?: boolean;

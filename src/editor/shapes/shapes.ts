@@ -4,13 +4,13 @@ import ShapeBox from "./box.shape";
 // import AtomElementCircle from "./circle.shape";
 // import AtomCodeElement from "./code.shape";
 // import AtomElementDraw from "./drawn.shape";
-import ShapeExport from "./export.shape";
 // import AtomElementImage from "./image.shape";
 // import AtomElementLine from "./line.shape";
 // import AtomElementText from "./text.shape";
 import { IShapeWithEvents } from "./type.shape";
 import { ShapeImage } from "./image.shape";
 import { ShapeCircle } from "./circle.shape";
+import { ShapeDraw } from "./drawn.shape";
 
 export type IMapperElements = {
   [key in IKeyTool]?: MemoExoticComponent<
@@ -24,7 +24,6 @@ export const Shapes: IMapperElements = {
   CIRCLE: ShapeCircle,
   // LINE: AtomElementLine,
   IMAGE: ShapeImage,
-  // DRAW: AtomElementDraw,
+  DRAW: ShapeDraw,
   // CODE: AtomCodeElement,
-  EXPORT: ShapeExport,
 };

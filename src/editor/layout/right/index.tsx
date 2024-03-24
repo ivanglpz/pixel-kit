@@ -1,6 +1,7 @@
 import { FC } from "react";
-import StageConfig from "./stage";
+import StageConfig from "./canvas";
 import { css } from "@stylespixelkit/css";
+import { Drawing } from "./drawing";
 
 const LayoutEditorSidebarRight: FC = () => {
   return (
@@ -20,6 +21,7 @@ const LayoutEditorSidebarRight: FC = () => {
       id="pixel-kit-sidebar-right"
     >
       <StageConfig />
+      <Drawing />
     </aside>
   );
 };
