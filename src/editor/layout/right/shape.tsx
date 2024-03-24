@@ -45,6 +45,7 @@ export const LayoutShapeConfig = (props: Props) => {
     dash,
     dashEnabled,
     shadowOpacity,
+    closed,
   } = props.shape;
   const onChange = props.onChange;
 
@@ -114,6 +115,11 @@ export const LayoutShapeConfig = (props: Props) => {
           },
         })} scrollbar_container`}
       >
+        <InputCheckbox
+          text="Closed"
+          value={closed ?? false}
+          onCheck={(e) => onChange("closed", e)}
+        />
         <InputCheckbox
           text="Fill Enable"
           value={fillEnabled ?? true}

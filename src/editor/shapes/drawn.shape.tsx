@@ -46,6 +46,7 @@ export const ShapeDraw = memo((item: IShapeWithEvents) => {
     borderRadius,
     fillEnabled,
     shadowEnabled,
+    closed,
     strokeEnabled,
     dash,
     points,
@@ -108,6 +109,7 @@ export const ShapeDraw = memo((item: IShapeWithEvents) => {
         height={height}
         rotationDeg={rotate}
         shadowColor={shadowColor}
+        closed={closed ?? false}
         shadowOpacity={shadowOpacity}
         shadowOffsetX={shadowOffsetX}
         shadowOffsetY={shadowOffsetY}

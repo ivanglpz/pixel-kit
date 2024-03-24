@@ -15,6 +15,7 @@ export type IShape = {
   isBlocked: boolean;
   points?: number[];
   src?: string;
+  closed?: boolean;
   rotate?: number;
   lineCap?: LineCap;
   lineJoin?: LineJoin;

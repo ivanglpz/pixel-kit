@@ -25,6 +25,7 @@ export const Drawing = () => {
     shadowEnabled,
     shadowOffsetX,
     shadowOffsetY,
+    closed,
   } = useBeforeStartDrawing();
   if (!isDrawing) return null;
   return (
@@ -64,6 +65,11 @@ export const Drawing = () => {
           },
         })} scrollbar_container`}
       >
+        <InputCheckbox
+          text="Closed"
+          value={closed ?? false}
+          onCheck={(e) => handleChangeLine("closed", e)}
+        />
         <PixelKitInputColor
           labelText="Color"
           keyInput={`pixel-kit-draw`}
@@ -161,6 +167,7 @@ export const Drawing = () => {
           value={shadowEnabled ?? true}
           onCheck={(e) => handleChangeLine("shadowEnabled", e)}
         />
+
         <InputSlider
           min={0}
           labelText="Shadow Opacity"
