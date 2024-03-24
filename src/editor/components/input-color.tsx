@@ -6,6 +6,7 @@ type Props = {
   color: string | undefined;
   onChangeColor: (value: string) => void;
   labelText: string;
+  primaryColors?: boolean;
 };
 
 const PixelKitInputColor: FC<Props> = ({
@@ -13,6 +14,7 @@ const PixelKitInputColor: FC<Props> = ({
   onChangeColor,
   keyInput,
   labelText,
+  primaryColors = false,
 }) => {
   return (
     <div
@@ -85,6 +87,43 @@ const PixelKitInputColor: FC<Props> = ({
           })}
         />
       </div>
+      {primaryColors ? (
+        <div
+          className={css({
+            display: "flex",
+            flexDirection: "row",
+            flexWrap: "wrap",
+            gap: "sm",
+          })}
+        >
+          {[
+            "#FF0000",
+            "#FFFF00",
+            "#0000FF",
+            "#00FF00",
+            "#FF6600",
+            "#6600FF",
+            "#000000",
+            "#FFFFFF",
+          ].map((e) => (
+            <button
+              key={e}
+              className={css({
+                height: "30px",
+                width: "30px",
+                borderRadius: "md",
+                border: "container",
+                display: "flex",
+                padding: "sm",
+              })}
+              style={{
+                backgroundColor: e,
+              }}
+              onClick={() => onChangeColor(e)}
+            ></button>
+          ))}
+        </div>
+      ) : null}
     </div>
   );
 };
