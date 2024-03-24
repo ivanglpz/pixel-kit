@@ -73,6 +73,7 @@ export const Drawing = () => {
         <PixelKitInputColor
           labelText="Color"
           keyInput={`pixel-kit-draw`}
+          primaryColors
           color={color}
           onChangeColor={(e) => handleChangeColor(e)}
         />
