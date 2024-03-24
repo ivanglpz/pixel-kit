@@ -14,4 +14,5 @@ export const DrawingBeforeStartAtom = atom({
   shadowBlur: 0,
   shadowEnabled: false,
   shadowOpacity: 1,
+  closed: false,
 });

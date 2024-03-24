@@ -24,6 +24,7 @@ type ShapeStartProps = {
   shadowBlur?: number;
   shadowEnabled?: boolean;
   shadowOpacity?: number;
+  closed?: boolean;
 };
 
 export const shapeStart = (props: ShapeStartProps): IShape => {
@@ -48,6 +49,7 @@ export const shapeStart = (props: ShapeStartProps): IShape => {
     shadowOffsetX,
     shadowOffsetY,
     shadowOpacity,
+    closed,
   } = props;
   return {
     id: uuidv4(),
@@ -79,6 +81,7 @@ export const shapeStart = (props: ShapeStartProps): IShape => {
     dashEnabled: dashEnable ?? true,
     borderRadiusTopLeft: 0,
     borderRadiusTopRight: 0,
+    closed: closed ?? false,
     colorText: "black",
     fontStyle: "Roboto",
     textDecoration: "none",
