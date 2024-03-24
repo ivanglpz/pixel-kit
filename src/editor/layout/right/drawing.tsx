@@ -14,11 +14,17 @@ export const Drawing = () => {
     handleThickness,
     thickness,
     handleChangeLine,
+    shadowOpacity,
     lineCap,
     lineJoin,
     dash,
     dashEnable,
     handleDash,
+    shadowBlur,
+    shadowColor,
+    shadowEnabled,
+    shadowOffsetX,
+    shadowOffsetY,
   } = useBeforeStartDrawing();
   if (!isDrawing) return null;
   return (
@@ -45,46 +51,34 @@ export const Drawing = () => {
         </p>
       </div>
       <div
-        className={css({
+        className={`${css({
           display: "flex",
           flexDirection: "column",
           gap: "lg",
-        })}
+          height: "100%",
+          maxHeight: "20rem",
+          overflow: "hidden",
+          overflowY: "hidden",
+          _hover: {
+            overflowY: "scroll",
+          },
+        })} scrollbar_container`}
       >
-        <p
-          className={css({
-            color: "text",
-            fontWeight: "600",
-            fontSize: "sm",
-          })}
-        >
-          Color
-        </p>
         <PixelKitInputColor
+          labelText="Color"
           keyInput={`pixel-kit-draw`}
           color={color}
           onChangeColor={(e) => handleChangeColor(e)}
         />
-        <p
-          className={css({
-            color: "text",
-            fontWeight: "600",
-            fontSize: "sm",
-          })}
-        >
-          Thickness
-        </p>
-        <InputSlider value={thickness} onChange={handleThickness} />
-        <p
-          className={css({
-            color: "text",
-            fontWeight: "600",
-            fontSize: "sm",
-          })}
-        >
-          Line Join
-        </p>
+
+        <InputSlider
+          labelText="Thickness"
+          value={thickness}
+          onChange={handleThickness}
+        />
+
         <InputSelect
+          labelText="Line Join"
           value={lineJoin}
           onChange={(e) => handleChangeLine("lineJoin", e)}
           options={[
@@ -105,16 +99,9 @@ export const Drawing = () => {
             },
           ]}
         />
-        <p
-          className={css({
-            color: "text",
-            fontWeight: "600",
-            fontSize: "sm",
-          })}
-        >
-          Line Cap
-        </p>
+
         <InputSelect
+          labelText="Line Cap"
           value={lineCap}
           onChange={(e) => handleChangeLine("lineCap", e)}
           options={[
@@ -135,16 +122,9 @@ export const Drawing = () => {
             },
           ]}
         />
-        <p
-          className={css({
-            color: "text",
-            fontWeight: "600",
-            fontSize: "sm",
-          })}
-        >
-          Dash
-        </p>
+
         <InputSlider
+          labelText="Dash"
           onChange={(e) => handleDash("dash", e)}
           value={dash || 0}
         />
@@ -152,6 +132,42 @@ export const Drawing = () => {
           text="Dash Enable"
           value={dashEnable ?? true}
           onCheck={(e) => handleDash("dashEnable", e)}
+        />
+        <PixelKitInputColor
+          labelText="Shadow Color"
+          keyInput={`pixel-kit-draw-before-shadowcolor`}
+          color={shadowColor}
+          onChangeColor={(e) => handleChangeLine("shadowColor", e)}
+        />
+        <InputSlider
+          labelText="Shadow X"
+          onChange={(e) => handleChangeLine("shadowOffsetX", e)}
+          value={shadowOffsetX || 0}
+        />
+
+        <InputSlider
+          labelText="Shadow Y"
+          onChange={(e) => handleChangeLine("shadowOffsetY", e)}
+          value={shadowOffsetY || 0}
+        />
+
+        <InputSlider
+          labelText="Shadow Blur"
+          onChange={(e) => handleChangeLine("shadowBlur", e)}
+          value={shadowBlur || 0}
+        />
+        <InputCheckbox
+          text="Shadow Enable"
+          value={shadowEnabled ?? true}
+          onCheck={(e) => handleChangeLine("shadowEnabled", e)}
+        />
+        <InputSlider
+          min={0}
+          labelText="Shadow Opacity"
+          max={1}
+          step={0.1}
+          onChange={(e) => handleChangeLine("shadowOpacity", e)}
+          value={shadowOpacity || 0}
         />
       </div>
     </section>

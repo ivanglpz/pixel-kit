@@ -11,7 +11,7 @@ export const useBeforeStartDrawing = () => {
     setState((prev) => ({ ...prev, thickness }));
   };
   const handleChangeLine = (
-    key: "lineCap" | "lineJoin" | "dash" | "dashEnable",
+    key: keyof typeof state,
     value: string | number | boolean
   ) => {
     setState((prev) => ({ ...prev, [key]: value }));
@@ -19,6 +19,7 @@ export const useBeforeStartDrawing = () => {
 
   return {
     ...state,
+    state,
     handleChangeColor,
     handleThickness,
     handleChangeLine,

@@ -44,6 +44,7 @@ export const LayoutShapeConfig = (props: Props) => {
     strokeEnabled,
     dash,
     dashEnabled,
+    shadowOpacity,
   } = props.shape;
   const onChange = props.onChange;
 
@@ -118,44 +119,23 @@ export const LayoutShapeConfig = (props: Props) => {
           value={fillEnabled ?? true}
           onCheck={(e) => onChange("fillEnabled", e)}
         />
-        <p
-          className={css({
-            color: "text",
-            fontWeight: "600",
-            fontSize: "sm",
-          })}
-        >
-          Fill Color
-        </p>
+
         <PixelKitInputColor
+          labelText=" Fill Color"
           keyInput={`pixel-kit-shape-fill-${id}-${tool}`}
           color={backgroundColor}
           onChangeColor={(e) => onChange("backgroundColor", e)}
         />
-        <p
-          className={css({
-            color: "text",
-            fontWeight: "600",
-            fontSize: "sm",
-          })}
-        >
-          Stroke Color
-        </p>
+
         <PixelKitInputColor
+          labelText="Stroke Color"
           keyInput={`pixel-kit-shape-stroke-${id}-${tool}`}
           color={stroke}
           onChangeColor={(e) => onChange("stroke", e)}
         />
-        <p
-          className={css({
-            color: "text",
-            fontWeight: "600",
-            fontSize: "sm",
-          })}
-        >
-          Stroke With
-        </p>
+
         <InputSlider
+          labelText="Stroke With"
           onChange={(e) => onChange("strokeWidth", e)}
           value={strokeWidth || 0}
         />
@@ -164,72 +144,36 @@ export const LayoutShapeConfig = (props: Props) => {
           value={strokeEnabled ?? true}
           onCheck={(e) => onChange("strokeEnabled", e)}
         />
-        <p
-          className={css({
-            color: "text",
-            fontWeight: "600",
-            fontSize: "sm",
-          })}
-        >
-          Dash
-        </p>
-        <InputSlider onChange={(e) => onChange("dash", e)} value={dash || 0} />
+
+        <InputSlider
+          labelText="Dash"
+          onChange={(e) => onChange("dash", e)}
+          value={dash || 0}
+        />
         <InputCheckbox
           text="Dash Enable"
           value={dashEnabled ?? true}
           onCheck={(e) => onChange("dashEnabled", e)}
         />
 
-        <p
-          className={css({
-            color: "text",
-            fontWeight: "600",
-            fontSize: "sm",
-          })}
-        >
-          Shadow Color
-        </p>
         <PixelKitInputColor
+          labelText="Shadow Color"
           keyInput={`pixel-kit-shape-shadow-${id}-${tool}`}
           color={shadowColor}
           onChangeColor={(e) => onChange("shadowColor", e)}
         />
-        <p
-          className={css({
-            color: "text",
-            fontWeight: "600",
-            fontSize: "sm",
-          })}
-        >
-          Shadow X
-        </p>
         <InputSlider
+          labelText="Shadow X"
           onChange={(e) => onChange("shadowOffsetX", e)}
           value={shadowOffsetX || 0}
         />
-        <p
-          className={css({
-            color: "text",
-            fontWeight: "600",
-            fontSize: "sm",
-          })}
-        >
-          Shadow Y
-        </p>
         <InputSlider
+          labelText="Shadow Y"
           onChange={(e) => onChange("shadowOffsetY", e)}
           value={shadowOffsetY || 0}
         />
-        <p
-          className={css({
-            color: "text",
-            fontWeight: "600",
-            fontSize: "sm",
-          })}
-        >
-          Shadow Blur
-        </p>
         <InputSlider
+          labelText="Shadow Blur"
           onChange={(e) => onChange("shadowBlur", e)}
           value={shadowBlur || 0}
         />
@@ -238,17 +182,17 @@ export const LayoutShapeConfig = (props: Props) => {
           value={shadowEnabled ?? true}
           onCheck={(e) => onChange("shadowEnabled", e)}
         />
-
-        <p
-          className={css({
-            color: "text",
-            fontWeight: "600",
-            fontSize: "sm",
-          })}
-        >
-          Border radius
-        </p>
         <InputSlider
+          min={0}
+          labelText="Shadow Opacity"
+          max={1}
+          step={0.1}
+          onChange={(e) => onChange("shadowOpacity", e)}
+          value={shadowOpacity || 0}
+        />
+
+        <InputSlider
+          labelText="Border radius"
           onChange={(e) => onChange("borderRadius", e)}
           value={borderRadius || 0}
         />

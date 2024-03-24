@@ -18,6 +18,12 @@ type ShapeStartProps = {
   lineJoin?: LineJoin;
   dash?: number;
   dashEnable?: boolean;
+  shadowColor?: string;
+  shadowOffsetX?: number;
+  shadowOffsetY?: number;
+  shadowBlur?: number;
+  shadowEnabled?: boolean;
+  shadowOpacity?: number;
 };
 
 export const shapeStart = (props: ShapeStartProps): IShape => {
@@ -36,6 +42,12 @@ export const shapeStart = (props: ShapeStartProps): IShape => {
     lineJoin,
     dash,
     dashEnable,
+    shadowBlur,
+    shadowColor,
+    shadowEnabled,
+    shadowOffsetX,
+    shadowOffsetY,
+    shadowOpacity,
   } = props;
   return {
     id: uuidv4(),
@@ -53,11 +65,12 @@ export const shapeStart = (props: ShapeStartProps): IShape => {
     backgroundColor: "#ffffff",
     lineCap: lineCap ?? "round",
     lineJoin: lineJoin ?? "round",
-    shadowBlur: 0,
-    shadowColor: "#ffffff",
-    shadowOffsetY: 0,
-    shadowOffsetX: 0,
-    shadowOpacity: 1,
+    shadowBlur: shadowBlur ?? 0,
+    shadowColor: shadowColor ?? "#ffffff",
+    shadowOffsetY: shadowOffsetY ?? 0,
+    shadowOffsetX: shadowOffsetX ?? 0,
+    shadowEnabled: shadowEnabled ?? true,
+    shadowOpacity: shadowOpacity ?? 1,
     isAllBorderRadius: false,
     borderRadius: 0,
     borderRadiusBottomLeft: 0,
