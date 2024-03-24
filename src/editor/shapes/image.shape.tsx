@@ -10,7 +10,7 @@ import {
   useState,
 } from "react";
 import { IShapeWithEvents } from "./type.shape";
-import { Image as KonvaImage, Transformer } from "react-konva";
+import { Image as KonvaImage } from "react-konva";
 import { PortalConfigShape } from "./config.shape";
 import {
   shapeEventClick,
@@ -120,6 +120,11 @@ export const ShapeImage = memo((item: IShapeWithEvents) => {
         onDragMove={(e) =>
           setImage(shapeEventDragMove(e, onDragMove, screenWidth, screenHeight))
         }
+        onTransform={(e) => {
+          setImage(
+            shapeEventDragMove(e, onDragMove, screenWidth, screenHeight)
+          );
+        }}
         onDragEnd={(e) => setImage(shapeEventDragStop(e, onDragStop))}
       />
       <Transform isSelected={isSelected} ref={trRef} keepRatio />

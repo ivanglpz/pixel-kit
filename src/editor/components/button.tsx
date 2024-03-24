@@ -21,6 +21,7 @@ export const Button = ({ onClick, text }: Props) => {
         padding: "md",
         color: "text",
         textAlign: "center",
+        fontSize: "sm",
       })}
       onClick={onClick}
     >
