@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { FC, ReactNode, useEffect, useRef } from "react";
 import { Stage } from "react-konva";
-import { useEvent, useSelectedShape, useStyleConfig } from "../hooks";
+import { useEvent, useSelectedShape, useStyleConfig, useTool } from "../hooks";
 import { css } from "@stylespixelkit/css";
 import useScreen from "../hooks/screen";
 import { useReference } from "../hooks/reference";
@@ -22,6 +22,8 @@ const PixelKitStage: FC<Props> = ({ children }) => {
   const { config } = useStyleConfig();
   const { height, ref: divRef, show, width } = useScreen();
   const { handleCleanShapeSelected, shapeSelected } = useSelectedShape();
+
+  const { setTool } = useTool();
 
   return (
     <main
@@ -50,6 +52,7 @@ const PixelKitStage: FC<Props> = ({ children }) => {
           onClick={(e) => {
             if (!e.target?.attrs?.id) {
               handleCleanShapeSelected();
+              setTool("MOVE");
             }
           }}
         >

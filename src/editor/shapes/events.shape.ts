@@ -72,3 +72,9 @@ export const shapeEventClick =
     onClick(prev);
     return prev;
   };
+
+export const shapeEventDoubleClick =
+  (evt: KonvaEventObject<MouseEvent>, onClick: Click) => (prev: IShape) => {
+    onClick(prev);
+    return prev;
+  };

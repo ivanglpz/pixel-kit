@@ -11,6 +11,7 @@ export type IShape = {
   height?: number;
   text?: string;
   visible: boolean;
+  isWritingNow: boolean;
   resolution?: "portrait" | "landscape";
   isBlocked: boolean;
   points?: number[];

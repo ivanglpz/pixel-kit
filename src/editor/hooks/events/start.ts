@@ -25,6 +25,7 @@ type ShapeStartProps = {
   shadowEnabled?: boolean;
   shadowOpacity?: number;
   closed?: boolean;
+  isWritingNow?: boolean;
 };
 
 export const shapeStart = (props: ShapeStartProps): IShape => {
@@ -50,6 +51,7 @@ export const shapeStart = (props: ShapeStartProps): IShape => {
     shadowOffsetY,
     shadowOpacity,
     closed,
+    isWritingNow,
   } = props;
   return {
     id: uuidv4(),
@@ -57,6 +59,9 @@ export const shapeStart = (props: ShapeStartProps): IShape => {
     y,
     isBlocked: false,
     tool: tool,
+    isWritingNow: isWritingNow ?? true,
+    fillEnabled: true,
+    strokeEnabled: true,
     visible: true,
     rotate: 0,
     height: height ?? 1,
@@ -91,6 +96,6 @@ export const shapeStart = (props: ShapeStartProps): IShape => {
     fontSize: 12,
     resolution: "landscape",
     src: image ?? "https://picsum.photos/200/300",
-    text: text ?? " Hello World",
+    text: "",
   };
 };
