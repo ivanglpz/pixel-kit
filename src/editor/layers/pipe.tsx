@@ -25,7 +25,7 @@ export const LayerPipe = () => {
           key={`pixel-kit-temporal-shape-${temporalShape.id}`}
           shape={temporalShape}
           draggable={false}
-          isSelected={false}
+          isSelected={temporalShape?.tool === "TEXT"}
           onClick={() => {}}
           onDragMove={() => {}}
           onDragStart={() => {}}

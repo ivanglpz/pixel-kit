@@ -37,6 +37,7 @@ const useEvent = () => {
         tool,
         x,
         y,
+        isWritingNow: false,
       });
 
       handleCreateTemporalShape(createStartElement);
@@ -85,8 +86,12 @@ const useEvent = () => {
   const handleMouseUp = () => {
     //create new shape in shapes and clean temporal shape and set tool with eventstage
     if (eventStage === "STAGE_TEMPORAL_CREATING_SHAPE" && temporalShape?.id) {
-      handleCreateShape(temporalShape);
-      handleSetShapeSelected(temporalShape);
+      const payload = {
+        ...temporalShape,
+        isWritingNow: true,
+      };
+      handleCreateShape(payload);
+      handleSetShapeSelected(payload);
       handleCleanTemporalShape();
       setEventStage("STAGE_IDLE");
       setTool("MOVE");
