@@ -93,7 +93,7 @@ export const shapeStart = (props: ShapeStartProps): IShape => {
     zIndex: 0,
     fontWeight: 400,
     fontFamily: "Roboto",
-    fontSize: 12,
+    fontSize: 24,
     resolution: "landscape",
     src: image ?? "https://picsum.photos/200/300",
     text: "",
