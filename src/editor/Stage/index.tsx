@@ -23,7 +23,7 @@ const PixelKitStage: FC<Props> = ({ children }) => {
   const { height, ref: divRef, show, width } = useScreen();
   const { handleCleanShapeSelected, shapeSelected } = useSelectedShape();
 
-  const { setTool } = useTool();
+  const { tool, setTool } = useTool();
 
   return (
     <main
@@ -50,7 +50,7 @@ const PixelKitStage: FC<Props> = ({ children }) => {
           onMousemove={handleMouseMove}
           onMouseup={handleMouseUp}
           onClick={(e) => {
-            if (!e.target?.attrs?.id) {
+            if (!e.target?.attrs?.id && tool !== "DRAW") {
               handleCleanShapeSelected();
               setTool("MOVE");
             }

@@ -46,6 +46,7 @@ export const LayoutShapeConfig = (props: Props) => {
     dashEnabled,
     shadowOpacity,
     closed,
+    fontSize,
   } = props.shape;
   const onChange = props.onChange;
 
@@ -201,6 +202,14 @@ export const LayoutShapeConfig = (props: Props) => {
           labelText="Border radius"
           onChange={(e) => onChange("borderRadius", e)}
           value={borderRadius || 0}
+        />
+        <InputSlider
+          labelText="Font size"
+          min={12}
+          max={72}
+          step={4}
+          onChange={(e) => onChange("fontSize", e)}
+          value={fontSize || 0}
         />
         <p
           className={css({
