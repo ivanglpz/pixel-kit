@@ -36,10 +36,7 @@ export const shapeDrawProgress = (
     return element;
   }
 
-  return {
-    ...element,
-    points: [...element?.points, x, y],
-  };
+  return element;
 };
 
 export const shapeProgressEvent: IShapeProgressEvent = {

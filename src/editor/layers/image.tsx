@@ -11,6 +11,8 @@ export const LayerImage = () => {
   return (
     <Layer>
       <ShapeImage
+        screenHeight={height}
+        screenWidth={width}
         isSelected={false}
         draggable={false}
         onClick={() => {}}
@@ -20,11 +22,14 @@ export const LayerImage = () => {
         onTransformStop={() => {}}
         shape={{
           ...calculateDimension(width, height, img?.width, img?.height),
-          id: "",
+          id: "main-image-render-stage",
           src: img?.base64,
           isBlocked: true,
           tool: "IMAGE",
           visible: true,
+          fillEnabled: false,
+          dash: 0,
+          isWritingNow: false,
         }}
       />
     </Layer>

@@ -1,9 +1,8 @@
 import Konva from "konva";
 import { MutableRefObject, memo, useEffect, useRef, useState } from "react";
-import { Rect, Transformer } from "react-konva";
+import { Rect } from "react-konva";
 import { IShapeWithEvents } from "./type.shape";
 import { KonvaEventObject } from "konva/lib/Node";
-
 import { PortalConfigShape } from "./config.shape";
 import {
   shapeEventClick,
@@ -11,6 +10,7 @@ import {
   ShapeEventDragStart,
   shapeEventDragStop,
 } from "./events.shape";
+import { Transform } from "./transformer";
 
 // eslint-disable-next-line react/display-name
 const ShapeBox = memo((item: IShapeWithEvents) => {
@@ -21,6 +21,8 @@ const ShapeBox = memo((item: IShapeWithEvents) => {
     onDragMove,
     onDragStart,
     onDragStop,
+    screenHeight,
+    screenWidth,
   } = item;
 
   const [box, setBox] = useState(() => {
@@ -30,7 +32,6 @@ const ShapeBox = memo((item: IShapeWithEvents) => {
   const {
     width,
     height,
-    resolution,
     shadowColor,
     shadowOpacity,
     rotate,
@@ -56,18 +57,17 @@ const ShapeBox = memo((item: IShapeWithEvents) => {
   const shapeTransformEnd = (evt: KonvaEventObject<Event>) => {
     setBox((prev) => {
       if (shapeRef?.current) {
-        const node = shapeRef.current;
-        const scaleX = node.scaleX();
-        const scaleY = node.scaleY();
-        node.scaleX(1);
-        node.scaleY(1);
+        const scaleX = evt.target.scaleX();
+        const scaleY = evt.target.scaleY();
+        evt.target.scaleX(1);
+        evt.target.scaleY(1);
         const payload = {
           ...prev,
-          x: node.x(),
-          y: node.y(),
+          x: evt.target.x(),
+          y: evt.target.y(),
           rotate,
-          width: Math.max(5, node.width() * scaleX),
-          height: Math.max(node.height() * scaleY),
+          width: Math.max(5, evt.target.width() * scaleX),
+          height: Math.max(evt.target.height() * scaleY),
         };
         onDragStop(payload);
 
@@ -122,30 +122,18 @@ const ShapeBox = memo((item: IShapeWithEvents) => {
         strokeWidth={strokeWidth}
         onClick={(e) => setBox(shapeEventClick(e, onClick))}
         onDragStart={(e) => setBox(ShapeEventDragStart(e, onDragStart))}
-        onDragMove={(e) => setBox(shapeEventDragMove(e, onDragMove))}
+        onDragMove={(e) =>
+          setBox(shapeEventDragMove(e, onDragMove, screenWidth, screenHeight))
+        }
         onDragEnd={(e) => setBox(shapeEventDragStop(e, onDragStop))}
+        onTransform={(e) => {
+          setBox(shapeEventDragMove(e, onDragMove, screenWidth, screenHeight));
+        }}
         onTransformEnd={shapeTransformEnd}
       />
-      {isSelected && (
-        <Transformer
-          ref={trRef as MutableRefObject<Konva.Transformer>}
-          keepRatio={false}
-          boundBoxFunc={(oldBox, newBox) => {
-            if (newBox.width < 5 || newBox.height < 5) {
-              return oldBox;
-            }
-            return newBox;
-          }}
-        />
-      )}
+      <Transform isSelected={isSelected} ref={trRef} />
     </>
   );
 });
-
-export const isPartialBorderRadius = (item: IShapeWithEvents) => {
-  return {
-    cornerRadius: [],
-  };
-};
 
 export default ShapeBox;

@@ -1,5 +1,6 @@
 import { FC } from "react";
 import { IKeyMethods } from "../hooks/tool/types";
+import { LineCap, LineJoin } from "konva/lib/Shape";
 
 export type IShape = {
   id: string;
@@ -10,11 +11,15 @@ export type IShape = {
   height?: number;
   text?: string;
   visible: boolean;
+  isWritingNow: boolean;
   resolution?: "portrait" | "landscape";
   isBlocked: boolean;
   points?: number[];
   src?: string;
+  closed?: boolean;
   rotate?: number;
+  lineCap?: LineCap;
+  lineJoin?: LineJoin;
   fillEnabled?: boolean;
   dashEnabled?: boolean;
   strokeEnabled?: boolean;
@@ -52,6 +57,8 @@ export type IShapeWithEvents = {
   onDragStop: (item: IShape) => void;
   onTransformStop: (item: IShape) => void;
   onClick: (item: IShape) => void;
+  screenWidth: number;
+  screenHeight: number;
 };
 
 export type FCShapeWEvents = FC<IShapeWithEvents>;

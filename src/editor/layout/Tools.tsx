@@ -9,10 +9,10 @@ const METHODS = [
     icon: icons.cursor,
     keyMethod: "MOVE",
   },
-  {
-    icon: icons.group,
-    keyMethod: "EXPORT",
-  },
+  // {
+  //   icon: icons.group,
+  //   keyMethod: "EXPORT",
+  // },
   {
     icon: icons.box,
     keyMethod: "BOX",
@@ -33,10 +33,10 @@ const METHODS = [
     icon: icons.text,
     keyMethod: "TEXT",
   },
-  {
-    icon: icons.code,
-    keyMethod: "CODE",
-  },
+  // {
+  //   icon: icons.code,
+  //   keyMethod: "CODE",
+  // },
   {
     icon: icons.peentool,
     keyMethod: "DRAW",
@@ -61,7 +61,7 @@ const ToolsTop: FC = () => {
         justifyContent: "center",
         borderRadius: "lg",
         width: "100%",
-        maxWidth: "22rem",
+        maxWidth: "17rem",
         gap: "md",
         border: "container",
       })}
