@@ -29,6 +29,7 @@ export const LayerImage = () => {
           visible: true,
           fillEnabled: false,
           dash: 0,
+          isWritingNow: false,
         }}
       />
     </Layer>
