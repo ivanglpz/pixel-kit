@@ -148,6 +148,7 @@ export const ShapeText = memo((item: IShapeWithEvents) => {
         onDragEnd={(e) => setBox(shapeEventDragStop(e, onDragStop))}
         onTransform={(e) => {
           setBox(shapeEventDragMove(e, onDragMove, screenWidth, screenHeight));
+          shapeTransformEnd(e);
         }}
         onTransformEnd={shapeTransformEnd}
       />
