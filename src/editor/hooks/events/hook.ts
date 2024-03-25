@@ -10,14 +10,16 @@ import { shapeProgressEvent } from "./progress";
 import { shapeStart } from "./start";
 import { IKeyMethods, IKeyTool } from "../tool/types";
 import stageAbsolutePosition from "../../helpers/position";
+import { useBeforeStartDrawing } from "@/editor/states/drawing/useBeforeStartDrawing";
 
 const useEvent = () => {
-  const { isGoingToCreateAShape, tool, setTool, isNotWriting } = useTool();
+  const { isGoingToCreateAShape, tool, setTool, isNotWriting, isDrawing } =
+    useTool();
   const { handleCreateShape, handleDeleteShapeInShapes } = useShapes();
 
   const { shapeSelected, handleCleanShapeSelected, handleSetShapeSelected } =
     useSelectedShape();
-
+  const { state } = useBeforeStartDrawing();
   const {
     handleCleanTemporalShape,
     handleCreateTemporalShape,
@@ -35,6 +37,24 @@ const useEvent = () => {
         tool,
         x,
         y,
+        isWritingNow: false,
+      });
+
+      handleCreateTemporalShape(createStartElement);
+    }
+    if (isDrawing) {
+      setEventStage("STAGE_IS_DRAWING_NOW");
+      const { x: XStage, y: YStage } = stageAbsolutePosition(event);
+      const x = XStage ?? 0;
+      const y = YStage ?? 0;
+      const createStartElement = shapeStart({
+        tool,
+        x: 0,
+        y: 0,
+        ...state,
+        strokeWidth: state.thickness,
+        stroke: state.color,
+        points: [x, y, x, y],
       });
 
       handleCreateTemporalShape(createStartElement);
@@ -42,12 +62,23 @@ const useEvent = () => {
   };
 
   const handleMouseMove = (event: KonvaEventObject<MouseEvent>) => {
-    ///updating temporal shape in stage
     if (eventStage === "STAGE_TEMPORAL_CREATING_SHAPE" && temporalShape?.tool) {
+      const { x, y } = stageAbsolutePosition(event);
       const updateProgressElement = shapeProgressEvent[temporalShape.tool];
 
-      const { x, y } = stageAbsolutePosition(event);
       const updateShape = updateProgressElement(x, y, temporalShape);
+      handleUpdateTemporalShape(updateShape);
+    }
+
+    if (eventStage === "STAGE_IS_DRAWING_NOW" && temporalShape?.tool) {
+      const updateProgressElement = shapeProgressEvent[temporalShape.tool];
+      const { x: XStage, y: YStage } = stageAbsolutePosition(event);
+      const x = XStage ?? 0;
+      const y = YStage ?? 0;
+      const updateShape = updateProgressElement(x, y, {
+        ...temporalShape,
+        points: temporalShape.points?.concat([x, y]),
+      });
       handleUpdateTemporalShape(updateShape);
     }
   };
@@ -55,11 +86,19 @@ const useEvent = () => {
   const handleMouseUp = () => {
     //create new shape in shapes and clean temporal shape and set tool with eventstage
     if (eventStage === "STAGE_TEMPORAL_CREATING_SHAPE" && temporalShape?.id) {
-      handleCreateShape(temporalShape);
-      handleSetShapeSelected(temporalShape);
+      const payload = {
+        ...temporalShape,
+        isWritingNow: true,
+      };
+      handleCreateShape(payload);
+      handleSetShapeSelected(payload);
       handleCleanTemporalShape();
       setEventStage("STAGE_IDLE");
       setTool("MOVE");
+    }
+    if (eventStage === "STAGE_IS_DRAWING_NOW" && temporalShape?.id) {
+      handleCreateShape(temporalShape);
+      handleCleanTemporalShape();
     }
   };
   const handleResetElement = (kl: IKeyTool) => {

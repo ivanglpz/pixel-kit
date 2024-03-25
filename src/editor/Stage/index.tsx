@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { FC, ReactNode, useEffect, useRef } from "react";
 import { Stage } from "react-konva";
-import { useEvent, useStyleConfig } from "../hooks";
+import { useEvent, useSelectedShape, useStyleConfig, useTool } from "../hooks";
 import { css } from "@stylespixelkit/css";
 import useScreen from "../hooks/screen";
 import { useReference } from "../hooks/reference";
@@ -21,6 +21,9 @@ const PixelKitStage: FC<Props> = ({ children }) => {
   const { handleMouseDown, handleMouseUp, handleMouseMove } = useEvent();
   const { config } = useStyleConfig();
   const { height, ref: divRef, show, width } = useScreen();
+  const { handleCleanShapeSelected, shapeSelected } = useSelectedShape();
+
+  const { tool, setTool } = useTool();
 
   return (
     <main
@@ -46,6 +49,12 @@ const PixelKitStage: FC<Props> = ({ children }) => {
           onMouseDown={handleMouseDown}
           onMousemove={handleMouseMove}
           onMouseup={handleMouseUp}
+          onClick={(e) => {
+            if (!e.target?.attrs?.id && tool !== "DRAW") {
+              handleCleanShapeSelected();
+              setTool("MOVE");
+            }
+          }}
         >
           {children}
         </Stage>
