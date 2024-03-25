@@ -8,7 +8,7 @@ import useScreen from "../hooks/screen";
 export const LayerShapes = () => {
   const { shapes } = useShapes();
   const { shapeSelected, handleSetShapeSelected } = useSelectedShape();
-  const { isMoving } = useTool();
+  const { isDrawing } = useTool();
 
   const onClick = (element: IShape) => {
     handleSetShapeSelected(element);
@@ -28,8 +28,8 @@ export const LayerShapes = () => {
               screenWidth={width}
               key={`pixel-kit-shapes-${item?.id}`}
               shape={item}
-              draggable={isSelected}
-              isSelected={isSelected}
+              draggable={!isDrawing && isSelected}
+              isSelected={!isDrawing && isSelected}
               onClick={onClick}
               onDragStart={() => {}}
               onDragMove={() => {}}
