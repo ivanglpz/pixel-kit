@@ -19,6 +19,7 @@ import {
   shapeEventDragStop,
 } from "./events.shape";
 import { Transform } from "./transformer";
+import { Valid } from "@/components/valid";
 
 export const ShapeImage = memo((item: IShapeWithEvents) => {
   const {
@@ -86,11 +87,13 @@ export const ShapeImage = memo((item: IShapeWithEvents) => {
 
   return (
     <>
-      <PortalConfigShape
-        isSelected={isSelected}
-        setShape={setImage}
-        shape={image}
-      />
+      <Valid isValid={isSelected}>
+        <PortalConfigShape
+          isSelected={isSelected}
+          setShape={setImage}
+          shape={image}
+        />
+      </Valid>
       <KonvaImage
         id={image?.id}
         x={x}

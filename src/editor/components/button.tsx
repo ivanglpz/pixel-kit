@@ -1,11 +1,13 @@
+import { Valid } from "@/components/valid";
 import { css } from "@stylespixelkit/css";
 
 type Props = {
   text: string;
   onClick: () => void;
+  isLoading?: boolean;
 };
 
-export const Button = ({ onClick, text }: Props) => {
+export const Button = ({ onClick, text, isLoading = false }: Props) => {
   return (
     <button
       type="button"
@@ -23,9 +25,18 @@ export const Button = ({ onClick, text }: Props) => {
         textAlign: "center",
         fontSize: "sm",
       })}
+      disabled={isLoading}
       onClick={onClick}
     >
-      {text}
+      <Valid isValid={!isLoading}>{text}</Valid>
+      <Valid isValid={isLoading}>
+        <div className="lds-ring">
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+        </div>
+      </Valid>
     </button>
   );
 };

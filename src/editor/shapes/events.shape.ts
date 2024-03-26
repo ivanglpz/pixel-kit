@@ -78,3 +78,22 @@ export const shapeEventDoubleClick =
     onClick(prev);
     return prev;
   };
+
+export const shapeTransformEnd =
+  (evt: KonvaEventObject<Event>, onDragStop: Drag) => (prev: IShape) => {
+    const scaleX = evt.target.scaleX();
+    const scaleY = evt.target.scaleY();
+    evt.target.scaleX(1);
+    evt.target.scaleY(1);
+    const payload = {
+      ...prev,
+      x: evt.target.x(),
+      y: evt.target.y(),
+      rotate: prev.rotate,
+      width: Math.max(5, evt.target.width() * scaleX),
+      height: Math.max(evt.target.height() * scaleY),
+    };
+    onDragStop(payload);
+
+    return payload;
+  };
