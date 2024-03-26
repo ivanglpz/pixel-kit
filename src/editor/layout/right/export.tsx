@@ -1,10 +1,20 @@
+import { Button } from "@/editor/components/button";
+import { InputSelect } from "@/editor/components/input-select";
+import { useImageRender } from "@/editor/hooks/image/hook";
 import { useReference } from "@/editor/hooks/reference";
+import useScreen from "@/editor/hooks/screen";
+import { calculateDimension } from "@/utils/calculateDimension";
 import { css } from "@stylespixelkit/css";
-type Props = {
-  x: number;
-  y: number;
-  width: number;
-  height: number;
+import { useState } from "react";
+import { toast } from "sonner";
+import { v4 as uuidv4 } from "uuid";
+
+const formats = {
+  LOW: 0.8,
+  MEDIUM: 1,
+  HIGH: 1.8,
+  BIG_HIGH: 2.6,
+  ULTRA_HIGH: 3.5,
 };
 
 function downloadBase64Image(base64String: string, filename: string) {
@@ -16,15 +26,46 @@ function downloadBase64Image(base64String: string, filename: string) {
   document.body.removeChild(link);
 }
 
-export const ExportStage = ({ height, width, x, y }: Props) => {
+export const ExportStage = () => {
   const { ref } = useReference({ type: "STAGE" });
+  const { img } = useImageRender();
+  const [loading, setloading] = useState(false);
+  const { height, width } = useScreen();
+  const [format, setformat] = useState("HIGH");
 
-  const handleExport = () => {
-    // const image = ref?.current?.toDataURL({
-    //   quality: 1,
-    // });
-    // downloadBase64Image(image, "test.png");
-    // console.log(image?.length);
+  const handleExport = async () => {
+    try {
+      toast.info("Your image is exporting...");
+
+      setloading(true);
+      const childrenToDestroy = ref?.current
+        ?.getStage?.()
+        ?.children?.[1].children.filter?.(
+          (child) => child.attrs.id === "transformer-editable"
+        );
+      childrenToDestroy?.forEach?.((child) => {
+        child?.destroy?.();
+      });
+
+      await new Promise(() => {
+        setTimeout(() => {
+          const image = ref?.current?.toDataURL({
+            quality: 1,
+            pixelRatio: formats[format as keyof typeof formats],
+            ...calculateDimension(width, height, img?.width, img?.height),
+          });
+          if (!image) return;
+          downloadBase64Image(
+            image,
+            `pixel-kit-edition-${uuidv4()?.slice(0, 4)}.jpg`
+          );
+          setloading(false);
+        }, 100);
+      });
+    } catch (error) {
+      toast.error("Please import a image");
+      setloading(false);
+    }
   };
   return (
     <div
@@ -36,6 +77,8 @@ export const ExportStage = ({ height, width, x, y }: Props) => {
         backgroundColor: "primary",
         borderRadius: "lg",
         border: "container",
+        alignItems: "flex-start",
+        justifyContent: "center",
       })}
     >
       <p
@@ -47,25 +90,47 @@ export const ExportStage = ({ height, width, x, y }: Props) => {
       >
         Export
       </p>
-      <button
-        type="button"
+      <div
         className={css({
-          width: "100%",
           display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          borderWidth: 1,
-          borderStyle: "solid",
-          borderColor: "secondary",
-          borderRadius: "md",
-          padding: "md",
-          color: "text",
-          textAlign: "center",
+          flexDirection: "column",
+          width: "100%",
         })}
-        onClick={handleExport}
       >
-        Export
-      </button>
+        <InputSelect
+          labelText="Format Quality"
+          options={[
+            {
+              id: "1",
+              label: "Low",
+              value: "LOW",
+            },
+            {
+              id: "2",
+              label: "Medium",
+              value: "MEDIUM",
+            },
+            {
+              id: "3",
+              label: "High",
+              value: "HIGH",
+            },
+            {
+              id: "4",
+              label: "Big High",
+              value: "BIG_HIGH",
+            },
+            {
+              id: "4",
+              label: "Ultra High",
+              value: "ULTRA_HIGH",
+            },
+          ]}
+          onChange={(e) => setformat(e)}
+          value={format}
+        />
+      </div>
+      <Button text="Export" onClick={handleExport} isLoading={loading}></Button>
     </div>
   );
 };

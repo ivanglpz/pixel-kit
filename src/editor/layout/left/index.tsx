@@ -1,6 +1,7 @@
 import { FC } from "react";
 import { css } from "@stylespixelkit/css";
 import { ImageConfiguration } from "./image";
+import { ExportStage } from "../right/export";
 
 const LayoutEditorSidebarLeft: FC = () => {
   return (
@@ -19,6 +20,7 @@ const LayoutEditorSidebarLeft: FC = () => {
       })}
     >
       <ImageConfiguration />
+      <ExportStage />
     </aside>
   );
 };

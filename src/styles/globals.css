@@ -2,7 +2,7 @@
 
 @import url("./fonts.css");
 @import url("./editor/fonts.css");
-
+@import url("./effects.css");
 body {
   display: flex;
   height: 100%;

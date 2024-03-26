@@ -3,6 +3,7 @@ import { IShape } from "./type.shape";
 import { Html } from "react-konva-utils";
 import { createPortal } from "react-dom";
 import { LayoutShapeConfig } from "../layout/right/shape";
+import { Valid } from "@/components/valid";
 
 type Props = {
   setShape: Dispatch<SetStateAction<IShape>>;
@@ -35,17 +36,17 @@ export const PortalConfigShape = ({ setShape, shape, isSelected }: Props) => {
         },
       }}
     >
-      {sidebarElement && sidebarElement instanceof Element && isSelected
-        ? createPortal(
-            <LayoutShapeConfig
-              shape={shape}
-              onChange={(key, value) => {
-                handleChangeWithKey(key, value);
-              }}
-            />,
-            sidebarElement
-          )
-        : null}
+      <Valid isValid={(sidebarElement ?? false) && isSelected}>
+        {createPortal(
+          <LayoutShapeConfig
+            shape={shape}
+            onChange={(key, value) => {
+              handleChangeWithKey(key, value);
+            }}
+          />,
+          sidebarElement as Element
+        )}
+      </Valid>
     </Html>
   );
 };
