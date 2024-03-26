@@ -9,10 +9,12 @@ import {
   shapeEventDragMove,
   ShapeEventDragStart,
   shapeEventDragStop,
+  shapeTransformEnd,
 } from "./events.shape";
 import { Transform } from "./transformer";
 import { PortalConfigShape } from "./config.shape";
 import { PortalTextWriting } from "./text.writing";
+import { Valid } from "@/components/valid";
 
 export const ShapeText = memo((item: IShapeWithEvents) => {
   const {
@@ -56,28 +58,6 @@ export const ShapeText = memo((item: IShapeWithEvents) => {
   const shapeRef = useRef<Konva.Text>();
   const trRef = useRef<Konva.Transformer>();
 
-  const shapeTransformEnd = (evt: KonvaEventObject<Event>) => {
-    setBox((prev) => {
-      if (shapeRef?.current) {
-        const scaleX = evt.target.scaleX();
-        const scaleY = evt.target.scaleY();
-        evt.target.scaleX(1);
-        evt.target.scaleY(1);
-        const payload = {
-          ...prev,
-          x: evt.target.x(),
-          y: evt.target.y(),
-          rotate,
-          width: Math.max(5, evt.target.width() * scaleX),
-          height: Math.max(evt.target.height() * scaleY),
-        };
-        onDragStop(payload);
-
-        return payload;
-      }
-      return prev;
-    });
-  };
   useEffect(() => {
     if (isSelected) {
       if (trRef.current && shapeRef.current) {
@@ -95,16 +75,20 @@ export const ShapeText = memo((item: IShapeWithEvents) => {
 
   return (
     <>
-      <PortalTextWriting
-        isSelected={isSelected}
-        setShape={setBox}
-        shape={box}
-      />
-      <PortalConfigShape
-        isSelected={isSelected}
-        setShape={setBox}
-        shape={box}
-      />
+      <Valid isValid={box.isWritingNow}>
+        <PortalTextWriting
+          isSelected={isSelected}
+          setShape={setBox}
+          shape={box}
+        />
+      </Valid>
+      <Valid isValid={isSelected}>
+        <PortalConfigShape
+          isSelected={isSelected}
+          setShape={setBox}
+          shape={box}
+        />
+      </Valid>
       <Text
         id={box?.id}
         x={x}
@@ -148,9 +132,9 @@ export const ShapeText = memo((item: IShapeWithEvents) => {
         onDragEnd={(e) => setBox(shapeEventDragStop(e, onDragStop))}
         onTransform={(e) => {
           setBox(shapeEventDragMove(e, onDragMove, screenWidth, screenHeight));
-          shapeTransformEnd(e);
+          setBox(shapeTransformEnd(e, onDragMove));
         }}
-        onTransformEnd={shapeTransformEnd}
+        onTransformEnd={(e) => setBox(shapeTransformEnd(e, onDragStop))}
       />
       <Transform isSelected={isSelected && !box.isWritingNow} ref={trRef} />
     </>

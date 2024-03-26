@@ -1,11 +1,12 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { FC, ReactNode, useEffect, useRef } from "react";
+import { FC, ReactNode, useRef } from "react";
 import { Stage } from "react-konva";
 import { useEvent, useSelectedShape, useStyleConfig, useTool } from "../hooks";
 import { css } from "@stylespixelkit/css";
 import useScreen from "../hooks/screen";
 import { useReference } from "../hooks/reference";
 import Konva from "konva";
+import { Valid } from "@/components/valid";
 
 type Props = {
   children: ReactNode;
@@ -41,7 +42,7 @@ const PixelKitStage: FC<Props> = ({ children }) => {
         backgroundColor: config.backgroundColor,
       }}
     >
-      {show ? (
+      <Valid isValid={show}>
         <Stage
           ref={ref}
           width={width}
@@ -58,7 +59,8 @@ const PixelKitStage: FC<Props> = ({ children }) => {
         >
           {children}
         </Stage>
-      ) : (
+      </Valid>
+      <Valid isValid={!show}>
         <p
           className={css({
             color: "text",
@@ -90,7 +92,7 @@ const PixelKitStage: FC<Props> = ({ children }) => {
           </svg>
           Pixel Kit is loading...
         </p>
-      )}
+      </Valid>
     </main>
   );
 };
