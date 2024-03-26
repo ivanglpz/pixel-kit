@@ -10,8 +10,10 @@ import {
   shapeEventDragMove,
   ShapeEventDragStart,
   shapeEventDragStop,
+  shapeTransformEnd,
 } from "./events.shape";
 import { Transform } from "./transformer";
+import { Valid } from "@/components/valid";
 
 export const ShapeDraw = memo((item: IShapeWithEvents) => {
   const {
@@ -58,29 +60,6 @@ export const ShapeDraw = memo((item: IShapeWithEvents) => {
   const shapeRef = useRef<Konva.Line>();
   const trRef = useRef<Konva.Transformer>();
 
-  const shapeTransformEnd = (evt: KonvaEventObject<Event>) => {
-    setBox((prev) => {
-      if (shapeRef?.current) {
-        const scaleX = evt.target.scaleX();
-        const scaleY = evt.target.scaleY();
-        evt.target.scaleX(1);
-        evt.target.scaleY(1);
-        const payload = {
-          ...prev,
-          x: evt.target.x(),
-          y: evt.target.y(),
-          rotate,
-          width: Math.max(5, evt.target.width() * scaleX),
-          height: Math.max(evt.target.height() * scaleY),
-        };
-        onDragStop(payload);
-
-        return payload;
-      }
-      return prev;
-    });
-  };
-
   useEffect(() => {
     if (isSelected) {
       if (trRef.current && shapeRef.current) {
@@ -95,11 +74,13 @@ export const ShapeDraw = memo((item: IShapeWithEvents) => {
   }, [item.shape]);
   return (
     <>
-      <PortalConfigShape
-        isSelected={isSelected}
-        setShape={setBox}
-        shape={box}
-      />
+      <Valid isValid={isSelected}>
+        <PortalConfigShape
+          isSelected={isSelected}
+          setShape={setBox}
+          shape={box}
+        />
+      </Valid>
       <Line
         id={box?.id}
         x={x}
@@ -137,7 +118,7 @@ export const ShapeDraw = memo((item: IShapeWithEvents) => {
         onTransform={(e) => {
           setBox(shapeEventDragMove(e, onDragMove, screenWidth, screenHeight));
         }}
-        onTransformEnd={shapeTransformEnd}
+        onTransformEnd={(e) => setBox(shapeTransformEnd(e, onDragStop))}
       />
       <Transform isSelected={isSelected} ref={trRef} />
     </>

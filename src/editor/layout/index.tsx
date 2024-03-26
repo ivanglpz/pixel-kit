@@ -1,7 +1,6 @@
 import { css } from "@stylespixelkit/css";
 import { FC, ReactNode } from "react";
 import ToolsTop from "./Tools";
-import { ClipboardFiles } from "./ClipboardFiles";
 import LayoutEditorSidebarLeft from "./left";
 import LayoutEditorSidebarRight from "./right";
 

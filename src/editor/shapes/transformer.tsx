@@ -15,5 +15,7 @@ export const Transform = forwardRef((props: Props, ref) => {
   if (!isSelected) return null;
   if (!refT) return null;
 
-  return <Transformer ref={refT} keepRatio={keepRatio} />;
+  return (
+    <Transformer id="transformer-editable" ref={refT} keepRatio={keepRatio} />
+  );
 });
