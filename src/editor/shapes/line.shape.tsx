@@ -1,11 +1,62 @@
+/* eslint-disable react/display-name */
 import Konva from "konva";
-import { MutableRefObject, useEffect, useRef } from "react";
-import { Rect, Transformer } from "react-konva";
+import { memo, MutableRefObject, useEffect, useRef, useState } from "react";
+import { Line } from "react-konva";
 import { IShapeWithEvents } from "./type.shape";
+import { PortalConfigShape } from "./config.shape";
+import {
+  shapeEventClick,
+  shapeEventDragMove,
+  ShapeEventDragStart,
+  shapeEventDragStop,
+  shapeTransformEnd,
+} from "./events.shape";
+import { Transform } from "./transformer";
+import { Valid } from "@/components/valid";
 
-const AtomEditorElementBox = (item: IShapeWithEvents) => {
-  const { draggable, isSelected } = item;
-  const shapeRef = useRef<Konva.Rect>();
+export const ShapeLine = memo((item: IShapeWithEvents) => {
+  const {
+    draggable,
+    isSelected,
+    onClick,
+    onDragMove,
+    onDragStart,
+    onDragStop,
+    screenHeight,
+    screenWidth,
+  } = item;
+
+  const [box, setBox] = useState(() => {
+    return item.shape;
+  });
+
+  const {
+    width,
+    height,
+    shadowColor,
+    shadowOpacity,
+    rotate,
+    x,
+    y,
+    shadowOffsetY,
+    shadowOffsetX,
+    shadowBlur,
+    stroke,
+    strokeWidth,
+    backgroundColor,
+    borderRadius,
+    fillEnabled,
+    shadowEnabled,
+    closed,
+    strokeEnabled,
+    dash,
+    points,
+    dashEnabled,
+    lineCap,
+    lineJoin,
+  } = box;
+
+  const shapeRef = useRef<Konva.Line>();
   const trRef = useRef<Konva.Transformer>();
 
   useEffect(() => {
@@ -15,96 +66,61 @@ const AtomEditorElementBox = (item: IShapeWithEvents) => {
         trRef.current?.getLayer()?.batchDraw();
       }
     }
-  }, [isSelected, item, trRef, shapeRef]);
+  }, [isSelected, trRef, shapeRef]);
 
-  return null;
-  // return (
-  //   <>
-  //     <Rect
-  //       {...item}
-  //       id={item?.id}
-  //       x={item?.x}
-  //       y={item?.y}
-  //       width={item?.width}
-  //       fill={item.style?.stroke}
-  //       shadowColor={item?.style?.shadowColor}
-  //       shadowOpacity={item?.style?.shadowOpacity}
-  //       shadowOffsetX={item?.style?.shadowOffset?.x}
-  //       shadowOffsetY={item?.style?.shadowOffset?.y}
-  //       shadowBlur={item?.style?.shadowBlur}
-  //       height={item?.style?.strokeWidth}
-  //       cornerRadius={isPartialBorderRadius(item)?.cornerRadius}
-  //       ref={shapeRef as MutableRefObject<Konva.Rect>}
-  //       draggable={draggable}
-  //       onClick={() => onSelect(item)}
-  //       onTap={() => onSelect(item)}
-  //       rotation={rotate}
-  //       onDragEnd={(e) => {
-  //         onChange({
-  //           ...item,
-  //           x: e.target.x(),
-  //           y: e.target.y(),
-  //         });
-  //       }}
-  //       onTransform={(e) => {
-  //         const rotate = e.target.rotation();
-  //         if (shapeRef?.current) {
-  //           1;
-  //           const node = shapeRef.current;
-  //           const scaleX = node.scaleX();
-  //           const scaleY = node.scaleY();
-  //           node.scaleX(1);
-  //           node.scaleY(1);
-  //           onChange({
-  //             ...item,
-  //             x: node.x(),
-  //             y: node.y(),
-  //             rotate,
-  //             width: Math.max(5, node.width() * scaleX),
-  //             height: Math.max(node.height() * scaleY),
-  //           });
-  //         }
-  //       }}
-  //       onTransformEnd={(e) => {
-  //         const rotate = e.target.rotation();
-  //         if (shapeRef?.current) {
-  //           const node = shapeRef.current;
-  //           const scaleX = node.scaleX();
-  //           const scaleY = node.scaleY();
-  //           node.scaleX(1);
-  //           node.scaleY(1);
-  //           onChange({
-  //             ...item,
-  //             x: node.x(),
-  //             y: node.y(),
-  //             rotate,
-  //             width: Math.max(5, node.width() * scaleX),
-  //             height: Math.max(node.height() * scaleY),
-  //           });
-  //         }
-  //       }}
-  //     />
-  //     {isSelected && (
-  //       <Transformer
-  //         ref={trRef as MutableRefObject<Konva.Transformer>}
-  //         // keepRatio={false}
-  //         // enabledAnchors={["middle-right", "middle-left"]}
-  //         // enabledAnchors={[
-  //         //   "top-left",
-  //         //   "top-right",
-  //         //   "bottom-left",
-  //         //   "bottom-right",
-  //         // ]}
-  //         boundBoxFunc={(oldBox, newBox) => {
-  //           if (newBox.width < 5 || newBox.height < 5) {
-  //             return oldBox;
-  //           }
-  //           return newBox;
-  //         }}
-  //       />
-  //     )}
-  //   </>
-  // );
-};
+  useEffect(() => {
+    setBox(item.shape);
+  }, [item.shape]);
 
-export default AtomEditorElementBox;
+  return (
+    <>
+      <Valid isValid={isSelected}>
+        <PortalConfigShape
+          isSelected={isSelected}
+          setShape={setBox}
+          shape={box}
+        />
+      </Valid>
+      <Line
+        id={box?.id}
+        x={x}
+        y={y}
+        width={width}
+        fillEnabled={fillEnabled ?? true}
+        height={height}
+        rotationDeg={rotate}
+        shadowColor={shadowColor}
+        closed={closed ?? false}
+        shadowOpacity={shadowOpacity}
+        shadowOffsetX={shadowOffsetX}
+        shadowOffsetY={shadowOffsetY}
+        shadowBlur={shadowBlur}
+        lineCap={lineCap}
+        lineJoin={lineJoin}
+        strokeEnabled={strokeEnabled ?? true}
+        points={points ?? [5, 70, 140, 23]}
+        globalCompositeOperation="source-over"
+        shadowEnabled={shadowEnabled ?? true}
+        dashEnabled={dashEnabled ?? true}
+        dash={[dash, dash, dash, dash]}
+        cornerRadius={borderRadius}
+        fill={backgroundColor}
+        ref={shapeRef as MutableRefObject<Konva.Line>}
+        draggable={draggable}
+        stroke={stroke}
+        strokeWidth={strokeWidth}
+        onClick={(e) => setBox(shapeEventClick(e, onClick))}
+        onDragStart={(e) => setBox(ShapeEventDragStart(e, onDragStart))}
+        onDragMove={(e) =>
+          setBox(shapeEventDragMove(e, onDragMove, screenWidth, screenHeight))
+        }
+        onDragEnd={(e) => setBox(shapeEventDragStop(e, onDragStop))}
+        onTransform={(e) => {
+          setBox(shapeEventDragMove(e, onDragMove, screenWidth, screenHeight));
+        }}
+        onTransformEnd={(e) => setBox(shapeTransformEnd(e, onDragStop))}
+      />
+      <Transform isSelected={isSelected} ref={trRef} />
+    </>
+  );
+});
