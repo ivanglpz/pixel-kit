@@ -40,26 +40,39 @@ export const ExportStage = () => {
       setloading(true);
       const childrenToDestroy = ref?.current
         ?.getStage?.()
-        ?.children?.[1].children.filter?.(
-          (child) => child.attrs.id === "transformer-editable"
-        );
+        ?.children?.[
+          img?.base64?.length ? 2 : 1
+        ].children.filter?.((child) => child.attrs.id === "transformer-editable");
       childrenToDestroy?.forEach?.((child) => {
         child?.destroy?.();
       });
 
       await new Promise(() => {
         setTimeout(() => {
-          const image = ref?.current?.toDataURL({
-            quality: 1,
-            pixelRatio: formats[format as keyof typeof formats],
-            ...calculateDimension(width, height, img?.width, img?.height),
-          });
-          if (!image) return;
-          downloadBase64Image(
-            image,
-            `pixel-kit-edition-${uuidv4()?.slice(0, 4)}.jpg`
-          );
-          setloading(false);
+          if (!img?.base64?.length) {
+            const image = ref?.current?.toDataURL({
+              quality: 1,
+              pixelRatio: formats[format as keyof typeof formats],
+            });
+            if (!image) return;
+            downloadBase64Image(
+              image,
+              `pixel-kit-edition-${uuidv4()?.slice(0, 4)}.jpg`
+            );
+            setloading(false);
+          } else {
+            const image = ref?.current?.toDataURL({
+              quality: 1,
+              pixelRatio: formats[format as keyof typeof formats],
+              ...calculateDimension(width, height, img?.width, img?.height),
+            });
+            if (!image) return;
+            downloadBase64Image(
+              image,
+              `pixel-kit-edition-${uuidv4()?.slice(0, 4)}.jpg`
+            );
+            setloading(false);
+          }
         }, 100);
       });
     } catch (error) {

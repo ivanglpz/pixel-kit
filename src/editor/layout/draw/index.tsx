@@ -1,14 +1,14 @@
 import { css } from "@stylespixelkit/css";
 import { FC, ReactNode } from "react";
-import ToolsTop from "./Tools";
-import LayoutEditorSidebarLeft from "./left";
-import LayoutEditorSidebarRight from "./right";
+import ToolsTop from "../Tools";
+import LayoutEditorSidebarRight from "../right";
+import { LayoutDrawSidebarLeft } from "./leftSidebar";
 
 type Props = {
   children: ReactNode;
 };
 
-const LayoutPixelEditor: FC<Props> = ({ children }) => {
+export const LayoutPixelEditorDraw: FC<Props> = ({ children }) => {
   return (
     <main
       className={css({
@@ -22,12 +22,10 @@ const LayoutPixelEditor: FC<Props> = ({ children }) => {
         justifyContent: "center",
       })}
     >
-      <LayoutEditorSidebarLeft />
+      <LayoutDrawSidebarLeft />
       <ToolsTop />
       {children}
       <LayoutEditorSidebarRight />
     </main>
   );
 };
-
-export default LayoutPixelEditor;
