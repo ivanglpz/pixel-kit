@@ -7,7 +7,7 @@ import { useBeforeStartDrawing } from "@/editor/states/drawing/useBeforeStartDra
 import { css } from "@stylespixelkit/css";
 
 export const Drawing = () => {
-  const { isDrawing } = useTool();
+  const { isDrawing, tool } = useTool();
   const {
     color,
     handleChangeColor,
@@ -27,7 +27,7 @@ export const Drawing = () => {
     shadowOffsetY,
     closed,
   } = useBeforeStartDrawing();
-  if (!isDrawing) return null;
+  if (!isDrawing && tool !== "LINE") return null;
   return (
     <section
       className={css({
@@ -48,7 +48,7 @@ export const Drawing = () => {
             fontWeight: "bold",
           })}
         >
-          Draw
+          {isDrawing ? "Draw" : "Line"}
         </p>
       </div>
       <div
