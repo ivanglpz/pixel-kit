@@ -1,6 +1,7 @@
 import { Button } from "@/editor/components/button";
 import { InputCheckbox } from "@/editor/components/input-checkbox";
 import PixelKitInputColor from "@/editor/components/input-color";
+import { InputSelect } from "@/editor/components/input-select";
 import { InputSlider } from "@/editor/components/input-slider";
 import { IShape } from "@/editor/shapes/type.shape";
 import { css } from "@stylespixelkit/css";
@@ -47,6 +48,8 @@ export const LayoutShapeConfig = (props: Props) => {
     shadowOpacity,
     closed,
     fontSize,
+    lineCap,
+    lineJoin,
   } = props.shape;
   const onChange = props.onChange;
 
@@ -139,6 +142,51 @@ export const LayoutShapeConfig = (props: Props) => {
           keyInput={`pixel-kit-shape-stroke-${id}-${tool}`}
           color={stroke}
           onChangeColor={(e) => onChange("stroke", e)}
+        />
+        <InputSelect
+          labelText="Line Join"
+          value={lineJoin ?? "round"}
+          onChange={(e) => onChange("lineJoin", e)}
+          options={[
+            {
+              id: `line-join-1-round`,
+              label: "Round",
+              value: "round",
+            },
+            {
+              id: `line-join-2-bevel`,
+              label: "Bevel",
+              value: "bevel",
+            },
+            {
+              id: `line-join-3-miter`,
+              label: "Miter",
+              value: "miter",
+            },
+          ]}
+        />
+
+        <InputSelect
+          labelText="Line Cap"
+          value={lineCap ?? "round"}
+          onChange={(e) => onChange("lineCap", e)}
+          options={[
+            {
+              id: `line-cap-1-round`,
+              label: "Round",
+              value: "round",
+            },
+            {
+              id: `line-cap-2-butt`,
+              label: "Butt",
+              value: "butt",
+            },
+            {
+              id: `line-cap-3-square`,
+              label: "Square",
+              value: "square",
+            },
+          ]}
         />
 
         <InputSlider

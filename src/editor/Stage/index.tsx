@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { FC, ReactNode, useRef } from "react";
-import { Stage } from "react-konva";
+import { Layer, Rect, Stage } from "react-konva";
 import { useEvent, useSelectedShape, useStyleConfig, useTool } from "../hooks";
 import { css } from "@stylespixelkit/css";
 import useScreen from "../hooks/screen";
@@ -57,6 +57,15 @@ const PixelKitStage: FC<Props> = ({ children }) => {
             }
           }}
         >
+          <Layer>
+            <Rect
+              width={width}
+              height={height}
+              x={0}
+              y={0}
+              fill={config.backgroundColor}
+            />
+          </Layer>
           {children}
         </Stage>
       </Valid>

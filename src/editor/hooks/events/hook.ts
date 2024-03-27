@@ -30,7 +30,23 @@ const useEvent = () => {
   const [eventStage, setEventStage] = useState<IStageEvents>("STAGE_IDLE");
 
   const handleMouseDown = (event: KonvaEventObject<MouseEvent>) => {
-    if (isGoingToCreateAShape) {
+    if (tool === "LINE") {
+      setEventStage("STAGE_CREATING_LINE");
+      const { x, y } = stageAbsolutePosition(event);
+      const createStartElement = shapeStart({
+        tool,
+        x: 0,
+        y: 0,
+        ...state,
+        strokeWidth: state.thickness,
+        stroke: state.color,
+        points: [x, y],
+        isWritingNow: false,
+      });
+
+      handleCreateTemporalShape(createStartElement);
+    }
+    if (isGoingToCreateAShape && tool !== "LINE") {
       setEventStage("STAGE_TEMPORAL_CREATING_SHAPE");
       const { x, y } = stageAbsolutePosition(event);
       const createStartElement = shapeStart({
@@ -81,6 +97,22 @@ const useEvent = () => {
       });
       handleUpdateTemporalShape(updateShape);
     }
+    if (eventStage === "STAGE_CREATING_LINE" && temporalShape?.tool) {
+      const { x, y } = stageAbsolutePosition(event);
+      const updateProgressElement = shapeProgressEvent[temporalShape.tool];
+
+      const updateShape = updateProgressElement(x, y, {
+        ...temporalShape,
+        points: [
+          temporalShape?.points?.[0] ?? 0,
+          temporalShape?.points?.[1] ?? 0,
+          x,
+          y,
+        ],
+      });
+
+      handleUpdateTemporalShape(updateShape);
+    }
   };
 
   const handleMouseUp = () => {
@@ -97,6 +129,10 @@ const useEvent = () => {
       setTool("MOVE");
     }
     if (eventStage === "STAGE_IS_DRAWING_NOW" && temporalShape?.id) {
+      handleCreateShape(temporalShape);
+      handleCleanTemporalShape();
+    }
+    if (eventStage === "STAGE_CREATING_LINE" && temporalShape?.id) {
       handleCreateShape(temporalShape);
       handleCleanTemporalShape();
     }

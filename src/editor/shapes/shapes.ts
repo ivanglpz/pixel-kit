@@ -6,6 +6,7 @@ import { ShapeImage } from "./image.shape";
 import { ShapeCircle } from "./circle.shape";
 import { ShapeDraw } from "./drawn.shape";
 import { ShapeText } from "./text.shape";
+import { ShapeLine } from "./line.shape";
 
 export type IMapperElements = {
   [key in IKeyTool]?: MemoExoticComponent<
@@ -17,8 +18,7 @@ export const Shapes: IMapperElements = {
   BOX: ShapeBox,
   TEXT: ShapeText,
   CIRCLE: ShapeCircle,
-  // LINE: AtomElementLine,
+  LINE: ShapeLine,
   IMAGE: ShapeImage,
   DRAW: ShapeDraw,
-  // CODE: AtomCodeElement,
 };

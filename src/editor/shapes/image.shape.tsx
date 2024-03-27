@@ -20,6 +20,25 @@ import {
 } from "./events.shape";
 import { Transform } from "./transformer";
 import { Valid } from "@/components/valid";
+import { useImage } from "react-konva-utils";
+
+function urlToBase64(
+  url: string,
+  callback: (b64: string | ArrayBuffer) => void
+) {
+  fetch(url)
+    .then((response) => response.blob())
+    .then((blob) => {
+      let reader = new FileReader();
+      reader.onloadend = function () {
+        callback(reader.result ?? "");
+      };
+      reader.readAsDataURL(blob);
+    })
+    .catch((error) => {
+      console.error("Error al convertir URL a base64:", error);
+    });
+}
 
 export const ShapeImage = memo((item: IShapeWithEvents) => {
   const {
@@ -58,14 +77,15 @@ export const ShapeImage = memo((item: IShapeWithEvents) => {
   } = image;
 
   const imageInstance = useMemo(() => {
-    const dataImage = new Image();
+    if (src?.includes("data:image")) {
+      const image = new Image();
+      image.src = src;
+      return image;
+    }
 
-    dataImage.src =
-      src?.includes("https") || src?.includes("data:image")
-        ? src
-        : "https://picsum.photos/200/300";
-
-    return dataImage;
+    const image = new Image();
+    urlToBase64(src ?? "", (b64) => (image.src = b64 as string));
+    return image;
   }, [src]);
 
   useEffect(() => {
