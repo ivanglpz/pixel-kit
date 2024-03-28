@@ -9,9 +9,10 @@ const App = ({ Component, pageProps }: AppPropsWithLayout) => {
   return (
     <>
       <SeoComponent
-        title="Pixel Kit"
+        image="/home/editorimages.png"
+        title="Pixel Kit - v1"
         content="pixels, kit, design, editor, react, nextjs"
-        description="Transform ideas into visual masterpieces with Pixel Kit, a potent open-source editing tool. Elevate your creative projects through intuitive design, advanced image editing, and seamless PDF document generation."
+        description="Transform ideas into visual masterpieces with Pixel Kit, a potent open-source editing tool. Elevate your creative projects through intuitive design, advanced image editing."
         url="https://pixel-kit.vercel.app/"
       />
       <Toaster
