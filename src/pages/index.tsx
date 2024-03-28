@@ -6,7 +6,7 @@ import Link from "next/link";
 const modes = [
   {
     id: 1,
-    label: "Image Editing",
+    label: "Image Editor",
     image: "/home/editorimages.png",
     tags: ["draw", "shapes", "images"],
     route: "/editor",
