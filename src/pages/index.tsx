@@ -30,6 +30,8 @@ const Page = () => {
         gap: "lg",
         backgroundColor: "primary",
         height: "100%",
+        alignItems: "center",
+        justifyContent: "center",
       })}
     >
       <section
@@ -40,8 +42,8 @@ const Page = () => {
         })}
       >
         <svg
-          width="30"
-          height="30"
+          width="40"
+          height="40"
           viewBox="0 0 60 60"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
@@ -63,7 +65,7 @@ const Page = () => {
           className={css({
             color: "text",
             fontWeight: "bold",
-            fontSize: "lg",
+            fontSize: "xxlg",
           })}
         >
           Pixel Kit
@@ -88,6 +90,8 @@ const Page = () => {
           flexWrap: "wrap",
           width: "100%",
           gap: "lg",
+          alignItems: "center",
+          justifyContent: "center",
         })}
       >
         {modes.map((e) => (
