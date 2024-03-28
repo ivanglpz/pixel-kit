@@ -27,8 +27,5 @@ const App = ({ Component, pageProps }: AppPropsWithLayout) => {
     </>
   );
 };
-const ComponentApp = dynamic(Promise.resolve(App), {
-  ssr: false,
-});
 
-export default ComponentApp;
+export default App;

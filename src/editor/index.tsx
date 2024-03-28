@@ -1,3 +1,4 @@
+import dynamic from "next/dynamic";
 import useBrowser from "./hooks/useBrowser/hook";
 import useStopZoom from "./hooks/useStopZoom/hook";
 import { PixelKitLayers } from "./layers";
@@ -15,5 +16,8 @@ const PixelEditor = () => {
     </LayoutPixelEditor>
   );
 };
+const ComponentApp = dynamic(Promise.resolve(PixelEditor), {
+  ssr: false,
+});
 
-export default PixelEditor;
+export default ComponentApp;
