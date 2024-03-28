@@ -1,4 +1,4 @@
-import { PixelEditorDraw } from "@/editor/draw";
+import PixelEditorDraw from "@/editor/draw";
 import { NextOnlyPage } from "next";
 
 const PageEditor: NextOnlyPage = () => {
