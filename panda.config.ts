@@ -16,6 +16,9 @@ export default defineConfig({
     extend: {},
     tokens: {
       fontSizes: {
+        xlg: { value: "18px" },
+        xxlg: { value: "22px" },
+        xxxlg: { value: "26px" },
         lg: { value: "larger" },
         md: { value: "medium" },
         sm: {
@@ -40,6 +43,9 @@ export default defineConfig({
           value: "6px",
         },
         lg: { value: "12px" },
+        xlg: { value: "18px" },
+        xxlg: { value: "22px" },
+        xxxlg: { value: "26px" },
       },
       radii: {
         sm: { value: "8px" },
