@@ -6,21 +6,20 @@ type Props = {
   title: string;
   description: string;
   url: string;
-  image?: string;
+  image: string;
   content: string;
 };
 
 const googleAnalytics = `${process.env.NEXT_PUBLIC_GOOGLE_ANALYTIS}`;
+
 const urlAnalytics = `https://www.googletagmanager.com/gtag/js?id=${googleAnalytics}`;
-const defaultImage =
-  "https://res.cloudinary.com/whil/image/upload/v1701621980/app/pixel-kit/images/tnzrsjyst8zrf7gs91eu.png";
 
 const SeoComponent: FC<Props> = ({
   title,
   content,
   description,
   url,
-  image = defaultImage,
+  image,
 }) => {
   return (
     <>
@@ -40,12 +39,14 @@ const SeoComponent: FC<Props> = ({
 
         <link rel="icon" type="image/png" href={`/icon-pixel-kit.png`} />
         <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
+        <meta httpEquiv="Content-Type" content="text/html;charset=UTF-8" />
+        <meta httpEquiv="X-UA-Compatible" content="IE=7" />
+        <meta httpEquiv="X-UA-Compatible" content="ie=edge" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <link rel="manifest" href="/manifest.json" />
         <meta name="description" content={description} />
         <link rel="canonical" href={url} />
         <meta name="keywords" content={content} />
-
         {/* Googlebot settings */}
         <meta name="googlebot" content="index,follow" />
 
@@ -81,6 +82,7 @@ const SeoComponent: FC<Props> = ({
           }
         `}
         </script>
+        {/* Add more Open Graph and Twitter meta tags if needed, e.g., for additional social sharing features. */}
       </Head>
     </>
   );
