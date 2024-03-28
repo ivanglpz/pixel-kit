@@ -2,11 +2,13 @@
 
 @import url("./fonts.css");
 @import url("./editor/fonts.css");
-
+@import url("./effects.css");
 body {
   display: flex;
-  height: 100vh;
+  height: 100%;
+  width: 100%;
   min-height: 100vh;
+  min-width: 100vw;
   cursor: url("/cursors/default.png"), auto;
   box-sizing: border-box;
   font-family: "Plus Jakarta Sans", sans-serif;
@@ -27,4 +29,24 @@ body {
 }
 .CursorDefault {
   cursor: url("/cursors/default.png"), auto;
+}
+* {
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    box-shadow: inset 0 0 5px grey;
+    border-radius: 10px;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #ffffff67;
+    border-radius: 99px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    width: 6px;
+    height: 6px;
+    background: "white";
+    box-shadow: 0 0 2px 1px rgba(0, 0, 0, 0.2);
+  }
 }
