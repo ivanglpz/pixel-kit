@@ -8,9 +8,6 @@ type TExtendBrowser = Navigator & {
 
 const isBrave = () => {
   const broswer: TExtendBrowser = window.navigator;
-  if (broswer?.brave != undefined) {
-    return broswer?.brave?.isBrave?.name == "isBrave";
-  }
-  return false;
+  return broswer?.brave?.isBrave?.name == "isBrave";
 };
 export default isBrave;
