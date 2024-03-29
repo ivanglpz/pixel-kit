@@ -27,6 +27,9 @@ export const ImageConfiguration = () => {
         });
       };
 
+      if (inputRef.current) {
+        inputRef.current.value = "";
+      }
       image.src = reader?.result as string;
     };
     reader.readAsDataURL(file);
@@ -97,18 +100,6 @@ export const ImageConfiguration = () => {
                   {img?.name}
                 </p>
               ) : null}
-              <input
-                ref={inputRef}
-                type="file"
-                color="white"
-                accept="image/*"
-                onChange={handleFiles}
-                className={css({
-                  backgroundColor: "red",
-                  width: 0,
-                  height: 0,
-                })}
-              />
             </div>
           </main>,
           document.body
