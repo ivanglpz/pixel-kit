@@ -39,12 +39,15 @@ const useShapes = () => {
     });
   }, []);
 
+  const handleResetShapes = () => setShapes({});
+
   return {
     shapes,
     handleCreateShape,
     handleDeleteShapeInShapes,
     handleDeleteManyShapesInShapes,
     handleUpdateShape,
+    handleResetShapes,
   };
 };
 

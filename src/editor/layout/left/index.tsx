@@ -2,8 +2,13 @@ import { FC } from "react";
 import { css } from "@stylespixelkit/css";
 import { ImageConfiguration } from "./image";
 import { ExportStage } from "../right/export";
+import { useConfiguration } from "@/editor/hooks/useConfiguration";
+import { Valid } from "@/components/valid";
 
 const LayoutEditorSidebarLeft: FC = () => {
+  const {
+    config: { showFilesBrowser },
+  } = useConfiguration();
   return (
     <aside
       className={css({
@@ -19,7 +24,9 @@ const LayoutEditorSidebarLeft: FC = () => {
         gap: "lg",
       })}
     >
-      <ImageConfiguration />
+      <Valid isValid={showFilesBrowser}>
+        <ImageConfiguration />
+      </Valid>
       <ExportStage />
     </aside>
   );

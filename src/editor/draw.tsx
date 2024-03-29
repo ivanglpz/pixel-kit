@@ -4,10 +4,14 @@ import useStopZoom from "./hooks/useStopZoom/hook";
 import { PixelKitLayers } from "./layers";
 import { LayoutPixelEditorDraw } from "./layout/draw";
 import PixelKitStage from "./Stage";
+import { useConfiguration } from "./hooks/useConfiguration";
 
 const Component = () => {
   useStopZoom();
   useBrowser();
+  useConfiguration({
+    type: "FREE_DRAW",
+  });
   return (
     <LayoutPixelEditorDraw>
       <PixelKitStage>

@@ -1,9 +1,9 @@
-import { useStyleConfig } from "@/editor/hooks";
+import { useCanvas } from "@/editor/hooks";
 import { css } from "@stylespixelkit/css";
 import { FC } from "react";
 
 const StageConfig: FC = () => {
-  const { config, handleConfig } = useStyleConfig();
+  const { config, handleConfig } = useCanvas();
 
   return (
     <div
