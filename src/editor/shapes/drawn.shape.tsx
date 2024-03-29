@@ -4,7 +4,6 @@ import { memo, MutableRefObject, useEffect, useRef, useState } from "react";
 import { Line } from "react-konva";
 import { IShapeWithEvents } from "./type.shape";
 import { PortalConfigShape } from "./config.shape";
-import { KonvaEventObject } from "konva/lib/Node";
 import {
   shapeEventClick,
   shapeEventDragMove,

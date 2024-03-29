@@ -20,7 +20,6 @@ import {
 } from "./events.shape";
 import { Transform } from "./transformer";
 import { Valid } from "@/components/valid";
-import { useImage } from "react-konva-utils";
 
 function urlToBase64(
   url: string,

@@ -2,7 +2,6 @@ import Konva from "konva";
 import { MutableRefObject, memo, useEffect, useRef, useState } from "react";
 import { Rect } from "react-konva";
 import { IShapeWithEvents } from "./type.shape";
-import { KonvaEventObject } from "konva/lib/Node";
 import { PortalConfigShape } from "./config.shape";
 import {
   shapeEventClick,
