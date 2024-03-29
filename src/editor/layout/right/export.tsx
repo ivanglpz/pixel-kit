@@ -3,9 +3,11 @@ import { InputSelect } from "@/editor/components/input-select";
 import { useImageRender } from "@/editor/hooks/image/hook";
 import { useReference } from "@/editor/hooks/reference";
 import useScreen from "@/editor/hooks/screen";
+import { useConfiguration } from "@/editor/hooks/useConfiguration";
 import { calculateDimension } from "@/utils/calculateDimension";
 import { css } from "@stylespixelkit/css";
-import { useState } from "react";
+import { Stage } from "konva/lib/Stage";
+import { RefObject, useState } from "react";
 import { toast } from "sonner";
 import { v4 as uuidv4 } from "uuid";
 
@@ -26,58 +28,65 @@ function downloadBase64Image(base64String: string, filename: string) {
   document.body.removeChild(link);
 }
 
+const destroyTransforms = (
+  ref: RefObject<Stage> | undefined,
+  position: 1 | 2
+) => {
+  const childrenToDestroy = ref?.current
+    ?.getStage?.()
+    ?.children?.[
+      position
+    ].children.filter?.((child) => child.attrs.id === "transformer-editable");
+  childrenToDestroy?.forEach?.((child) => {
+    child?.destroy?.();
+  });
+};
+
 export const ExportStage = () => {
   const { ref } = useReference({ type: "STAGE" });
+  const { config } = useConfiguration();
   const { img } = useImageRender();
   const [loading, setloading] = useState(false);
   const { height, width } = useScreen();
   const [format, setformat] = useState("HIGH");
 
   const handleExport = async () => {
-    try {
-      toast.info("Your image is exporting...");
-
-      setloading(true);
-      const childrenToDestroy = ref?.current
-        ?.getStage?.()
-        ?.children?.[
-          img?.base64?.length ? 2 : 1
-        ].children.filter?.((child) => child.attrs.id === "transformer-editable");
-      childrenToDestroy?.forEach?.((child) => {
-        child?.destroy?.();
-      });
-
+    toast.info("Your image is exporting...");
+    setloading(true);
+    if (config.exportMode === "FULL_SCREEN") {
+      destroyTransforms(ref, 1);
       await new Promise(() => {
         setTimeout(() => {
-          if (!img?.base64?.length) {
-            const image = ref?.current?.toDataURL({
-              quality: 1,
-              pixelRatio: formats[format as keyof typeof formats],
-            });
-            if (!image) return;
-            downloadBase64Image(
-              image,
-              `pixel-kit-edition-${uuidv4()?.slice(0, 4)}.jpg`
-            );
-            setloading(false);
-          } else {
-            const image = ref?.current?.toDataURL({
-              quality: 1,
-              pixelRatio: formats[format as keyof typeof formats],
-              ...calculateDimension(width, height, img?.width, img?.height),
-            });
-            if (!image) return;
-            downloadBase64Image(
-              image,
-              `pixel-kit-edition-${uuidv4()?.slice(0, 4)}.jpg`
-            );
-            setloading(false);
-          }
+          const image = ref?.current?.toDataURL({
+            quality: 1,
+            pixelRatio: formats[format as keyof typeof formats],
+          });
+          if (!image) return;
+          downloadBase64Image(
+            image,
+            `pixel-kit-edition-${uuidv4()?.slice(0, 4)}.jpg`
+          );
+          setloading(false);
         }, 100);
       });
-    } catch (error) {
-      toast.error("Please import a image");
-      setloading(false);
+    }
+    if (config.exportMode === "ONLY_IMAGE") {
+      destroyTransforms(ref, 2);
+      await new Promise(() => {
+        setTimeout(() => {
+          const image = ref?.current?.toDataURL({
+            quality: 1,
+            pixelRatio: formats[format as keyof typeof formats],
+            ...calculateDimension(width, height, img?.width, img?.height),
+          });
+          if (!image) return;
+          downloadBase64Image(
+            image,
+            `pixel-kit-edition-${uuidv4()?.slice(0, 4)}.jpg`
+          );
+          setloading(false);
+        }, 100);
+      });
     }
   };
   return (

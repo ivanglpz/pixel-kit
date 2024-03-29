@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { FC, ReactNode, useRef } from "react";
+import { FC, ReactNode, useEffect, useRef } from "react";
 import { Layer, Rect, Stage } from "react-konva";
-import { useEvent, useSelectedShape, useStyleConfig, useTool } from "../hooks";
+import { useEvent, useSelectedShape, useCanvas, useTool } from "../hooks";
 import { css } from "@stylespixelkit/css";
 import useScreen from "../hooks/screen";
 import { useReference } from "../hooks/reference";
@@ -12,23 +12,63 @@ type Props = {
   children: ReactNode;
 };
 
-const PixelKitStage: FC<Props> = ({ children }) => {
+export const StageRender = ({ children }: Props) => {
   const ref = useRef<Konva.Stage>(null);
-  useReference({
+
+  const { config } = useCanvas();
+  const { handleCleanShapeSelected } = useSelectedShape();
+  const { handleMouseDown, handleMouseUp, handleMouseMove } = useEvent();
+  const { tool, setTool } = useTool();
+  const { height, width } = useScreen();
+  const { handleSetRef } = useReference({
     type: "STAGE",
     ref,
   });
+  useEffect(() => {
+    if (ref?.current) {
+      handleSetRef({
+        type: "STAGE",
+        ref,
+      });
+    }
+  }, [height, width, ref]);
 
-  const { handleMouseDown, handleMouseUp, handleMouseMove } = useEvent();
-  const { config } = useStyleConfig();
-  const { height, ref: divRef, show, width } = useScreen();
-  const { handleCleanShapeSelected } = useSelectedShape();
+  return (
+    <Stage
+      ref={ref}
+      width={width}
+      height={height}
+      onMouseDown={handleMouseDown}
+      onMousemove={handleMouseMove}
+      onMouseup={handleMouseUp}
+      onClick={(e) => {
+        if (!e.target?.attrs?.id && tool !== "DRAW") {
+          handleCleanShapeSelected();
+          setTool("MOVE");
+        }
+      }}
+    >
+      <Layer>
+        <Rect
+          width={width}
+          height={height}
+          x={0}
+          y={0}
+          fill={config.backgroundColor}
+        />
+      </Layer>
+      {children}
+    </Stage>
+  );
+};
 
-  const { tool, setTool } = useTool();
+const PixelKitStage: FC<Props> = ({ children }) => {
+  const { ref, show } = useScreen();
+  const { config } = useCanvas();
 
   return (
     <main
-      ref={divRef}
+      ref={ref}
       id="StageViewer"
       className={`CursorDefault ${css({
         width: "100vw",
@@ -43,31 +83,7 @@ const PixelKitStage: FC<Props> = ({ children }) => {
       }}
     >
       <Valid isValid={show}>
-        <Stage
-          ref={ref}
-          width={width}
-          height={height}
-          onMouseDown={handleMouseDown}
-          onMousemove={handleMouseMove}
-          onMouseup={handleMouseUp}
-          onClick={(e) => {
-            if (!e.target?.attrs?.id && tool !== "DRAW") {
-              handleCleanShapeSelected();
-              setTool("MOVE");
-            }
-          }}
-        >
-          <Layer>
-            <Rect
-              width={width}
-              height={height}
-              x={0}
-              y={0}
-              fill={config.backgroundColor}
-            />
-          </Layer>
-          {children}
-        </Stage>
+        <StageRender>{children}</StageRender>
       </Valid>
       <Valid isValid={!show}>
         <p
