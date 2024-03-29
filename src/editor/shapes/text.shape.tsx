@@ -3,7 +3,6 @@ import Konva from "konva";
 import { memo, MutableRefObject, useEffect, useRef, useState } from "react";
 import { Text } from "react-konva";
 import { IShapeWithEvents } from "./type.shape";
-import { KonvaEventObject } from "konva/lib/Node";
 import {
   shapeEventClick,
   shapeEventDragMove,

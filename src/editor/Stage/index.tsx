@@ -22,7 +22,7 @@ const PixelKitStage: FC<Props> = ({ children }) => {
   const { handleMouseDown, handleMouseUp, handleMouseMove } = useEvent();
   const { config } = useStyleConfig();
   const { height, ref: divRef, show, width } = useScreen();
-  const { handleCleanShapeSelected, shapeSelected } = useSelectedShape();
+  const { handleCleanShapeSelected } = useSelectedShape();
 
   const { tool, setTool } = useTool();
 

@@ -11,7 +11,6 @@ import {
   shapeTransformEnd,
 } from "./events.shape";
 import { Transform } from "./transformer";
-import { KonvaEventObject } from "konva/lib/Node";
 import { PortalConfigShape } from "./config.shape";
 import { Valid } from "@/components/valid";
 

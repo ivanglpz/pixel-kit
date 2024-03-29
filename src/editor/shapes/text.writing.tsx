@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction, useEffect } from "react";
+import { Dispatch, SetStateAction } from "react";
 import { IShape } from "./type.shape";
 import { Html } from "react-konva-utils";
 import { createPortal } from "react-dom";
