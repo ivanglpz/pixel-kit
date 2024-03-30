@@ -71,8 +71,8 @@ const PixelKitStage: FC<Props> = ({ children }) => {
       ref={ref}
       id="StageViewer"
       className={`CursorDefault ${css({
-        width: "100vw",
-        height: "100vh",
+        width: "80vw",
+        height: "80vh",
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
