@@ -47,6 +47,7 @@ export const ShapeText = memo((item: IShapeWithEvents) => {
     backgroundColor,
     borderRadius,
     fillEnabled,
+    fontWeight,
     shadowEnabled,
     strokeEnabled,
     dash,
@@ -94,7 +95,7 @@ export const ShapeText = memo((item: IShapeWithEvents) => {
         y={y}
         width={width}
         fontFamily="Plus Jakarta Sans"
-        // fontVariant="bold"
+        fontVariant={fontWeight ?? "normal"}
         visible={!box.isWritingNow}
         text={box.text}
         fillEnabled={fillEnabled ?? true}

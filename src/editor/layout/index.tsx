@@ -20,6 +20,7 @@ const LayoutPixelEditor: FC<Props> = ({ children }) => {
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
+        backgroundColor: "black",
       })}
     >
       <LayoutEditorSidebarLeft />

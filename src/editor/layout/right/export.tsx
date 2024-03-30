@@ -105,7 +105,7 @@ export const ExportStage = () => {
     >
       <p
         className={css({
-          fontSize: "md",
+          fontSize: "sm",
           color: "text",
           fontWeight: "bold",
         })}

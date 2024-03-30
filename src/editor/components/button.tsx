@@ -23,7 +23,11 @@ export const Button = ({ onClick, text, isLoading = false }: Props) => {
         padding: "md",
         color: "text",
         textAlign: "center",
-        fontSize: "sm",
+        fontSize: "x-small",
+        _hover: {
+          backgroundColor: "secondary",
+          cursor: "pointer",
+        },
       })}
       disabled={isLoading}
       onClick={onClick}
