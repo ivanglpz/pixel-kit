@@ -1,5 +1,7 @@
+import { Valid } from "@/components/valid";
 import { Button } from "@/editor/components/button";
 import { InputSelect } from "@/editor/components/input-select";
+import { InputText } from "@/editor/components/input-text";
 import { useImageRender } from "@/editor/hooks/image/hook";
 import { useReference } from "@/editor/hooks/reference";
 import useScreen from "@/editor/hooks/screen";
@@ -7,6 +9,7 @@ import { useConfiguration } from "@/editor/hooks/useConfiguration";
 import { calculateDimension } from "@/utils/calculateDimension";
 import { css } from "@stylespixelkit/css";
 import { Stage } from "konva/lib/Stage";
+import Link from "next/link";
 import { RefObject, useState } from "react";
 import { toast } from "sonner";
 import { v4 as uuidv4 } from "uuid";
@@ -19,9 +22,9 @@ const formats = {
   ULTRA_HIGH: 3.5,
 };
 
-function downloadBase64Image(base64String: string, filename: string) {
+function downloadBase64Image(base64String: string) {
   var link = document.createElement("a");
-  link.download = filename;
+  link.download = `pixel-kit-edition-${uuidv4()?.slice(0, 4)}.jpg`;
   link.href = base64String;
   document.body.appendChild(link);
   link.click();
@@ -51,7 +54,26 @@ export const ExportStage = () => {
   const [format, setformat] = useState("HIGH");
 
   const handleExport = async () => {
-    toast.info("Your image is exporting...");
+    toast.success("Thank you very much for using pixel kit!", {
+      description: (
+        <div>
+          <p>
+            Your edition is exporting. If you want to know more about pixel kit
+            you can follow me on{" "}
+            <Link
+              href={"https://twitter.com/ivanglpz"}
+              target="_blank"
+              className={css({
+                textDecoration: "underline",
+              })}
+            >
+              Twitter(X)
+            </Link>
+          </p>
+        </div>
+      ),
+    });
+
     setloading(true);
     if (config.exportMode === "FULL_SCREEN") {
       destroyTransforms(ref, 1);
@@ -62,10 +84,7 @@ export const ExportStage = () => {
             pixelRatio: formats[format as keyof typeof formats],
           });
           if (!image) return;
-          downloadBase64Image(
-            image,
-            `pixel-kit-edition-${uuidv4()?.slice(0, 4)}.jpg`
-          );
+          downloadBase64Image(image);
           setloading(false);
         }, 100);
       });
@@ -74,17 +93,27 @@ export const ExportStage = () => {
       destroyTransforms(ref, 2);
       await new Promise(() => {
         setTimeout(() => {
-          const image = ref?.current?.toDataURL({
+          const base64String = ref?.current?.toDataURL({
             quality: 1,
             pixelRatio: formats[format as keyof typeof formats],
             ...calculateDimension(width, height, img?.width, img?.height),
           });
-          if (!image) return;
-          downloadBase64Image(
-            image,
-            `pixel-kit-edition-${uuidv4()?.slice(0, 4)}.jpg`
-          );
-          setloading(false);
+          if (!base64String) return;
+
+          const canvas = document.createElement("canvas");
+          const ctx = canvas.getContext("2d");
+          canvas.width = img.width;
+          canvas.height = img.height;
+
+          const image = new Image();
+          image.onload = () => {
+            ctx?.drawImage(image, 0, 0, img.width, img.height);
+
+            downloadBase64Image(canvas.toDataURL("image/png", 1));
+            setloading(false);
+          };
+
+          image.src = base64String;
         }, 100);
       });
     }
@@ -117,6 +146,7 @@ export const ExportStage = () => {
           display: "flex",
           flexDirection: "column",
           width: "100%",
+          gap: "md",
         })}
       >
         <InputSelect
@@ -151,6 +181,13 @@ export const ExportStage = () => {
           onChange={(e) => setformat(e)}
           value={format}
         />
+        <Valid isValid={config?.exportMode === "ONLY_IMAGE"}>
+          <InputText
+            labelText="Resolution"
+            value={`${img.width}x${img?.height}`}
+            onChange={() => {}}
+          />
+        </Valid>
       </div>
       <Button text="Export" onClick={handleExport} isLoading={loading}></Button>
     </div>
