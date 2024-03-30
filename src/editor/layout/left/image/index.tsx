@@ -56,6 +56,8 @@ export const ImageConfiguration = () => {
                 padding: "lg",
                 display: "flex",
                 flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
                 gap: "lg",
                 backgroundColor: "primary",
                 borderRadius: "lg",
@@ -110,6 +112,7 @@ export const ImageConfiguration = () => {
           padding: "lg",
           display: "flex",
           flexDirection: "column",
+          justifyContent: "space-between",
           gap: "lg",
           backgroundColor: "primary",
           borderRadius: "lg",
@@ -118,7 +121,7 @@ export const ImageConfiguration = () => {
       >
         <p
           className={css({
-            fontSize: "md",
+            fontSize: "sm",
             color: "text",
             fontWeight: "bold",
           })}
@@ -139,7 +142,7 @@ export const ImageConfiguration = () => {
           text="Browser Files"
           onClick={() => inputRef.current?.click()}
         />
-        {img?.name ? (
+        <Valid isValid={Boolean(img?.name?.length)}>
           <p
             className={css({
               fontSize: "x-small",
@@ -147,11 +150,14 @@ export const ImageConfiguration = () => {
               fontWeight: "normal",
               fontStyle: "italic",
               opacity: 0.7,
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
             })}
           >
             {img?.name}
           </p>
-        ) : null}
+        </Valid>
         <input
           ref={inputRef}
           type="file"
@@ -162,6 +168,7 @@ export const ImageConfiguration = () => {
             backgroundColor: "red",
             width: 0,
             height: 0,
+            display: "none",
           })}
         />
       </div>

@@ -56,6 +56,7 @@ export const PortalTextWriting = ({ shape, isSelected, setShape }: Props) => {
                     Number(shape.height) > 100 ? shape.height + "px" : "100px",
                   resize: "none",
                   background: "transparent",
+                  fontWeight: shape?.fontWeight ?? "normal",
                   fontSize: shape.fontSize + "px",
                   border: `1px solid ${tokens.colors.blue}`,
                   padding: "0px",
@@ -65,6 +66,9 @@ export const PortalTextWriting = ({ shape, isSelected, setShape }: Props) => {
                   textAlign: "left",
                   color: shape.backgroundColor ?? "white",
                   lineHeight: 1.45,
+                  textShadow: shape.shadowEnabled
+                    ? `${shape.shadowOffsetX}px ${shape.shadowOffsetY}px  #000`
+                    : "none",
                 }}
                 value={shape.text ?? ""}
                 onChange={(e) => {

@@ -30,7 +30,7 @@ export type IShape = {
   fontStyle?: string;
   fontFamily?: string;
   textDecoration?: string;
-  fontWeight?: number;
+  fontWeight?: "bold" | "normal" | "lighter" | "bolder" | "100" | "900";
   shadowBlur?: number;
   shadowColor?: string;
   shadowOffsetX?: number;
