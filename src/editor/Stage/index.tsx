@@ -77,6 +77,15 @@ const PixelKitStage: FC<Props> = ({ children }) => {
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
+        // 1440
+        "@media(max-width:1440px)": {
+          width: "70vw",
+          height: "70vh",
+        },
+        "@media(max-width:1024px)": {
+          width: "60vw",
+          height: "60vh",
+        },
       })}`}
       style={{
         backgroundColor: config.backgroundColor,
