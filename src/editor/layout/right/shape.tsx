@@ -50,6 +50,7 @@ export const LayoutShapeConfig = (props: Props) => {
     fontSize,
     lineCap,
     lineJoin,
+    fontWeight,
   } = props.shape;
   const onChange = props.onChange;
 
@@ -185,6 +186,43 @@ export const LayoutShapeConfig = (props: Props) => {
               id: `line-cap-3-square`,
               label: "Square",
               value: "square",
+            },
+          ]}
+        />
+        <InputSelect
+          labelText="Font Weight"
+          value={fontWeight ?? "normal"}
+          onChange={(e) => onChange("fontWeight", e)}
+          options={[
+            {
+              id: `font-weight-lighter`,
+              label: "Lighter",
+              value: "lighter",
+            },
+            {
+              id: `font-weight-normal`,
+              label: "Normal",
+              value: "normal",
+            },
+            {
+              id: `font-weight-medium`,
+              label: "Medium",
+              value: "500",
+            },
+            {
+              id: `font-weight-semi-bold`,
+              label: "Semi Bold",
+              value: "600",
+            },
+            {
+              id: `font-weight-bold`,
+              label: "Bold",
+              value: "bold",
+            },
+            {
+              id: `font-weight-bolder`,
+              label: "Bolder",
+              value: "bolder",
             },
           ]}
         />
