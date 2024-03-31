@@ -56,14 +56,14 @@ export const ImageConfiguration = () => {
                 padding: "lg",
                 display: "flex",
                 flexDirection: "column",
-                alignItems: "center",
-                justifyContent: "center",
+                alignItems: "flex-start",
+                justifyContent: "space-around",
                 gap: "lg",
                 backgroundColor: "primary",
                 borderRadius: "lg",
                 border: "container",
-                width: 200,
-                height: 130,
+                width: 300,
+                height: 180,
               })}
             >
               <p
@@ -73,7 +73,7 @@ export const ImageConfiguration = () => {
                   fontWeight: "bold",
                 })}
               >
-                Please enter a image
+                Welcome to image editing mode.
               </p>
               <p
                 className={css({
@@ -83,7 +83,7 @@ export const ImageConfiguration = () => {
                   opacity: 0.7,
                 })}
               >
-                Only accept images...
+                Please upload an image for editing before proceeding.
               </p>
               <Button
                 text="Browser Files"
@@ -107,71 +107,20 @@ export const ImageConfiguration = () => {
           document.body
         )}
       </Valid>
-      <div
+      <Button text="Change Image" onClick={() => inputRef.current?.click()} />
+      <input
+        ref={inputRef}
+        type="file"
+        color="white"
+        accept="image/*"
+        onChange={handleFiles}
         className={css({
-          padding: "lg",
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "space-between",
-          gap: "lg",
-          backgroundColor: "primary",
-          borderRadius: "lg",
-          border: "container",
+          backgroundColor: "red",
+          width: 0,
+          height: 0,
+          display: "none",
         })}
-      >
-        <p
-          className={css({
-            fontSize: "sm",
-            color: "text",
-            fontWeight: "bold",
-          })}
-        >
-          Files
-        </p>
-        <p
-          className={css({
-            fontSize: "sm",
-            color: "text",
-            fontWeight: "normal",
-            opacity: 0.7,
-          })}
-        >
-          Only accept images...
-        </p>
-        <Button
-          text="Browser Files"
-          onClick={() => inputRef.current?.click()}
-        />
-        <Valid isValid={Boolean(img?.name?.length)}>
-          <p
-            className={css({
-              fontSize: "x-small",
-              color: "text",
-              fontWeight: "normal",
-              fontStyle: "italic",
-              opacity: 0.7,
-              whiteSpace: "nowrap",
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-            })}
-          >
-            {img?.name}
-          </p>
-        </Valid>
-        <input
-          ref={inputRef}
-          type="file"
-          color="white"
-          accept="image/*"
-          onChange={handleFiles}
-          className={css({
-            backgroundColor: "red",
-            width: 0,
-            height: 0,
-            display: "none",
-          })}
-        />
-      </div>
+      />
     </>
   );
 };

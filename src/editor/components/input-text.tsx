@@ -5,9 +5,15 @@ type Props = {
   value: string;
   onChange: (value: string) => void;
   labelText?: string;
+  disable?: boolean;
 };
 
-export const InputText = ({ onChange, value, labelText }: Props) => {
+export const InputText = ({
+  onChange,
+  value,
+  labelText,
+  disable = false,
+}: Props) => {
   return (
     <div
       className={css({
@@ -32,6 +38,7 @@ export const InputText = ({ onChange, value, labelText }: Props) => {
         type="text"
         value={value}
         onChange={(event) => onChange(event.target.value)}
+        disabled={disable}
         className={css({
           width: "auto",
           border: "container",

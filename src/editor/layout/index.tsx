@@ -1,19 +1,34 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { css } from "@stylespixelkit/css";
-import { FC, ReactNode } from "react";
+import { FC, ReactNode, useEffect, useRef } from "react";
 import ToolsTop from "./Tools";
-import LayoutEditorSidebarLeft from "./left";
 import LayoutEditorSidebarRight from "./right";
+import { useReference } from "../hooks/reference";
 
 type Props = {
   children: ReactNode;
 };
 
 const LayoutPixelEditor: FC<Props> = ({ children }) => {
+  const constraintsRef = useRef(null);
+
+  const { handleSetRef } = useReference({
+    type: "CONTAINER",
+    ref: constraintsRef,
+  });
+
+  useEffect(() => {
+    handleSetRef({
+      type: "CONTAINER",
+      ref: constraintsRef,
+    });
+  }, [constraintsRef]);
+
   return (
     <main
       className={css({
-        minHeight: "100vh",
-        minWidth: "100vw",
+        height: "100vh",
+        width: "100vw",
         position: "relative",
         overflow: "hidden",
         display: "flex",
@@ -23,10 +38,29 @@ const LayoutPixelEditor: FC<Props> = ({ children }) => {
         backgroundColor: "black",
       })}
     >
-      <LayoutEditorSidebarLeft />
-      <ToolsTop />
-      {children}
-      <LayoutEditorSidebarRight />
+      <div
+        className={css({
+          width: "98%",
+          height: "97%",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+        })}
+      >
+        <ToolsTop />
+        <div
+          className={css({
+            height: "100%",
+            width: "100%",
+            position: "relative",
+          })}
+          ref={constraintsRef}
+        >
+          <LayoutEditorSidebarRight />
+          {children}
+        </div>
+      </div>
     </main>
   );
 };

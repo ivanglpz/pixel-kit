@@ -3,16 +3,14 @@ import { IKeyTool } from "@/editor/hooks/tool/types";
 import { FC } from "react";
 import icons from "@/assets/index";
 import { css } from "@stylespixelkit/css";
+import LayoutEditorSidebarLeft from "./left";
 
 const METHODS = [
   {
     icon: icons.cursor,
     keyMethod: "MOVE",
   },
-  // {
-  //   icon: icons.group,
-  //   keyMethod: "EXPORT",
-  // },
+
   {
     icon: icons.box,
     keyMethod: "BOX",
@@ -51,18 +49,14 @@ const ToolsTop: FC = () => {
     <div
       className={css({
         padding: "lg",
-        position: "absolute",
-        zIndex: 9,
-        top: 5,
         backgroundColor: "primary",
         display: "flex",
-        flexDirection: "column",
+        flexDirection: "row",
         alignItems: "center",
-        justifyContent: "center",
-        borderRadius: "lg",
+        justifyContent: "flex-start",
+        // borderRadius: "lg",
         width: "100%",
-        maxWidth: "17rem",
-        gap: "md",
+        gap: "lg",
         border: "container",
       })}
     >
@@ -70,36 +64,67 @@ const ToolsTop: FC = () => {
         className={css({
           display: "flex",
           flexDirection: "row",
-          width: "100%",
           alignItems: "center",
           justifyContent: "center",
+          gap: "md",
         })}
       >
         <svg
-          width="20"
-          height="20"
-          viewBox="0 0 60 60"
+          width="34"
+          height="34"
+          viewBox="0 0 34 34"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
         >
-          <mask id="path-1-inside-1_865_433" fill="white">
-            <path d="M43.5714 11H49V27.2857H43.5714V16.4286H16.4286V43.5714H27.2857V49H11V11H43.5714ZM32.7143 38.1429V32.7143H49V38.1429H43.5714V43.5714H38.1429V49H32.7143V38.1429ZM43.5714 43.5714V49H49V43.5714H43.5714Z" />
+          <rect
+            x="0.5"
+            y="0.5"
+            width="33"
+            height="33"
+            rx="3.5"
+            fill="#252727"
+          />
+          <rect
+            x="0.5"
+            y="0.5"
+            width="33"
+            height="33"
+            rx="3.5"
+            stroke="#555555"
+          />
+          <mask
+            id="mask0_50_334"
+            // style="mask-type:luminance"
+            style={{
+              maskType: "luminance",
+            }}
+            maskUnits="userSpaceOnUse"
+            x="10"
+            y="10"
+            width="14"
+            height="14"
+          >
+            <path
+              d="M22 10H24V16H22V12H12V22H16V24H10V10H22ZM18 20V18H24V20H22V22H20V24H18V20ZM22 22V24H24V22H22Z"
+              fill="white"
+            />
           </mask>
-          <path
-            d="M43.5714 11H49V27.2857H43.5714V16.4286H16.4286V43.5714H27.2857V49H11V11H43.5714ZM32.7143 38.1429V32.7143H49V38.1429H43.5714V43.5714H38.1429V49H32.7143V38.1429ZM43.5714 43.5714V49H49V43.5714H43.5714Z"
-            fill="black"
-          />
-          <path
-            d="M49 11H86V-26H49V11ZM49 27.2857V64.2857H86V27.2857H49ZM43.5714 27.2857H6.57143V64.2857H43.5714V27.2857ZM43.5714 16.4286H80.5714V-20.5714H43.5714V16.4286ZM16.4286 16.4286V-20.5714H-20.5714V16.4286H16.4286ZM16.4286 43.5714H-20.5714V80.5714H16.4286V43.5714ZM27.2857 43.5714H64.2857V6.57143H27.2857V43.5714ZM27.2857 49V86H64.2857V49H27.2857ZM11 49H-26V86H11V49ZM11 11V-26H-26V11H11ZM32.7143 32.7143V-4.28571H-4.28571V32.7143H32.7143ZM49 32.7143H86V-4.28571H49V32.7143ZM49 38.1429V75.1429H86V38.1429H49ZM43.5714 38.1429V1.14286H6.57143V38.1429H43.5714ZM38.1429 43.5714V6.57143H1.14286V43.5714H38.1429ZM38.1429 49V86H75.1429V49H38.1429ZM32.7143 49H-4.28571V86H32.7143V49ZM43.5714 49H6.57143V86H43.5714V49ZM49 49V86H86V49H49ZM49 43.5714H86V6.57143H49V43.5714ZM43.5714 48H49V-26H43.5714V48ZM12 11V27.2857H86V11H12ZM49 -9.71429H43.5714V64.2857H49V-9.71429ZM80.5714 27.2857V16.4286H6.57143V27.2857H80.5714ZM43.5714 -20.5714H16.4286V53.4286H43.5714V-20.5714ZM-20.5714 16.4286V43.5714H53.4286V16.4286H-20.5714ZM16.4286 80.5714H27.2857V6.57143H16.4286V80.5714ZM-9.71429 43.5714V49H64.2857V43.5714H-9.71429ZM27.2857 12H11V86H27.2857V12ZM48 49V11H-26V49H48ZM11 48H43.5714V-26H11V48ZM69.7143 38.1429V32.7143H-4.28571V38.1429H69.7143ZM32.7143 69.7143H49V-4.28571H32.7143V69.7143ZM12 32.7143V38.1429H86V32.7143H12ZM49 1.14286H43.5714V75.1429H49V1.14286ZM6.57143 38.1429V43.5714H80.5714V38.1429H6.57143ZM43.5714 6.57143H38.1429V80.5714H43.5714V6.57143ZM1.14286 43.5714V49H75.1429V43.5714H1.14286ZM38.1429 12H32.7143V86H38.1429V12ZM69.7143 49V38.1429H-4.28571V49H69.7143ZM6.57143 43.5714V49H80.5714V43.5714H6.57143ZM43.5714 86H49V12H43.5714V86ZM86 49V43.5714H12V49H86ZM49 6.57143H43.5714V80.5714H49V6.57143Z"
-            fill="white"
-            mask="url(#path-1-inside-1_865_433)"
-          />
+          <g mask="url(#mask0_50_334)">
+            <path
+              d="M24 9.99999H37.6316V-3.63159H24V9.99999ZM24 16V29.6316H37.6316V16H24ZM22 16H8.36841V29.6316H22V16ZM22 12H35.6316V-1.63158H22V12ZM12 12V-1.63158H-1.63158V12H12ZM12 22H-1.63158V35.6316H12V22ZM16 22H29.6316V8.36841H16V22ZM16 24V37.6316H29.6316V24H16ZM9.99999 24H-3.63159V37.6316H9.99999V24ZM9.99999 9.99999V-3.63159H-3.63159V9.99999H9.99999ZM18 18V4.36841H4.36841V18H18ZM24 18H37.6316V4.36841H24V18ZM24 20V33.6316H37.6316V20H24ZM22 20V6.36841H8.36841V20H22ZM20 22V8.36841H6.36841V22H20ZM20 24V37.6316H33.6316V24H20ZM18 24H4.36841V37.6316H18V24ZM22 24H8.36841V37.6316H22V24ZM24 24V37.6316H37.6316V24H24ZM24 22H37.6316V8.36841H24V22ZM22 23.6316H24V-3.63159H22V23.6316ZM10.3684 9.99999V16H37.6316V9.99999H10.3684ZM24 2.36841H22V29.6316H24V2.36841ZM35.6316 16V12H8.36841V16H35.6316ZM22 -1.63158H12V25.6316H22V-1.63158ZM-1.63158 12V22H25.6316V12H-1.63158ZM12 35.6316H16V8.36841H12V35.6316ZM2.36841 22V24H29.6316V22H2.36841ZM16 10.3684H9.99999V37.6316H16V10.3684ZM23.6316 24V9.99999H-3.63159V24H23.6316ZM9.99999 23.6316H22V-3.63159H9.99999V23.6316ZM31.6316 20V18H4.36841V20H31.6316ZM18 31.6316H24V4.36841H18V31.6316ZM10.3684 18V20H37.6316V18H10.3684ZM24 6.36841H22V33.6316H24V6.36841ZM8.36841 20V22H35.6316V20H8.36841ZM22 8.36841H20V35.6316H22V8.36841ZM6.36841 22V24H33.6316V22H6.36841ZM20 10.3684H18V37.6316H20V10.3684ZM31.6316 24V20H4.36841V24H31.6316ZM8.36841 22V24H35.6316V22H8.36841ZM22 37.6316H24V10.3684H22V37.6316ZM37.6316 24V22H10.3684V24H37.6316ZM24 8.36841H22V35.6316H24V8.36841Z"
+              fill="white"
+            />
+          </g>
         </svg>
+
         <p
           className={css({
             color: "text",
             fontWeight: "bold",
-            fontSize: "smaller",
+            fontSize: "md",
+            "@media(max-width:605px)": {
+              display: "none",
+            },
           })}
         >
           Pixel Kit
@@ -137,6 +162,16 @@ const ToolsTop: FC = () => {
             </button>
           );
         })}
+      </section>
+      <section
+        className={css({
+          display: "flex",
+          flexDirection: "row",
+          width: "200px",
+          gap: "lg",
+        })}
+      >
+        <LayoutEditorSidebarLeft />
       </section>
     </div>
   );
