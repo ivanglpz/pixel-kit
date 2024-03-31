@@ -63,6 +63,10 @@ export const Drawing = () => {
           _hover: {
             overflowY: "scroll",
           },
+          "@media(max-width:768px)": {
+            overflowY: "scroll",
+            overflow: "scroll",
+          },
         })} scrollbar_container`}
       >
         <InputCheckbox
