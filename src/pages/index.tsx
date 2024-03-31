@@ -474,7 +474,10 @@ const Page = () => {
             width: "100%",
             display: "flex",
             flexDirection: "row",
+            flexWrap: "wrap",
+            justifyContent: "space-between",
             padding: "0px 30px",
+            gap: "xlg",
           })}
         >
           <section
@@ -482,7 +485,9 @@ const Page = () => {
               display: "flex",
               flexDirection: "column",
               alignItems: "flex-start",
+              flexWrap: "wrap",
               gap: "lg",
+              flexGrow: 1,
             })}
           >
             <Logo />
@@ -503,6 +508,43 @@ const Page = () => {
               © {new Date().getFullYear()} A division of Ivan Garcia. All
               rights reserved
             </p>
+          </section>
+          <section
+            className={css({
+              display: "flex",
+              flexDirection: "row",
+              gap: "lg",
+              alignItems: "flex-end",
+            })}
+          >
+            <Link href="https://twitter.com/ivanglpz" target="_blank">
+              <svg
+                width="28"
+                height="26"
+                viewBox="0 0 28 26"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M22.0512 0H26.3445L16.9645 11.0146L28 26H19.3597L12.593 16.9102L4.84867 26H0.553L10.5863 14.2183L0 0.0011986H8.85967L14.9765 8.3095L22.0512 0ZM20.545 23.3608H22.9238L7.567 2.50136H5.01433L20.545 23.3608Z"
+                  fill="white"
+                />
+              </svg>
+            </Link>
+            <Link href="https://www.linkedin.com/in/ivanglpz/" target="_blank">
+              <svg
+                width="26"
+                height="26"
+                viewBox="0 0 26 26"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M23.1111 0C23.8773 0 24.6121 0.304364 25.1539 0.846136C25.6956 1.38791 26 2.12271 26 2.88889V23.1111C26 23.8773 25.6956 24.6121 25.1539 25.1539C24.6121 25.6956 23.8773 26 23.1111 26H2.88889C2.12271 26 1.38791 25.6956 0.846136 25.1539C0.304364 24.6121 0 23.8773 0 23.1111V2.88889C0 2.12271 0.304364 1.38791 0.846136 0.846136C1.38791 0.304364 2.12271 0 2.88889 0H23.1111ZM22.3889 22.3889V14.7333C22.3889 13.4845 21.8928 12.2867 21.0097 11.4036C20.1266 10.5206 18.9289 10.0244 17.68 10.0244C16.4522 10.0244 15.0222 10.7756 14.3289 11.9022V10.2989H10.2989V22.3889H14.3289V15.2678C14.3289 14.1556 15.2244 13.2456 16.3367 13.2456C16.873 13.2456 17.3874 13.4586 17.7666 13.8379C18.1458 14.2171 18.3589 14.7315 18.3589 15.2678V22.3889H22.3889ZM5.60444 8.03111C6.24804 8.03111 6.86527 7.77545 7.32036 7.32036C7.77545 6.86527 8.03111 6.24804 8.03111 5.60444C8.03111 4.26111 6.94778 3.16333 5.60444 3.16333C4.95702 3.16333 4.33612 3.42052 3.87832 3.87832C3.42052 4.33612 3.16333 4.95702 3.16333 5.60444C3.16333 6.94778 4.26111 8.03111 5.60444 8.03111ZM7.61222 22.3889V10.2989H3.61111V22.3889H7.61222Z"
+                  fill="white"
+                />
+              </svg>
+            </Link>
           </section>
         </div>
       </footer>

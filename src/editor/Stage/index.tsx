@@ -7,6 +7,7 @@ import useScreen from "../hooks/screen";
 import { useReference } from "../hooks/reference";
 import Konva from "konva";
 import { Valid } from "@/components/valid";
+import { KonvaEventObject } from "konva/lib/Node";
 
 type Props = {
   children: ReactNode;
@@ -41,6 +42,13 @@ export const StageRender = ({ children }: Props) => {
       onMouseDown={handleMouseDown}
       onMousemove={handleMouseMove}
       onMouseup={handleMouseUp}
+      onTouchStart={(e) =>
+        handleMouseDown(e as unknown as KonvaEventObject<MouseEvent>)
+      }
+      onTouchMove={(e) =>
+        handleMouseMove(e as unknown as KonvaEventObject<MouseEvent>)
+      }
+      onTouchEnd={handleMouseUp}
       onClick={(e) => {
         if (!e.target?.attrs?.id && tool !== "DRAW") {
           handleCleanShapeSelected();
