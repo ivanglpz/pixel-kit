@@ -11,6 +11,7 @@ import { css } from "@stylespixelkit/css";
 import { Stage } from "konva/lib/Stage";
 import Link from "next/link";
 import { RefObject, useState } from "react";
+import { createPortal } from "react-dom";
 import { toast } from "sonner";
 import { v4 as uuidv4 } from "uuid";
 
@@ -52,6 +53,7 @@ export const ExportStage = () => {
   const [loading, setloading] = useState(false);
   const { height, width } = useScreen();
   const [format, setformat] = useState("HIGH");
+  const [showExport, setShowExport] = useState(false);
 
   const handleExport = async () => {
     toast.success("Thank you very much for using pixel kit!", {
@@ -119,77 +121,120 @@ export const ExportStage = () => {
     }
   };
   return (
-    <div
-      className={css({
-        padding: "lg",
-        display: "flex",
-        flexDirection: "column",
-        gap: "lg",
-        backgroundColor: "primary",
-        borderRadius: "lg",
-        border: "container",
-        alignItems: "flex-start",
-        justifyContent: "center",
-      })}
-    >
-      <p
-        className={css({
-          fontSize: "sm",
-          color: "text",
-          fontWeight: "bold",
-        })}
-      >
-        Export
-      </p>
-      <div
-        className={css({
-          display: "flex",
-          flexDirection: "column",
-          width: "100%",
-          gap: "md",
-        })}
-      >
-        <InputSelect
-          labelText="Format Quality"
-          options={[
-            {
-              id: "1",
-              label: "Low",
-              value: "LOW",
-            },
-            {
-              id: "2",
-              label: "Medium",
-              value: "MEDIUM",
-            },
-            {
-              id: "3",
-              label: "High",
-              value: "HIGH",
-            },
-            {
-              id: "4",
-              label: "Big High",
-              value: "BIG_HIGH",
-            },
-            {
-              id: "4",
-              label: "Ultra High",
-              value: "ULTRA_HIGH",
-            },
-          ]}
-          onChange={(e) => setformat(e)}
-          value={format}
-        />
-        <Valid isValid={config?.exportMode === "ONLY_IMAGE"}>
-          <InputText
-            labelText="Resolution"
-            value={`${img.width}x${img?.height}`}
-            onChange={() => {}}
-          />
-        </Valid>
-      </div>
-      <Button text="Export" onClick={handleExport} isLoading={loading}></Button>
-    </div>
+    <>
+      <Valid isValid={showExport}>
+        {createPortal(
+          <main
+            className={css({
+              position: "absolute",
+              top: 0,
+              zIndex: 9999,
+              width: "100%",
+              height: "100%",
+              backgroundColor: "rgba(0,0,0,0.5)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            })}
+            onClick={() => setShowExport(false)}
+          >
+            <div
+              className={css({
+                padding: "lg",
+                display: "flex",
+                flexDirection: "column",
+                gap: "lg",
+                backgroundColor: "primary",
+                borderRadius: "lg",
+                border: "container",
+                alignItems: "flex-start",
+                justifyContent: "space-between",
+                width: 320,
+                minHeight: 280,
+              })}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <p
+                className={css({
+                  fontSize: "sm",
+                  color: "text",
+                  fontWeight: "bold",
+                })}
+              >
+                Export
+              </p>
+              <p
+                className={css({
+                  color: "text",
+                  fontSize: "sm",
+                  opacity: 0.7,
+                })}
+              >
+                Export your edit to the quality you prefer the most.
+              </p>
+              <div
+                className={css({
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "space-between",
+                  width: "100%",
+                  height: "100%",
+                  flex: 1,
+                  gap: "md",
+                })}
+              >
+                <InputSelect
+                  labelText="Format Quality"
+                  options={[
+                    {
+                      id: "1",
+                      label: "Low",
+                      value: "LOW",
+                    },
+                    {
+                      id: "2",
+                      label: "Medium",
+                      value: "MEDIUM",
+                    },
+                    {
+                      id: "3",
+                      label: "High",
+                      value: "HIGH",
+                    },
+                    {
+                      id: "4",
+                      label: "Big High",
+                      value: "BIG_HIGH",
+                    },
+                    {
+                      id: "4",
+                      label: "Ultra High",
+                      value: "ULTRA_HIGH",
+                    },
+                  ]}
+                  onChange={(e) => setformat(e)}
+                  value={format}
+                />
+                <Valid isValid={config?.exportMode === "ONLY_IMAGE"}>
+                  <InputText
+                    labelText="Resolution"
+                    value={`${img.width}x${img?.height}`}
+                    onChange={() => {}}
+                    disable
+                  />
+                </Valid>
+                <Button
+                  text="Export Now"
+                  onClick={() => handleExport()}
+                  isLoading={loading}
+                ></Button>
+              </div>
+            </div>
+          </main>,
+          document.body
+        )}
+      </Valid>
+      <Button text="Export" onClick={() => setShowExport(true)}></Button>
+    </>
   );
 };
