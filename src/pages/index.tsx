@@ -276,7 +276,7 @@ const Page = () => {
               display: "flex",
               flexDirection: "row",
               flexWrap: "nowrap",
-              justifyContent: "space-around",
+              justifyContent: "center",
               gap: "xxlg",
               alignItems: "flex-end",
               width: "100%",
@@ -285,9 +285,9 @@ const Page = () => {
             <img
               src="/landing/4.png"
               className={css({
-                flexGrow: 1,
+                width: "250px",
                 "@media(max-width:1158px)": {
-                  width: "250px",
+                  width: "190px",
                 },
                 "@media(max-width:1040px)": {
                   display: "none",
@@ -298,15 +298,15 @@ const Page = () => {
               src="/landing/1.png"
               className={css({
                 objectFit: "contain",
-                flexGrow: 1,
+                width: "420px",
               })}
             />
             <img
               src="/landing/5.png"
               className={css({
-                flexGrow: 1,
+                width: "250px",
                 "@media(max-width:1158px)": {
-                  width: "250px",
+                  width: "190px",
                 },
                 "@media(max-width:1040px)": {
                   display: "none",
