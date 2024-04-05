@@ -12,6 +12,8 @@ type Props = {
 
 const googleAnalytics = `${process.env.NEXT_PUBLIC_GOOGLE_ANALYTIS}`;
 
+const googleVerification = `${process.env.NEXT_PUBLIC_GOOGLE_VERIFICATION}`;
+
 const urlAnalytics = `https://www.googletagmanager.com/gtag/js?id=${googleAnalytics}`;
 
 const SeoComponent: FC<Props> = ({
@@ -49,6 +51,7 @@ const SeoComponent: FC<Props> = ({
         <meta name="keywords" content={content} />
         {/* Googlebot settings */}
         <meta name="googlebot" content="index,follow" />
+        <meta name="google-site-verification" content={googleVerification} />
 
         {/* Open Graph and Twitter meta tags for social sharing */}
         <meta property="og:locale" content="es_ES" />
