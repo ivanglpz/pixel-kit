@@ -1,5 +1,6 @@
 /* eslint-disable jsx-a11y/alt-text */
 /* eslint-disable @next/next/no-img-element */
+import SeoComponent from "@/components/seo";
 import { css } from "@stylespixelkit/css";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -8,14 +9,16 @@ const modes = [
   {
     id: 1,
     label: "Image Editor",
-    image: "/landing/2.png",
+    image:
+      "https://res.cloudinary.com/whil/image/upload/v1712285934/app/pixel-kit/images/ejhubphvcmnj5duxiyna.png",
     tags: ["draw", "shapes", "images"],
     route: "/editor",
   },
   {
     id: 2,
     label: "Free Drawing",
-    image: "/landing/3.png",
+    image:
+      "https://res.cloudinary.com/whil/image/upload/v1712285934/app/pixel-kit/images/mlaf3hmbnhsdk8go034a.png",
     tags: ["draw", "shapes", "images", "text"],
     route: "/draw",
   },
@@ -208,6 +211,13 @@ const Page = () => {
         alignItems: "center",
       })}
     >
+      <SeoComponent
+        image="https://res.cloudinary.com/whil/image/upload/v1712286761/app/pixel-kit/images/eeackp0gyfsgatxd5htg.png"
+        title="Pixel Kit Editing Tools"
+        content="Edit, Enhance, Photos, Pixel Kit, Photo editing app, User-friendly interface, Advanced filters, Powerful editing tools, Transform, Retouch, Customize, Download, Unleash your creativity"
+        description="Edit and enhance your photos with Pixel Kit. Elevate your images with our user-friendly interface and powerful editing tools."
+        url="https://pixel-kit.vercel.app/"
+      />
       <div
         className={css({
           maxWidth: "1440px",
@@ -255,8 +265,8 @@ const Page = () => {
                 },
               })}
             >
-              Unleash your creativity with
-              <br /> our high-quality image editing.
+              Elevate your images with our user-friendly <br /> interface and
+              powerful editing tools.
             </h1>
             <button
               className={css({
@@ -283,7 +293,7 @@ const Page = () => {
             })}
           >
             <img
-              src="/landing/4.png"
+              src="https://res.cloudinary.com/whil/image/upload/v1712285934/app/pixel-kit/images/mqmdepb3bj8adqxusir4.png"
               className={css({
                 width: "250px",
                 "@media(max-width:1158px)": {
@@ -295,14 +305,14 @@ const Page = () => {
               })}
             />
             <img
-              src="/landing/1.png"
+              src="https://res.cloudinary.com/whil/image/upload/v1712285934/app/pixel-kit/images/akasjodi5noa2vaxqncp.png"
               className={css({
                 objectFit: "contain",
                 width: "420px",
               })}
             />
             <img
-              src="/landing/5.png"
+              src="https://res.cloudinary.com/whil/image/upload/v1712285934/app/pixel-kit/images/psh56yoaa2xdccg8zgbd.png"
               className={css({
                 width: "250px",
                 "@media(max-width:1158px)": {
