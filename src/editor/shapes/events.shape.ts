@@ -68,7 +68,11 @@ export const shapeEventDragStop =
     return payload;
   };
 export const shapeEventClick =
-  (evt: KonvaEventObject<MouseEvent>, onClick: Click) => (prev: IShape) => {
+  (
+    evt: KonvaEventObject<MouseEvent> | KonvaEventObject<Event>,
+    onClick: Click
+  ) =>
+  (prev: IShape) => {
     onClick(prev);
     return prev;
   };

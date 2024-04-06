@@ -118,6 +118,7 @@ export const ShapeText = memo((item: IShapeWithEvents) => {
         lineHeight={1.45}
         stroke={stroke}
         strokeWidth={strokeWidth}
+        onTap={(e) => setBox(shapeEventClick(e, onClick))}
         onDblClick={(e) => {
           setBox((prev) => ({
             ...prev,
