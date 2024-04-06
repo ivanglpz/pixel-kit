@@ -33,7 +33,7 @@ function createSitemaps(paths: string[], props: Options) {
   const xmls = sitemaps?.map((paths) => {
     const urlset = paths
       .map((path) => {
-        return `<url><loc>${ENDPOINT_URL}${path}</loc><lastmod>${lastmod}</lastmod><changefreq>${changefreq}</changefreq><priority>${path === "/" ? 1 : priority}</priority></url>`;
+        return `<url><loc>${ENDPOINT_URL}${path}</loc><lastmod>${lastmod}</lastmod><changefreq>${changefreq}</changefreq><priority>${path === "/" ? 1.0 : priority}</priority></url>`;
       })
       .join("");
     return START_SITEMAP_URLSET + urlset + END_SITEMAP_URLSET;
