@@ -100,6 +100,7 @@ const ShapeBox = memo((item: IShapeWithEvents) => {
         draggable={draggable}
         stroke={stroke}
         strokeWidth={strokeWidth}
+        onTap={(e) => setBox(shapeEventClick(e, onClick))}
         onClick={(e) => setBox(shapeEventClick(e, onClick))}
         onDragStart={(e) => setBox(ShapeEventDragStart(e, onDragStart))}
         onDragMove={(e) =>

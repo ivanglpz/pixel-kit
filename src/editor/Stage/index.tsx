@@ -55,6 +55,12 @@ export const StageRender = ({ children }: Props) => {
           setTool("MOVE");
         }
       }}
+      onTap={(e) => {
+        if (!e.target?.attrs?.id && tool !== "DRAW") {
+          handleCleanShapeSelected();
+          setTool("MOVE");
+        }
+      }}
     >
       <Layer>
         <Rect

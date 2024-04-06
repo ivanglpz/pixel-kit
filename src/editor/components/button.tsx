@@ -1,38 +1,49 @@
 import { Valid } from "@/components/valid";
 import { css } from "@stylespixelkit/css";
+import { ReactNode } from "react";
 
 type Props = {
-  text: string;
+  text?: string;
   onClick: () => void;
   isLoading?: boolean;
+  children?: ReactNode;
+  type?: "normal" | "danger";
+  fullWidth?: boolean;
 };
 
-export const Button = ({ onClick, text, isLoading = false }: Props) => {
+export const Button = ({
+  onClick,
+  text,
+  isLoading = false,
+  children,
+  fullWidth = true,
+  type = "normal",
+}: Props) => {
   return (
     <button
       type="button"
       className={css({
-        width: "100%",
+        width: fullWidth ? "100%" : "auto",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
         borderWidth: 1,
         borderStyle: "solid",
-        borderColor: "secondary",
+        borderColor: type === "danger" ? "danger" : "secondary",
         borderRadius: "md",
         padding: "md",
         color: "text",
         textAlign: "center",
         fontSize: "x-small",
         _hover: {
-          backgroundColor: "secondary",
+          backgroundColor: type === "danger" ? "danger" : "secondary",
           cursor: "pointer",
         },
       })}
       disabled={isLoading}
       onClick={onClick}
     >
-      <Valid isValid={!isLoading}>{text}</Valid>
+      <Valid isValid={!isLoading}>{text ?? children}</Valid>
       <Valid isValid={isLoading}>
         <div className="lds-ring">
           <div></div>

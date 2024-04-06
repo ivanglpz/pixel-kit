@@ -59,6 +59,7 @@ export default defineConfig({
           value: "#0d0e0e",
         },
         secondary: { value: "rgb(0, 153, 255)" },
+        danger: { value: "#bb2124" },
         text: {
           value: "white",
         },

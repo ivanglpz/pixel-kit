@@ -137,6 +137,7 @@ export const ShapeImage = memo((item: IShapeWithEvents) => {
         stroke={stroke}
         strokeWidth={strokeWidth}
         image={imageInstance}
+        onTap={(e) => setImage(shapeEventClick(e, onClick))}
         onClick={(e) => setImage(shapeEventClick(e, onClick))}
         onDragStart={(e) => setImage(ShapeEventDragStart(e, onDragStart))}
         onDragMove={(e) =>
