@@ -1,4 +1,5 @@
-import { Dispatch, SetStateAction } from "react";
+/* eslint-disable react-hooks/exhaustive-deps */
+import { Dispatch, SetStateAction, useEffect, useRef } from "react";
 import { IShape } from "./type.shape";
 import { Html } from "react-konva-utils";
 import { createPortal } from "react-dom";
@@ -18,6 +19,22 @@ export const PortalTextWriting = ({ shape, isSelected, setShape }: Props) => {
     type: "STAGE",
   });
   const stage = ref?.current;
+  const adjustTextareaHeight = () => {
+    if (textareaRef.current) {
+      const textarea = textareaRef.current;
+      textarea.style.height = "auto";
+      const newHeight = textarea.scrollHeight;
+      setShape((prev) => ({
+        ...prev,
+        height: newHeight,
+      }));
+      textarea.style.height = `${newHeight}px`;
+    }
+  };
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  useEffect(() => {
+    adjustTextareaHeight();
+  }, [shape?.text, textareaRef]);
 
   if (!shape?.isWritingNow || !isSelected || !stage) return null;
 
@@ -25,7 +42,6 @@ export const PortalTextWriting = ({ shape, isSelected, setShape }: Props) => {
     x: stage?.container().offsetLeft + shape.x,
     y: stage?.container().offsetTop + shape.y,
   };
-
   const sidebarElement = document.getElementById("StageViewer");
 
   return (
@@ -42,6 +58,7 @@ export const PortalTextWriting = ({ shape, isSelected, setShape }: Props) => {
         ? createPortal(
             <>
               <textarea
+                ref={textareaRef}
                 autoFocus
                 onFocus={() => {
                   setTool("WRITING");
@@ -72,6 +89,7 @@ export const PortalTextWriting = ({ shape, isSelected, setShape }: Props) => {
                 }}
                 value={shape.text ?? ""}
                 onChange={(e) => {
+                  adjustTextareaHeight();
                   setShape((prev) => ({
                     ...prev,
                     text: e.target.value,
