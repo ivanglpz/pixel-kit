@@ -10,6 +10,7 @@ type Config = {
   showFilesBrowser: boolean;
   backgroundColor: string;
   showCanvasConfig: boolean;
+  showClipImageConfig: boolean;
 };
 
 type Keys = "EDIT_IMAGE" | "FREE_DRAW";
@@ -21,6 +22,7 @@ const configs: { [key in Keys]: Config } = {
     showFilesBrowser: true,
     backgroundColor: "#212121",
     showCanvasConfig: false,
+    showClipImageConfig: true,
   },
   FREE_DRAW: {
     showPreviewImage: false,
@@ -28,6 +30,7 @@ const configs: { [key in Keys]: Config } = {
     exportMode: "FULL_SCREEN",
     backgroundColor: "#ffffff",
     showCanvasConfig: true,
+    showClipImageConfig: false,
   },
 };
 

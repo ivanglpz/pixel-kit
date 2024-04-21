@@ -8,6 +8,7 @@ import { motion, useDragControls } from "framer-motion";
 
 import { DragControls } from "framer-motion";
 import { useReference } from "@/editor/hooks/reference";
+import { Clip } from "./clip";
 
 interface Props {
   dragControls: DragControls;
@@ -158,6 +159,9 @@ const LayoutEditorSidebarRight: FC = () => {
           <StageConfig />
         </Valid>
         <Drawing />
+        <Valid isValid={config.showClipImageConfig}>
+          <Clip />
+        </Valid>
       </Valid>
       <div
         id="pixel-kit-sidebar-right"

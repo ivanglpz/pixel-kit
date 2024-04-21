@@ -3,7 +3,7 @@ import { atom, useAtom } from "jotai";
 import Konva from "konva";
 import { RefObject, useEffect } from "react";
 
-type IKType = "STAGE" | "CONTAINER";
+type IKType = "STAGE" | "CONTAINER" | "CLIP";
 
 type IGPayload<T extends IKType, R> = {
   type: T;
@@ -12,7 +12,8 @@ type IGPayload<T extends IKType, R> = {
 
 type IListItems =
   | IGPayload<"STAGE", Konva.Stage>
-  | IGPayload<"CONTAINER", Konva.Stage>;
+  | IGPayload<"CONTAINER", Konva.Stage>
+  | IGPayload<"CLIP", Konva.Group>;
 
 type IPayload = IListItems;
 

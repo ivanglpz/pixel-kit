@@ -15,7 +15,6 @@ export const imageOriginalAtom = atom<typeof initialRenderImage | null>(null);
 export const useImageRender = () => {
   const [img, setImg] = useAtom(imageRenderAtom);
   const [originalImage, setOriginalImage] = useAtom(imageOriginalAtom);
-  console.log({ originalImage });
 
   const handleSetImageRender = (values: typeof initialRenderImage) => {
     setOriginalImage(values);
