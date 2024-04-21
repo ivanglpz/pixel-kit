@@ -122,8 +122,8 @@ const useEvent = () => {
         ...temporalShape,
         isWritingNow: true,
       };
-      handleCreateShape(payload);
       handleSetShapeSelected(payload);
+      handleCreateShape(payload);
       handleCleanTemporalShape();
       setEventStage("STAGE_IDLE");
       setTool("MOVE");

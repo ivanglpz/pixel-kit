@@ -1,8 +1,9 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react/display-name */
 import Konva from "konva";
-import { memo, MutableRefObject, useEffect, useRef, useState } from "react";
+import { memo, MutableRefObject, useEffect, useRef } from "react";
 import { Text } from "react-konva";
-import { IShapeWithEvents } from "./type.shape";
+import { IShape, IShapeWithEvents, WithInitialValue } from "./type.shape";
 import {
   shapeEventClick,
   shapeEventDragMove,
@@ -14,6 +15,7 @@ import { Transform } from "./transformer";
 import { PortalConfigShape } from "./config.shape";
 import { PortalTextWriting } from "./text.writing";
 import { Valid } from "@/components/valid";
+import { PrimitiveAtom, useAtom } from "jotai";
 
 export const ShapeText = memo((item: IShapeWithEvents) => {
   const {
@@ -27,9 +29,9 @@ export const ShapeText = memo((item: IShapeWithEvents) => {
     screenWidth,
   } = item;
 
-  const [box, setBox] = useState(() => {
-    return item.shape;
-  });
+  const [box, setBox] = useAtom(
+    item.shape as PrimitiveAtom<IShape> & WithInitialValue<IShape>
+  );
 
   const {
     width,
@@ -65,13 +67,14 @@ export const ShapeText = memo((item: IShapeWithEvents) => {
         trRef.current?.getLayer()?.batchDraw();
       }
     } else {
-      setBox((prev) => ({ ...prev, isWritingNow: false }));
     }
   }, [isSelected, trRef, shapeRef]);
 
   useEffect(() => {
-    setBox(item.shape);
-  }, [item.shape]);
+    if (!isSelected && box.isWritingNow) {
+      setBox((prev) => ({ ...prev, isWritingNow: false }));
+    }
+  }, [isSelected, box.isWritingNow]);
 
   return (
     <>

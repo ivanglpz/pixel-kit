@@ -4,6 +4,7 @@ import { useMemo } from "react";
 import { FCShapeWEvents } from "../shapes/type.shape";
 import { Shapes } from "../shapes/shapes";
 import useScreen from "../hooks/screen";
+import { atom } from "jotai";
 
 export const LayerPipe = () => {
   const { temporalShape } = useTemporalShape();
@@ -23,7 +24,7 @@ export const LayerPipe = () => {
           screenHeight={height}
           screenWidth={width}
           key={`pixel-kit-temporal-shape-${temporalShape.id}`}
-          shape={temporalShape}
+          shape={atom(temporalShape)}
           draggable={false}
           isSelected={temporalShape?.tool === "TEXT"}
           onClick={() => {}}

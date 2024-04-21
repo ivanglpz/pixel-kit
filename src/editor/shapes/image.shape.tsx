@@ -9,7 +9,7 @@ import {
   useRef,
   useState,
 } from "react";
-import { IShapeWithEvents } from "./type.shape";
+import { IShape, IShapeWithEvents, WithInitialValue } from "./type.shape";
 import { Image as KonvaImage } from "react-konva";
 import { PortalConfigShape } from "./config.shape";
 import {
@@ -20,6 +20,7 @@ import {
 } from "./events.shape";
 import { Transform } from "./transformer";
 import { Valid } from "@/components/valid";
+import { PrimitiveAtom, useAtom } from "jotai";
 
 function urlToBase64(
   url: string,
@@ -48,10 +49,11 @@ export const ShapeImage = memo((item: IShapeWithEvents) => {
     onDragStop,
     screenHeight,
     screenWidth,
+    onDbClick,
   } = item;
-  const [image, setImage] = useState(() => {
-    return item.shape;
-  });
+  const [image, setImage] = useAtom(
+    item.shape as PrimitiveAtom<IShape> & WithInitialValue<IShape>
+  );
   const {
     width,
     height,
@@ -86,10 +88,6 @@ export const ShapeImage = memo((item: IShapeWithEvents) => {
     urlToBase64(src ?? "", (b64) => (image.src = b64 as string));
     return image;
   }, [src]);
-
-  useEffect(() => {
-    setImage(item.shape);
-  }, [item.shape]);
 
   const { isSelected } = item;
   const shapeRef = useRef<Konva.Image>();
@@ -138,6 +136,7 @@ export const ShapeImage = memo((item: IShapeWithEvents) => {
         strokeWidth={strokeWidth}
         image={imageInstance}
         onTap={(e) => setImage(shapeEventClick(e, onClick))}
+        onDblClick={() => onDbClick?.(image)}
         onClick={(e) => setImage(shapeEventClick(e, onClick))}
         onDragStart={(e) => setImage(ShapeEventDragStart(e, onDragStart))}
         onDragMove={(e) =>
