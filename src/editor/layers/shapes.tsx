@@ -27,7 +27,7 @@ export const LayerShapes = () => {
               screenHeight={height}
               screenWidth={width}
               key={`pixel-kit-shapes-${item?.id}`}
-              shape={item}
+              shape={item?.state}
               draggable={!isDrawing && isSelected}
               isSelected={!isDrawing && isSelected}
               onClick={onClick}

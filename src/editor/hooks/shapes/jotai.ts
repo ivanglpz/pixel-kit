@@ -1,8 +1,13 @@
 import { IShape } from "@/editor/shapes/type.shape";
-import { atom } from "jotai";
+import { Atom, atom } from "jotai";
+import { IKeyMethods } from "../tool/types";
 
 type IOBCElement = {
-  [key: string]: IShape;
+  [key: string]: {
+    id: string;
+    tool: IKeyMethods;
+    state: Atom<IShape>;
+  };
 };
 
 const elementsAtom = atom({} as IOBCElement);

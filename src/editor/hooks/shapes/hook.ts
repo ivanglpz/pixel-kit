@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useAtom } from "jotai";
+import { atom, useAtom } from "jotai";
 import { useCallback } from "react";
 import elementsAtom from "./jotai";
 import { IShape } from "@/editor/shapes/type.shape";
@@ -10,7 +10,13 @@ const useShapes = () => {
   const handleCreateShape = useCallback((element: IShape) => {
     if (element?.id) {
       setShapes((prev) => {
-        return Object.assign({}, prev, { [`${element?.id}`]: element });
+        return Object.assign({}, prev, {
+          [`${element?.id}`]: {
+            id: element?.id,
+            tool: element?.tool,
+            state: atom(element),
+          },
+        });
       });
     }
   }, []);

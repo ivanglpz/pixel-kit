@@ -2,7 +2,7 @@
 import Konva from "konva";
 import { memo, MutableRefObject, useEffect, useRef, useState } from "react";
 import { Line } from "react-konva";
-import { IShapeWithEvents } from "./type.shape";
+import { IShape, IShapeWithEvents, WithInitialValue } from "./type.shape";
 import { PortalConfigShape } from "./config.shape";
 import {
   shapeEventClick,
@@ -13,6 +13,7 @@ import {
 } from "./events.shape";
 import { Transform } from "./transformer";
 import { Valid } from "@/components/valid";
+import { PrimitiveAtom, useAtom } from "jotai";
 
 export const ShapeLine = memo((item: IShapeWithEvents) => {
   const {
@@ -26,9 +27,9 @@ export const ShapeLine = memo((item: IShapeWithEvents) => {
     screenWidth,
   } = item;
 
-  const [box, setBox] = useState(() => {
-    return item.shape;
-  });
+  const [box, setBox] = useAtom(
+    item.shape as PrimitiveAtom<IShape> & WithInitialValue<IShape>
+  );
 
   const {
     width,
@@ -67,10 +68,6 @@ export const ShapeLine = memo((item: IShapeWithEvents) => {
       }
     }
   }, [isSelected, trRef, shapeRef]);
-
-  useEffect(() => {
-    setBox(item.shape);
-  }, [item.shape]);
 
   return (
     <>

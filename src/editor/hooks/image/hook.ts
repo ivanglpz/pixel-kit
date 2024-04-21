@@ -10,14 +10,21 @@ const initialRenderImage = {
 };
 
 export const imageRenderAtom = atom(initialRenderImage);
+export const imageOriginalAtom = atom<typeof initialRenderImage | null>(
+  initialRenderImage
+);
 
 export const useImageRender = () => {
   const [img, setImg] = useAtom(imageRenderAtom);
-  const handleSetImageRender = (values: typeof initialRenderImage) =>
+  const [originalImage, setOriginalImage] = useAtom(imageOriginalAtom);
+  const handleSetImageRender = (values: typeof initialRenderImage) => {
+    setOriginalImage(values);
     setImg(values);
+  };
 
   return {
     img,
+    imageCliped: originalImage,
     handleSetImageRender,
   };
 };
