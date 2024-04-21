@@ -6,6 +6,7 @@ import { createPortal } from "react-dom";
 import { useTool } from "../hooks";
 import { useReference } from "../hooks/reference";
 import { tokens } from "../tokens";
+import { Stage } from "konva/lib/Stage";
 
 type Props = {
   setShape: Dispatch<SetStateAction<IShape>>;
@@ -18,7 +19,7 @@ export const PortalTextWriting = ({ shape, isSelected, setShape }: Props) => {
   const { ref } = useReference({
     type: "STAGE",
   });
-  const stage = ref?.current;
+  const stage = ref?.current as Stage;
   const adjustTextareaHeight = () => {
     if (textareaRef.current) {
       const textarea = textareaRef.current;
