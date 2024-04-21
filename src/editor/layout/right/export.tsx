@@ -6,8 +6,10 @@ import { useImageRender } from "@/editor/hooks/image/hook";
 import { useReference } from "@/editor/hooks/reference";
 import useScreen from "@/editor/hooks/screen";
 import { useConfiguration } from "@/editor/hooks/useConfiguration";
+import { showClipAtom } from "@/editor/jotai/clipImage";
 import { calculateDimension } from "@/utils/calculateDimension";
 import { css } from "@stylespixelkit/css";
+import { useSetAtom } from "jotai";
 import { Group } from "konva/lib/Group";
 import { Stage } from "konva/lib/Stage";
 import Link from "next/link";
@@ -55,6 +57,7 @@ export const ExportStage = () => {
   const { height, width } = useScreen();
   const [format, setformat] = useState("HIGH");
   const [showExport, setShowExport] = useState(false);
+  const setshowClip = useSetAtom(showClipAtom);
 
   const handleExport = async () => {
     toast.success("Thank you very much for using pixel kit!", {
@@ -93,6 +96,7 @@ export const ExportStage = () => {
       });
     }
     if (config.exportMode === "ONLY_IMAGE") {
+      setshowClip(false);
       destroyTransforms(ref, 1);
       destroyTransforms(ref, 2);
       await new Promise(() => {
