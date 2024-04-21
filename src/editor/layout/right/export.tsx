@@ -8,6 +8,7 @@ import useScreen from "@/editor/hooks/screen";
 import { useConfiguration } from "@/editor/hooks/useConfiguration";
 import { calculateDimension } from "@/utils/calculateDimension";
 import { css } from "@stylespixelkit/css";
+import { Group } from "konva/lib/Group";
 import { Stage } from "konva/lib/Stage";
 import Link from "next/link";
 import { RefObject, useState } from "react";
@@ -33,7 +34,7 @@ function downloadBase64Image(base64String: string) {
 }
 
 const destroyTransforms = (
-  ref: RefObject<Stage> | undefined,
+  ref: RefObject<Stage> | RefObject<Group> | undefined,
   position: 1 | 2
 ) => {
   const childrenToDestroy = ref?.current
@@ -92,6 +93,7 @@ export const ExportStage = () => {
       });
     }
     if (config.exportMode === "ONLY_IMAGE") {
+      destroyTransforms(ref, 1);
       destroyTransforms(ref, 2);
       await new Promise(() => {
         setTimeout(() => {
