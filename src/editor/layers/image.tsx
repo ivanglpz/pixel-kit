@@ -4,19 +4,22 @@ import { ShapeImage } from "../shapes/image.shape";
 import { useImageRender } from "../hooks/image/hook";
 import useScreen from "../hooks/screen";
 import { calculateDimension } from "@/utils/calculateDimension";
-import { atom } from "jotai";
+import { atom, useAtom, useSetAtom } from "jotai";
 import { MutableRefObject, useEffect, useRef, useState } from "react";
 import { Valid } from "@/components/valid";
 import { IShape } from "../shapes/type.shape";
 import Konva from "konva";
 import { Shape, ShapeConfig } from "konva/lib/Shape";
 
+const showClipAtom = atom(false);
+
 export const LayerImage = () => {
-  const { img } = useImageRender();
+  const { img, handleResetImage } = useImageRender();
   const { height, width } = useScreen();
   const dimension = calculateDimension(width, height, img?.width, img?.height);
-  const [showClip, setshowClip] = useState(false);
+  const [showClip, setshowClip] = useAtom(showClipAtom);
   if (!img?.base64) return null;
+
   return (
     <Layer>
       <ShapeImage
@@ -31,6 +34,7 @@ export const LayerImage = () => {
         onTransformStop={() => {}}
         onDbClick={() => {
           setshowClip(true);
+          handleResetImage();
         }}
         shape={atom({
           ...dimension,
@@ -59,11 +63,13 @@ type ClipProps = {
 };
 
 const ClipComponent = ({ isSelected }: ClipProps) => {
-  const { img } = useImageRender();
+  const { img, handleSetClipImage } = useImageRender();
   const { height, width } = useScreen();
   const dimension = calculateDimension(width, height, img?.width, img?.height);
   const trRef = useRef<Konva.Transformer>(null);
   const shapeRef = useRef<Konva.Rect>(null);
+  const setshowClip = useSetAtom(showClipAtom);
+  const gshRef = useRef<Konva.Group>(null);
 
   const [box, setBox] = useState({
     x: dimension.x,
@@ -125,8 +131,31 @@ const ClipComponent = ({ isSelected }: ClipProps) => {
         width={dimension?.width}
         height={dimension?.height}
         fill="rgba(0,0,0,0.6)"
+        onClick={() => {
+          const base64 = gshRef?.current?.toDataURL({
+            quality: 1,
+            x: box.x,
+            y: box.y,
+            width: box.width,
+            height: box.height,
+          });
+          const image = new Image();
+          image.onload = () => {
+            handleSetClipImage({
+              base64: base64 ?? "",
+              name: "cliped",
+              height: image.height,
+              width: image.width,
+              x: 0,
+              y: 0,
+            });
+            setshowClip(false);
+          };
+          image.src = base64 ?? "";
+        }}
       />
       <Group
+        ref={gshRef}
         clipWidth={box.width}
         clipHeight={box.height}
         clipX={box.x}
