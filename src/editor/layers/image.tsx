@@ -10,8 +10,7 @@ import { Valid } from "@/components/valid";
 import { IShape } from "../shapes/type.shape";
 import Konva from "konva";
 import { Shape, ShapeConfig } from "konva/lib/Shape";
-
-const showClipAtom = atom(false);
+import { showClipAtom } from "../jotai/clipImage";
 
 export const LayerImage = () => {
   const { img, handleResetImage } = useImageRender();
@@ -193,8 +192,10 @@ const ClipComponent = ({ isSelected }: ClipProps) => {
         y={box?.y}
         width={box?.width}
         height={box?.height}
-        // fill="red"
         draggable
+        onDblClick={() => {
+          setshowClip(false);
+        }}
         onDragMove={(e) => {
           let payload = position({
             x: e.target.x(),
