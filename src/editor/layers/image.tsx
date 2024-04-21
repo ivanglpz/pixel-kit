@@ -4,19 +4,20 @@ import { ShapeImage } from "../shapes/image.shape";
 import { useImageRender } from "../hooks/image/hook";
 import useScreen from "../hooks/screen";
 import { calculateDimension } from "@/utils/calculateDimension";
-import { atom, useAtom, useSetAtom } from "jotai";
-import { MutableRefObject, useEffect, useRef, useState } from "react";
+import { atom, useAtom, useAtomValue } from "jotai";
+import { MutableRefObject, useEffect, useRef } from "react";
 import { Valid } from "@/components/valid";
 import { IShape } from "../shapes/type.shape";
 import Konva from "konva";
 import { Shape, ShapeConfig } from "konva/lib/Shape";
-import { showClipAtom } from "../jotai/clipImage";
+import { boxClipAtom, showClipAtom } from "../jotai/clipImage";
+import { useReference } from "../hooks/reference";
 
 export const LayerImage = () => {
-  const { img, handleResetImage } = useImageRender();
+  const { img } = useImageRender();
   const { height, width } = useScreen();
   const dimension = calculateDimension(width, height, img?.width, img?.height);
-  const [showClip, setshowClip] = useAtom(showClipAtom);
+  const showClip = useAtomValue(showClipAtom);
   if (!img?.base64) return null;
 
   return (
@@ -31,10 +32,6 @@ export const LayerImage = () => {
         onDragStart={() => {}}
         onDragStop={() => {}}
         onTransformStop={() => {}}
-        onDbClick={() => {
-          setshowClip(true);
-          handleResetImage();
-        }}
         shape={atom({
           ...dimension,
           id: "main-image-render-stage",
@@ -62,20 +59,19 @@ type ClipProps = {
 };
 
 const ClipComponent = ({ isSelected }: ClipProps) => {
-  const { img, handleSetClipImage } = useImageRender();
+  const { img } = useImageRender();
   const { height, width } = useScreen();
   const dimension = calculateDimension(width, height, img?.width, img?.height);
   const trRef = useRef<Konva.Transformer>(null);
   const shapeRef = useRef<Konva.Rect>(null);
-  const setshowClip = useSetAtom(showClipAtom);
   const gshRef = useRef<Konva.Group>(null);
 
-  const [box, setBox] = useState({
-    x: dimension.x,
-    y: dimension.y,
-    width: dimension.width,
-    height: dimension.height,
-  } as Partial<IShape>);
+  useReference({
+    type: "CLIP",
+    ref: gshRef,
+  });
+
+  const [box, setBox] = useAtom(boxClipAtom);
 
   useEffect(() => {
     setBox({
@@ -130,28 +126,6 @@ const ClipComponent = ({ isSelected }: ClipProps) => {
         width={dimension?.width}
         height={dimension?.height}
         fill="rgba(0,0,0,0.6)"
-        onClick={() => {
-          const base64 = gshRef?.current?.toDataURL({
-            quality: 1,
-            x: box.x,
-            y: box.y,
-            width: box.width,
-            height: box.height,
-          });
-          const image = new Image();
-          image.onload = () => {
-            handleSetClipImage({
-              base64: base64 ?? "",
-              name: "cliped",
-              height: image.height,
-              width: image.width,
-              x: 0,
-              y: 0,
-            });
-            setshowClip(false);
-          };
-          image.src = base64 ?? "";
-        }}
       />
       <Group
         ref={gshRef}
@@ -193,9 +167,6 @@ const ClipComponent = ({ isSelected }: ClipProps) => {
         width={box?.width}
         height={box?.height}
         draggable
-        onDblClick={() => {
-          setshowClip(false);
-        }}
         onDragMove={(e) => {
           let payload = position({
             x: e.target.x(),

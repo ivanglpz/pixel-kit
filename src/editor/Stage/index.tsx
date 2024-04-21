@@ -8,8 +8,6 @@ import { useReference } from "../hooks/reference";
 import Konva from "konva";
 import { Valid } from "@/components/valid";
 import { KonvaEventObject } from "konva/lib/Node";
-import { showClipAtom } from "../jotai/clipImage";
-import { useSetAtom } from "jotai";
 
 type Props = {
   children: ReactNode;
@@ -36,7 +34,6 @@ export const StageRender = ({ children }: Props) => {
     }
   }, [height, width, ref]);
 
-  const setshowClip = useSetAtom(showClipAtom);
   return (
     <Stage
       ref={ref}
@@ -53,17 +50,23 @@ export const StageRender = ({ children }: Props) => {
       }
       onTouchEnd={handleMouseUp}
       onClick={(e) => {
-        if (!e.target?.attrs?.id && tool !== "DRAW") {
+        if (
+          !e.target?.attrs?.id ||
+          (e.target?.attrs?.id?.includes("main-image-render-stage") &&
+            tool !== "DRAW")
+        ) {
           handleCleanShapeSelected();
           setTool("MOVE");
-          setshowClip(false);
         }
       }}
       onTap={(e) => {
-        if (!e.target?.attrs?.id && tool !== "DRAW") {
+        if (
+          !e.target?.attrs?.id ||
+          (e.target?.attrs?.id?.includes("main-image-render-stage") &&
+            tool !== "DRAW")
+        ) {
           handleCleanShapeSelected();
           setTool("MOVE");
-          setshowClip(false);
         }
       }}
     >

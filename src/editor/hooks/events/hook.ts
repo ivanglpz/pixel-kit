@@ -11,6 +11,8 @@ import { shapeStart } from "./start";
 import { IKeyMethods, IKeyTool } from "../tool/types";
 import stageAbsolutePosition from "../../helpers/position";
 import { useBeforeStartDrawing } from "@/editor/states/drawing/useBeforeStartDrawing";
+import { showClipAtom } from "@/editor/jotai/clipImage";
+import { useSetAtom } from "jotai";
 
 const useEvent = () => {
   const { isGoingToCreateAShape, tool, setTool, isNotWriting, isDrawing } =
@@ -26,6 +28,7 @@ const useEvent = () => {
     handleUpdateTemporalShape,
     temporalShape,
   } = useTemporalShape();
+  const setshowClip = useSetAtom(showClipAtom);
 
   const [eventStage, setEventStage] = useState<IStageEvents>("STAGE_IDLE");
 
@@ -166,6 +169,7 @@ const useEvent = () => {
           T: "TEXT",
         };
         if (keysActions[KEY]) {
+          setshowClip(false);
           handleResetElement(keysActions[KEY] as IKeyMethods);
         }
       }

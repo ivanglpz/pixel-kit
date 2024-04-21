@@ -4,6 +4,8 @@ import { FC } from "react";
 import icons from "@/assets/index";
 import { css } from "@stylespixelkit/css";
 import LayoutEditorSidebarLeft from "./left";
+import { showClipAtom } from "../jotai/clipImage";
+import { useAtom, useSetAtom } from "jotai";
 
 const METHODS = [
   {
@@ -45,6 +47,7 @@ const ToolsTop: FC = () => {
   const { tool, setTool } = useTool();
   const { handleCleanShapeSelected } = useSelectedShape();
 
+  const setshowClip = useSetAtom(showClipAtom);
   return (
     <div
       className={css({
@@ -156,6 +159,7 @@ const ToolsTop: FC = () => {
               onClick={() => {
                 setTool(item.keyMethod as IKeyTool);
                 handleCleanShapeSelected();
+                setshowClip(false);
               }}
             >
               {item?.icon}
