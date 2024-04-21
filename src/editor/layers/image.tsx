@@ -246,49 +246,42 @@ const ClipComponent = ({ isSelected }: ClipProps) => {
           }));
         }}
       />
-      {isSelected && (
-        <Transformer
-          ref={trRef}
-          flipEnabled={false}
-          keepRatio={false}
-          anchorStrokeWidth={3}
-          anchorStyleFunc={(configAnchor) => {
-            const anchor = configAnchor as Shape<ShapeConfig> & {
-              cornerRadius: (v: number) => void;
-            };
-            if (
-              anchor.hasName("top-center") ||
-              anchor.hasName("bottom-center")
-            ) {
-              anchor.cornerRadius(20);
-              anchor.height(10);
-              anchor.offsetY(5);
-              anchor.width(30);
-              anchor.offsetX(15);
-            }
-            if (
-              anchor.hasName("middle-left") ||
-              anchor.hasName("middle-right")
-            ) {
-              anchor.cornerRadius(20);
-              anchor.height(30);
-              anchor.offsetY(15);
-              anchor.width(10);
-              anchor.offsetX(5);
-            }
-          }}
-          anchorSize={20}
-          borderStrokeWidth={4}
-          anchorCornerRadius={4}
-          boundBoxFunc={(oldBox, newBox) => {
-            // limit resize
-            if (Math.abs(newBox.width) < 5 || Math.abs(newBox.height) < 5) {
-              return oldBox;
-            }
-            return newBox;
-          }}
-        />
-      )}
+      <Transformer
+        id="transformer-editable"
+        ref={trRef}
+        flipEnabled={false}
+        keepRatio={false}
+        anchorStrokeWidth={3}
+        anchorStyleFunc={(configAnchor) => {
+          const anchor = configAnchor as Shape<ShapeConfig> & {
+            cornerRadius: (v: number) => void;
+          };
+          if (anchor.hasName("top-center") || anchor.hasName("bottom-center")) {
+            anchor.cornerRadius(20);
+            anchor.height(10);
+            anchor.offsetY(5);
+            anchor.width(30);
+            anchor.offsetX(15);
+          }
+          if (anchor.hasName("middle-left") || anchor.hasName("middle-right")) {
+            anchor.cornerRadius(20);
+            anchor.height(30);
+            anchor.offsetY(15);
+            anchor.width(10);
+            anchor.offsetX(5);
+          }
+        }}
+        anchorSize={20}
+        borderStrokeWidth={4}
+        anchorCornerRadius={4}
+        boundBoxFunc={(oldBox, newBox) => {
+          // limit resize
+          if (Math.abs(newBox.width) < 5 || Math.abs(newBox.height) < 5) {
+            return oldBox;
+          }
+          return newBox;
+        }}
+      />
     </>
   );
 };
