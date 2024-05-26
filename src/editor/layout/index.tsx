@@ -40,8 +40,8 @@ const LayoutPixelEditor: FC<Props> = ({ children }) => {
     >
       <div
         className={css({
-          width: "98%",
-          height: "97%",
+          width: "99.5%",
+          height: "99%",
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
@@ -51,13 +51,22 @@ const LayoutPixelEditor: FC<Props> = ({ children }) => {
         <ToolsTop />
         <div
           className={css({
+            height: 1,
+            width: "100%",
+            position: "relative",
+          })}
+        >
+          <LayoutEditorSidebarRight />
+        </div>
+
+        <div
+          className={css({
             height: "100%",
             width: "100%",
             position: "relative",
           })}
           ref={constraintsRef}
         >
-          <LayoutEditorSidebarRight />
           {children}
         </div>
       </div>

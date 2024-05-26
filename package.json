@@ -26,7 +26,7 @@
     "react-hook-form": "^7.43.9",
     "react-konva": "^18.2.7",
     "react-konva-utils": "^1.0.4",
-    "sonner": "^1.2.4",
+    "sonner": "1.2.4",
     "tsx": "^4.7.2",
     "typescript": "5.0.4",
     "uuid": "^9.0.0"

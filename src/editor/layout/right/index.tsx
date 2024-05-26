@@ -142,6 +142,7 @@ const LayoutEditorSidebarRight: FC = () => {
 
   return (
     <motion.aside
+      drag="x"
       className={css({
         height: "auto",
         position: "absolute",
@@ -154,7 +155,6 @@ const LayoutEditorSidebarRight: FC = () => {
         flexDirection: "column",
         gap: "lg",
       })}
-      drag
       dragListener={false}
       dragConstraints={
         ref?.current ? (ref as unknown as RefObject<HTMLDivElement>) : false

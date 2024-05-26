@@ -54,6 +54,7 @@ export const Button = ({
         _active: {
           backgroundColor: "primary",
           opacity: 1,
+          scale: 0.95,
         },
       })}
       disabled={isLoading}
