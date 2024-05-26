@@ -35,16 +35,19 @@ export const Button = ({
         justifyContent: "center",
         borderWidth: 1,
         borderStyle: "solid",
-        borderColor: stylesType[type] ?? "secondary",
+        borderColor:
+          type === "success" ? "success" : stylesType[type] ?? "secondary",
         borderRadius: "md",
         padding: "md",
         color: "text",
         textAlign: "center",
         fontSize: "x-small",
-        backgroundColor: stylesType[type] ?? "secondary",
+        backgroundColor:
+          type === "success" ? "success" : stylesType[type] ?? "secondary",
         fontWeight: "bold",
         _hover: {
-          backgroundColor: stylesType[type] ?? "secondary",
+          backgroundColor:
+            type === "success" ? "success" : stylesType[type] ?? "secondary",
           cursor: "pointer",
           opacity: 0.8,
         },

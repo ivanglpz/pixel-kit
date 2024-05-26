@@ -38,18 +38,6 @@ export const Clip = () => {
           Clip Image
         </p>
       </header>
-      <div>
-        <InputText
-          labelText="Width"
-          value={`${Math.round(box.width || 0)}ppx`}
-          onChange={() => {}}
-        />
-        <InputText
-          labelText="Height"
-          value={`${Math.round(box.height || 0)}px`}
-          onChange={() => {}}
-        />
-      </div>
 
       <div
         className={css({
@@ -66,6 +54,20 @@ export const Clip = () => {
           }}
           text="Clip"
         />
+        <Valid isValid={showClip}>
+          <div>
+            <InputText
+              labelText="Width"
+              value={`${Math.round(box.width || 0)}ppx`}
+              onChange={() => {}}
+            />
+            <InputText
+              labelText="Height"
+              value={`${Math.round(box.height || 0)}px`}
+              onChange={() => {}}
+            />
+          </div>
+        </Valid>
         <section
           className={css({
             display: "flex",
