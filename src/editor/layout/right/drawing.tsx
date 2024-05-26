@@ -70,7 +70,7 @@ export const Drawing = () => {
         })} scrollbar_container`}
       >
         <InputCheckbox
-          text="Closed"
+          text="Bucket Fill"
           value={closed ?? false}
           onCheck={(e) => handleChangeLine("closed", e)}
         />
@@ -133,16 +133,20 @@ export const Drawing = () => {
             },
           ]}
         />
-
+        <InputCheckbox
+          text="Dash"
+          value={dashEnable ?? true}
+          onCheck={(e) => handleDash("dashEnable", e)}
+        />
         <InputSlider
           labelText="Dash"
           onChange={(e) => handleDash("dash", e)}
           value={dash || 0}
         />
         <InputCheckbox
-          text="Dash Enable"
-          value={dashEnable ?? true}
-          onCheck={(e) => handleDash("dashEnable", e)}
+          text="Shadow"
+          value={shadowEnabled ?? true}
+          onCheck={(e) => handleChangeLine("shadowEnabled", e)}
         />
         <PixelKitInputColor
           labelText="Shadow Color"
@@ -166,11 +170,6 @@ export const Drawing = () => {
           labelText="Shadow Blur"
           onChange={(e) => handleChangeLine("shadowBlur", e)}
           value={shadowBlur || 0}
-        />
-        <InputCheckbox
-          text="Shadow Enable"
-          value={shadowEnabled ?? true}
-          onCheck={(e) => handleChangeLine("shadowEnabled", e)}
         />
 
         <InputSlider

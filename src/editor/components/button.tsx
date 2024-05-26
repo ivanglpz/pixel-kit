@@ -7,10 +7,16 @@ type Props = {
   onClick: () => void;
   isLoading?: boolean;
   children?: ReactNode;
-  type?: "normal" | "danger" | "success";
+  type?: "normal" | "danger" | "success" | "dangerfill";
   fullWidth?: boolean;
 };
 
+const stylesType = {
+  normal: "secondary",
+  danger: "danger",
+  success: "success",
+  dangerfill: "danger",
+};
 export const Button = ({
   onClick,
   text,
@@ -29,26 +35,22 @@ export const Button = ({
         justifyContent: "center",
         borderWidth: 1,
         borderStyle: "solid",
-        borderColor:
-          type === "danger"
-            ? "danger"
-            : type === "success"
-              ? "success"
-              : "secondary",
+        borderColor: stylesType[type] ?? "secondary",
         borderRadius: "md",
         padding: "md",
         color: "text",
         textAlign: "center",
         fontSize: "x-small",
+        backgroundColor: stylesType[type] ?? "secondary",
         fontWeight: "bold",
         _hover: {
-          backgroundColor:
-            type === "danger"
-              ? "danger"
-              : type === "success"
-                ? "success"
-                : "secondary",
+          backgroundColor: stylesType[type] ?? "secondary",
           cursor: "pointer",
+          opacity: 0.8,
+        },
+        _active: {
+          backgroundColor: "primary",
+          opacity: 1,
         },
       })}
       disabled={isLoading}

@@ -1,6 +1,7 @@
 import { Valid } from "@/components/valid";
 import { Button } from "@/editor/components/button";
 import { InputCheckbox } from "@/editor/components/input-checkbox";
+import { InputText } from "@/editor/components/input-text";
 import { useTool } from "@/editor/hooks";
 import { useImageRender } from "@/editor/hooks/image/hook";
 import { useReference } from "@/editor/hooks/reference";
@@ -15,7 +16,7 @@ export const Clip = () => {
   const { ref } = useReference({ type: "CLIP" });
   const box = useAtomValue(boxClipAtom);
   return (
-    <div
+    <section
       className={css({
         padding: "lg",
         display: "flex",
@@ -26,7 +27,7 @@ export const Clip = () => {
         border: "container",
       })}
     >
-      <div>
+      <header>
         <p
           className={css({
             fontSize: "sm",
@@ -36,7 +37,20 @@ export const Clip = () => {
         >
           Clip Image
         </p>
+      </header>
+      <div>
+        <InputText
+          labelText="Width"
+          value={`${Math.round(box.width || 0)}ppx`}
+          onChange={() => {}}
+        />
+        <InputText
+          labelText="Height"
+          value={`${Math.round(box.height || 0)}px`}
+          onChange={() => {}}
+        />
       </div>
+
       <div
         className={css({
           display: "flex",
@@ -50,47 +64,58 @@ export const Clip = () => {
             setTool("MOVE");
             setshowClip(v);
           }}
-          text="Show Clip"
+          text="Clip"
         />
-        <Button
-          onClick={() => {
-            setTool("MOVE");
-            handleResetImage();
-          }}
+        <section
+          className={css({
+            display: "flex",
+            flexDirection: "row",
+            gap: "lg",
+          })}
         >
-          Reset Clip
-        </Button>
-        <Valid isValid={showClip}>
-          <Button
-            type="success"
-            onClick={() => {
-              setTool("MOVE");
-              const base64 = ref?.current?.toDataURL({
-                quality: 1,
-                //   pixelRatio: 3,
-                x: box.x,
-                y: box.y,
-                width: box.width,
-                height: box.height,
-              });
-              const image = new Image();
-              image.onload = () => {
-                handleSetClipImage({
-                  base64: base64 ?? "",
-                  name: "cliped",
-                  height: image.height,
-                  width: image.width,
-                  x: 0,
-                  y: 0,
+          <Valid isValid={showClip}>
+            <Button
+              onClick={() => {
+                setTool("MOVE");
+                handleResetImage();
+              }}
+            >
+              Reset Clip
+            </Button>
+          </Valid>
+          <Valid isValid={showClip}>
+            <Button
+              type="success"
+              onClick={() => {
+                setTool("MOVE");
+                const base64 = ref?.current?.toDataURL({
+                  quality: 1,
+                  //   pixelRatio: 3,
+                  x: box.x,
+                  y: box.y,
+                  width: box.width,
+                  height: box.height,
                 });
-              };
-              image.src = base64 ?? "";
-            }}
-          >
-            Save Clip
-          </Button>
-        </Valid>
+                const image = new Image();
+                image.onload = () => {
+                  handleSetClipImage({
+                    base64: base64 ?? "",
+                    name: "cliped",
+                    height: image.height,
+                    width: image.width,
+                    x: 0,
+                    y: 0,
+                  });
+                  setshowClip(false);
+                };
+                image.src = base64 ?? "";
+              }}
+            >
+              Save Clip
+            </Button>
+          </Valid>
+        </section>
       </div>
-    </div>
+    </section>
   );
 };
