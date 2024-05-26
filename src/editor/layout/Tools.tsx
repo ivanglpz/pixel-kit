@@ -162,6 +162,7 @@ const ToolsTop: FC = () => {
                   justifyContent: "center",
                   alignItems: "center",
                   border: "container",
+                  cursor: "pointer",
                 })}
                 onClick={() => {
                   setTool(item.keyMethod as IKeyTool);

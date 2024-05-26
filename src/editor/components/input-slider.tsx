@@ -45,7 +45,7 @@ export const InputSlider = ({
         className={css({
           accentColor: "secondary",
           width: "100%",
-          height: "4px",
+          height: "6px",
           cursor: "pointer",
         })}
       />
