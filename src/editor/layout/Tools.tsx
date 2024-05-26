@@ -49,14 +49,14 @@ const ToolsTop: FC = () => {
 
   const setshowClip = useSetAtom(showClipAtom);
   return (
-    <div
+    <nav
       className={css({
-        padding: "lg",
+        padding: "md",
         backgroundColor: "primary",
         display: "flex",
         flexDirection: "row",
         alignItems: "center",
-        justifyContent: "flex-start",
+        justifyContent: "space-between",
         // borderRadius: "lg",
         width: "100%",
         gap: "lg",
@@ -133,51 +133,59 @@ const ToolsTop: FC = () => {
           Pixel Kit
         </p>
       </section>
-      <section
+      <div
         className={css({
           display: "flex",
           flexDirection: "row",
-          gap: "md",
-        })}
-      >
-        {METHODS?.map((item) => {
-          const isSelected = item?.keyMethod === tool;
-          return (
-            <button
-              key={`sidebar-methods-key-${item.keyMethod}`}
-              className={css({
-                backgroundGradient: isSelected ? "primary" : "transparent",
-                padding: "md",
-                borderRadius: "sm",
-                width: "30px",
-                height: "30px",
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                border: "container",
-              })}
-              onClick={() => {
-                setTool(item.keyMethod as IKeyTool);
-                handleCleanShapeSelected();
-                setshowClip(false);
-              }}
-            >
-              {item?.icon}
-            </button>
-          );
-        })}
-      </section>
-      <section
-        className={css({
-          display: "flex",
-          flexDirection: "row",
-          width: "200px",
           gap: "lg",
         })}
       >
-        <LayoutEditorSidebarLeft />
-      </section>
-    </div>
+        <section
+          className={css({
+            display: "flex",
+            flexDirection: "row",
+            gap: "md",
+          })}
+        >
+          {METHODS?.map((item) => {
+            const isSelected = item?.keyMethod === tool;
+            return (
+              <button
+                key={`sidebar-methods-key-${item.keyMethod}`}
+                className={css({
+                  backgroundGradient: isSelected ? "primary" : "transparent",
+                  padding: "md",
+                  borderRadius: "sm",
+                  width: "30px",
+                  height: "30px",
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  border: "container",
+                })}
+                onClick={() => {
+                  setTool(item.keyMethod as IKeyTool);
+                  handleCleanShapeSelected();
+                  setshowClip(false);
+                }}
+              >
+                {item?.icon}
+              </button>
+            );
+          })}
+        </section>
+        <section
+          className={css({
+            display: "flex",
+            flexDirection: "row",
+            width: "200px",
+            gap: "lg",
+          })}
+        >
+          <LayoutEditorSidebarLeft />
+        </section>
+      </div>
+    </nav>
   );
 };
 
