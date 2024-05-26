@@ -50,6 +50,13 @@ const PixelKitInputColor: FC<Props> = ({
             border: "container",
             display: "flex",
             padding: "sm",
+            cursor: "pointer",
+            _hover: {
+              opacity: 0.8,
+            },
+            _active: {
+              scale: 0.9,
+            },
           })}
           style={{
             backgroundColor: color ?? "#ffffff",
@@ -115,6 +122,13 @@ const PixelKitInputColor: FC<Props> = ({
                 border: "container",
                 display: "flex",
                 padding: "sm",
+                cursor: "pointer",
+                _hover: {
+                  opacity: 0.8,
+                },
+                _active: {
+                  scale: 0.9,
+                },
               })}
               style={{
                 backgroundColor: e,

@@ -51,42 +51,51 @@ export const ImageConfiguration = () => {
               justifyContent: "center",
             })}
           >
-            <div
+            <section
               className={css({
                 padding: "lg",
                 display: "flex",
                 flexDirection: "column",
                 alignItems: "flex-start",
-                justifyContent: "space-around",
+                justifyContent: "space-between",
                 gap: "lg",
                 backgroundColor: "primary",
                 borderRadius: "lg",
                 border: "container",
-                width: 300,
-                height: 180,
+                width: 280,
+                height: 220,
               })}
             >
-              <p
+              <div
                 className={css({
-                  fontSize: "md",
-                  color: "text",
-                  fontWeight: "bold",
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "center",
+                  gap: "lg",
                 })}
               >
-                Welcome to image editing mode.
-              </p>
-              <p
-                className={css({
-                  fontSize: "sm",
-                  color: "text",
-                  fontWeight: "normal",
-                  opacity: 0.7,
-                })}
-              >
-                Please upload an image for editing before proceeding.
-              </p>
+                <p
+                  className={css({
+                    fontSize: "md",
+                    color: "text",
+                    fontWeight: "bold",
+                  })}
+                >
+                  Image editing mode.
+                </p>
+                <p
+                  className={css({
+                    fontSize: "sm",
+                    color: "text",
+                    fontWeight: "normal",
+                    opacity: 0.7,
+                  })}
+                >
+                  Please upload an image for editing before proceeding.
+                </p>
+              </div>
               <Button
-                text="Browser Files"
+                text="Upload Image"
                 onClick={() => inputRef.current?.click()}
               />
               {img?.name ? (
@@ -102,7 +111,7 @@ export const ImageConfiguration = () => {
                   {img?.name}
                 </p>
               ) : null}
-            </div>
+            </section>
           </main>,
           document.body
         )}

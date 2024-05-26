@@ -12,29 +12,31 @@ export const InputCheckbox = ({ text, value, onCheck }: Props) => {
       className={css({
         display: "flex",
         flexDirection: "row",
+        alignItems: "center",
         gap: "lg",
         height: "100%",
       })}
     >
-      <input
-        type="checkbox"
-        id={text}
-        name="scales"
-        checked={value}
-        onChange={() => onCheck(!value)}
-        className={css({
-          accentColor: "secondary",
-        })}
-      />
-      <label
-        htmlFor={text}
-        className={css({
-          color: "text",
-          fontSize: "sm",
-          fontWeight: "normal",
-        })}
-      >
-        {text}
+      <label className="switch">
+        <input
+          name="scales"
+          id={text}
+          type="checkbox"
+          checked={value}
+          onChange={() => onCheck(!value)}
+        />
+        <span className="slider round"></span>
+      </label>
+      <label htmlFor={text}>
+        <p
+          className={css({
+            color: "text",
+            fontSize: "sm",
+            fontWeight: "normal",
+          })}
+        >
+          {text}
+        </p>
       </label>
     </div>
   );

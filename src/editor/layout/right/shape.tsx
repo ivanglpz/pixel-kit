@@ -121,10 +121,10 @@ export const LayoutShapeConfig = (props: Props) => {
         >
           Shape
         </p>
-        <Button fullWidth={false} onClick={handleDelete} type="danger">
+        <Button fullWidth={false} onClick={handleDelete} type="dangerfill">
           <svg
-            width="24"
-            height="24"
+            width="15"
+            height="15"
             viewBox="0 0 24 24"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
@@ -154,13 +154,42 @@ export const LayoutShapeConfig = (props: Props) => {
           },
         })} scrollbar_container`}
       >
+        <Valid isValid={tool === "IMAGE"}>
+          <p
+            className={css({
+              color: "text",
+              fontWeight: "600",
+              fontSize: "sm",
+            })}
+          >
+            Image
+          </p>
+          <Button
+            text="Browser Files"
+            onClick={() => inputRef.current?.click()}
+          />
+          <input
+            ref={inputRef}
+            type="file"
+            color="white"
+            accept="image/*"
+            onChange={handleFiles}
+            className={css({
+              backgroundColor: "red",
+              width: 0,
+              height: 0,
+            })}
+          />
+        </Valid>
+        <Valid isValid={tool === "DRAW"}>
+          <InputCheckbox
+            text="Bucket Fill"
+            value={closed ?? false}
+            onCheck={(e) => onChange("closed", e)}
+          />
+        </Valid>
         <InputCheckbox
-          text="Closed"
-          value={closed ?? false}
-          onCheck={(e) => onChange("closed", e)}
-        />
-        <InputCheckbox
-          text="Fill Enable"
+          text="Fill"
           value={fillEnabled ?? true}
           onCheck={(e) => onChange("fillEnabled", e)}
         />
@@ -172,12 +201,6 @@ export const LayoutShapeConfig = (props: Props) => {
           onChangeColor={(e) => onChange("backgroundColor", e)}
         />
 
-        <PixelKitInputColor
-          labelText="Stroke Color"
-          keyInput={`pixel-kit-shape-stroke-${id}-${tool}`}
-          color={stroke}
-          onChangeColor={(e) => onChange("stroke", e)}
-        />
         <Valid isValid={tool === "LINE"}>
           <InputSelect
             labelText="Line Join"
@@ -274,27 +297,38 @@ export const LayoutShapeConfig = (props: Props) => {
             value={fontSize || 0}
           />
         </Valid>
-
+        <InputCheckbox
+          text="Stroke"
+          value={strokeEnabled ?? true}
+          onCheck={(e) => onChange("strokeEnabled", e)}
+        />
+        <PixelKitInputColor
+          labelText="Stroke Color"
+          keyInput={`pixel-kit-shape-stroke-${id}-${tool}`}
+          color={stroke}
+          onChangeColor={(e) => onChange("stroke", e)}
+        />
         <InputSlider
           labelText="Stroke With"
           onChange={(e) => onChange("strokeWidth", e)}
           value={strokeWidth || 0}
         />
-        <InputCheckbox
-          text="Stroke Enable"
-          value={strokeEnabled ?? true}
-          onCheck={(e) => onChange("strokeEnabled", e)}
-        />
 
+        <InputCheckbox
+          text="Dash"
+          value={dashEnabled ?? true}
+          onCheck={(e) => onChange("dashEnabled", e)}
+        />
         <InputSlider
           labelText="Dash"
           onChange={(e) => onChange("dash", e)}
           value={dash || 0}
         />
+
         <InputCheckbox
-          text="Dash Enable"
-          value={dashEnabled ?? true}
-          onCheck={(e) => onChange("dashEnabled", e)}
+          text="Shadow"
+          value={shadowEnabled ?? true}
+          onCheck={(e) => onChange("shadowEnabled", e)}
         />
 
         <PixelKitInputColor
@@ -318,11 +352,7 @@ export const LayoutShapeConfig = (props: Props) => {
           onChange={(e) => onChange("shadowBlur", e)}
           value={shadowBlur || 0}
         />
-        <InputCheckbox
-          text="Shadow Enable"
-          value={shadowEnabled ?? true}
-          onCheck={(e) => onChange("shadowEnabled", e)}
-        />
+
         <InputSlider
           min={0}
           labelText="Shadow Opacity"
@@ -337,34 +367,6 @@ export const LayoutShapeConfig = (props: Props) => {
           onChange={(e) => onChange("borderRadius", e)}
           value={borderRadius || 0}
         />
-
-        <Valid isValid={tool === "IMAGE"}>
-          <p
-            className={css({
-              color: "text",
-              fontWeight: "600",
-              fontSize: "sm",
-            })}
-          >
-            Image
-          </p>
-          <Button
-            text="Browser Files"
-            onClick={() => inputRef.current?.click()}
-          />
-          <input
-            ref={inputRef}
-            type="file"
-            color="white"
-            accept="image/*"
-            onChange={handleFiles}
-            className={css({
-              backgroundColor: "red",
-              width: 0,
-              height: 0,
-            })}
-          />
-        </Valid>
       </div>
     </section>
   );
