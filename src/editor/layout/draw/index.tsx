@@ -39,8 +39,8 @@ export const LayoutPixelEditorDraw: FC<Props> = ({ children }) => {
     >
       <div
         className={css({
-          width: "98%",
-          height: "97%",
+          width: "99.5%",
+          height: "99%",
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
