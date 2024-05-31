@@ -148,28 +148,26 @@ const LayoutEditorSidebarRight: FC = () => {
   return (
     <motion.aside
       drag="x"
-      className={
-        css({
-          height: browser === "SAFARI" ? "100%" : "fit-content",
-          // webmaxHeight: "fit-content",
-          backgroundColor: "rgba(0,0,0,0.15)",
-          maxHeight: "100%",
-          borderRadius: "sm",
-          position: "absolute",
-          top: 0,
-          right: 0,
-          zIndex: 9,
-          maxWidth: "180px",
-          width: "100%",
-          display: "flex",
-          flexDirection: "column",
-          gap: "lg",
-          overflow: "hidden",
-          overflowX: "hidden",
-          overflowY: "scroll",
-          padding: "sm",
-        }) + " bar"
-      }
+      className={css({
+        height: browser === "SAFARI" ? "100%" : "fit-content",
+        // webmaxHeight: "fit-content",
+        backgroundColor: "rgba(0,0,0,0.15)",
+        maxHeight: browser === "SAFARI" ? "fit-content" : "100%",
+        borderRadius: "sm",
+        position: "absolute",
+        top: 0,
+        right: 0,
+        zIndex: 9,
+        maxWidth: "180px",
+        width: "100%",
+        display: "flex",
+        flexDirection: "column",
+        gap: "lg",
+        overflow: "hidden",
+        overflowX: "hidden",
+        overflowY: "scroll",
+        padding: "sm",
+      })}
       dragListener={false}
       dragConstraints={
         ref?.current ? (ref as unknown as RefObject<HTMLDivElement>) : false
