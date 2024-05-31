@@ -9,6 +9,8 @@ import { motion, useDragControls } from "framer-motion";
 import { DragControls } from "framer-motion";
 import { useReference } from "@/editor/hooks/reference";
 import { Clip } from "./clip";
+import { Tools } from "./tools";
+import { useBrowserType } from "@/editor/hooks/useTypeBrowser";
 
 interface Props {
   dragControls: DragControls;
@@ -140,21 +142,34 @@ const LayoutEditorSidebarRight: FC = () => {
   const { ref } = useReference({ type: "CONTAINER" });
   const [showConfig, setshowConfig] = useState(true);
 
+  const browser = useBrowserType();
+  console.log({ browser });
+
   return (
     <motion.aside
       drag="x"
-      className={css({
-        height: "auto",
-        position: "absolute",
-        top: 0,
-        right: 0,
-        zIndex: 9,
-        maxWidth: "180px",
-        width: "100%",
-        display: "flex",
-        flexDirection: "column",
-        gap: "lg",
-      })}
+      className={
+        css({
+          height: browser === "SAFARI" ? "100%" : "fit-content",
+          // webmaxHeight: "fit-content",
+          backgroundColor: "rgba(0,0,0,0.15)",
+          maxHeight: "100%",
+          borderRadius: "sm",
+          position: "absolute",
+          top: 0,
+          right: 0,
+          zIndex: 9,
+          maxWidth: "180px",
+          width: "100%",
+          display: "flex",
+          flexDirection: "column",
+          gap: "lg",
+          overflow: "hidden",
+          overflowX: "hidden",
+          overflowY: "scroll",
+          padding: "sm",
+        }) + " bar"
+      }
       dragListener={false}
       dragConstraints={
         ref?.current ? (ref as unknown as RefObject<HTMLDivElement>) : false
@@ -167,6 +182,7 @@ const LayoutEditorSidebarRight: FC = () => {
         setshowConfig={setshowConfig}
       />
       <Valid isValid={showConfig}>
+        <Tools />
         <Valid isValid={config?.showCanvasConfig}>
           <StageConfig />
         </Valid>
@@ -180,6 +196,8 @@ const LayoutEditorSidebarRight: FC = () => {
         style={{
           display: showConfig ? "block" : "none",
           height: showConfig ? "auto" : "0px",
+          padding: "0px",
+          margin: "0",
         }}
       ></div>
     </motion.aside>

@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { css } from "@stylespixelkit/css";
 import { FC, ReactNode, useEffect, useRef } from "react";
-import ToolsTop from "../Tools";
+import LogoApp from "../Tools";
 import LayoutEditorSidebarRight from "../right";
 import { useReference } from "@/editor/hooks/reference";
 
@@ -26,8 +26,8 @@ export const LayoutPixelEditorDraw: FC<Props> = ({ children }) => {
   return (
     <main
       className={css({
-        height: "100vh",
-        width: "100vw",
+        height: "100dvh",
+        width: "100dvw",
         position: "relative",
         overflow: "hidden",
         display: "flex",
@@ -47,7 +47,7 @@ export const LayoutPixelEditorDraw: FC<Props> = ({ children }) => {
           justifyContent: "center",
         })}
       >
-        <ToolsTop />
+        {/* <ToolsTop /> */}
         <div
           className={css({
             height: "100%",

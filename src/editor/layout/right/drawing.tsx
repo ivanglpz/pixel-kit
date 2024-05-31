@@ -2,6 +2,7 @@ import { InputCheckbox } from "@/editor/components/input-checkbox";
 import PixelKitInputColor from "@/editor/components/input-color";
 import { InputSelect } from "@/editor/components/input-select";
 import { InputSlider } from "@/editor/components/input-slider";
+import { Section } from "@/editor/components/section";
 import { useTool } from "@/editor/hooks";
 import { useBeforeStartDrawing } from "@/editor/states/drawing/useBeforeStartDrawing";
 import { css } from "@stylespixelkit/css";
@@ -29,28 +30,7 @@ export const Drawing = () => {
   } = useBeforeStartDrawing();
   if (!isDrawing && tool !== "LINE") return null;
   return (
-    <section
-      className={css({
-        padding: "lg",
-        display: "flex",
-        flexDirection: "column",
-        gap: "lg",
-        backgroundColor: "primary",
-        borderRadius: "lg",
-        border: "container",
-      })}
-    >
-      <div>
-        <p
-          className={css({
-            fontSize: "sm",
-            color: "text",
-            fontWeight: "bold",
-          })}
-        >
-          {isDrawing ? "Draw" : "Line"}
-        </p>
-      </div>
+    <Section title={isDrawing ? "Draw" : "Line"}>
       <div
         className={`${css({
           display: "flex",
@@ -181,6 +161,6 @@ export const Drawing = () => {
           value={shadowOpacity || 0}
         />
       </div>
-    </section>
+    </Section>
   );
 };

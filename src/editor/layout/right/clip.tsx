@@ -2,6 +2,7 @@ import { Valid } from "@/components/valid";
 import { Button } from "@/editor/components/button";
 import { InputCheckbox } from "@/editor/components/input-checkbox";
 import { InputText } from "@/editor/components/input-text";
+import { Section } from "@/editor/components/section";
 import { useTool } from "@/editor/hooks";
 import { useImageRender } from "@/editor/hooks/image/hook";
 import { useReference } from "@/editor/hooks/reference";
@@ -16,29 +17,7 @@ export const Clip = () => {
   const { ref } = useReference({ type: "CLIP" });
   const box = useAtomValue(boxClipAtom);
   return (
-    <section
-      className={css({
-        padding: "lg",
-        display: "flex",
-        flexDirection: "column",
-        gap: "lg",
-        backgroundColor: "primary",
-        borderRadius: "lg",
-        border: "container",
-      })}
-    >
-      <header>
-        <p
-          className={css({
-            fontSize: "sm",
-            color: "text",
-            fontWeight: "bold",
-          })}
-        >
-          Clip Image
-        </p>
-      </header>
-
+    <Section title=" Clip Image">
       <div
         className={css({
           display: "flex",
@@ -118,6 +97,6 @@ export const Clip = () => {
           </Valid>
         </section>
       </div>
-    </section>
+    </Section>
   );
 };

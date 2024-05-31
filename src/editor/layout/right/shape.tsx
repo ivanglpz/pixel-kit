@@ -4,6 +4,7 @@ import { InputCheckbox } from "@/editor/components/input-checkbox";
 import PixelKitInputColor from "@/editor/components/input-color";
 import { InputSelect } from "@/editor/components/input-select";
 import { InputSlider } from "@/editor/components/input-slider";
+import { Section } from "@/editor/components/section";
 import { useSelectedShape } from "@/editor/hooks";
 import useShapes from "@/editor/hooks/shapes/hook";
 import { IShape } from "@/editor/shapes/type.shape";
@@ -93,17 +94,7 @@ export const LayoutShapeConfig = (props: Props) => {
   };
 
   return (
-    <section
-      className={css({
-        padding: "lg",
-        display: "flex",
-        flexDirection: "column",
-        gap: "lg",
-        backgroundColor: "primary",
-        borderRadius: "lg",
-        border: "container",
-      })}
-    >
+    <Section title="Shape">
       <header
         className={css({
           display: "flex",
@@ -178,6 +169,8 @@ export const LayoutShapeConfig = (props: Props) => {
               backgroundColor: "red",
               width: 0,
               height: 0,
+              opacity: 0,
+              display: "none",
             })}
           />
         </Valid>
@@ -368,6 +361,6 @@ export const LayoutShapeConfig = (props: Props) => {
           value={borderRadius || 0}
         />
       </div>
-    </section>
+    </Section>
   );
 };
