@@ -1,0 +1,90 @@
+import icons from "@/assets";
+import { Section } from "@/editor/components/section";
+import { useSelectedShape, useTool } from "@/editor/hooks";
+import { IKeyTool } from "@/editor/hooks/tool/types";
+import { showClipAtom } from "@/editor/jotai/clipImage";
+import { css } from "@stylespixelkit/css";
+import { useSetAtom } from "jotai";
+
+const METHODS = [
+  {
+    icon: icons.cursor,
+    keyMethod: "MOVE",
+  },
+
+  {
+    icon: icons.box,
+    keyMethod: "BOX",
+  },
+  {
+    icon: icons.circle,
+    keyMethod: "CIRCLE",
+  },
+  {
+    icon: icons.line,
+    keyMethod: "LINE",
+  },
+  {
+    icon: icons.image,
+    keyMethod: "IMAGE",
+  },
+  {
+    icon: icons.text,
+    keyMethod: "TEXT",
+  },
+  // {
+  //   icon: icons.code,
+  //   keyMethod: "CODE",
+  // },
+  {
+    icon: icons.peentool,
+    keyMethod: "DRAW",
+  },
+];
+
+export const Tools = () => {
+  const { tool, setTool } = useTool();
+  const { handleCleanShapeSelected } = useSelectedShape();
+
+  const setshowClip = useSetAtom(showClipAtom);
+  return (
+    <Section title="Tools">
+      <section
+        className={css({
+          display: "flex",
+          flexDirection: "row",
+          flexWrap: "wrap",
+          gap: "md",
+        })}
+      >
+        {METHODS?.map((item) => {
+          const isSelected = item?.keyMethod === tool;
+          return (
+            <button
+              key={`sidebar-methods-key-${item.keyMethod}`}
+              className={css({
+                backgroundGradient: isSelected ? "primary" : "transparent",
+                padding: "md",
+                borderRadius: "6px",
+                width: "25px",
+                height: "25px",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                border: "container",
+                cursor: "pointer",
+              })}
+              onClick={() => {
+                setTool(item.keyMethod as IKeyTool);
+                handleCleanShapeSelected();
+                setshowClip(false);
+              }}
+            >
+              {item?.icon}
+            </button>
+          );
+        })}
+      </section>
+    </Section>
+  );
+};

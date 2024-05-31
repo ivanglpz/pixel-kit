@@ -1,53 +1,7 @@
-import { useSelectedShape, useTool } from "@/editor/hooks";
-import { IKeyTool } from "@/editor/hooks/tool/types";
 import { FC } from "react";
-import icons from "@/assets/index";
 import { css } from "@stylespixelkit/css";
-import LayoutEditorSidebarLeft from "./left";
-import { showClipAtom } from "../jotai/clipImage";
-import { useAtom, useSetAtom } from "jotai";
 
-const METHODS = [
-  {
-    icon: icons.cursor,
-    keyMethod: "MOVE",
-  },
-
-  {
-    icon: icons.box,
-    keyMethod: "BOX",
-  },
-  {
-    icon: icons.circle,
-    keyMethod: "CIRCLE",
-  },
-  {
-    icon: icons.line,
-    keyMethod: "LINE",
-  },
-  {
-    icon: icons.image,
-    keyMethod: "IMAGE",
-  },
-  {
-    icon: icons.text,
-    keyMethod: "TEXT",
-  },
-  // {
-  //   icon: icons.code,
-  //   keyMethod: "CODE",
-  // },
-  {
-    icon: icons.peentool,
-    keyMethod: "DRAW",
-  },
-];
-
-const ToolsTop: FC = () => {
-  const { tool, setTool } = useTool();
-  const { handleCleanShapeSelected } = useSelectedShape();
-
-  const setshowClip = useSetAtom(showClipAtom);
+const LogoApp: FC = () => {
   return (
     <nav
       className={css({
@@ -58,9 +12,12 @@ const ToolsTop: FC = () => {
         alignItems: "center",
         justifyContent: "space-between",
         // borderRadius: "lg",
-        width: "100%",
+        width: "fit-content",
         gap: "lg",
         border: "container",
+        position: "absolute",
+        zIndex: 10,
+        bottom: 25,
       })}
     >
       <section
@@ -73,8 +30,8 @@ const ToolsTop: FC = () => {
         })}
       >
         <svg
-          width="34"
-          height="34"
+          width="20"
+          height="20"
           viewBox="0 0 34 34"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
@@ -124,70 +81,15 @@ const ToolsTop: FC = () => {
           className={css({
             color: "text",
             fontWeight: "bold",
-            fontSize: "md",
-            "@media(max-width:605px)": {
-              display: "none",
-            },
+            fontSize: "10px",
           })}
         >
           Pixel Kit
         </p>
       </section>
-      <div
-        className={css({
-          display: "flex",
-          flexDirection: "row",
-          gap: "lg",
-        })}
-      >
-        <section
-          className={css({
-            display: "flex",
-            flexDirection: "row",
-            gap: "md",
-          })}
-        >
-          {METHODS?.map((item) => {
-            const isSelected = item?.keyMethod === tool;
-            return (
-              <button
-                key={`sidebar-methods-key-${item.keyMethod}`}
-                className={css({
-                  backgroundGradient: isSelected ? "primary" : "transparent",
-                  padding: "md",
-                  borderRadius: "sm",
-                  width: "30px",
-                  height: "30px",
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  border: "container",
-                  cursor: "pointer",
-                })}
-                onClick={() => {
-                  setTool(item.keyMethod as IKeyTool);
-                  handleCleanShapeSelected();
-                  setshowClip(false);
-                }}
-              >
-                {item?.icon}
-              </button>
-            );
-          })}
-        </section>
-        <section
-          className={css({
-            display: "flex",
-            flexDirection: "row",
-            width: "200px",
-            gap: "lg",
-          })}
-        >
-          <LayoutEditorSidebarLeft />
-        </section>
-      </div>
+      {/* <LayoutEditorSidebarLeft /> */}
     </nav>
   );
 };
 
-export default ToolsTop;
+export default LogoApp;
