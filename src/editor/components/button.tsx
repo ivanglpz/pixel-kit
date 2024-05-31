@@ -12,10 +12,25 @@ type Props = {
 };
 
 const stylesType = {
-  normal: "secondary",
-  danger: "danger",
-  success: "success",
-  dangerfill: "danger",
+  normal: "rgb(0, 153, 255)",
+  danger: "#bb2124",
+  success: "#5cb85c",
+  dangerfill: "#bb2124",
+};
+
+const defaultStyles = {
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  borderWidth: 1,
+  borderStyle: "solid",
+  borderRadius: "md",
+  padding: "md",
+  color: "text",
+  textAlign: "center",
+  fontSize: "x-small",
+
+  fontWeight: "bold",
 };
 export const Button = ({
   onClick,
@@ -29,25 +44,10 @@ export const Button = ({
     <button
       type="button"
       className={css({
+        ...defaultStyles,
         width: fullWidth ? "100%" : "auto",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        borderWidth: 1,
-        borderStyle: "solid",
-        borderColor:
-          type === "success" ? "success" : stylesType[type] ?? "secondary",
-        borderRadius: "md",
-        padding: "md",
-        color: "text",
-        textAlign: "center",
-        fontSize: "x-small",
-        backgroundColor:
-          type === "success" ? "success" : stylesType[type] ?? "secondary",
-        fontWeight: "bold",
         _hover: {
-          backgroundColor:
-            type === "success" ? "success" : stylesType[type] ?? "secondary",
+          backgroundColor: stylesType[type],
           cursor: "pointer",
           opacity: 0.8,
         },
@@ -58,6 +58,10 @@ export const Button = ({
         },
       })}
       disabled={isLoading}
+      style={{
+        borderColor: stylesType[type],
+        backgroundColor: stylesType[type],
+      }}
       onClick={onClick}
     >
       <Valid isValid={!isLoading}>{text ?? children}</Valid>
