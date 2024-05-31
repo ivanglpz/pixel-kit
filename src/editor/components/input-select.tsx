@@ -38,8 +38,7 @@ export const InputSelect = ({ options, value, onChange, labelText }: Props) => {
           border: "container",
           backgroundColor: "primary",
           color: "text",
-          padding: "sm",
-          height: "30px",
+          padding: "md",
           borderRadius: "md",
           fontSize: "sm",
         })}

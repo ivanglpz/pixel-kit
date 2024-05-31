@@ -87,7 +87,7 @@ const LogoApp: FC = () => {
           Pixel Kit
         </p>
       </section>
-      {/* <LayoutEditorSidebarLeft /> */}
+      {/*  */}
     </nav>
   );
 };

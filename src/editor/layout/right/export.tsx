@@ -2,6 +2,7 @@ import { Valid } from "@/components/valid";
 import { Button } from "@/editor/components/button";
 import { InputSelect } from "@/editor/components/input-select";
 import { InputText } from "@/editor/components/input-text";
+import { Section } from "@/editor/components/section";
 import { useImageRender } from "@/editor/hooks/image/hook";
 import { useReference } from "@/editor/hooks/reference";
 import useScreen from "@/editor/hooks/screen";
@@ -17,6 +18,7 @@ import { RefObject, useState } from "react";
 import { createPortal } from "react-dom";
 import { toast } from "sonner";
 import { v4 as uuidv4 } from "uuid";
+import { ImageConfiguration } from "../left/image";
 
 const formats = {
   LOW: 0.8,
@@ -240,7 +242,16 @@ export const ExportStage = () => {
           document.body
         )}
       </Valid>
-      <Button text="Export" onClick={() => setShowExport(true)}></Button>
+      <Section title="Export">
+        <Valid isValid={config?.showFilesBrowser}>
+          <ImageConfiguration />
+        </Valid>
+        <Button
+          text="Export"
+          onClick={() => setShowExport(true)}
+          type="success"
+        ></Button>
+      </Section>
     </>
   );
 };

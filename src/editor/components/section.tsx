@@ -11,10 +11,10 @@ export const Section = ({ title, children }: Props) => {
   return (
     <section
       className={css({
-        padding: "lg",
+        padding: "md",
         display: "flex",
         flexDirection: "column",
-        gap: "lg",
+        gap: "md",
         backgroundColor: "primary",
         borderRadius: "lg",
         border: "container",
