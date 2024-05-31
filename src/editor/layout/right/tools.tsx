@@ -64,15 +64,15 @@ export const Tools = () => {
               key={`sidebar-methods-key-${item.keyMethod}`}
               className={css({
                 backgroundGradient: isSelected ? "primary" : "transparent",
-                padding: "md",
                 borderRadius: "6px",
-                width: "25px",
-                height: "25px",
+                width: "35px",
+                height: "35px",
                 display: "flex",
                 justifyContent: "center",
                 alignItems: "center",
                 border: "container",
                 cursor: "pointer",
+                flexGrow: 1,
               })}
               onClick={() => {
                 setTool(item.keyMethod as IKeyTool);

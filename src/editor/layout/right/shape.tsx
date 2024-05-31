@@ -149,11 +149,13 @@ export const LayoutShapeConfig = (props: Props) => {
             onCheck={(e) => onChange("closed", e)}
           />
         </Valid>
-        <InputCheckbox
-          text="Fill"
-          value={fillEnabled ?? true}
-          onCheck={(e) => onChange("fillEnabled", e)}
-        />
+        <Valid isValid={tool !== "IMAGE"}>
+          <InputCheckbox
+            text="Fill"
+            value={fillEnabled ?? true}
+            onCheck={(e) => onChange("fillEnabled", e)}
+          />
+        </Valid>
 
         <PixelKitInputColor
           labelText="Fill Color"
