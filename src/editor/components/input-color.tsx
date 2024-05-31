@@ -81,6 +81,7 @@ const PixelKitInputColor: FC<Props> = ({
         <input
           type="text"
           value={`#${color?.replace(/#/, "") ?? "ffffff"}`}
+          disabled
           className={css({
             width: "10",
             flex: 1,
