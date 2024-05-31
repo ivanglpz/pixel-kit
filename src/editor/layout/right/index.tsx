@@ -11,6 +11,7 @@ import { useReference } from "@/editor/hooks/reference";
 import { Clip } from "./clip";
 import { Tools } from "./tools";
 import { useBrowserType } from "@/editor/hooks/useTypeBrowser";
+import { ExportStage } from "./export";
 
 interface Props {
   dragControls: DragControls;
@@ -26,19 +27,19 @@ export function HeaderConfiguration({
   return (
     <section
       className={css({
-        paddingLeft: "lg",
-        paddingRight: "lg",
+        paddingLeft: "md",
+        paddingRight: "md",
         display: "grid",
         flexDirection: "row",
         backgroundColor: "primary",
         border: "container",
-        borderRadius: "lg",
+        borderRadius: "md",
         backgroundSize: "0.5rem 0.5rem",
         backgroundRepeat: "round",
         justifyContent: "space-between",
         alignItems: "center",
         gridTemplateColumns: "1fr 25px",
-        height: "40px",
+        height: "35px",
       })}
     >
       <div
@@ -162,7 +163,7 @@ const LayoutEditorSidebarRight: FC = () => {
         width: "100%",
         display: "flex",
         flexDirection: "column",
-        gap: "lg",
+        gap: "md",
         overflow: "hidden",
         overflowX: "hidden",
         overflowY: "scroll",
@@ -181,6 +182,7 @@ const LayoutEditorSidebarRight: FC = () => {
       />
       <Valid isValid={showConfig}>
         <Tools />
+        <ExportStage />
         <Valid isValid={config?.showCanvasConfig}>
           <StageConfig />
         </Valid>
