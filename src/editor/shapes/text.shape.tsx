@@ -122,6 +122,12 @@ export const ShapeText = memo((item: IShapeWithEvents) => {
         stroke={stroke}
         strokeWidth={strokeWidth}
         onTap={(e) => setBox(shapeEventClick(e, onClick))}
+        onDblTap={() => {
+          setBox((prev) => ({
+            ...prev,
+            isWritingNow: true,
+          }));
+        }}
         onDblClick={(e) => {
           setBox((prev) => ({
             ...prev,
