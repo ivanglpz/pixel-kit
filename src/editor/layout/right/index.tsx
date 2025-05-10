@@ -83,7 +83,7 @@ export function HeaderConfiguration() {
             fontWeight: "bold",
           })}
         >
-          Pixel Kit
+          Pixel Kit v4
         </p>
       </div>
       <div
