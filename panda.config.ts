@@ -57,7 +57,7 @@ export default defineConfig({
       },
       colors: {
         primary: {
-          value: "#0d0e0e",
+          value: "#0A0A0A",
         },
         secondary: { value: "rgb(0, 153, 255)" },
         danger: { value: "#bb2124" },

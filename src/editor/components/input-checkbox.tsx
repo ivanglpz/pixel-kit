@@ -13,10 +13,21 @@ export const InputCheckbox = ({ text, value, onCheck }: Props) => {
         display: "flex",
         flexDirection: "row",
         alignItems: "center",
+        justifyContent: "space-between",
         gap: "lg",
         height: "100%",
       })}
     >
+      <label
+        htmlFor={text}
+        className={css({
+          color: "text",
+          fontWeight: "600",
+          fontSize: "x-small",
+        })}
+      >
+        {text}
+      </label>
       <label className="switch">
         <input
           name="scales"
@@ -26,17 +37,6 @@ export const InputCheckbox = ({ text, value, onCheck }: Props) => {
           onChange={() => onCheck(!value)}
         />
         <span className="slider round"></span>
-      </label>
-      <label htmlFor={text}>
-        <p
-          className={css({
-            color: "text",
-            fontSize: "sm",
-            fontWeight: "normal",
-          })}
-        >
-          {text}
-        </p>
       </label>
     </div>
   );

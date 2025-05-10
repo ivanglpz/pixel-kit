@@ -29,7 +29,6 @@ const defaultStyles = {
   color: "text",
   textAlign: "center",
   fontSize: "x-small",
-
   fontWeight: "bold",
 };
 export const Button = ({
@@ -45,7 +44,7 @@ export const Button = ({
       type="button"
       className={css({
         ...defaultStyles,
-        width: fullWidth ? "100%" : "auto",
+        width: fullWidth ? "100%" : "max-content",
         _hover: {
           backgroundColor: stylesType[type],
           cursor: "pointer",

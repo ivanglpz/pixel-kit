@@ -22,10 +22,9 @@ export const InputSelect = ({ options, value, onChange, labelText }: Props) => {
     >
       <p
         className={css({
-          fontSize: "sm",
           color: "text",
-          fontWeight: "normal",
-          opacity: 0.7,
+          fontWeight: "600",
+          fontSize: "x-small",
         })}
       >
         {labelText}

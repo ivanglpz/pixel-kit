@@ -151,26 +151,56 @@ export const ExportStage = () => {
                 padding: "lg",
                 display: "flex",
                 flexDirection: "column",
-                gap: "lg",
                 backgroundColor: "primary",
                 borderRadius: "lg",
                 border: "container",
-                alignItems: "flex-start",
-                justifyContent: "space-between",
-                width: 320,
-                minHeight: 280,
+                justifyContent: "flex-end",
+                alignItems: "flex-end",
+                width: 300,
+                // minHeight: 320,
+                gap: "lg",
               })}
               onClick={(e) => e.stopPropagation()}
             >
-              <p
+              <div
                 className={css({
-                  fontSize: "sm",
-                  color: "text",
-                  fontWeight: "bold",
+                  display: "flex",
+                  justifyContent: "space-between",
+                  width: "100%",
+                  alignItems: "center",
                 })}
               >
-                Export
-              </p>
+                <p
+                  className={css({
+                    fontSize: "md",
+                    color: "text",
+                    fontWeight: "bold",
+                  })}
+                >
+                  Export
+                </p>
+                <button
+                  className={css({
+                    padding: "sm",
+                    cursor: "pointer",
+                  })}
+                  onClick={() => setShowExport(false)}
+                >
+                  <svg
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M6.4 19L5 17.6L10.6 12L5 6.4L6.4 5L12 10.6L17.6 5L19 6.4L13.4 12L19 17.6L17.6 19L12 13.4L6.4 19Z"
+                      fill="white"
+                    />
+                  </svg>
+                </button>
+              </div>
+
               <p
                 className={css({
                   color: "text",
@@ -184,10 +214,8 @@ export const ExportStage = () => {
                 className={css({
                   display: "flex",
                   flexDirection: "column",
-                  justifyContent: "space-between",
                   width: "100%",
                   height: "100%",
-                  flex: 1,
                   gap: "md",
                 })}
               >
@@ -231,26 +259,35 @@ export const ExportStage = () => {
                     disable
                   />
                 </Valid>
-                <Button
-                  text="Export Now"
-                  onClick={() => handleExport()}
-                  isLoading={loading}
-                ></Button>
               </div>
+              <Button
+                text="Export Now"
+                onClick={() => handleExport()}
+                isLoading={loading}
+                fullWidth={false}
+              ></Button>
             </div>
           </main>,
           document.body
         )}
       </Valid>
       <Section title="Export">
-        <Valid isValid={config?.showFilesBrowser}>
-          <ImageConfiguration />
-        </Valid>
-        <Button
-          text="Export"
-          onClick={() => setShowExport(true)}
-          type="success"
-        ></Button>
+        <div
+          className={css({
+            display: "grid",
+            gridTemplateColumns: "2",
+            gap: "md",
+          })}
+        >
+          <Valid isValid={config?.showFilesBrowser}>
+            <ImageConfiguration />
+          </Valid>
+          <Button
+            text="Export"
+            onClick={() => setShowExport(true)}
+            type="success"
+          ></Button>
+        </div>
       </Section>
     </>
   );

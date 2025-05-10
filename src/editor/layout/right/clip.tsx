@@ -37,7 +37,7 @@ export const Clip = () => {
           <div>
             <InputText
               labelText="Width"
-              value={`${Math.round(box.width || 0)}ppx`}
+              value={`${Math.round(box.width || 0)}px`}
               onChange={() => {}}
             />
             <InputText

@@ -65,7 +65,7 @@ export const Tools = () => {
               className={css({
                 backgroundGradient: isSelected ? "primary" : "transparent",
                 borderRadius: "6px",
-                width: "35px",
+                width: "40px",
                 height: "35px",
                 display: "flex",
                 justifyContent: "center",
