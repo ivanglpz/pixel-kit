@@ -34,6 +34,17 @@ export const StageRender = ({ children }: Props) => {
     }
   }, [height, width, ref]);
 
+  const handleClear = (e: KonvaEventObject<MouseEvent>) => {
+    if (["DRAW", "LINE"].includes(tool)) return;
+    if (
+      !e.target?.attrs?.id ||
+      e.target?.attrs?.id?.includes("main-image-render-stage")
+    ) {
+      handleCleanShapeSelected();
+      setTool("MOVE");
+    }
+  };
+
   return (
     <Stage
       ref={ref}
@@ -49,26 +60,8 @@ export const StageRender = ({ children }: Props) => {
         handleMouseMove(e as unknown as KonvaEventObject<MouseEvent>)
       }
       onTouchEnd={handleMouseUp}
-      onClick={(e) => {
-        if (
-          !e.target?.attrs?.id ||
-          (e.target?.attrs?.id?.includes("main-image-render-stage") &&
-            tool !== "DRAW")
-        ) {
-          handleCleanShapeSelected();
-          setTool("MOVE");
-        }
-      }}
-      onTap={(e) => {
-        if (
-          !e.target?.attrs?.id ||
-          (e.target?.attrs?.id?.includes("main-image-render-stage") &&
-            tool !== "DRAW")
-        ) {
-          handleCleanShapeSelected();
-          setTool("MOVE");
-        }
-      }}
+      onClick={handleClear}
+      onTap={handleClear}
     >
       <Layer>
         <Rect
