@@ -1,3 +1,4 @@
+import { Valid } from "@/components/valid";
 import { InputCheckbox } from "@/editor/components/input-checkbox";
 import PixelKitInputColor from "@/editor/components/input-color";
 import { InputSelect } from "@/editor/components/input-select";
@@ -37,17 +38,7 @@ export const Drawing = () => {
           flexDirection: "column",
           gap: "lg",
           height: "100%",
-          maxHeight: "20rem",
-          overflow: "hidden",
-          overflowY: "hidden",
-          _hover: {
-            overflowY: "scroll",
-          },
-          "@media(max-width:768px)": {
-            overflowY: "scroll",
-            overflow: "scroll",
-          },
-        })} scrollbar_container`}
+        })} `}
       >
         <InputCheckbox
           text="Bucket Fill"
@@ -118,48 +109,52 @@ export const Drawing = () => {
           value={dashEnable ?? true}
           onCheck={(e) => handleDash("dashEnable", e)}
         />
-        <InputSlider
-          labelText="Dash"
-          onChange={(e) => handleDash("dash", e)}
-          value={dash || 0}
-        />
+        <Valid isValid={dashEnable ?? false}>
+          <InputSlider
+            labelText={`Array (${dash})`}
+            onChange={(e) => handleDash("dash", e)}
+            value={dash || 0}
+          />
+        </Valid>
         <InputCheckbox
           text="Shadow"
           value={shadowEnabled ?? true}
           onCheck={(e) => handleChangeLine("shadowEnabled", e)}
         />
-        <PixelKitInputColor
-          labelText="Shadow Color"
-          keyInput={`pixel-kit-draw-before-shadowcolor`}
-          color={shadowColor}
-          onChangeColor={(e) => handleChangeLine("shadowColor", e)}
-        />
-        <InputSlider
-          labelText="Shadow X"
-          onChange={(e) => handleChangeLine("shadowOffsetX", e)}
-          value={shadowOffsetX || 0}
-        />
+        <Valid isValid={shadowEnabled ?? false}>
+          <PixelKitInputColor
+            labelText="Color"
+            keyInput={`pixel-kit-draw-before-shadowcolor`}
+            color={shadowColor}
+            onChangeColor={(e) => handleChangeLine("shadowColor", e)}
+          />
+          <InputSlider
+            labelText="X"
+            onChange={(e) => handleChangeLine("shadowOffsetX", e)}
+            value={shadowOffsetX || 0}
+          />
 
-        <InputSlider
-          labelText="Shadow Y"
-          onChange={(e) => handleChangeLine("shadowOffsetY", e)}
-          value={shadowOffsetY || 0}
-        />
+          <InputSlider
+            labelText="Y"
+            onChange={(e) => handleChangeLine("shadowOffsetY", e)}
+            value={shadowOffsetY || 0}
+          />
 
-        <InputSlider
-          labelText="Shadow Blur"
-          onChange={(e) => handleChangeLine("shadowBlur", e)}
-          value={shadowBlur || 0}
-        />
+          <InputSlider
+            labelText="Blur"
+            onChange={(e) => handleChangeLine("shadowBlur", e)}
+            value={shadowBlur || 0}
+          />
 
-        <InputSlider
-          min={0}
-          labelText="Shadow Opacity"
-          max={1}
-          step={0.1}
-          onChange={(e) => handleChangeLine("shadowOpacity", e)}
-          value={shadowOpacity || 0}
-        />
+          <InputSlider
+            min={0}
+            labelText="Opacity"
+            max={1}
+            step={0.1}
+            onChange={(e) => handleChangeLine("shadowOpacity", e)}
+            value={shadowOpacity || 0}
+          />
+        </Valid>
       </div>
     </Section>
   );

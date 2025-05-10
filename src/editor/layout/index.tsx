@@ -40,16 +40,12 @@ const LayoutPixelEditor: FC<Props> = ({ children }) => {
     >
       <div
         className={css({
-          width: "99.5%",
-          height: "99%",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
+          width: "100dvw",
+          height: "100dvh",
+          display: "grid",
+          gridTemplateColumns: "1fr 240px",
         })}
       >
-        <LayoutEditorSidebarRight />
-
         <div
           className={css({
             height: "100%",
@@ -60,6 +56,7 @@ const LayoutPixelEditor: FC<Props> = ({ children }) => {
         >
           {children}
         </div>
+        <LayoutEditorSidebarRight />
       </div>
     </main>
   );

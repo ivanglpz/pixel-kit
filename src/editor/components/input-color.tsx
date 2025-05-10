@@ -28,7 +28,7 @@ const PixelKitInputColor: FC<Props> = ({
         className={css({
           color: "text",
           fontWeight: "600",
-          fontSize: "sm",
+          fontSize: "x-small",
         })}
       >
         {labelText}

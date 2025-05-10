@@ -13,6 +13,7 @@ import stageAbsolutePosition from "../../helpers/position";
 import { useBeforeStartDrawing } from "@/editor/states/drawing/useBeforeStartDrawing";
 import { showClipAtom } from "@/editor/jotai/clipImage";
 import { useSetAtom } from "jotai";
+import { IShape } from "@/editor/shapes/type.shape";
 
 const useEvent = () => {
   const { isGoingToCreateAShape, tool, setTool, isNotWriting, isDrawing } =
@@ -121,9 +122,12 @@ const useEvent = () => {
   const handleMouseUp = () => {
     //create new shape in shapes and clean temporal shape and set tool with eventstage
     if (eventStage === "STAGE_TEMPORAL_CREATING_SHAPE" && temporalShape?.id) {
-      const payload = {
+      const payload: IShape = {
         ...temporalShape,
         isWritingNow: true,
+        dashEnabled: false,
+        shadowEnabled: false,
+        strokeEnabled: false,
       };
       handleSetShapeSelected(payload);
       handleCreateShape(payload);
