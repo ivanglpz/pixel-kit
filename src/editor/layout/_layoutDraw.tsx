@@ -1,8 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { css } from "@stylespixelkit/css";
 import { FC, ReactNode, useEffect, useRef } from "react";
-import LogoApp from "../Tools";
-import LayoutEditorSidebarRight from "../right";
+import LayoutEditorSidebarRight from "./_layoutImage";
 import { useReference } from "@/editor/hooks/useReference";
 
 type Props = {

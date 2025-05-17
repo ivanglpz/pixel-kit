@@ -2,7 +2,7 @@ import dynamic from "next/dynamic";
 import useBrowser from "./hooks/useBrowser";
 import useStopZoom from "./hooks/useStopZoom";
 import { PixelKitLayers } from "./layers";
-import { LayoutPixelEditorDraw } from "./layout/draw";
+import { LayoutPixelEditorDraw } from "./layout/_layoutDraw";
 import PixelKitStage from "./stage";
 import { useConfiguration } from "./hooks/useConfiguration";
 
