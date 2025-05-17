@@ -156,7 +156,6 @@ const PxStage: FC<Props> = ({ children }) => {
               mask="url(#path-1-inside-1_865_433)"
             />
           </svg>
-          Pixel Kit is loading...
         </p>
       </Valid>
     </main>
