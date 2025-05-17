@@ -1,6 +1,7 @@
 /* eslint-disable jsx-a11y/alt-text */
 /* eslint-disable @next/next/no-img-element */
 import SeoComponent from "@/components/seo";
+import ComponentApp from "@/editor";
 import { css } from "@stylespixelkit/css";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -13,14 +14,6 @@ const modes = [
       "https://res.cloudinary.com/whil/image/upload/v1712285934/app/pixel-kit/images/ejhubphvcmnj5duxiyna.png",
     tags: ["draw", "shapes", "images"],
     route: "/editor",
-  },
-  {
-    id: 2,
-    label: "Free Drawing",
-    image:
-      "https://res.cloudinary.com/whil/image/upload/v1712285934/app/pixel-kit/images/mlaf3hmbnhsdk8go034a.png",
-    tags: ["draw", "shapes", "images", "text"],
-    route: "/draw",
   },
 ];
 const features = [
@@ -130,7 +123,7 @@ const features = [
         />
         <path
           fill-rule="evenodd"
-          clip-rule="evenodd"
+          clipRule="evenodd"
           d="M14.3676 10C15.411 10.0001 16.4248 10.3469 17.2497 10.9857C18.0747 11.6245 18.6641 12.5193 18.9253 13.5294H28.4853V15.8824H18.9253C18.6362 16.9888 17.9543 17.9522 17.0068 18.5927C16.0594 19.2332 14.9113 19.5069 13.7768 19.3629C12.6423 19.2188 11.599 18.6667 10.8418 17.8097C10.0845 16.9528 9.66509 15.8495 9.66176 14.7059C9.66176 13.4578 10.1576 12.2608 11.0401 11.3783C11.9226 10.4958 13.1196 10 14.3676 10ZM14.3676 17.0588C14.9917 17.0588 15.5902 16.8109 16.0314 16.3697C16.4727 15.9284 16.7206 15.3299 16.7206 14.7059C16.7206 14.0818 16.4727 13.4834 16.0314 13.0421C15.5902 12.6008 14.9917 12.3529 14.3676 12.3529C13.7436 12.3529 13.1451 12.6008 12.7039 13.0421C12.2626 13.4834 12.0147 14.0818 12.0147 14.7059C12.0147 15.3299 12.2626 15.9284 12.7039 16.3697C13.1451 16.8109 13.7436 17.0588 14.3676 17.0588ZM26.1323 30C25.089 29.9999 24.0752 29.6531 23.2503 29.0143C22.4253 28.3755 21.8359 27.4807 21.5747 26.4706H12.0147V24.1176H21.5747C21.8638 23.0112 22.5457 22.0478 23.4931 21.4073C24.4406 20.7668 25.5887 20.4931 26.7232 20.6371C27.8577 20.7812 28.901 21.3333 29.6582 22.1903C30.4154 23.0472 30.8349 24.1505 30.8382 25.2941C30.8382 26.5422 30.3424 27.7392 29.4599 28.6217C28.5774 29.5042 27.3804 30 26.1323 30ZM26.1323 27.6471C26.7564 27.6471 27.3549 27.3992 27.7961 26.9579C28.2374 26.5166 28.4853 25.9182 28.4853 25.2941C28.4853 24.6701 28.2374 24.0716 27.7961 23.6303C27.3549 23.1891 26.7564 22.9412 26.1323 22.9412C25.5083 22.9412 24.9098 23.1891 24.4686 23.6303C24.0273 24.0716 23.7794 24.6701 23.7794 25.2941C23.7794 25.9182 24.0273 26.5166 24.4686 26.9579C24.9098 27.3992 25.5083 27.6471 26.1323 27.6471Z"
           fill="white"
         />
@@ -206,9 +199,9 @@ const Page = () => {
         flexDirection: "column",
         gap: "lg",
         backgroundColor: "primary",
-        height: "100%",
         width: "100%",
         alignItems: "center",
+        overflowY: "scroll",
       })}
     >
       <SeoComponent
@@ -235,7 +228,7 @@ const Page = () => {
             alignItems: "center",
             justifyContent: "flex-end",
             gap: "xxlg",
-            minHeight: "100vh",
+            marginTop: "15%",
           })}
         >
           <div
@@ -283,46 +276,15 @@ const Page = () => {
           </div>
           <div
             className={css({
-              display: "flex",
-              flexDirection: "row",
-              flexWrap: "nowrap",
-              justifyContent: "center",
-              gap: "xxlg",
-              alignItems: "flex-end",
+              position: "relative",
+              maxWidth: "100%",
               width: "100%",
+              height: 720,
+              display: "flex",
+              maxHeight: 720,
             })}
           >
-            <img
-              src="https://res.cloudinary.com/whil/image/upload/v1712285934/app/pixel-kit/images/mqmdepb3bj8adqxusir4.png"
-              className={css({
-                width: "250px",
-                "@media(max-width:1158px)": {
-                  width: "190px",
-                },
-                "@media(max-width:1040px)": {
-                  display: "none",
-                },
-              })}
-            />
-            <img
-              src="https://res.cloudinary.com/whil/image/upload/v1712285934/app/pixel-kit/images/akasjodi5noa2vaxqncp.png"
-              className={css({
-                objectFit: "contain",
-                width: "420px",
-              })}
-            />
-            <img
-              src="https://res.cloudinary.com/whil/image/upload/v1712285934/app/pixel-kit/images/psh56yoaa2xdccg8zgbd.png"
-              className={css({
-                width: "250px",
-                "@media(max-width:1158px)": {
-                  width: "190px",
-                },
-                "@media(max-width:1040px)": {
-                  display: "none",
-                },
-              })}
-            />
+            <ComponentApp />
           </div>
         </section>
         <section
