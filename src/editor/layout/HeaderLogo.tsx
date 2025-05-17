@@ -61,7 +61,7 @@ export function HeaderLogo() {
             fontWeight: "bold",
           })}
         >
-          Pixel Kit v4
+          Pixel kit v4
         </p>
       </div>
     </section>

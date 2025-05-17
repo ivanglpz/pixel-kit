@@ -280,6 +280,8 @@ const Page = () => {
               maxWidth: "100%",
               width: "100%",
               height: 720,
+              display: "flex",
+              maxHeight: 720,
             })}
           >
             <ComponentApp />
