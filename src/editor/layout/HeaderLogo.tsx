@@ -14,7 +14,6 @@ export function HeaderLogo() {
         justifyContent: "space-between",
         alignItems: "center",
         gridTemplateColumns: "1fr 25px",
-        marginTop: "lg",
       })}
     >
       <div
