@@ -28,7 +28,7 @@ const PixelKitInputColor: FC<Props> = ({
         className={css({
           color: "text",
           fontWeight: "600",
-          fontSize: "sm",
+          fontSize: "x-small",
         })}
       >
         {labelText}
@@ -50,6 +50,13 @@ const PixelKitInputColor: FC<Props> = ({
             border: "container",
             display: "flex",
             padding: "sm",
+            cursor: "pointer",
+            _hover: {
+              opacity: 0.8,
+            },
+            _active: {
+              scale: 0.9,
+            },
           })}
           style={{
             backgroundColor: color ?? "#ffffff",
@@ -74,6 +81,7 @@ const PixelKitInputColor: FC<Props> = ({
         <input
           type="text"
           value={`#${color?.replace(/#/, "") ?? "ffffff"}`}
+          disabled
           className={css({
             width: "10",
             flex: 1,
@@ -115,6 +123,13 @@ const PixelKitInputColor: FC<Props> = ({
                 border: "container",
                 display: "flex",
                 padding: "sm",
+                cursor: "pointer",
+                _hover: {
+                  opacity: 0.8,
+                },
+                _active: {
+                  scale: 0.9,
+                },
               })}
               style={{
                 backgroundColor: e,

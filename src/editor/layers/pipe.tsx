@@ -1,18 +1,20 @@
 import { Layer } from "react-konva";
-import useTemporalShape from "../hooks/temporalShape/hook";
+import useCurrentItem from "../hooks/useCurrentItem";
 import { useMemo } from "react";
 import { FCShapeWEvents } from "../shapes/type.shape";
 import { Shapes } from "../shapes/shapes";
-import useScreen from "../hooks/screen";
+import { atom, useAtomValue } from "jotai";
+import { STAGE_DIMENSION_ATOM } from "../states/dimension";
 
 export const LayerPipe = () => {
-  const { temporalShape } = useTemporalShape();
+  const { temporalShape } = useCurrentItem();
 
   const Component = useMemo(
     () => Shapes?.[`${temporalShape?.tool}`] as FCShapeWEvents,
     [temporalShape]
   );
-  const { width, height } = useScreen();
+
+  const { height, width } = useAtomValue(STAGE_DIMENSION_ATOM);
 
   if (!temporalShape?.id) return null;
 
@@ -23,7 +25,7 @@ export const LayerPipe = () => {
           screenHeight={height}
           screenWidth={width}
           key={`pixel-kit-temporal-shape-${temporalShape.id}`}
-          shape={temporalShape}
+          shape={atom(temporalShape)}
           draggable={false}
           isSelected={temporalShape?.tool === "TEXT"}
           onClick={() => {}}

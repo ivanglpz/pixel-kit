@@ -1,6 +1,11 @@
 import { FC } from "react";
-import { IKeyMethods } from "../hooks/tool/types";
 import { LineCap, LineJoin } from "konva/lib/Shape";
+import { Atom } from "jotai";
+import { IKeyMethods } from "../states/tool";
+
+export type WithInitialValue<Value> = {
+  init: Value;
+};
 
 export type IShape = {
   id: string;
@@ -30,7 +35,7 @@ export type IShape = {
   fontStyle?: string;
   fontFamily?: string;
   textDecoration?: string;
-  fontWeight?: number;
+  fontWeight?: "bold" | "normal" | "lighter" | "bolder" | "100" | "900";
   shadowBlur?: number;
   shadowColor?: string;
   shadowOffsetX?: number;
@@ -49,7 +54,7 @@ export type IShape = {
 };
 
 export type IShapeWithEvents = {
-  shape: IShape;
+  shape: Atom<IShape>;
   draggable: boolean;
   isSelected: boolean;
   onDragStart: (item: IShape) => void;
@@ -57,6 +62,7 @@ export type IShapeWithEvents = {
   onDragStop: (item: IShape) => void;
   onTransformStop: (item: IShape) => void;
   onClick: (item: IShape) => void;
+  onDbClick?: (item: IShape) => void;
   screenWidth: number;
   screenHeight: number;
 };

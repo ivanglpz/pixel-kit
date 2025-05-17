@@ -3,17 +3,11 @@
 @import url("./fonts.css");
 @import url("./editor/fonts.css");
 @import url("./effects.css");
-body {
-  display: flex;
-  height: 100%;
-  width: 100%;
-  min-height: 100vh;
-  min-width: 100vw;
-  cursor: url("/cursors/default.png"), auto;
-  box-sizing: border-box;
-  font-family: "Plus Jakarta Sans", sans-serif;
-}
+
 #__next {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
   width: 100%;
 }
 
@@ -22,6 +16,16 @@ body {
   box-sizing: border-box;
   touch-action: manipulation;
   user-select: none !important;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  display: flex;
+  cursor: url("/cursors/default.png"), auto;
+  box-sizing: border-box;
+  font-family: "Plus Jakarta Sans", sans-serif;
+  max-width: 100%;
 }
 
 .CursorPointer {
@@ -36,7 +40,8 @@ body {
     height: 6px;
   }
   ::-webkit-scrollbar-track {
-    box-shadow: inset 0 0 5px grey;
+    box-shadow: inset 0 0 5px rgb(71, 71, 71);
+    background-color: rgb(71, 71, 71);
     border-radius: 10px;
   }
   ::-webkit-scrollbar-thumb {
@@ -46,7 +51,11 @@ body {
   ::-webkit-scrollbar-thumb:hover {
     width: 6px;
     height: 6px;
-    background: "white";
+    background: black;
     box-shadow: 0 0 2px 1px rgba(0, 0, 0, 0.2);
   }
+}
+
+.bar {
+  max-height: fit-content;
 }

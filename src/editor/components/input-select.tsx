@@ -24,7 +24,7 @@ export const InputSelect = ({ options, value, onChange, labelText }: Props) => {
         className={css({
           color: "text",
           fontWeight: "600",
-          fontSize: "sm",
+          fontSize: "x-small",
         })}
       >
         {labelText}
@@ -37,8 +37,7 @@ export const InputSelect = ({ options, value, onChange, labelText }: Props) => {
           border: "container",
           backgroundColor: "primary",
           color: "text",
-          padding: "sm",
-          height: "30px",
+          padding: "md",
           borderRadius: "md",
           fontSize: "sm",
         })}

@@ -1,5 +1,4 @@
 import { css } from "@stylespixelkit/css";
-import { tokens } from "../tokens";
 
 type Props = {
   value: number;
@@ -10,14 +9,7 @@ type Props = {
   labelText: string;
 };
 
-export const InputSlider = ({
-  onChange,
-  value,
-  min,
-  max,
-  step,
-  labelText,
-}: Props) => {
+export const InputSlider = ({ onChange, value, labelText }: Props) => {
   return (
     <div
       className={css({
@@ -30,23 +22,31 @@ export const InputSlider = ({
         className={css({
           color: "text",
           fontWeight: "600",
-          fontSize: "sm",
+          fontSize: "x-small",
         })}
       >
         {labelText}
       </p>
-      <input
-        type="range"
-        min={min ?? 0}
-        max={max ?? 100}
-        step={step ?? 1}
+      <select
         value={value}
-        onChange={(e) => onChange(Number(e.target.value))}
         className={css({
-          accentColor: "secondary",
           width: "100%",
+          flex: 1,
+          border: "container",
+          backgroundColor: "primary",
+          color: "text",
+          padding: "md",
+          borderRadius: "md",
+          fontSize: "sm",
         })}
-      />
+        onChange={(event) => onChange(Number(event.target.value))}
+      >
+        {[1, 2, 3, 4, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55]?.map((e) => (
+          <option key={`selector-slider-${e}`} value={e}>
+            {e}
+          </option>
+        ))}
+      </select>
     </div>
   );
 };

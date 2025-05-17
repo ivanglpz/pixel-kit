@@ -1,4 +1,4 @@
-export { default as useSelectedShape } from "./selectedShape/hook";
-export { default as useEvent } from "./events/hook";
-export { default as useStyleConfig } from "./styleConfig/hook";
-export { default as useTool } from "./tool/hook";
+export { default as useSelectedShape } from "./useSelectedShape";
+export { default as useEventStage } from "./useEventStage";
+export { default as useCanvas } from "./useCanvas";
+export { default as useTool } from "./useTool";

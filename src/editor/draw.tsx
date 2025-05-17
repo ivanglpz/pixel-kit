@@ -1,12 +1,17 @@
-import useBrowser from "./hooks/useBrowser/hook";
-import useStopZoom from "./hooks/useStopZoom/hook";
+import dynamic from "next/dynamic";
+import useBrowser from "./hooks/useBrowser";
+import useStopZoom from "./hooks/useStopZoom";
 import { PixelKitLayers } from "./layers";
-import { LayoutPixelEditorDraw } from "./layout/draw";
-import PixelKitStage from "./Stage";
+import { LayoutPixelEditorDraw } from "./layout/_layoutDraw";
+import PixelKitStage from "./stage";
+import { useConfiguration } from "./hooks/useConfiguration";
 
-export const PixelEditorDraw = () => {
+const Component = () => {
   useStopZoom();
   useBrowser();
+  useConfiguration({
+    type: "FREE_DRAW",
+  });
   return (
     <LayoutPixelEditorDraw>
       <PixelKitStage>
@@ -15,3 +20,7 @@ export const PixelEditorDraw = () => {
     </LayoutPixelEditorDraw>
   );
 };
+const PixelEditorDraw = dynamic(Promise.resolve(Component), {
+  ssr: false,
+});
+export default PixelEditorDraw;

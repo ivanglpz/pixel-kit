@@ -1,10 +1,12 @@
-import { Dispatch, SetStateAction, useEffect } from "react";
+/* eslint-disable react-hooks/exhaustive-deps */
+import { Dispatch, SetStateAction, useEffect, useRef } from "react";
 import { IShape } from "./type.shape";
 import { Html } from "react-konva-utils";
 import { createPortal } from "react-dom";
 import { useTool } from "../hooks";
-import { useReference } from "../hooks/reference";
-import { tokens } from "../tokens";
+import { useReference } from "../hooks/useReference";
+import { tokens } from "../constants";
+import { Stage } from "konva/lib/Stage";
 
 type Props = {
   setShape: Dispatch<SetStateAction<IShape>>;
@@ -17,7 +19,23 @@ export const PortalTextWriting = ({ shape, isSelected, setShape }: Props) => {
   const { ref } = useReference({
     type: "STAGE",
   });
-  const stage = ref?.current;
+  const stage = ref?.current as Stage;
+  const adjustTextareaHeight = () => {
+    if (textareaRef.current) {
+      const textarea = textareaRef.current;
+      textarea.style.height = "auto";
+      const newHeight = textarea.scrollHeight;
+      setShape((prev) => ({
+        ...prev,
+        height: newHeight,
+      }));
+      textarea.style.height = `${newHeight}px`;
+    }
+  };
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  useEffect(() => {
+    adjustTextareaHeight();
+  }, [shape?.text, textareaRef]);
 
   if (!shape?.isWritingNow || !isSelected || !stage) return null;
 
@@ -25,7 +43,6 @@ export const PortalTextWriting = ({ shape, isSelected, setShape }: Props) => {
     x: stage?.container().offsetLeft + shape.x,
     y: stage?.container().offsetTop + shape.y,
   };
-
   const sidebarElement = document.getElementById("StageViewer");
 
   return (
@@ -42,6 +59,7 @@ export const PortalTextWriting = ({ shape, isSelected, setShape }: Props) => {
         ? createPortal(
             <>
               <textarea
+                ref={textareaRef}
                 autoFocus
                 onFocus={() => {
                   setTool("WRITING");
@@ -56,6 +74,7 @@ export const PortalTextWriting = ({ shape, isSelected, setShape }: Props) => {
                     Number(shape.height) > 100 ? shape.height + "px" : "100px",
                   resize: "none",
                   background: "transparent",
+                  fontWeight: shape?.fontWeight ?? "normal",
                   fontSize: shape.fontSize + "px",
                   border: `1px solid ${tokens.colors.blue}`,
                   padding: "0px",
@@ -65,9 +84,13 @@ export const PortalTextWriting = ({ shape, isSelected, setShape }: Props) => {
                   textAlign: "left",
                   color: shape.backgroundColor ?? "white",
                   lineHeight: 1.45,
+                  textShadow: shape.shadowEnabled
+                    ? `${shape.shadowOffsetX}px ${shape.shadowOffsetY}px  #000`
+                    : "none",
                 }}
                 value={shape.text ?? ""}
                 onChange={(e) => {
+                  adjustTextareaHeight();
                   setShape((prev) => ({
                     ...prev,
                     text: e.target.value,

@@ -1,9 +1,10 @@
 import { Layer } from "react-konva";
 import { useSelectedShape, useTool } from "../hooks";
-import useShapes from "../hooks/shapes/hook";
+import useShapes from "../hooks/useShapes";
 import { FCShapeWEvents, IShape } from "../shapes/type.shape";
 import { Shapes } from "../shapes/shapes";
-import useScreen from "../hooks/screen";
+import { useAtomValue } from "jotai";
+import { STAGE_DIMENSION_ATOM } from "../states/dimension";
 
 export const LayerShapes = () => {
   const { shapes } = useShapes();
@@ -14,7 +15,7 @@ export const LayerShapes = () => {
     handleSetShapeSelected(element);
   };
 
-  const { width, height } = useScreen();
+  const { height, width } = useAtomValue(STAGE_DIMENSION_ATOM);
 
   return (
     <>
@@ -27,7 +28,7 @@ export const LayerShapes = () => {
               screenHeight={height}
               screenWidth={width}
               key={`pixel-kit-shapes-${item?.id}`}
-              shape={item}
+              shape={item?.state}
               draggable={!isDrawing && isSelected}
               isSelected={!isDrawing && isSelected}
               onClick={onClick}
