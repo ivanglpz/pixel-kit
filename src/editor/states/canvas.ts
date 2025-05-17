@@ -5,8 +5,11 @@ export type IStageConfig = {
   graphicMapped?: boolean;
 };
 
-const StageConfigAtom = atomWithStorage<IStageConfig>("harmony_stage", {
-  backgroundColor: "#04080c",
-  graphicMapped: true,
-});
+const StageConfigAtom = atomWithStorage<IStageConfig>(
+  "pixel-kit-canvas-config",
+  {
+    backgroundColor: "#FFFFFF",
+    graphicMapped: true,
+  }
+);
 export default StageConfigAtom;
