@@ -19,7 +19,7 @@ export const LayerShapes = () => {
 
   return (
     <>
-      <Layer>
+      <Layer id="layer-shapes">
         {Object.values(shapes)?.map((item) => {
           const Component = Shapes?.[item?.tool] as FCShapeWEvents;
           const isSelected = item?.id === shapeSelected?.id;

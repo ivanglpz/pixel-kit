@@ -22,7 +22,7 @@ export const LayerImage = () => {
   if (!img?.base64) return null;
 
   return (
-    <Layer>
+    <Layer id="layer-image-preview">
       <ShapeImage
         screenHeight={height}
         screenWidth={width}

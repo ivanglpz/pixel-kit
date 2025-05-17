@@ -20,7 +20,7 @@ export const LayerPipe = () => {
 
   return (
     <>
-      <Layer>
+      <Layer id="layer-pipe-shapes">
         <Component
           screenHeight={height}
           screenWidth={width}

@@ -22,7 +22,7 @@ const Component = () => {
         flex: 1,
       })}
     >
-      <SidebarRight />
+      <p>left</p>
       <PixelKitStage>
         <PixelKitLayers />
       </PixelKitStage>

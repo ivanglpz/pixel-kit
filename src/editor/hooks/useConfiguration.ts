@@ -13,6 +13,7 @@ type Config = {
   showCanvasConfig: boolean;
   showClipImageConfig: boolean;
   tools: IKeyTool[];
+  showBackgroundColor: boolean;
 };
 
 type Keys = "EDIT_IMAGE" | "FREE_DRAW";
@@ -25,7 +26,8 @@ const configs: { [key in Keys]: Config } = {
     backgroundColor: "#212121",
     showCanvasConfig: false,
     showClipImageConfig: true,
-    tools: ["BOX", "CIRCLE", "LINE", "IMAGE", "TEXT", "DRAW"],
+    tools: ["MOVE", "BOX", "CIRCLE", "LINE", "IMAGE", "TEXT", "DRAW"],
+    showBackgroundColor: false,
   },
   FREE_DRAW: {
     showPreviewImage: false,
@@ -34,7 +36,8 @@ const configs: { [key in Keys]: Config } = {
     backgroundColor: "#ffffff",
     showCanvasConfig: true,
     showClipImageConfig: false,
-    tools: ["LINE", "TEXT", "DRAW"],
+    tools: ["MOVE", "LINE", "TEXT", "DRAW"],
+    showBackgroundColor: true,
   },
 };
 
