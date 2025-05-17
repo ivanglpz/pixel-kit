@@ -41,9 +41,9 @@ const PixelEditor = () => {
           display: "grid",
           gridTemplateColumns: "240px 1fr 240px",
           backgroundColor: "black",
-          flex: 1,
           height: "100%",
           width: "100%",
+          overflow: "hidden",
         })}
       >
         <div

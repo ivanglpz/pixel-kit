@@ -27,6 +27,7 @@ const SidebarRight: FC = () => {
         overflowY: "scroll",
         padding: "md",
         borderLeft: "1px solid gray",
+        height: "100%",
       })}
     >
       <ChangeEnv />
