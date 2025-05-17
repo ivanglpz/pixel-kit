@@ -2,7 +2,6 @@
 import { Group, Layer, Rect, Transformer } from "react-konva";
 import { ShapeImage } from "../shapes/image.shape";
 import { useImageRender } from "../hooks/useImageRender";
-import useScreen from "../hooks/useScreen";
 import { calculateDimension } from "@/utils/calculateDimension";
 import { atom, useAtom, useAtomValue } from "jotai";
 import { MutableRefObject, useEffect, useRef } from "react";
@@ -12,10 +11,12 @@ import Konva from "konva";
 import { Shape, ShapeConfig } from "konva/lib/Shape";
 import { boxClipAtom, showClipAtom } from "../states/clipImage";
 import { useReference } from "../hooks/useReference";
+import { STAGE_DIMENSION_ATOM } from "../states/dimension";
 
 export const LayerImage = () => {
   const { img } = useImageRender();
-  const { height, width } = useScreen();
+  const { height, width } = useAtomValue(STAGE_DIMENSION_ATOM);
+
   const dimension = calculateDimension(width, height, img?.width, img?.height);
   const showClip = useAtomValue(showClipAtom);
   if (!img?.base64) return null;
@@ -60,7 +61,8 @@ type ClipProps = {
 
 const ClipComponent = ({ isSelected }: ClipProps) => {
   const { img } = useImageRender();
-  const { height, width } = useScreen();
+  const { height, width } = useAtomValue(STAGE_DIMENSION_ATOM);
+
   const dimension = calculateDimension(width, height, img?.width, img?.height);
   const trRef = useRef<Konva.Transformer>(null);
   const shapeRef = useRef<Konva.Rect>(null);

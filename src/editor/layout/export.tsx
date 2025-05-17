@@ -5,12 +5,11 @@ import { InputText } from "@/editor/components/input-text";
 import { Section } from "@/editor/components/section";
 import { useImageRender } from "@/editor/hooks/useImageRender";
 import { useReference } from "@/editor/hooks/useReference";
-import useScreen from "@/editor/hooks/useScreen";
 import { useConfiguration } from "@/editor/hooks/useConfiguration";
 import { showClipAtom } from "@/editor/states/clipImage";
 import { calculateDimension } from "@/utils/calculateDimension";
 import { css } from "@stylespixelkit/css";
-import { useSetAtom } from "jotai";
+import { useAtomValue, useSetAtom } from "jotai";
 import { Group } from "konva/lib/Group";
 import { Stage } from "konva/lib/Stage";
 import Link from "next/link";
@@ -19,6 +18,7 @@ import { createPortal } from "react-dom";
 import { toast } from "sonner";
 import { v4 as uuidv4 } from "uuid";
 import { ImageConfiguration } from "./imageConfig";
+import { STAGE_DIMENSION_ATOM } from "../states/dimension";
 
 const formats = {
   LOW: 0.8,
@@ -56,7 +56,8 @@ export const ExportStage = () => {
   const { config } = useConfiguration();
   const { img } = useImageRender();
   const [loading, setloading] = useState(false);
-  const { height, width } = useScreen();
+  const { height, width } = useAtomValue(STAGE_DIMENSION_ATOM);
+
   const [format, setformat] = useState("HIGH");
   const [showExport, setShowExport] = useState(false);
   const setshowClip = useSetAtom(showClipAtom);

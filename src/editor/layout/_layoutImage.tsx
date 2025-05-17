@@ -4,20 +4,11 @@ import { css } from "@stylespixelkit/css";
 import { Drawing } from "./drawing";
 import { useConfiguration } from "@/editor/hooks/useConfiguration";
 import { Valid } from "@/components/valid";
-import { motion, useDragControls } from "framer-motion";
-
-import { DragControls } from "framer-motion";
 import { useReference } from "@/editor/hooks/useReference";
 import { Clip } from "./clip";
 import { Tools } from "./tools";
 import { useBrowserType } from "@/editor/hooks/useTypeBrowser";
 import { ExportStage } from "./export";
-
-interface Props {
-  dragControls: DragControls;
-  showConfig: boolean;
-  setshowConfig: Dispatch<SetStateAction<boolean>>;
-}
 
 export function HeaderConfiguration() {
   return (
