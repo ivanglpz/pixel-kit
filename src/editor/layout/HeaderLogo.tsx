@@ -1,16 +1,6 @@
-import { Dispatch, FC, RefObject, SetStateAction, useState } from "react";
-import StageConfig from "./canvas";
 import { css } from "@stylespixelkit/css";
-import { Drawing } from "./drawing";
-import { useConfiguration } from "@/editor/hooks/useConfiguration";
-import { Valid } from "@/components/valid";
-import { useReference } from "@/editor/hooks/useReference";
-import { Clip } from "./clip";
-import { Tools } from "./tools";
-import { useBrowserType } from "@/editor/hooks/useTypeBrowser";
-import { ExportStage } from "./export";
 
-export function HeaderConfiguration() {
+export function HeaderLogo() {
   return (
     <section
       className={css({
@@ -77,60 +67,6 @@ export function HeaderConfiguration() {
           Pixel Kit v4
         </p>
       </div>
-      <div
-        className={css({
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-        })}
-      >
-        1
-      </div>
     </section>
   );
 }
-
-const LayoutEditorSidebarRight: FC = () => {
-  const { config } = useConfiguration();
-  const { ref } = useReference({ type: "CONTAINER" });
-  const browser = useBrowserType();
-
-  return (
-    <aside
-      className={css({
-        // webmaxHeight: "fit-content",
-        backgroundColor: "rgba(0,0,0,0.15)",
-        borderRadius: "sm",
-        zIndex: 9,
-        width: "100%",
-        display: "flex",
-        flexDirection: "column",
-        gap: "md",
-        overflow: "hidden",
-        overflowX: "hidden",
-        overflowY: "scroll",
-        padding: "md",
-      })}
-    >
-      <HeaderConfiguration />
-      <Tools />
-      <Valid isValid={config?.showCanvasConfig}>
-        <StageConfig />
-      </Valid>
-      <Valid isValid={config.showClipImageConfig}>
-        <Clip />
-      </Valid>
-      <Drawing />
-      <div
-        id="pixel-kit-sidebar-right"
-        style={{
-          padding: "0px",
-          margin: "0",
-        }}
-      ></div>
-      <ExportStage />
-    </aside>
-  );
-};
-
-export default LayoutEditorSidebarRight;

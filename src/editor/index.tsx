@@ -4,7 +4,7 @@ import useStopZoom from "./hooks/useStopZoom";
 import { PixelKitLayers } from "./layers";
 import PixelKitStage from "./stage";
 import { useConfiguration } from "./hooks/useConfiguration";
-import LayoutEditorSidebarRight from "./layout/_layoutImage";
+import SidebarRight from "./layout/SidebarRight";
 import { css } from "@stylespixelkit/css";
 
 const PixelEditor = () => {
@@ -22,11 +22,11 @@ const PixelEditor = () => {
         flex: 1,
       })}
     >
-      <LayoutEditorSidebarRight />
+      <SidebarRight />
       <PixelKitStage>
         <PixelKitLayers />
       </PixelKitStage>
-      <LayoutEditorSidebarRight />
+      <SidebarRight />
     </div>
   );
 };

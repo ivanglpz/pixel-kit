@@ -7,7 +7,7 @@ import { useImageRender } from "@/editor/hooks/useImageRender";
 import { useReference } from "@/editor/hooks/useReference";
 import { useConfiguration } from "@/editor/hooks/useConfiguration";
 import { showClipAtom } from "@/editor/states/clipImage";
-import { calculateDimension } from "@/utils/calculateDimension";
+import { calculateDimension } from "@/editor/utils/calculateDimension";
 import { css } from "@stylespixelkit/css";
 import { useAtomValue, useSetAtom } from "jotai";
 import { Group } from "konva/lib/Group";
