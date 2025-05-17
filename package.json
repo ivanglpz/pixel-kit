@@ -13,27 +13,30 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "canvas": "2.11.2",
+    "@vercel/analytics": "^1.5.0",
+    "canvas": "3.1.0",
     "eslint": "8.38.0",
     "eslint-config-next": "13.3.0",
-    "jotai": "^2.0.4",
-    "konva": "^9.0.1",
+    "framer-motion": "^11.18.2",
+    "jotai": "^2.12.4",
+    "konva": "^9.3.20",
     "next": "13.3.0",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "react-hook-form": "^7.43.9",
-    "react-konva": "^18.2.7",
-    "react-konva-utils": "^1.0.4",
-    "sonner": "^1.2.4",
+    "react-hook-form": "^7.56.3",
+    "react-konva": "^18.2.10",
+    "react-konva-utils": "^1.1.0",
+    "sonner": "1.2.4",
+    "tsx": "^4.19.4",
     "typescript": "5.0.4",
-    "uuid": "^9.0.0"
+    "uuid": "^9.0.1"
   },
   "devDependencies": {
     "@pandacss/dev": "0.32.1",
     "@types/node": "18.15.11",
     "@types/react": "18.0.35",
     "@types/react-dom": "18.0.11",
-    "@types/uuid": "^9.0.1",
-    "prettier": "^3.0.3"
+    "@types/uuid": "^9.0.8",
+    "prettier": "^3.5.3"
   }
 }

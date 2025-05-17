@@ -30,6 +30,7 @@ export default defineConfig({
         container: { value: "0.1px solid #424242" },
         selected: { value: "1px solid " },
         secondary: { value: "rgb(0, 153, 255)" },
+        success: { value: "#5cb85c" },
       },
       gradients: {
         primary: {
@@ -56,12 +57,14 @@ export default defineConfig({
       },
       colors: {
         primary: {
-          value: "#0d0e0e",
+          value: "#0A0A0A",
         },
         secondary: { value: "rgb(0, 153, 255)" },
+        danger: { value: "#bb2124" },
         text: {
           value: "white",
         },
+        success: { value: "#5cb85c" },
       },
       fontWeights: {
         bold: {

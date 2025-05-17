@@ -1,7 +1,7 @@
 /* eslint-disable react/display-name */
 import Konva from "konva";
 import { memo, MutableRefObject, useEffect, useRef, useState } from "react";
-import { IShapeWithEvents } from "./type.shape";
+import { IShape, IShapeWithEvents, WithInitialValue } from "./type.shape";
 import { Circle } from "react-konva";
 import {
   shapeEventClick,
@@ -11,9 +11,9 @@ import {
   shapeTransformEnd,
 } from "./events.shape";
 import { Transform } from "./transformer";
-import { KonvaEventObject } from "konva/lib/Node";
 import { PortalConfigShape } from "./config.shape";
 import { Valid } from "@/components/valid";
+import { PrimitiveAtom, useAtom } from "jotai";
 
 export const ShapeCircle = memo((item: IShapeWithEvents) => {
   const {
@@ -27,9 +27,9 @@ export const ShapeCircle = memo((item: IShapeWithEvents) => {
     screenWidth,
   } = item;
 
-  const [box, setBox] = useState(() => {
-    return item.shape;
-  });
+  const [box, setBox] = useAtom(
+    item.shape as PrimitiveAtom<IShape> & WithInitialValue<IShape>
+  );
 
   const {
     width,
@@ -65,9 +65,6 @@ export const ShapeCircle = memo((item: IShapeWithEvents) => {
     }
   }, [isSelected, trRef, shapeRef]);
 
-  useEffect(() => {
-    setBox(item.shape);
-  }, [item.shape]);
   return (
     <>
       <Valid isValid={isSelected}>
@@ -100,6 +97,7 @@ export const ShapeCircle = memo((item: IShapeWithEvents) => {
         draggable={draggable}
         stroke={stroke}
         strokeWidth={strokeWidth}
+        onTap={(e) => setBox(shapeEventClick(e, onClick))}
         onClick={(e) => setBox(shapeEventClick(e, onClick))}
         onDragStart={(e) => setBox(ShapeEventDragStart(e, onDragStart))}
         onDragMove={(e) =>
