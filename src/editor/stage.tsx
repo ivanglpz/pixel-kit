@@ -1,10 +1,10 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { FC, ReactNode, useEffect, useRef } from "react";
 import { Layer, Rect, Stage } from "react-konva";
-import { useEvent, useSelectedShape, useCanvas, useTool } from "../hooks";
+import { useSelectedShape, useCanvas, useTool, useEventStage } from "./hooks";
 import { css } from "@stylespixelkit/css";
-import useScreen from "../hooks/screen";
-import { useReference } from "../hooks/reference";
+import useScreen from "./hooks/useScreen";
+import { useReference } from "./hooks/useReference";
 import Konva from "konva";
 import { Valid } from "@/components/valid";
 import { KonvaEventObject } from "konva/lib/Node";
@@ -18,7 +18,7 @@ export const StageRender = ({ children }: Props) => {
 
   const { config } = useCanvas();
   const { handleCleanShapeSelected } = useSelectedShape();
-  const { handleMouseDown, handleMouseUp, handleMouseMove } = useEvent();
+  const { handleMouseDown, handleMouseUp, handleMouseMove } = useEventStage();
   const { tool, setTool } = useTool();
   const { height, width } = useScreen();
   const { handleSetRef } = useReference({

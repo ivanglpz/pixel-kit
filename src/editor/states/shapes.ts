@@ -1,6 +1,6 @@
 import { IShape } from "@/editor/shapes/type.shape";
 import { Atom, atom } from "jotai";
-import { IKeyMethods } from "../tool/types";
+import { IKeyMethods } from "./tool";
 
 type IOBCElement = {
   [key: string]: {

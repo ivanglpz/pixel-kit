@@ -1,5 +1,5 @@
 import { IShape } from "@/editor/shapes/type.shape";
-import { IShapeProgressEvent } from "./types";
+import { IShapeProgressEvent } from "../hooks/useEventStage";
 
 const isNotNegative = (value: number) => {
   return value < 1 ? 1 : value;
@@ -49,14 +49,3 @@ export const shapeProgressEvent: IShapeProgressEvent = {
   LINE: shapeBoxProgress,
   EXPORT: shapeBoxProgress,
 };
-
-// export const shapeLineProgress = (
-//   x: number,
-//   y: number,
-//   element: IElement
-// ): IElement => {
-//   return Object.assign({}, element, {
-//     width: x - Number(element?.x),
-//     height: y - Number(element?.y),
-//   });
-// };

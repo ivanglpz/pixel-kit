@@ -6,7 +6,7 @@ import { InputSelect } from "@/editor/components/input-select";
 import { InputSlider } from "@/editor/components/input-slider";
 import { Section } from "@/editor/components/section";
 import { useSelectedShape } from "@/editor/hooks";
-import useShapes from "@/editor/hooks/shapes/hook";
+import useShapes from "@/editor/hooks/useShapes";
 import { IShape } from "@/editor/shapes/type.shape";
 import { css } from "@stylespixelkit/css";
 import { useRef, ChangeEvent } from "react";

@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { atom, useAtom } from "jotai";
 import { useCallback } from "react";
-import elementsAtom from "./jotai";
+import elementsAtom from "../states/shapes";
 import { IShape } from "@/editor/shapes/type.shape";
 
 const useShapes = () => {

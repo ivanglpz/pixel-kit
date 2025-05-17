@@ -1,8 +1,8 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { atom, useAtom } from "jotai";
 import { useEffect } from "react";
-import useShapes from "./shapes/hook";
-import useCanvas from "./canvas/hook";
+import useShapes from "./useShapes";
+import useCanvas from "./useCanvas";
 
 type Config = {
   showPreviewImage: boolean;

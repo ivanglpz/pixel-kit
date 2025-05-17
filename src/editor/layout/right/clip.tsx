@@ -4,9 +4,9 @@ import { InputCheckbox } from "@/editor/components/input-checkbox";
 import { InputText } from "@/editor/components/input-text";
 import { Section } from "@/editor/components/section";
 import { useTool } from "@/editor/hooks";
-import { useImageRender } from "@/editor/hooks/image/hook";
-import { useReference } from "@/editor/hooks/reference";
-import { boxClipAtom, showClipAtom } from "@/editor/jotai/clipImage";
+import { useImageRender } from "@/editor/hooks/useImageRender";
+import { useReference } from "@/editor/hooks/useReference";
+import { boxClipAtom, showClipAtom } from "@/editor/states/clipImage";
 import { css } from "@stylespixelkit/css";
 import { useAtom, useAtomValue } from "jotai";
 

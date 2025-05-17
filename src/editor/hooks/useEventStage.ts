@@ -1,34 +1,74 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { KonvaEventObject } from "konva/lib/Node";
 import { useEffect, useState } from "react";
-import useSelectedShape from "../selectedShape/hook";
-import useShapes from "../shapes/hook";
-import useTemporalShape from "../temporalShape/hook";
-import useTool from "../tool/hook";
-import { IStageEvents } from "./types";
-import { shapeProgressEvent } from "./progress";
-import { shapeStart } from "./start";
-import { IKeyMethods, IKeyTool } from "../tool/types";
-import stageAbsolutePosition from "../../helpers/position";
-import { useBeforeStartDrawing } from "@/editor/states/drawing/useBeforeStartDrawing";
-import { showClipAtom } from "@/editor/jotai/clipImage";
+import useTool from "./useTool";
+import { shapeProgressEvent } from "../helpers/progressEvent";
+import { shapeStart } from "../helpers/startEvent";
+import stageAbsolutePosition from "../helpers/position";
 import { useSetAtom } from "jotai";
+import useSelectedShape from "./useSelectedShape";
+import useShapes from "./useShapes";
+import useCurrentItem from "./useCurrentItem";
+import { IKeyMethods, IKeyTool } from "@/editor/states/tool";
+import { useStartDrawing } from "./useStartDrawing";
+import { showClipAtom } from "@/editor/states/clipImage";
+
 import { IShape } from "@/editor/shapes/type.shape";
 
-const useEvent = () => {
+export type IRelativePosition = {
+  x: number;
+  y: number;
+};
+
+export type IStartEvent = (
+  event: IRelativePosition,
+  params?: {
+    text?: string;
+    image?: string;
+    width?: number;
+    height?: number;
+  }
+) => IShape;
+
+export type IEndEvent = (event: IRelativePosition, element: IShape) => IShape;
+
+export type IEventElement = {
+  [key in IKeyTool]?: {
+    start: IStartEvent;
+    progress: IEndEvent;
+  };
+};
+
+export type IShapeProgressEvent = {
+  [key in IKeyMethods]: (x: number, y: number, element: IShape) => IShape;
+};
+
+export type IStageEvents =
+  | "STAGE_COPY_IMAGE_SHAPE"
+  | "STAGE_IDLE"
+  | "STAGE_TEMPORAL_CREATING_SHAPE"
+  | "STAGE_TEMPORAL_UPDATING_SHAPE"
+  | "STAGE_COPY_TEXT_SHAPE"
+  | "STAGE_COPY_SHAPE_SVG"
+  | "STAGE_DELETE_SHAPES"
+  | "STAGE_COPY_SHAPE"
+  | "STAGE_IS_DRAWING_NOW"
+  | "STAGE_CREATING_LINE";
+
+const useEventStage = () => {
   const { isGoingToCreateAShape, tool, setTool, isNotWriting, isDrawing } =
     useTool();
   const { handleCreateShape, handleDeleteShapeInShapes } = useShapes();
 
   const { shapeSelected, handleCleanShapeSelected, handleSetShapeSelected } =
     useSelectedShape();
-  const { state } = useBeforeStartDrawing();
+  const { state } = useStartDrawing();
   const {
     handleCleanTemporalShape,
     handleCreateTemporalShape,
     handleUpdateTemporalShape,
     temporalShape,
-  } = useTemporalShape();
+  } = useCurrentItem();
   const setshowClip = useSetAtom(showClipAtom);
 
   const [eventStage, setEventStage] = useState<IStageEvents>("STAGE_IDLE");
@@ -288,4 +328,4 @@ const useEvent = () => {
   };
 };
 
-export default useEvent;
+export default useEventStage;

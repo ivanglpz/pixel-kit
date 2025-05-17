@@ -1,9 +1,9 @@
 import dynamic from "next/dynamic";
-import useBrowser from "./hooks/useBrowser/hook";
-import useStopZoom from "./hooks/useStopZoom/hook";
+import useBrowser from "./hooks/useBrowser";
+import useStopZoom from "./hooks/useStopZoom";
 import { PixelKitLayers } from "./layers";
 import { LayoutPixelEditorDraw } from "./layout/draw";
-import PixelKitStage from "./Stage";
+import PixelKitStage from "./stage";
 import { useConfiguration } from "./hooks/useConfiguration";
 
 const Component = () => {
