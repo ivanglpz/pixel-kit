@@ -22,6 +22,8 @@ body {
   height: 100%;
   box-sizing: border-box;
   display: flex;
+  flex-direction: column;
+  display: flex;
   cursor: url("/cursors/default.png"), auto;
   box-sizing: border-box;
   font-family: "Plus Jakarta Sans", sans-serif;

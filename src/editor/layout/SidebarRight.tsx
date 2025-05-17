@@ -29,7 +29,6 @@ const SidebarRight: FC = () => {
         borderLeft: "1px solid gray",
       })}
     >
-      <HeaderLogo />
       <ChangeEnv />
 
       <Tools />
