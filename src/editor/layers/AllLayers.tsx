@@ -5,7 +5,7 @@ import { LayerShapes } from "./shapes";
 import { useConfiguration } from "../hooks/useConfiguration";
 import { LayerBackground } from "./background";
 
-export const PixelKitLayers = () => {
+export const AllLayers = () => {
   const { config } = useConfiguration();
   return (
     <>

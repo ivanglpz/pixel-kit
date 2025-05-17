@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { FC, ReactNode, useEffect, useRef, useState } from "react";
-import { Layer, Rect, Stage } from "react-konva";
+import { Stage } from "react-konva";
 import { useSelectedShape, useCanvas, useTool, useEventStage } from "./hooks";
 import { css } from "@stylespixelkit/css";
 import { useReference } from "./hooks/useReference";
@@ -14,7 +14,7 @@ type Props = {
   children: ReactNode;
 };
 
-const PixelKitStage: FC<Props> = ({ children }) => {
+const PxStage: FC<Props> = ({ children }) => {
   const [{ height, width }, setDimension] = useAtom(STAGE_DIMENSION_ATOM);
   const containerRef = useRef<HTMLDivElement>(null);
   const stageRef = useRef<Konva.Stage>(null);
@@ -163,4 +163,4 @@ const PixelKitStage: FC<Props> = ({ children }) => {
   );
 };
 
-export default PixelKitStage;
+export default PxStage;

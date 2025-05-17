@@ -1,8 +1,8 @@
 import dynamic from "next/dynamic";
 import useBrowser from "./hooks/useBrowser";
 import useStopZoom from "./hooks/useStopZoom";
-import { PixelKitLayers } from "./layers";
-import PixelKitStage from "./stage";
+import { AllLayers } from "./layers/AllLayers";
+import PxStage from "./stage";
 import { useConfiguration } from "./hooks/useConfiguration";
 import SidebarRight from "./layout/SidebarRight";
 import { css } from "@stylespixelkit/css";
@@ -24,9 +24,9 @@ const PixelEditor = () => {
     >
       <p>left</p>
 
-      <PixelKitStage>
-        <PixelKitLayers />
-      </PixelKitStage>
+      <PxStage>
+        <AllLayers />
+      </PxStage>
       <SidebarRight />
     </div>
   );

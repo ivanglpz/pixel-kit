@@ -9,7 +9,7 @@ import { useConfiguration } from "@/editor/hooks/useConfiguration";
 import { showClipAtom } from "@/editor/states/clipImage";
 import { calculateDimension } from "@/editor/utils/calculateDimension";
 import { css } from "@stylespixelkit/css";
-import { useAtomValue, useSetAtom } from "jotai";
+import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { Group } from "konva/lib/Group";
 import { Stage } from "konva/lib/Stage";
 import Link from "next/link";
@@ -19,6 +19,7 @@ import { toast } from "sonner";
 import { v4 as uuidv4 } from "uuid";
 import { ImageConfiguration } from "./imageConfig";
 import { STAGE_DIMENSION_ATOM } from "../states/dimension";
+import { typeExportAtom } from "../states/export";
 
 const formats = {
   LOW: 0.8,
@@ -59,7 +60,7 @@ export const ExportStage = () => {
   const [loading, setloading] = useState(false);
   const { height, width } = useAtomValue(STAGE_DIMENSION_ATOM);
 
-  const [format, setformat] = useState("HIGH");
+  const [format, setformat] = useAtom(typeExportAtom);
   const [showExport, setShowExport] = useState(false);
   const setshowClip = useSetAtom(showClipAtom);
 
