@@ -3,18 +3,18 @@ import useCurrentItem from "../hooks/useCurrentItem";
 import { useMemo } from "react";
 import { FCShapeWEvents } from "../shapes/type.shape";
 import { Shapes } from "../shapes/shapes";
-import useScreen from "../hooks/useScreen";
-import { atom } from "jotai";
+import { atom, useAtomValue } from "jotai";
+import { STAGE_DIMENSION_ATOM } from "../states/dimension";
 
 export const LayerPipe = () => {
   const { temporalShape } = useCurrentItem();
-  console.log(temporalShape);
 
   const Component = useMemo(
     () => Shapes?.[`${temporalShape?.tool}`] as FCShapeWEvents,
     [temporalShape]
   );
-  const { width, height } = useScreen();
+
+  const { height, width } = useAtomValue(STAGE_DIMENSION_ATOM);
 
   if (!temporalShape?.id) return null;
 

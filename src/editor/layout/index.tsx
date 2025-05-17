@@ -42,19 +42,12 @@ const LayoutPixelEditor: FC<Props> = ({ children }) => {
           width: "100dvw",
           height: "100dvh",
           display: "grid",
-          gridTemplateColumns: "1fr 240px",
+          gridTemplateColumns: "240px 1fr 240px",
         })}
       >
-        <div
-          className={css({
-            height: "100%",
-            width: "100%",
-            position: "relative",
-          })}
-          ref={constraintsRef}
-        >
-          {children}
-        </div>
+        <LayoutEditorSidebarRight />
+
+        {children}
         <LayoutEditorSidebarRight />
       </div>
     </main>

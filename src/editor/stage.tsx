@@ -1,38 +1,42 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { FC, ReactNode, useEffect, useRef } from "react";
+import { FC, ReactNode, useEffect, useRef, useState } from "react";
 import { Layer, Rect, Stage } from "react-konva";
 import { useSelectedShape, useCanvas, useTool, useEventStage } from "./hooks";
 import { css } from "@stylespixelkit/css";
-import useScreen from "./hooks/useScreen";
 import { useReference } from "./hooks/useReference";
 import Konva from "konva";
-import { Valid } from "@/components/valid";
 import { KonvaEventObject } from "konva/lib/Node";
+import { useAtom } from "jotai";
+import { STAGE_DIMENSION_ATOM } from "./states/dimension";
+import { Valid } from "@/components/valid";
 
 type Props = {
   children: ReactNode;
 };
 
-export const StageRender = ({ children }: Props) => {
-  const ref = useRef<Konva.Stage>(null);
+const PixelKitStage: FC<Props> = ({ children }) => {
+  const [{ height, width }, setDimension] = useAtom(STAGE_DIMENSION_ATOM);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const stageRef = useRef<Konva.Stage>(null);
+  const [show, setShow] = useState(true);
 
   const { config } = useCanvas();
   const { handleCleanShapeSelected } = useSelectedShape();
   const { handleMouseDown, handleMouseUp, handleMouseMove } = useEventStage();
   const { tool, setTool } = useTool();
-  const { height, width } = useScreen();
+
   const { handleSetRef } = useReference({
     type: "STAGE",
-    ref,
+    ref: stageRef,
   });
   useEffect(() => {
-    if (ref?.current) {
+    if (stageRef?.current) {
       handleSetRef({
         type: "STAGE",
-        ref,
+        ref: stageRef,
       });
     }
-  }, [height, width, ref]);
+  }, [height, width, stageRef]);
 
   const handleClear = (e: KonvaEventObject<MouseEvent>) => {
     if (["DRAW", "LINE"].includes(tool)) return;
@@ -45,60 +49,91 @@ export const StageRender = ({ children }: Props) => {
     }
   };
 
-  return (
-    <Stage
-      ref={ref}
-      width={width}
-      height={height}
-      onMouseDown={handleMouseDown}
-      onMousemove={handleMouseMove}
-      onMouseup={handleMouseUp}
-      onTouchStart={(e) =>
-        handleMouseDown(e as unknown as KonvaEventObject<MouseEvent>)
+  useEffect(() => {
+    const timeout = requestAnimationFrame(() => {
+      if (containerRef.current) {
+        const { width, height } = containerRef.current.getBoundingClientRect();
+        setDimension({ width, height });
       }
-      onTouchMove={(e) =>
-        handleMouseMove(e as unknown as KonvaEventObject<MouseEvent>)
-      }
-      onTouchEnd={handleMouseUp}
-      onClick={handleClear}
-      onTap={handleClear}
-    >
-      <Layer>
-        <Rect
-          width={width}
-          height={height}
-          x={0}
-          y={0}
-          fill={config.backgroundColor}
-        />
-      </Layer>
-      {children}
-    </Stage>
-  );
-};
+    });
 
-const PixelKitStage: FC<Props> = ({ children }) => {
-  const { ref, show } = useScreen();
-  const { config } = useCanvas();
+    return () => cancelAnimationFrame(timeout);
+  }, []);
+
+  useEffect(() => {
+    if (!containerRef.current) return;
+
+    const updateSize = () => {
+      if (!containerRef.current) return;
+
+      setShow(false); // 🔄 Oculta el Stage
+
+      const { width, height } = containerRef.current.getBoundingClientRect();
+      setDimension({ width, height });
+
+      // 🔄 Esperar a que React actualice el DOM, luego volver a mostrarlo
+      requestAnimationFrame(() => {
+        setShow(true);
+      });
+    };
+
+    const resizeObserver = new ResizeObserver(updateSize);
+    resizeObserver.observe(containerRef.current);
+
+    // También escuchar cambios de ventana
+    window.addEventListener("resize", updateSize);
+
+    updateSize();
+
+    return () => {
+      if (containerRef.current) resizeObserver.unobserve(containerRef.current);
+      window.removeEventListener("resize", updateSize);
+    };
+  }, []);
 
   return (
     <main
-      ref={ref}
-      id="StageViewer"
+      ref={containerRef}
       className={`CursorDefault ${css({
-        width: "100%",
-        height: "100%",
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
+        maxWidth: "100%",
       })}`}
       style={{
         backgroundColor: config.backgroundColor,
       }}
     >
       <Valid isValid={show}>
-        <StageRender>{children}</StageRender>
+        <Stage
+          ref={stageRef}
+          width={width}
+          height={height}
+          onMouseDown={handleMouseDown}
+          onMousemove={handleMouseMove}
+          onMouseup={handleMouseUp}
+          onTouchStart={(e) =>
+            handleMouseDown(e as unknown as KonvaEventObject<MouseEvent>)
+          }
+          onTouchMove={(e) =>
+            handleMouseMove(e as unknown as KonvaEventObject<MouseEvent>)
+          }
+          onTouchEnd={handleMouseUp}
+          onClick={handleClear}
+          onTap={handleClear}
+        >
+          <Layer>
+            <Rect
+              width={width}
+              height={height}
+              x={0}
+              y={0}
+              fill={config.backgroundColor}
+            />
+          </Layer>
+          {children}
+        </Stage>
       </Valid>
       <Valid isValid={!show}>
         <p

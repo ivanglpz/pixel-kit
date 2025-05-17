@@ -3,7 +3,8 @@ import { useSelectedShape, useTool } from "../hooks";
 import useShapes from "../hooks/useShapes";
 import { FCShapeWEvents, IShape } from "../shapes/type.shape";
 import { Shapes } from "../shapes/shapes";
-import useScreen from "../hooks/useScreen";
+import { useAtomValue } from "jotai";
+import { STAGE_DIMENSION_ATOM } from "../states/dimension";
 
 export const LayerShapes = () => {
   const { shapes } = useShapes();
@@ -14,7 +15,7 @@ export const LayerShapes = () => {
     handleSetShapeSelected(element);
   };
 
-  const { width, height } = useScreen();
+  const { height, width } = useAtomValue(STAGE_DIMENSION_ATOM);
 
   return (
     <>
