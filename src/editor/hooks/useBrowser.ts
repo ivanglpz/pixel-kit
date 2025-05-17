@@ -7,6 +7,7 @@ const useBrowser = () => {
       toast.warning("Message for brave users", {
         description:
           "Always remember to keep the fingerpriting for pixel kit activated.",
+        duration: 3000,
       });
     }
   }, []);
