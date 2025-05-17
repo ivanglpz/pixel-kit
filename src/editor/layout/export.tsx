@@ -18,7 +18,7 @@ import { RefObject, useState } from "react";
 import { createPortal } from "react-dom";
 import { toast } from "sonner";
 import { v4 as uuidv4 } from "uuid";
-import { ImageConfiguration } from "../left/image";
+import { ImageConfiguration } from "./imageConfig";
 
 const formats = {
   LOW: 0.8,

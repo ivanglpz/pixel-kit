@@ -3,6 +3,7 @@ import { atom, useAtom } from "jotai";
 import { useEffect } from "react";
 import useShapes from "./useShapes";
 import useCanvas from "./useCanvas";
+import { IKeyTool } from "../states/tool";
 
 type Config = {
   showPreviewImage: boolean;
@@ -11,6 +12,7 @@ type Config = {
   backgroundColor: string;
   showCanvasConfig: boolean;
   showClipImageConfig: boolean;
+  tools: IKeyTool[];
 };
 
 type Keys = "EDIT_IMAGE" | "FREE_DRAW";
@@ -23,6 +25,7 @@ const configs: { [key in Keys]: Config } = {
     backgroundColor: "#212121",
     showCanvasConfig: false,
     showClipImageConfig: true,
+    tools: ["BOX", "CIRCLE", "LINE", "IMAGE", "TEXT", "DRAW"],
   },
   FREE_DRAW: {
     showPreviewImage: false,
@@ -31,6 +34,7 @@ const configs: { [key in Keys]: Config } = {
     backgroundColor: "#ffffff",
     showCanvasConfig: true,
     showClipImageConfig: false,
+    tools: ["LINE", "TEXT", "DRAW"],
   },
 };
 
