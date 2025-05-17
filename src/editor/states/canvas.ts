@@ -1,5 +1,9 @@
 import { atomWithStorage } from "jotai/utils";
-import { IStageConfig } from "./types";
+
+export type IStageConfig = {
+  backgroundColor?: string;
+  graphicMapped?: boolean;
+};
 
 const StageConfigAtom = atomWithStorage<IStageConfig>("harmony_stage", {
   backgroundColor: "#04080c",

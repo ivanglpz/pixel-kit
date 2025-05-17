@@ -1,13 +1,14 @@
 import { Layer } from "react-konva";
-import useTemporalShape from "../hooks/temporalShape/hook";
+import useCurrentItem from "../hooks/useCurrentItem";
 import { useMemo } from "react";
 import { FCShapeWEvents } from "../shapes/type.shape";
 import { Shapes } from "../shapes/shapes";
-import useScreen from "../hooks/screen";
+import useScreen from "../hooks/useScreen";
 import { atom } from "jotai";
 
 export const LayerPipe = () => {
-  const { temporalShape } = useTemporalShape();
+  const { temporalShape } = useCurrentItem();
+  console.log(temporalShape);
 
   const Component = useMemo(
     () => Shapes?.[`${temporalShape?.tool}`] as FCShapeWEvents,

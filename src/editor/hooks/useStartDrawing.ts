@@ -1,7 +1,7 @@
 import { useAtom } from "jotai";
-import { DrawingBeforeStartAtom } from "./state";
+import { DrawingBeforeStartAtom } from "../states/drawing";
 
-export const useBeforeStartDrawing = () => {
+export const useStartDrawing = () => {
   const [state, setState] = useAtom(DrawingBeforeStartAtom);
 
   const handleChangeColor = (color: string) => {

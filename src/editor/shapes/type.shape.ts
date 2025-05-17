@@ -1,7 +1,7 @@
 import { FC } from "react";
-import { IKeyMethods } from "../hooks/tool/types";
 import { LineCap, LineJoin } from "konva/lib/Shape";
 import { Atom } from "jotai";
+import { IKeyMethods } from "../states/tool";
 
 export type WithInitialValue<Value> = {
   init: Value;

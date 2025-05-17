@@ -1,10 +1,10 @@
 import { useAtom, useSetAtom } from "jotai";
-import pipeElement from "./jotai";
+import currentItemAtom from "../states/currentItem";
 import { IShape } from "@/editor/shapes/type.shape";
 
-const useTemporalShape = () => {
-  const [temporalShape, setElement] = useAtom(pipeElement);
-  const setTemporalShape = useSetAtom(pipeElement);
+const useCurrentItem = () => {
+  const [temporalShape, setElement] = useAtom(currentItemAtom);
+  const setTemporalShape = useSetAtom(currentItemAtom);
 
   const handleUpdateTemporalShape = (params: IShape) => {
     setElement((prev) => {
@@ -25,4 +25,4 @@ const useTemporalShape = () => {
     handleCreateTemporalShape,
   };
 };
-export default useTemporalShape;
+export default useCurrentItem;

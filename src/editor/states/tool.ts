@@ -1,3 +1,5 @@
+import { atom } from "jotai";
+
 export type IKeyTool =
   | "MOVE"
   | "BOX"
@@ -12,3 +14,7 @@ export type IKeyTool =
   | "CODE";
 
 export type IKeyMethods = Exclude<IKeyTool, "MOVE" | "FRAME" | "WRITING">;
+
+const toolEditorAtom = atom("MOVE" as IKeyTool);
+
+export default toolEditorAtom;

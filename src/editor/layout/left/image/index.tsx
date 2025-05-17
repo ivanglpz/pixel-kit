@@ -1,6 +1,6 @@
 import { Valid } from "@/components/valid";
 import { Button } from "@/editor/components/button";
-import { useImageRender } from "@/editor/hooks/image/hook";
+import { useImageRender } from "@/editor/hooks/useImageRender";
 import { css } from "@stylespixelkit/css";
 import { ChangeEvent, useRef } from "react";
 import { createPortal } from "react-dom";

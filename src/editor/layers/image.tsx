@@ -1,8 +1,8 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { Group, Layer, Rect, Transformer } from "react-konva";
 import { ShapeImage } from "../shapes/image.shape";
-import { useImageRender } from "../hooks/image/hook";
-import useScreen from "../hooks/screen";
+import { useImageRender } from "../hooks/useImageRender";
+import useScreen from "../hooks/useScreen";
 import { calculateDimension } from "@/utils/calculateDimension";
 import { atom, useAtom, useAtomValue } from "jotai";
 import { MutableRefObject, useEffect, useRef } from "react";
@@ -10,8 +10,8 @@ import { Valid } from "@/components/valid";
 import { IShape } from "../shapes/type.shape";
 import Konva from "konva";
 import { Shape, ShapeConfig } from "konva/lib/Shape";
-import { boxClipAtom, showClipAtom } from "../jotai/clipImage";
-import { useReference } from "../hooks/reference";
+import { boxClipAtom, showClipAtom } from "../states/clipImage";
+import { useReference } from "../hooks/useReference";
 
 export const LayerImage = () => {
   const { img } = useImageRender();

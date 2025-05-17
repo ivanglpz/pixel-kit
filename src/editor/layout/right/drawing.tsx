@@ -5,7 +5,7 @@ import { InputSelect } from "@/editor/components/input-select";
 import { InputSlider } from "@/editor/components/input-slider";
 import { Section } from "@/editor/components/section";
 import { useTool } from "@/editor/hooks";
-import { useBeforeStartDrawing } from "@/editor/states/drawing/useBeforeStartDrawing";
+import { useStartDrawing } from "@/editor/hooks/useStartDrawing";
 import { css } from "@stylespixelkit/css";
 
 export const Drawing = () => {
@@ -28,7 +28,7 @@ export const Drawing = () => {
     shadowOffsetX,
     shadowOffsetY,
     closed,
-  } = useBeforeStartDrawing();
+  } = useStartDrawing();
   if (!isDrawing && tool !== "LINE") return null;
   return (
     <Section title={isDrawing ? "Draw" : "Line"}>

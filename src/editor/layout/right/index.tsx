@@ -7,7 +7,7 @@ import { Valid } from "@/components/valid";
 import { motion, useDragControls } from "framer-motion";
 
 import { DragControls } from "framer-motion";
-import { useReference } from "@/editor/hooks/reference";
+import { useReference } from "@/editor/hooks/useReference";
 import { Clip } from "./clip";
 import { Tools } from "./tools";
 import { useBrowserType } from "@/editor/hooks/useTypeBrowser";

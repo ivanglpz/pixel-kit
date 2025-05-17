@@ -1,7 +1,6 @@
 import { useAtom } from "jotai";
 import { useMemo } from "react";
-import toolEditorAtom from "./jotai";
-import { IKeyMethods } from "./types";
+import toolEditorAtom, { IKeyMethods } from "../states/tool";
 
 const keyMove: IKeyMethods[] = ["BOX", "CIRCLE", "LINE", "IMAGE", "TEXT"];
 

@@ -1,9 +1,9 @@
 import { Layer } from "react-konva";
 import { useSelectedShape, useTool } from "../hooks";
-import useShapes from "../hooks/shapes/hook";
+import useShapes from "../hooks/useShapes";
 import { FCShapeWEvents, IShape } from "../shapes/type.shape";
 import { Shapes } from "../shapes/shapes";
-import useScreen from "../hooks/screen";
+import useScreen from "../hooks/useScreen";
 
 export const LayerShapes = () => {
   const { shapes } = useShapes();

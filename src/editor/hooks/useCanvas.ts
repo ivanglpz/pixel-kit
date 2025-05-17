@@ -1,7 +1,6 @@
 import { useAtom } from "jotai";
 import { useCallback } from "react";
-import StageConfigAtom from "./jotai";
-import { IStageConfig } from "./types";
+import StageConfigAtom, { IStageConfig } from "../states/canvas";
 
 const useCanvas = () => {
   const [config, setConfig] = useAtom(StageConfigAtom);

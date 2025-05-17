@@ -4,8 +4,8 @@ import { IShape } from "./type.shape";
 import { Html } from "react-konva-utils";
 import { createPortal } from "react-dom";
 import { useTool } from "../hooks";
-import { useReference } from "../hooks/reference";
-import { tokens } from "../tokens";
+import { useReference } from "../hooks/useReference";
+import { tokens } from "../constants";
 import { Stage } from "konva/lib/Stage";
 
 type Props = {

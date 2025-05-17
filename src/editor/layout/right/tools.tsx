@@ -1,8 +1,8 @@
 import icons from "@/assets";
 import { Section } from "@/editor/components/section";
 import { useSelectedShape, useTool } from "@/editor/hooks";
-import { IKeyTool } from "@/editor/hooks/tool/types";
-import { showClipAtom } from "@/editor/jotai/clipImage";
+import { showClipAtom } from "@/editor/states/clipImage";
+import { IKeyTool } from "@/editor/states/tool";
 import { css } from "@stylespixelkit/css";
 import { useSetAtom } from "jotai";
 

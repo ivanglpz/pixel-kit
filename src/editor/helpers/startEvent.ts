@@ -1,8 +1,8 @@
 import { v4 as uuidv4 } from "uuid";
-import { IKeyMethods } from "../tool/types";
 import { IShape } from "@/editor/shapes/type.shape";
 import { LineCap, LineJoin } from "konva/lib/Shape";
 import { image_stock } from "@/assets/image_stock";
+import { IKeyMethods } from "@/editor/states/tool";
 
 type ShapeStartProps = {
   x: number;
@@ -77,7 +77,7 @@ export const shapeStart = (props: ShapeStartProps): IShape => {
     shadowColor: shadowColor ?? "#000",
     shadowOffsetY: shadowOffsetY ?? 2,
     shadowOffsetX: shadowOffsetX ?? 2,
-    shadowEnabled: tool === "IMAGE" ? false : shadowEnabled ?? true,
+    shadowEnabled: tool === "IMAGE" ? false : (shadowEnabled ?? true),
     shadowOpacity: shadowOpacity ?? 1,
     isAllBorderRadius: false,
     borderRadius: 0,
