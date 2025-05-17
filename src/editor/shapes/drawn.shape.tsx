@@ -97,6 +97,7 @@ export const ShapeDraw = memo((item: IShapeWithEvents) => {
         strokeEnabled={strokeEnabled ?? true}
         points={points ?? []}
         globalCompositeOperation="source-over"
+        bezier={true} // Importante: tension solo funciona cuando bezier = false
         shadowEnabled={shadowEnabled ?? true}
         dashEnabled={dashEnabled ?? true}
         dash={[dash, dash, dash, dash]}
