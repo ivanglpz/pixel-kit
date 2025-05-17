@@ -8,6 +8,7 @@ import { Clip } from "./clip";
 import { ExportStage } from "./export";
 import { Tools } from "./Tools";
 import { HeaderLogo } from "./HeaderLogo";
+import { ChangeEnv } from "../components/ChangeEnv";
 
 const SidebarRight: FC = () => {
   const { config } = useConfiguration();
@@ -16,7 +17,6 @@ const SidebarRight: FC = () => {
     <aside
       className={css({
         backgroundColor: "rgba(0,0,0,0.15)",
-        borderRadius: "sm",
         zIndex: 9,
         width: "100%",
         display: "flex",
@@ -26,9 +26,12 @@ const SidebarRight: FC = () => {
         overflowX: "hidden",
         overflowY: "scroll",
         padding: "md",
+        borderLeft: "1px solid gray",
       })}
     >
       <HeaderLogo />
+      <ChangeEnv />
+
       <Tools />
       <Valid isValid={config?.showCanvasConfig}>
         <StageConfig />

@@ -131,148 +131,153 @@ export const ExportStage = () => {
       });
     }
   };
+
+  const Container = document.getElementById("pixel-app");
+
   return (
     <>
       <Valid isValid={showExport}>
-        {createPortal(
-          <main
-            className={css({
-              position: "absolute",
-              top: 0,
-              zIndex: 9999,
-              width: "100%",
-              height: "100%",
-              backgroundColor: "rgba(0,0,0,0.5)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            })}
-            onClick={() => setShowExport(false)}
-          >
-            <div
-              className={css({
-                padding: "lg",
-                display: "flex",
-                flexDirection: "column",
-                backgroundColor: "primary",
-                borderRadius: "lg",
-                border: "container",
-                justifyContent: "flex-end",
-                alignItems: "flex-end",
-                width: 300,
-                // minHeight: 320,
-                gap: "lg",
-              })}
-              onClick={(e) => e.stopPropagation()}
-            >
-              <div
+        {Container
+          ? createPortal(
+              <main
                 className={css({
-                  display: "flex",
-                  justifyContent: "space-between",
-                  width: "100%",
-                  alignItems: "center",
-                })}
-              >
-                <p
-                  className={css({
-                    fontSize: "md",
-                    color: "text",
-                    fontWeight: "bold",
-                  })}
-                >
-                  Export
-                </p>
-                <button
-                  className={css({
-                    padding: "sm",
-                    cursor: "pointer",
-                  })}
-                  onClick={() => setShowExport(false)}
-                >
-                  <svg
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M6.4 19L5 17.6L10.6 12L5 6.4L6.4 5L12 10.6L17.6 5L19 6.4L13.4 12L19 17.6L17.6 19L12 13.4L6.4 19Z"
-                      fill="white"
-                    />
-                  </svg>
-                </button>
-              </div>
-
-              <p
-                className={css({
-                  color: "text",
-                  fontSize: "sm",
-                  opacity: 0.7,
-                })}
-              >
-                Export your edit to the quality you prefer the most.
-              </p>
-              <div
-                className={css({
-                  display: "flex",
-                  flexDirection: "column",
+                  position: "absolute",
+                  top: 0,
+                  zIndex: 9999,
                   width: "100%",
                   height: "100%",
-                  gap: "md",
+                  backgroundColor: "rgba(0,0,0,0.5)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
                 })}
+                onClick={() => setShowExport(false)}
               >
-                <InputSelect
-                  labelText="Format Quality"
-                  options={[
-                    {
-                      id: "1",
-                      label: "Low",
-                      value: "LOW",
-                    },
-                    {
-                      id: "2",
-                      label: "Medium",
-                      value: "MEDIUM",
-                    },
-                    {
-                      id: "3",
-                      label: "High",
-                      value: "HIGH",
-                    },
-                    {
-                      id: "4",
-                      label: "Big High",
-                      value: "BIG_HIGH",
-                    },
-                    {
-                      id: "4",
-                      label: "Ultra High",
-                      value: "ULTRA_HIGH",
-                    },
-                  ]}
-                  onChange={(e) => setformat(e)}
-                  value={format}
-                />
-                <Valid isValid={config?.exportMode === "EDIT_IMAGE"}>
-                  <InputText
-                    labelText="Resolution"
-                    value={`${img.width}x${img?.height}`}
-                    onChange={() => {}}
-                    disable
-                  />
-                </Valid>
-              </div>
-              <Button
-                text="Export Now"
-                onClick={() => handleExport()}
-                isLoading={loading}
-                fullWidth={false}
-              ></Button>
-            </div>
-          </main>,
-          document.body
-        )}
+                <div
+                  className={css({
+                    padding: "lg",
+                    display: "flex",
+                    flexDirection: "column",
+                    backgroundColor: "primary",
+                    borderRadius: "lg",
+                    border: "container",
+                    justifyContent: "flex-end",
+                    alignItems: "flex-end",
+                    width: 300,
+                    // minHeight: 320,
+                    gap: "lg",
+                  })}
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <div
+                    className={css({
+                      display: "flex",
+                      justifyContent: "space-between",
+                      width: "100%",
+                      alignItems: "center",
+                    })}
+                  >
+                    <p
+                      className={css({
+                        fontSize: "md",
+                        color: "text",
+                        fontWeight: "bold",
+                      })}
+                    >
+                      Export
+                    </p>
+                    <button
+                      className={css({
+                        padding: "sm",
+                        cursor: "pointer",
+                      })}
+                      onClick={() => setShowExport(false)}
+                    >
+                      <svg
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M6.4 19L5 17.6L10.6 12L5 6.4L6.4 5L12 10.6L17.6 5L19 6.4L13.4 12L19 17.6L17.6 19L12 13.4L6.4 19Z"
+                          fill="white"
+                        />
+                      </svg>
+                    </button>
+                  </div>
+
+                  <p
+                    className={css({
+                      color: "text",
+                      fontSize: "sm",
+                      opacity: 0.7,
+                    })}
+                  >
+                    Export your edit to the quality you prefer the most.
+                  </p>
+                  <div
+                    className={css({
+                      display: "flex",
+                      flexDirection: "column",
+                      width: "100%",
+                      height: "100%",
+                      gap: "md",
+                    })}
+                  >
+                    <InputSelect
+                      labelText="Format Quality"
+                      options={[
+                        {
+                          id: "1",
+                          label: "Low",
+                          value: "LOW",
+                        },
+                        {
+                          id: "2",
+                          label: "Medium",
+                          value: "MEDIUM",
+                        },
+                        {
+                          id: "3",
+                          label: "High",
+                          value: "HIGH",
+                        },
+                        {
+                          id: "4",
+                          label: "Big High",
+                          value: "BIG_HIGH",
+                        },
+                        {
+                          id: "4",
+                          label: "Ultra High",
+                          value: "ULTRA_HIGH",
+                        },
+                      ]}
+                      onChange={(e) => setformat(e)}
+                      value={format}
+                    />
+                    <Valid isValid={config?.exportMode === "EDIT_IMAGE"}>
+                      <InputText
+                        labelText="Resolution"
+                        value={`${img.width}x${img?.height}`}
+                        onChange={() => {}}
+                        disable
+                      />
+                    </Valid>
+                  </div>
+                  <Button
+                    text="Export Now"
+                    onClick={() => handleExport()}
+                    isLoading={loading}
+                    fullWidth={false}
+                  ></Button>
+                </div>
+              </main>,
+              Container
+            )
+          : null}
       </Valid>
       <Section title="Export">
         <div

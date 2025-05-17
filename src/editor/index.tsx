@@ -6,7 +6,6 @@ import PxStage from "./stage";
 import { useConfiguration } from "./hooks/useConfiguration";
 import SidebarRight from "./layout/SidebarRight";
 import { css } from "@stylespixelkit/css";
-import { ChangeEnv } from "./components/ChangeEnv";
 
 const PixelEditor = () => {
   useStopZoom();
@@ -16,11 +15,14 @@ const PixelEditor = () => {
   });
   return (
     <div
+      id="pixel-app"
       className={css({
         display: "grid",
         gridTemplateColumns: "240px 1fr 240px",
         backgroundColor: "black",
         flex: 1,
+        height: "100%",
+        width: "100%",
       })}
     >
       <p>left</p>
@@ -29,7 +31,6 @@ const PixelEditor = () => {
         <AllLayers />
       </PxStage>
       <SidebarRight />
-      <ChangeEnv />
     </div>
   );
 };

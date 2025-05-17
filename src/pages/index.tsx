@@ -1,6 +1,7 @@
 /* eslint-disable jsx-a11y/alt-text */
 /* eslint-disable @next/next/no-img-element */
 import SeoComponent from "@/components/seo";
+import ComponentApp from "@/editor";
 import { css } from "@stylespixelkit/css";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -206,7 +207,6 @@ const Page = () => {
         flexDirection: "column",
         gap: "lg",
         backgroundColor: "primary",
-        height: "100%",
         width: "100%",
         alignItems: "center",
         overflowY: "scroll",
@@ -236,7 +236,7 @@ const Page = () => {
             alignItems: "center",
             justifyContent: "flex-end",
             gap: "xxlg",
-            minHeight: "100vh",
+            marginTop: "15%",
           })}
         >
           <div
@@ -284,46 +284,13 @@ const Page = () => {
           </div>
           <div
             className={css({
-              display: "flex",
-              flexDirection: "row",
-              flexWrap: "nowrap",
-              justifyContent: "center",
-              gap: "xxlg",
-              alignItems: "flex-end",
+              position: "relative",
+              maxWidth: "100%",
               width: "100%",
+              height: 720,
             })}
           >
-            <img
-              src="https://res.cloudinary.com/whil/image/upload/v1712285934/app/pixel-kit/images/mqmdepb3bj8adqxusir4.png"
-              className={css({
-                width: "250px",
-                "@media(max-width:1158px)": {
-                  width: "190px",
-                },
-                "@media(max-width:1040px)": {
-                  display: "none",
-                },
-              })}
-            />
-            <img
-              src="https://res.cloudinary.com/whil/image/upload/v1712285934/app/pixel-kit/images/akasjodi5noa2vaxqncp.png"
-              className={css({
-                objectFit: "contain",
-                width: "420px",
-              })}
-            />
-            <img
-              src="https://res.cloudinary.com/whil/image/upload/v1712285934/app/pixel-kit/images/psh56yoaa2xdccg8zgbd.png"
-              className={css({
-                width: "250px",
-                "@media(max-width:1158px)": {
-                  width: "190px",
-                },
-                "@media(max-width:1040px)": {
-                  display: "none",
-                },
-              })}
-            />
+            <ComponentApp />
           </div>
         </section>
         <section

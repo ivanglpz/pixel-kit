@@ -16,11 +16,14 @@ const Component = () => {
   });
   return (
     <div
+      id="pixel-app"
       className={css({
         display: "grid",
         gridTemplateColumns: "240px 1fr 240px",
         backgroundColor: "black",
         flex: 1,
+        height: "100%",
+        width: "100%",
       })}
     >
       <p>left</p>
@@ -28,7 +31,6 @@ const Component = () => {
         <AllLayers />
       </PxStage>
       <SidebarRight />
-      <ChangeEnv />
     </div>
   );
 };
