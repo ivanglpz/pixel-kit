@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { FC, ReactNode, useEffect, useRef, useState } from "react";
-import { Layer, Rect, Stage } from "react-konva";
+import { Stage } from "react-konva";
 import { useSelectedShape, useCanvas, useTool, useEventStage } from "./hooks";
 import { css } from "@stylespixelkit/css";
 import { useReference } from "./hooks/useReference";
@@ -14,7 +14,7 @@ type Props = {
   children: ReactNode;
 };
 
-const PixelKitStage: FC<Props> = ({ children }) => {
+const PxStage: FC<Props> = ({ children }) => {
   const [{ height, width }, setDimension] = useAtom(STAGE_DIMENSION_ATOM);
   const containerRef = useRef<HTMLDivElement>(null);
   const stageRef = useRef<Konva.Stage>(null);
@@ -102,7 +102,7 @@ const PixelKitStage: FC<Props> = ({ children }) => {
         maxWidth: "100%",
       })}`}
       style={{
-        backgroundColor: config.backgroundColor,
+        backgroundColor: config?.backgroundColor,
       }}
     >
       <Valid isValid={show}>
@@ -123,15 +123,6 @@ const PixelKitStage: FC<Props> = ({ children }) => {
           onClick={handleClear}
           onTap={handleClear}
         >
-          <Layer>
-            <Rect
-              width={width}
-              height={height}
-              x={0}
-              y={0}
-              fill={config.backgroundColor}
-            />
-          </Layer>
           {children}
         </Stage>
       </Valid>
@@ -165,11 +156,10 @@ const PixelKitStage: FC<Props> = ({ children }) => {
               mask="url(#path-1-inside-1_865_433)"
             />
           </svg>
-          Pixel Kit is loading...
         </p>
       </Valid>
     </main>
   );
 };
 
-export default PixelKitStage;
+export default PxStage;

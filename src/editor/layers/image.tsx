@@ -2,7 +2,7 @@
 import { Group, Layer, Rect, Transformer } from "react-konva";
 import { ShapeImage } from "../shapes/image.shape";
 import { useImageRender } from "../hooks/useImageRender";
-import { calculateDimension } from "@/utils/calculateDimension";
+import { calculateDimension } from "@/editor/utils/calculateDimension";
 import { atom, useAtom, useAtomValue } from "jotai";
 import { MutableRefObject, useEffect, useRef } from "react";
 import { Valid } from "@/components/valid";
@@ -22,7 +22,7 @@ export const LayerImage = () => {
   if (!img?.base64) return null;
 
   return (
-    <Layer>
+    <Layer id="layer-image-preview">
       <ShapeImage
         screenHeight={height}
         screenWidth={width}
