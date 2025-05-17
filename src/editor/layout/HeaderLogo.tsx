@@ -8,15 +8,13 @@ export function HeaderLogo() {
         paddingRight: "md",
         display: "grid",
         flexDirection: "row",
-        backgroundColor: "primary",
-        border: "container",
         borderRadius: "md",
         backgroundSize: "0.5rem 0.5rem",
         backgroundRepeat: "round",
         justifyContent: "space-between",
         alignItems: "center",
         gridTemplateColumns: "1fr 25px",
-        height: "35px",
+        marginTop: "lg",
       })}
     >
       <div

@@ -7,7 +7,7 @@ type Props = {
     label: string;
     value: string;
   }[];
-  labelText: string;
+  labelText?: string;
   onChange: (value: string) => void;
 };
 
@@ -20,15 +20,17 @@ export const InputSelect = ({ options, value, onChange, labelText }: Props) => {
         gap: "md",
       })}
     >
-      <p
-        className={css({
-          color: "text",
-          fontWeight: "600",
-          fontSize: "x-small",
-        })}
-      >
-        {labelText}
-      </p>
+      {labelText ? (
+        <p
+          className={css({
+            color: "text",
+            fontWeight: "600",
+            fontSize: "x-small",
+          })}
+        >
+          {labelText}
+        </p>
+      ) : null}
       <select
         value={value}
         className={css({
