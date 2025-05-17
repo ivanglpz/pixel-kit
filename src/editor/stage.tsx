@@ -123,15 +123,6 @@ const PixelKitStage: FC<Props> = ({ children }) => {
           onClick={handleClear}
           onTap={handleClear}
         >
-          <Layer>
-            <Rect
-              width={width}
-              height={height}
-              x={0}
-              y={0}
-              fill={config.backgroundColor}
-            />
-          </Layer>
           {children}
         </Stage>
       </Valid>

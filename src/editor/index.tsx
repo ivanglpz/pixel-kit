@@ -22,7 +22,8 @@ const PixelEditor = () => {
         flex: 1,
       })}
     >
-      <SidebarRight />
+      <p>left</p>
+
       <PixelKitStage>
         <PixelKitLayers />
       </PixelKitStage>

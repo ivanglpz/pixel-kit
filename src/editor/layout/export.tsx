@@ -38,17 +38,18 @@ function downloadBase64Image(base64String: string) {
 }
 
 const destroyTransforms = (
-  ref: RefObject<Stage> | RefObject<Group> | undefined,
-  position: 1 | 2
+  ref: RefObject<Stage> | RefObject<Group> | undefined
 ) => {
-  const childrenToDestroy = ref?.current
-    ?.getStage?.()
-    ?.children?.[
-      position
-    ].children.filter?.((child) => child.attrs.id === "transformer-editable");
-  childrenToDestroy?.forEach?.((child) => {
-    child?.destroy?.();
-  });
+  const childrens = ref?.current?.getStage?.()?.children;
+  if (!childrens) return;
+  const layerShapes = childrens?.find((e) => e?.attrs?.id === "layer-shapes");
+  if (!layerShapes) return;
+
+  layerShapes?.children
+    ?.filter?.((child) => child?.attrs?.id === "transformer-editable")
+    ?.forEach?.((child) => {
+      child?.destroy?.();
+    });
 };
 
 export const ExportStage = () => {
@@ -85,7 +86,7 @@ export const ExportStage = () => {
 
     setloading(true);
     if (config.exportMode === "FULL_SCREEN") {
-      destroyTransforms(ref, 1);
+      destroyTransforms(ref);
       await new Promise(() => {
         setTimeout(() => {
           const image = ref?.current?.toDataURL({
@@ -100,8 +101,8 @@ export const ExportStage = () => {
     }
     if (config.exportMode === "ONLY_IMAGE") {
       setshowClip(false);
-      destroyTransforms(ref, 1);
-      destroyTransforms(ref, 2);
+      destroyTransforms(ref);
+      // destroyTransforms(ref, 2);
       await new Promise(() => {
         setTimeout(() => {
           const base64String = ref?.current?.toDataURL({
