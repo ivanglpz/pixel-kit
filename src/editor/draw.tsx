@@ -2,9 +2,10 @@ import dynamic from "next/dynamic";
 import useBrowser from "./hooks/useBrowser";
 import useStopZoom from "./hooks/useStopZoom";
 import { PixelKitLayers } from "./layers";
-import { LayoutPixelEditorDraw } from "./layout/_layoutDraw";
 import PixelKitStage from "./stage";
 import { useConfiguration } from "./hooks/useConfiguration";
+import { css } from "@stylespixelkit/css";
+import SidebarRight from "./layout/SidebarRight";
 
 const Component = () => {
   useStopZoom();
@@ -13,11 +14,20 @@ const Component = () => {
     type: "FREE_DRAW",
   });
   return (
-    <LayoutPixelEditorDraw>
+    <div
+      className={css({
+        display: "grid",
+        gridTemplateColumns: "240px 1fr 240px",
+        backgroundColor: "black",
+        flex: 1,
+      })}
+    >
+      <SidebarRight />
       <PixelKitStage>
         <PixelKitLayers />
       </PixelKitStage>
-    </LayoutPixelEditorDraw>
+      <SidebarRight />
+    </div>
   );
 };
 const PixelEditorDraw = dynamic(Promise.resolve(Component), {

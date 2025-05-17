@@ -5,8 +5,9 @@ import { showClipAtom } from "@/editor/states/clipImage";
 import { IKeyTool } from "@/editor/states/tool";
 import { css } from "@stylespixelkit/css";
 import { useSetAtom } from "jotai";
+import { useConfiguration } from "../hooks/useConfiguration";
 
-const METHODS = [
+const METHODS: { icon: JSX.Element; keyMethod: IKeyTool }[] = [
   {
     icon: icons.cursor,
     keyMethod: "MOVE",
@@ -32,10 +33,7 @@ const METHODS = [
     icon: icons.text,
     keyMethod: "TEXT",
   },
-  // {
-  //   icon: icons.code,
-  //   keyMethod: "CODE",
-  // },
+
   {
     icon: icons.peentool,
     keyMethod: "DRAW",
@@ -47,6 +45,9 @@ export const Tools = () => {
   const { handleCleanShapeSelected } = useSelectedShape();
 
   const setshowClip = useSetAtom(showClipAtom);
+
+  const { config } = useConfiguration();
+
   return (
     <Section title="Tools">
       <section
@@ -57,33 +58,35 @@ export const Tools = () => {
           gap: "md",
         })}
       >
-        {METHODS?.map((item) => {
-          const isSelected = item?.keyMethod === tool;
-          return (
-            <button
-              key={`sidebar-methods-key-${item.keyMethod}`}
-              className={css({
-                backgroundGradient: isSelected ? "primary" : "transparent",
-                borderRadius: "6px",
-                width: "40px",
-                height: "35px",
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                border: "container",
-                cursor: "pointer",
-                flexGrow: 1,
-              })}
-              onClick={() => {
-                setTool(item.keyMethod as IKeyTool);
-                handleCleanShapeSelected();
-                setshowClip(false);
-              }}
-            >
-              {item?.icon}
-            </button>
-          );
-        })}
+        {METHODS?.filter((e) => config.tools.includes(e?.keyMethod))?.map(
+          (item) => {
+            const isSelected = item?.keyMethod === tool;
+            return (
+              <button
+                key={`sidebar-methods-key-${item.keyMethod}`}
+                className={css({
+                  backgroundGradient: isSelected ? "primary" : "transparent",
+                  borderRadius: "6px",
+                  width: "40px",
+                  height: "35px",
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  border: "container",
+                  cursor: "pointer",
+                  flexGrow: 1,
+                })}
+                onClick={() => {
+                  setTool(item.keyMethod as IKeyTool);
+                  handleCleanShapeSelected();
+                  setshowClip(false);
+                }}
+              >
+                {item?.icon}
+              </button>
+            );
+          }
+        )}
       </section>
     </Section>
   );

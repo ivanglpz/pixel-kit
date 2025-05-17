@@ -29,6 +29,8 @@ type ShapeStartProps = {
   isWritingNow?: boolean;
 };
 
+const thickness = 5;
+
 export const shapeStart = (props: ShapeStartProps): IShape => {
   const {
     tool,
@@ -69,21 +71,21 @@ export const shapeStart = (props: ShapeStartProps): IShape => {
     width: width ?? 1,
     stroke: stroke ?? "#ffffff",
     points: points ?? [],
-    strokeWidth: strokeWidth ?? 0,
+    strokeWidth: strokeWidth ?? thickness,
     backgroundColor: "#ffffff",
     lineCap: lineCap ?? "round",
     lineJoin: lineJoin ?? "round",
     shadowBlur: shadowBlur ?? 0,
     shadowColor: shadowColor ?? "#000",
-    shadowOffsetY: shadowOffsetY ?? 2,
-    shadowOffsetX: shadowOffsetX ?? 2,
+    shadowOffsetY: shadowOffsetY ?? thickness,
+    shadowOffsetX: shadowOffsetX ?? thickness,
     shadowEnabled: tool === "IMAGE" ? false : (shadowEnabled ?? true),
-    shadowOpacity: shadowOpacity ?? 1,
+    shadowOpacity: shadowOpacity ?? thickness,
     isAllBorderRadius: false,
     borderRadius: 0,
     borderRadiusBottomLeft: 0,
     borderRadiusBottomRight: 0,
-    dash: dash ?? 0,
+    dash: dash ?? thickness,
     dashEnabled: dashEnable ?? true,
     borderRadiusTopLeft: 0,
     borderRadiusTopRight: 0,
