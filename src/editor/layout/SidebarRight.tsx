@@ -7,7 +7,7 @@ import { Valid } from "@/components/valid";
 import { Clip } from "./clip";
 import { ExportStage } from "./export";
 import { Tools } from "./Tools";
-import { HeaderLogo } from "./headerLogo";
+import { HeaderLogo } from "./HeaderLogo";
 
 const SidebarRight: FC = () => {
   const { config } = useConfiguration();
