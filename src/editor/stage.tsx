@@ -102,7 +102,7 @@ const PxStage: FC<Props> = ({ children }) => {
         maxWidth: "100%",
       })}`}
       style={{
-        backgroundColor: config.backgroundColor,
+        backgroundColor: config?.backgroundColor,
       }}
     >
       <Valid isValid={show}>

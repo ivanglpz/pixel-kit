@@ -7,7 +7,7 @@ import { IKeyTool } from "../states/tool";
 
 type Config = {
   showPreviewImage: boolean;
-  exportMode: "FULL_SCREEN" | "ONLY_IMAGE";
+  exportMode: "FREE_DRAW" | "EDIT_IMAGE";
   showFilesBrowser: boolean;
   backgroundColor: string;
   showCanvasConfig: boolean;
@@ -21,7 +21,7 @@ type Keys = "EDIT_IMAGE" | "FREE_DRAW";
 const configs: { [key in Keys]: Config } = {
   EDIT_IMAGE: {
     showPreviewImage: true,
-    exportMode: "ONLY_IMAGE",
+    exportMode: "EDIT_IMAGE",
     showFilesBrowser: true,
     backgroundColor: "#212121",
     showCanvasConfig: false,
@@ -32,7 +32,7 @@ const configs: { [key in Keys]: Config } = {
   FREE_DRAW: {
     showPreviewImage: false,
     showFilesBrowser: false,
-    exportMode: "FULL_SCREEN",
+    exportMode: "FREE_DRAW",
     backgroundColor: "#ffffff",
     showCanvasConfig: true,
     showClipImageConfig: false,
@@ -40,6 +40,12 @@ const configs: { [key in Keys]: Config } = {
     showBackgroundColor: true,
   },
 };
+
+export const optionsEnviroments = Object.keys(configs)?.map((e, index) => ({
+  id: e + index,
+  label: e,
+  value: e,
+}));
 
 const configAtom = atom(configs.EDIT_IMAGE);
 
@@ -52,15 +58,24 @@ export const useConfiguration = (props?: Props) => {
   const [config, setConfig] = useAtom(configAtom);
   const { handleResetShapes } = useShapes();
   const { handleConfig } = useCanvas();
-  useEffect(() => {
+
+  const handleChangeConfig = (type?: Keys | string) => {
     if (!type) return;
-    const tconfig = configs[type];
+    const tconfig = configs[type as Keys];
     setConfig(tconfig);
     handleResetShapes();
-    handleConfig({ backgroundColor: tconfig.backgroundColor });
+    handleConfig({
+      backgroundColor:
+        tconfig?.backgroundColor ?? configs?.EDIT_IMAGE?.backgroundColor,
+    });
+  };
+  useEffect(() => {
+    handleChangeConfig();
   }, [type]);
 
   return {
     config,
+    change: handleChangeConfig,
+    type,
   };
 };

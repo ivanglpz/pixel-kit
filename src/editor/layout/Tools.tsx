@@ -58,7 +58,7 @@ export const Tools = () => {
           gap: "md",
         })}
       >
-        {METHODS?.filter((e) => config.tools.includes(e?.keyMethod))?.map(
+        {METHODS?.filter((e) => config?.tools?.includes(e?.keyMethod))?.map(
           (item) => {
             const isSelected = item?.keyMethod === tool;
             return (
