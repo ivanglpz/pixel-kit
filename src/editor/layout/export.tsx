@@ -86,7 +86,7 @@ export const ExportStage = () => {
     });
 
     setloading(true);
-    if (config.exportMode === "FULL_SCREEN") {
+    if (config?.exportMode === "FREE_DRAW") {
       destroyTransforms(ref);
       await new Promise(() => {
         setTimeout(() => {
@@ -100,7 +100,7 @@ export const ExportStage = () => {
         }, 100);
       });
     }
-    if (config.exportMode === "ONLY_IMAGE") {
+    if (config?.exportMode === "EDIT_IMAGE") {
       setshowClip(false);
       destroyTransforms(ref);
       // destroyTransforms(ref, 2);
@@ -254,7 +254,7 @@ export const ExportStage = () => {
                   onChange={(e) => setformat(e)}
                   value={format}
                 />
-                <Valid isValid={config?.exportMode === "ONLY_IMAGE"}>
+                <Valid isValid={config?.exportMode === "EDIT_IMAGE"}>
                   <InputText
                     labelText="Resolution"
                     value={`${img.width}x${img?.height}`}

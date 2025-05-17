@@ -33,7 +33,7 @@ const SidebarRight: FC = () => {
       <Valid isValid={config?.showCanvasConfig}>
         <StageConfig />
       </Valid>
-      <Valid isValid={config.showClipImageConfig}>
+      <Valid isValid={config?.showClipImageConfig}>
         <Clip />
       </Valid>
       <Drawing />

@@ -6,6 +6,7 @@ import PxStage from "./stage";
 import { useConfiguration } from "./hooks/useConfiguration";
 import { css } from "@stylespixelkit/css";
 import SidebarRight from "./layout/SidebarRight";
+import { ChangeEnv } from "./components/ChangeEnv";
 
 const Component = () => {
   useStopZoom();
@@ -27,6 +28,7 @@ const Component = () => {
         <AllLayers />
       </PxStage>
       <SidebarRight />
+      <ChangeEnv />
     </div>
   );
 };
