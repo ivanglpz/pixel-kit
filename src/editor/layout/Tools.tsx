@@ -1,4 +1,3 @@
-import icons from "@/assets";
 import { Section } from "@/editor/components/section";
 import { useSelectedShape, useTool } from "@/editor/hooks";
 import { showClipAtom } from "@/editor/states/clipImage";
