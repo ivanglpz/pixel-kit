@@ -38,7 +38,6 @@ export const Nodes = ({ item }: { item: SHAPES_NODES }) => {
         onDragOver={handleDragOver}
         onDrop={handleDrop}
         className={css({
-          width: "100%",
           color: "text",
           padding: "md",
           borderTopRightRadius: "md",
@@ -46,15 +45,15 @@ export const Nodes = ({ item }: { item: SHAPES_NODES }) => {
           fontSize: "sm",
           listStyle: "none",
           display: "grid",
-          gridTemplateColumns: "13px 13px 1fr 10px",
+          gridTemplateColumns: "12px 10px 50px 10px",
           flexDirection: "row",
           alignItems: "center",
-          backgroundColor: value.tool === "GROUP" ? "primary" : "transparent",
           gap: "lg",
           _hover: {
             backgroundColor: "primary",
           },
           cursor: "pointer",
+          width: "100%", // ← importante para que crezca según los hijos
         })}
         onClick={() => {
           handleSetShapeSelected(value);
@@ -125,15 +124,15 @@ export const Nodes = ({ item }: { item: SHAPES_NODES }) => {
           })}
         ></div>
       </li>
-
       {childrens?.length > 0 && isExpanded && (
         <ul
           className={css({
-            marginLeft: "xlg",
+            marginLeft: "15px",
             display: "flex",
             flexDirection: "column",
             gap: "md",
-            borderLeft: "1px solid #535353",
+            borderLeft: "1px solid #212121",
+            width: "max-content", // ← importante para que crezca según los hijos
           })}
         >
           {childrens.map((e) => (

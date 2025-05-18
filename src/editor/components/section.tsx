@@ -3,11 +3,17 @@ import { ReactNode, useState } from "react";
 
 type Props = {
   title: string;
-  children: ReactNode;
+  children?: ReactNode;
   onDelete?: VoidFunction;
+  onDeleteLabel?: string;
 };
 
-export const Section = ({ title, children, onDelete }: Props) => {
+export const Section = ({
+  title,
+  children,
+  onDelete,
+  onDeleteLabel,
+}: Props) => {
   return (
     <section
       className={css({
@@ -43,6 +49,10 @@ export const Section = ({ title, children, onDelete }: Props) => {
             className={css({
               padding: "md",
               cursor: "pointer",
+              display: "flex",
+              flexDirection: "row",
+              alignItems: "center",
+              gap: "md",
             })}
           >
             <svg
@@ -57,6 +67,17 @@ export const Section = ({ title, children, onDelete }: Props) => {
                 fill="#bb2124"
               />
             </svg>
+            {onDeleteLabel ? (
+              <p
+                className={css({
+                  color: "#bb2124",
+                  fontSize: "x-small",
+                  fontWeight: "bold",
+                })}
+              >
+                {onDeleteLabel}
+              </p>
+            ) : null}
           </button>
         ) : null}
       </header>
