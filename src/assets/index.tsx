@@ -1,3 +1,5 @@
+import { IKeyTool } from "@/editor/states/tool";
+
 const size = 16;
 
 const icons = {
@@ -308,4 +310,13 @@ const icons = {
   ),
 };
 
+export const iconsWithTools: { [key in IKeyTool]?: JSX.Element } = {
+  BOX: icons.box,
+  CIRCLE: icons.circle,
+  DRAW: icons.peentool,
+  GROUP: icons.group,
+  IMAGE: icons.image,
+  TEXT: icons.text,
+  LINE: icons.line,
+};
 export default icons;

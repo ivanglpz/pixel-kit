@@ -104,6 +104,16 @@ const configs: { [key in Keys]: Config } = {
         keyMethod: "DRAW",
         keyBoard: "R",
       },
+      {
+        icon: icons.group,
+        keyMethod: "GROUP",
+        keyBoard: "A",
+      },
+      {
+        icon: icons.box,
+        keyMethod: "BOX",
+        keyBoard: "S",
+      },
     ],
     showBackgroundColor: true,
     showClipImage: false,
