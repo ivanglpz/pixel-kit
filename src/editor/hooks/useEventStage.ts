@@ -69,6 +69,7 @@ const useEventStage = () => {
     handleUpdateTemporalShape,
     temporalShape,
   } = useCurrentItem();
+
   const setshowClip = useSetAtom(showClipAtom);
 
   const [eventStage, setEventStage] = useState<IStageEvents>("STAGE_IDLE");
@@ -89,8 +90,10 @@ const useEventStage = () => {
       });
 
       handleCreateTemporalShape(createStartElement);
+      return;
     }
-    if (isGoingToCreateAShape && tool !== "LINE") {
+
+    if (isGoingToCreateAShape) {
       setEventStage("STAGE_TEMPORAL_CREATING_SHAPE");
       const { x, y } = stageAbsolutePosition(event);
       const createStartElement = shapeStart({
@@ -123,7 +126,9 @@ const useEventStage = () => {
   };
 
   const handleMouseMove = (event: KonvaEventObject<MouseEvent>) => {
-    if (eventStage === "STAGE_TEMPORAL_CREATING_SHAPE" && temporalShape?.tool) {
+    if (!temporalShape?.tool) return;
+
+    if (eventStage === "STAGE_TEMPORAL_CREATING_SHAPE") {
       const { x, y } = stageAbsolutePosition(event);
       const updateProgressElement = shapeProgressEvent[temporalShape.tool];
 
@@ -131,7 +136,7 @@ const useEventStage = () => {
       handleUpdateTemporalShape(updateShape);
     }
 
-    if (eventStage === "STAGE_IS_DRAWING_NOW" && temporalShape?.tool) {
+    if (eventStage === "STAGE_IS_DRAWING_NOW") {
       const updateProgressElement = shapeProgressEvent[temporalShape.tool];
       const { x: XStage, y: YStage } = stageAbsolutePosition(event);
       const x = XStage ?? 0;
@@ -142,7 +147,7 @@ const useEventStage = () => {
       });
       handleUpdateTemporalShape(updateShape);
     }
-    if (eventStage === "STAGE_CREATING_LINE" && temporalShape?.tool) {
+    if (eventStage === "STAGE_CREATING_LINE") {
       const { x, y } = stageAbsolutePosition(event);
       const updateProgressElement = shapeProgressEvent[temporalShape.tool];
 
@@ -161,8 +166,9 @@ const useEventStage = () => {
   };
 
   const handleMouseUp = () => {
-    //create new shape in shapes and clean temporal shape and set tool with eventstage
-    if (eventStage === "STAGE_TEMPORAL_CREATING_SHAPE" && temporalShape?.id) {
+    if (!temporalShape?.id) return;
+
+    if (eventStage === "STAGE_TEMPORAL_CREATING_SHAPE") {
       const payload: IShape = {
         ...temporalShape,
         isWritingNow: true,
@@ -176,14 +182,15 @@ const useEventStage = () => {
       setEventStage("STAGE_IDLE");
       setTool("MOVE");
     }
-    if (eventStage === "STAGE_IS_DRAWING_NOW" && temporalShape?.id) {
+    if (eventStage === "STAGE_IS_DRAWING_NOW") {
       handleCreateShape({
         ...temporalShape,
         bezier: true,
       });
       handleCleanTemporalShape();
     }
-    if (eventStage === "STAGE_CREATING_LINE" && temporalShape?.id) {
+
+    if (eventStage === "STAGE_CREATING_LINE") {
       handleCreateShape(temporalShape);
       handleCleanTemporalShape();
     }
@@ -199,7 +206,7 @@ const useEventStage = () => {
       const KEY = event.key?.toUpperCase();
 
       if (isNotWriting) {
-        if (KEY === "DELETE") {
+        if (KEY === "DELETE" || KEY === "BACKSPACE") {
           if (shapeSelected?.id) {
             handleDeleteShapeInShapes(`${shapeSelected?.id}`);
             handleCleanShapeSelected();
@@ -209,12 +216,13 @@ const useEventStage = () => {
           setEventStage("STAGE_COPY_SHAPE");
         }
         const keysActions: { [key in string]: IKeyTool } = {
-          O: "CIRCLE",
-          L: "LINE",
-          V: "MOVE",
-          I: "IMAGE",
-          F: "BOX",
-          T: "TEXT",
+          2: "CIRCLE",
+          4: "LINE",
+          Q: "MOVE",
+          W: "IMAGE",
+          E: "DRAW",
+          1: "BOX",
+          3: "TEXT",
         };
         if (keysActions[KEY]) {
           setshowClip(false);

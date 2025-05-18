@@ -4,9 +4,7 @@ import { IShape } from "./type.shape";
 import { Html } from "react-konva-utils";
 import { createPortal } from "react-dom";
 import { useTool } from "../hooks";
-import { useReference } from "../hooks/useReference";
 import { tokens } from "../constants";
-import { Stage } from "konva/lib/Stage";
 
 type Props = {
   setShape: Dispatch<SetStateAction<IShape>>;
@@ -16,10 +14,7 @@ type Props = {
 
 export const PortalTextWriting = ({ shape, isSelected, setShape }: Props) => {
   const { setTool } = useTool();
-  const { ref } = useReference({
-    type: "STAGE",
-  });
-  const stage = ref?.current as Stage;
+
   const adjustTextareaHeight = () => {
     if (textareaRef.current) {
       const textarea = textareaRef.current;
@@ -37,13 +32,13 @@ export const PortalTextWriting = ({ shape, isSelected, setShape }: Props) => {
     adjustTextareaHeight();
   }, [shape?.text, textareaRef]);
 
-  if (!shape?.isWritingNow || !isSelected || !stage) return null;
+  if (!shape?.isWritingNow || !isSelected) return null;
 
   const areaPosition = {
-    x: stage?.container().offsetLeft + shape.x,
-    y: stage?.container().offsetTop + shape.y,
+    x: shape.x,
+    y: shape.y,
   };
-  const sidebarElement = document.getElementById("StageViewer");
+  const sidebarElement = document.getElementById("pixel-kit-stage");
 
   return (
     <Html

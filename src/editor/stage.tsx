@@ -107,6 +107,7 @@ const PxStage: FC<Props> = ({ children }) => {
     >
       <Valid isValid={show}>
         <Stage
+          id="pixel-kit-stage"
           ref={stageRef}
           width={width}
           height={height}

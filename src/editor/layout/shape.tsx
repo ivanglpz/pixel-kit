@@ -152,6 +152,7 @@ export const LayoutShapeConfig = (props: Props) => {
             keyInput={`pixel-kit-shape-fill-${id}-${tool}`}
             color={backgroundColor}
             onChangeColor={(e) => onChange("backgroundColor", e)}
+            primaryColors
           />
         </Valid>
 
