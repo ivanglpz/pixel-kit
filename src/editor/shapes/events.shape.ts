@@ -20,28 +20,33 @@ const coordinatesShapeMove = (
   stageWidth: number,
   stageHeight: number,
   evt: KonvaEventObject<DragEvent> | KonvaEventObject<Event>
-) => {
-  const box = evt.target.getClientRect();
-  const absPos = evt.target.getAbsolutePosition();
-  const offsetX = box.x - absPos.x;
-  const offsetY = box.y - absPos.y;
+): IShape => {
+  const shape = evt.target;
 
-  const newAbsPos = { ...prev, ...absPos };
+  const stage = shape.getStage();
+  if (!stage) return prev;
+
+  const box = shape.getClientRect({ relativeTo: stage });
+  const x = shape.x(); // relativo al grupo
+  const y = shape.y();
+
+  const newPos: IShape = { ...prev, x, y };
 
   if (box.x < 0) {
-    newAbsPos.x = -offsetX;
+    newPos.x = x - box.x;
   }
   if (box.y < 0) {
-    newAbsPos.y = -offsetY;
+    newPos.y = y - box.y;
   }
-  if (box.x + (box?.width ?? 0) > stageWidth) {
-    newAbsPos.x = stageWidth - box.width - offsetX;
+  if (box.x + (box.width ?? 0) > stageWidth) {
+    newPos.x = x - (box.x + box.width - stageWidth);
   }
   if (box.y + (box.height ?? 0) > stageHeight) {
-    newAbsPos.y = stageHeight - box.height - offsetY;
+    newPos.y = y - (box.y + box.height - stageHeight);
   }
-  evt.target.setAbsolutePosition(newAbsPos);
-  return newAbsPos;
+
+  shape.setPosition({ x: newPos.x, y: newPos.y });
+  return newPos;
 };
 
 export const shapeEventDragMove =
@@ -53,7 +58,9 @@ export const shapeEventDragMove =
   ) =>
   (prev: IShape) => {
     const payload = coordinatesShapeMove(prev, stageWidth, stageHeight, evt);
-    onDragMove(payload);
+    onDragMove({
+      ...payload,
+    });
 
     return payload;
   };
