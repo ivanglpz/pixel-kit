@@ -14,6 +14,7 @@ import { useStartDrawing } from "./useStartDrawing";
 import { showClipAtom } from "@/editor/states/clipImage";
 
 import { IShape } from "@/editor/shapes/type.shape";
+import { useConfiguration } from "./useConfiguration";
 
 export type IRelativePosition = {
   x: number;
@@ -69,6 +70,8 @@ const useEventStage = () => {
     handleUpdateTemporalShape,
     temporalShape,
   } = useCurrentItem();
+
+  const { config } = useConfiguration();
 
   const setshowClip = useSetAtom(showClipAtom);
 
@@ -215,15 +218,11 @@ const useEventStage = () => {
         if (KEY === "ALT") {
           setEventStage("STAGE_COPY_SHAPE");
         }
-        const keysActions: { [key in string]: IKeyTool } = {
-          2: "CIRCLE",
-          4: "LINE",
-          Q: "MOVE",
-          W: "IMAGE",
-          E: "DRAW",
-          1: "BOX",
-          3: "TEXT",
-        };
+
+        const keysActions = Object.fromEntries(
+          config.tools.map((item) => [item.keyBoard, item.keyMethod])
+        );
+
         if (keysActions[KEY]) {
           setshowClip(false);
           handleResetElement(keysActions[KEY] as IKeyMethods);
