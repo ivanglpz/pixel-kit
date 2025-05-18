@@ -26,6 +26,7 @@ export const LayerShapes = () => {
           const isSelected = item?.id === shapeSelected?.id;
           return (
             <Component
+              item={item}
               screenHeight={height}
               screenWidth={width}
               key={`pixel-kit-shapes-${item?.id}`}

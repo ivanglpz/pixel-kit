@@ -40,6 +40,7 @@ const configs: { [key in Keys]: Config } = {
         keyMethod: "BOX",
         keyBoard: "W",
       },
+
       {
         icon: icons.circle,
         keyMethod: "CIRCLE",
@@ -65,6 +66,11 @@ const configs: { [key in Keys]: Config } = {
         icon: icons.peentool,
         keyMethod: "DRAW",
         keyBoard: "D",
+      },
+      {
+        icon: icons.group,
+        keyMethod: "GROUP",
+        keyBoard: "F",
       },
     ],
     showBackgroundColor: false,

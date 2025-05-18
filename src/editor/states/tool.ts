@@ -11,7 +11,8 @@ export type IKeyTool =
   | "EXPORT"
   | "DRAW"
   | "WRITING"
-  | "CODE";
+  | "CODE"
+  | "GROUP";
 
 export type IKeyMethods = Exclude<IKeyTool, "MOVE" | "FRAME" | "WRITING">;
 

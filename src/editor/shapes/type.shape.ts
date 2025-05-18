@@ -2,6 +2,7 @@ import { FC } from "react";
 import { LineCap, LineJoin } from "konva/lib/Shape";
 import { Atom } from "jotai";
 import { IKeyMethods } from "../states/tool";
+import { SHAPES_NODES } from "../states/shapes";
 
 export type WithInitialValue<Value> = {
   init: Value;
@@ -55,6 +56,7 @@ export type IShape = {
 };
 
 export type IShapeWithEvents = {
+  item: SHAPES_NODES;
   shape: Atom<IShape>;
   draggable: boolean;
   isSelected: boolean;
