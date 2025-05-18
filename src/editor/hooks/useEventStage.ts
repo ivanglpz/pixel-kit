@@ -7,14 +7,13 @@ import { shapeStart } from "../helpers/startEvent";
 import stageAbsolutePosition from "../helpers/position";
 import { useSetAtom } from "jotai";
 import useSelectedShape from "./useSelectedShape";
-import useShapes from "./useShapes";
 import useCurrentItem from "./useCurrentItem";
 import { IKeyMethods, IKeyTool } from "@/editor/states/tool";
 import { useStartDrawing } from "./useStartDrawing";
 import { showClipAtom } from "@/editor/states/clipImage";
-
 import { IShape } from "@/editor/shapes/type.shape";
 import { useConfiguration } from "./useConfiguration";
+import { CREATE_SHAPE_ATOM, DELETE_SHAPE_ATOM } from "../states/shapes";
 
 export type IRelativePosition = {
   x: number;
@@ -59,8 +58,9 @@ export type IStageEvents =
 const useEventStage = () => {
   const { isGoingToCreateAShape, tool, setTool, isNotWriting, isDrawing } =
     useTool();
-  const { handleCreateShape, handleDeleteShapeInShapes } = useShapes();
 
+  const SET_CREATE = useSetAtom(CREATE_SHAPE_ATOM);
+  const DELETE_SHAPE = useSetAtom(DELETE_SHAPE_ATOM);
   const { shapeSelected, handleCleanShapeSelected, handleSetShapeSelected } =
     useSelectedShape();
   const { state } = useStartDrawing();
@@ -180,13 +180,13 @@ const useEventStage = () => {
         strokeEnabled: false,
       };
       handleSetShapeSelected(payload);
-      handleCreateShape(payload);
+      SET_CREATE(payload);
       handleCleanTemporalShape();
       setEventStage("STAGE_IDLE");
       setTool("MOVE");
     }
     if (eventStage === "STAGE_IS_DRAWING_NOW") {
-      handleCreateShape({
+      SET_CREATE({
         ...temporalShape,
         bezier: true,
       });
@@ -194,7 +194,7 @@ const useEventStage = () => {
     }
 
     if (eventStage === "STAGE_CREATING_LINE") {
-      handleCreateShape(temporalShape);
+      SET_CREATE(temporalShape);
       handleCleanTemporalShape();
     }
   };
@@ -211,7 +211,7 @@ const useEventStage = () => {
       if (isNotWriting) {
         if (["X", "DELETE", "BACKSPACE"].includes(KEY)) {
           if (shapeSelected?.id) {
-            handleDeleteShapeInShapes(`${shapeSelected?.id}`);
+            DELETE_SHAPE({ id: shapeSelected?.id });
             handleCleanShapeSelected();
           }
         }
@@ -255,7 +255,7 @@ const useEventStage = () => {
               height: image.height,
             });
 
-            handleCreateShape(createStartElement);
+            SET_CREATE(createStartElement);
           };
         };
         reader.readAsDataURL(file);
@@ -269,7 +269,7 @@ const useEventStage = () => {
           text: clipboardText,
         });
 
-        handleCreateShape(createStartElement);
+        SET_CREATE(createStartElement);
       }
 
       if (clipboardText.trim().startsWith("<svg")) {
@@ -300,7 +300,7 @@ const useEventStage = () => {
             height: img.height,
           });
 
-          handleCreateShape(createStartElement);
+          SET_CREATE(createStartElement);
         };
 
         const dataImage =

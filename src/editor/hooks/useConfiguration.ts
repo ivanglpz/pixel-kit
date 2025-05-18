@@ -1,10 +1,10 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { atom, useAtom } from "jotai";
+import { atom, useAtom, useSetAtom } from "jotai";
 import { useEffect } from "react";
-import useShapes from "./useShapes";
 import useCanvas from "./useCanvas";
 import { IKeyTool } from "../states/tool";
 import icons from "@/assets";
+import { CLEAR_SHAPES_ATOM } from "../states/shapes";
 
 type Config = {
   showPreviewImage: boolean;
@@ -116,14 +116,14 @@ type Props = {
 export const useConfiguration = (props?: Props) => {
   const type = props?.type;
   const [config, setConfig] = useAtom(configAtom);
-  const { handleResetShapes } = useShapes();
+  const SET_RESET = useSetAtom(CLEAR_SHAPES_ATOM);
   const { handleConfig } = useCanvas();
 
   const handleChangeConfig = (type?: Keys | string) => {
     if (!type) return;
     const tconfig = configs[type as Keys];
     setConfig(tconfig);
-    handleResetShapes();
+    SET_RESET();
     handleConfig({
       backgroundColor:
         tconfig?.backgroundColor ?? configs?.EDIT_IMAGE?.backgroundColor,
