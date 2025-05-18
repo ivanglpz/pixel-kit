@@ -11,6 +11,7 @@ import { Shape, ShapeConfig } from "konva/lib/Shape";
 import { boxClipAtom, showClipAtom } from "../states/clipImage";
 import { useReference } from "../hooks/useReference";
 import { STAGE_DIMENSION_ATOM } from "../states/dimension";
+import { SHAPES_NODES } from "../states/shapes";
 
 export const LayerClip = () => {
   const { img } = useImageRender();
@@ -95,6 +96,26 @@ export const LayerClip = () => {
         clipY={box.y}
       >
         <ShapeImage
+          item={{
+            id: "1c024656-106b-4d70-bc5c-845637d3344a",
+            childrens: atom<SHAPES_NODES[]>([]),
+            state: atom({
+              ...dimension,
+              id: "main-image-render-stage",
+              src: img?.base64,
+              isBlocked: true,
+              tool: "IMAGE",
+              visible: true,
+              fillEnabled: true,
+              dash: 0,
+              isWritingNow: false,
+              strokeEnabled: false,
+              shadowEnabled: false,
+              dashEnabled: false,
+              bezier: false,
+            }),
+            tool: "IMAGE",
+          }}
           screenHeight={height}
           screenWidth={width}
           isSelected={false}
