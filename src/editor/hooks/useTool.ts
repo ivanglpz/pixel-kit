@@ -10,7 +10,7 @@ const useTool = () => {
   const isMoving = useMemo(() => tool === "MOVE", [tool]);
 
   const isGoingToCreateAShape = useMemo(
-    () => tool !== "MOVE" && tool !== "WRITING",
+    () => tool !== "MOVE" && tool !== "WRITING" && tool !== "LINE",
     [tool]
   );
 
