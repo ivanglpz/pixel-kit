@@ -1,16 +1,19 @@
 import { FC } from "react";
 import { css } from "@stylespixelkit/css";
 import { useConfiguration } from "@/editor/hooks/useConfiguration";
-import { useAtomValue } from "jotai";
-import SHAPES_ATOM from "../states/shapes";
+import { useAtomValue, useSetAtom } from "jotai";
+import SHAPES_ATOM, { CLEAR_SHAPES_ATOM } from "../states/shapes";
 import { Nodes } from "../components/Nodes";
+import { Section } from "../components/section";
+import { Button } from "../components/button";
 
 export const SidebarLeft: FC = () => {
   const { config } = useConfiguration();
 
   const SHAPES = useAtomValue(SHAPES_ATOM);
+  const CLEAR = useSetAtom(CLEAR_SHAPES_ATOM);
   return (
-    <aside
+    <ul
       className={css({
         backgroundColor: "rgba(0,0,0,0.15)",
         zIndex: 9,
@@ -18,7 +21,6 @@ export const SidebarLeft: FC = () => {
         display: "flex",
         flexDirection: "column",
         gap: "md",
-        overflow: "hidden",
         overflowX: "scroll",
         overflowY: "scroll",
         padding: "md",
@@ -26,9 +28,14 @@ export const SidebarLeft: FC = () => {
         height: "100%",
       })}
     >
+      <Section
+        title="Shapes"
+        onDelete={CLEAR}
+        onDeleteLabel="Clear all"
+      ></Section>
       {SHAPES?.map((e) => {
         return <Nodes key={`main-nodes-${e?.id}-${e?.tool}`} item={e} />;
       })}
-    </aside>
+    </ul>
   );
 };
