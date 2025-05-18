@@ -115,6 +115,7 @@ const useEventStage = () => {
         strokeWidth: state.thickness,
         stroke: state.color,
         points: [x, y, x, y],
+        bezier: false,
       });
 
       handleCreateTemporalShape(createStartElement);
@@ -176,7 +177,10 @@ const useEventStage = () => {
       setTool("MOVE");
     }
     if (eventStage === "STAGE_IS_DRAWING_NOW" && temporalShape?.id) {
-      handleCreateShape(temporalShape);
+      handleCreateShape({
+        ...temporalShape,
+        bezier: true,
+      });
       handleCleanTemporalShape();
     }
     if (eventStage === "STAGE_CREATING_LINE" && temporalShape?.id) {

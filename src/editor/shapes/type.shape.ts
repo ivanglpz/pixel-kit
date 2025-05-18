@@ -51,6 +51,7 @@ export type IShape = {
   colorText?: string;
   stroke?: string;
   strokeWidth?: number;
+  bezier: boolean;
 };
 
 export type IShapeWithEvents = {

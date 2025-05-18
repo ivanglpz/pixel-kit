@@ -27,6 +27,7 @@ type ShapeStartProps = {
   shadowOpacity?: number;
   closed?: boolean;
   isWritingNow?: boolean;
+  bezier?: boolean;
 };
 
 const thickness = 5;
@@ -55,6 +56,7 @@ export const shapeStart = (props: ShapeStartProps): IShape => {
     shadowOpacity,
     closed,
     isWritingNow,
+    bezier,
   } = props;
   return {
     id: uuidv4(),
@@ -100,5 +102,6 @@ export const shapeStart = (props: ShapeStartProps): IShape => {
     resolution: "landscape",
     src: image ?? image_stock,
     text: "",
+    bezier: bezier ?? false,
   };
 };
