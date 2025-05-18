@@ -99,7 +99,7 @@ export const LayerClip = () => {
           item={{
             id: "1c024656-106b-4d70-bc5c-845637d3344a",
             childrens: atom<SHAPES_NODES[]>([]),
-            state: atom({
+            state: atom<IShape>({
               ...dimension,
               id: "main-image-render-stage",
               src: img?.base64,
@@ -113,6 +113,8 @@ export const LayerClip = () => {
               shadowEnabled: false,
               dashEnabled: false,
               bezier: false,
+              x: 0,
+              y: 0,
             }),
             tool: "IMAGE",
           }}
