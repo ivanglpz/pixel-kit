@@ -2,6 +2,7 @@ import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { SHAPES_NODES } from "../states/shapes";
 import { css } from "@stylespixelkit/css";
 import { CHANGE_SHAPE_NODE_ATOM, NODE_ATOM } from "../states/nodes";
+import icons, { iconsWithTools } from "@/assets";
 
 export const Nodes = ({ item }: { item: SHAPES_NODES }) => {
   const value = useAtomValue(item.state);
@@ -33,16 +34,22 @@ export const Nodes = ({ item }: { item: SHAPES_NODES }) => {
         onDrop={handleDrop}
         className={css({
           width: "100%",
-          border: "container",
-          backgroundColor: "primary",
           color: "text",
           padding: "md",
           borderRadius: "md",
           fontSize: "sm",
           listStyle: "none",
+          display: "flex",
+          flexDirection: "row",
+          alignItems: "center",
+          gap: "lg",
+          _hover: {
+            backgroundColor: "primary",
+          },
         })}
       >
-        {/* <p>{value.id.slice(0, 4)}</p> */}
+        {iconsWithTools[value.tool]}
+
         <p>{value.tool}</p>
       </li>
 
@@ -52,7 +59,7 @@ export const Nodes = ({ item }: { item: SHAPES_NODES }) => {
             paddingLeft: "lg",
             display: "flex",
             flexDirection: "column",
-            gap: "lg",
+            gap: "md",
           })}
         >
           {childrens.map((e) => (
