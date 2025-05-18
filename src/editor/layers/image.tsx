@@ -46,6 +46,7 @@ export const LayerImage = () => {
           strokeEnabled: false,
           shadowEnabled: false,
           dashEnabled: false,
+          bezier: false,
         })}
       />
       <Valid isValid={showClip}>
@@ -159,6 +160,7 @@ const ClipComponent = ({ isSelected }: ClipProps) => {
             strokeEnabled: false,
             shadowEnabled: false,
             dashEnabled: false,
+            bezier: false,
           })}
         />
       </Group>
