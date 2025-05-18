@@ -7,6 +7,7 @@ import { useConfiguration } from "./hooks/useConfiguration";
 import SidebarRight from "./layout/SidebarRight";
 import { css } from "@stylespixelkit/css";
 import { HeaderLogo } from "./layout/HeaderLogo";
+import { SidebarLeft } from "./layout/sidebarLeft";
 
 const PixelEditor = () => {
   useStopZoom();
@@ -46,13 +47,7 @@ const PixelEditor = () => {
           overflow: "hidden",
         })}
       >
-        <div
-          className={css({
-            borderRight: "1px solid gray",
-          })}
-        >
-          <p>left</p>
-        </div>
+        <SidebarLeft />
 
         <PxStage>
           <AllLayers />

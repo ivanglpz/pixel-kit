@@ -48,4 +48,5 @@ export const shapeProgressEvent: IShapeProgressEvent = {
   TEXT: shapeBoxProgress,
   LINE: shapeBoxProgress,
   EXPORT: shapeBoxProgress,
+  GROUP: shapeBoxProgress,
 };
