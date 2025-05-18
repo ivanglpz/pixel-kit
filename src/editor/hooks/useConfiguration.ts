@@ -89,30 +89,43 @@ const configs: { [key in Keys]: Config } = {
         keyMethod: "MOVE",
         keyBoard: "Q",
       },
+
+      {
+        icon: icons.box,
+        keyMethod: "BOX",
+        keyBoard: "W",
+      },
+
+      {
+        icon: icons.circle,
+        keyMethod: "CIRCLE",
+        keyBoard: "E",
+      },
       {
         icon: icons.line,
         keyMethod: "LINE",
-        keyBoard: "W",
+        keyBoard: "R",
+      },
+      {
+        icon: icons.image,
+        keyMethod: "IMAGE",
+        keyBoard: "A",
       },
       {
         icon: icons.text,
         keyMethod: "TEXT",
-        keyBoard: "E",
+        keyBoard: "S",
       },
+
       {
         icon: icons.peentool,
         keyMethod: "DRAW",
-        keyBoard: "R",
+        keyBoard: "D",
       },
       {
         icon: icons.group,
         keyMethod: "GROUP",
-        keyBoard: "A",
-      },
-      {
-        icon: icons.box,
-        keyMethod: "BOX",
-        keyBoard: "S",
+        keyBoard: "F",
       },
     ],
     showBackgroundColor: true,
