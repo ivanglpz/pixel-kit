@@ -38,6 +38,18 @@ export const CHANGE_SHAPE_NODE_ATOM = atom(
 
     // 4. Insertar el nodo dentro del grupo destino
     const currentChildren = get(targetGroup.childrens);
+    const shapeGroup = get(targetGroup.state);
+    const shapeNodo = get(changeNode.state);
+
+    const relativeX = shapeNodo.x - shapeGroup.x;
+    const relativeY = shapeNodo.y - shapeGroup.y;
+
+    // 5. Actualizar la posición del nodo
+    set(changeNode.state, {
+      ...shapeNodo,
+      x: relativeX,
+      y: relativeY,
+    });
     set(targetGroup.childrens, [...currentChildren, changeNode]);
 
     // 5. Eliminar el nodo de la raíz
