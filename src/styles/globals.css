@@ -28,6 +28,7 @@ body {
   box-sizing: border-box;
   font-family: "Plus Jakarta Sans", sans-serif;
   max-width: 100%;
+  overscroll-behavior: contain; /* o 'none' */
 }
 
 .CursorPointer {
