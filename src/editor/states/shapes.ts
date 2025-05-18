@@ -6,6 +6,7 @@ type IOBCElement = {
   id: string;
   tool: IKeyMethods;
   state: Atom<IShape>;
+  childrens?: IOBCElement[];
 };
 
 const SHAPES_ATOM = atom([] as IOBCElement[]);

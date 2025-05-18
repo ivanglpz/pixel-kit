@@ -15,6 +15,7 @@ type Config = {
   showClipImageConfig: boolean;
   tools: { icon: JSX.Element; keyMethod: IKeyTool; keyBoard: string }[];
   showBackgroundColor: boolean;
+  showClipImage: boolean;
 };
 
 type Keys = "EDIT_IMAGE" | "FREE_DRAW";
@@ -67,6 +68,7 @@ const configs: { [key in Keys]: Config } = {
       },
     ],
     showBackgroundColor: false,
+    showClipImage: true,
   },
   FREE_DRAW: {
     showPreviewImage: false,
@@ -98,6 +100,7 @@ const configs: { [key in Keys]: Config } = {
       },
     ],
     showBackgroundColor: true,
+    showClipImage: false,
   },
 };
 
