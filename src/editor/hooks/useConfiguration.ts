@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import useShapes from "./useShapes";
 import useCanvas from "./useCanvas";
 import { IKeyTool } from "../states/tool";
+import icons from "@/assets";
 
 type Config = {
   showPreviewImage: boolean;
@@ -12,7 +13,7 @@ type Config = {
   backgroundColor: string;
   showCanvasConfig: boolean;
   showClipImageConfig: boolean;
-  tools: IKeyTool[];
+  tools: { icon: JSX.Element; keyMethod: IKeyTool; keyBoard: string }[];
   showBackgroundColor: boolean;
 };
 
@@ -26,7 +27,45 @@ const configs: { [key in Keys]: Config } = {
     backgroundColor: "#FFFFFF",
     showCanvasConfig: true,
     showClipImageConfig: true,
-    tools: ["MOVE", "BOX", "CIRCLE", "LINE", "IMAGE", "TEXT", "DRAW"],
+    tools: [
+      {
+        icon: icons.cursor,
+        keyMethod: "MOVE",
+        keyBoard: "Q",
+      },
+
+      {
+        icon: icons.box,
+        keyMethod: "BOX",
+        keyBoard: "W",
+      },
+      {
+        icon: icons.circle,
+        keyMethod: "CIRCLE",
+        keyBoard: "E",
+      },
+      {
+        icon: icons.line,
+        keyMethod: "LINE",
+        keyBoard: "R",
+      },
+      {
+        icon: icons.image,
+        keyMethod: "IMAGE",
+        keyBoard: "A",
+      },
+      {
+        icon: icons.text,
+        keyMethod: "TEXT",
+        keyBoard: "S",
+      },
+
+      {
+        icon: icons.peentool,
+        keyMethod: "DRAW",
+        keyBoard: "D",
+      },
+    ],
     showBackgroundColor: false,
   },
   FREE_DRAW: {
@@ -36,7 +75,28 @@ const configs: { [key in Keys]: Config } = {
     backgroundColor: "#ffffff",
     showCanvasConfig: true,
     showClipImageConfig: false,
-    tools: ["MOVE", "LINE", "TEXT", "DRAW"],
+    tools: [
+      {
+        icon: icons.cursor,
+        keyMethod: "MOVE",
+        keyBoard: "Q",
+      },
+      {
+        icon: icons.line,
+        keyMethod: "LINE",
+        keyBoard: "W",
+      },
+      {
+        icon: icons.text,
+        keyMethod: "TEXT",
+        keyBoard: "E",
+      },
+      {
+        icon: icons.peentool,
+        keyMethod: "DRAW",
+        keyBoard: "R",
+      },
+    ],
     showBackgroundColor: true,
   },
 };

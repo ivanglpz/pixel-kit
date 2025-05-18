@@ -7,39 +7,6 @@ import { css } from "@stylespixelkit/css";
 import { useSetAtom } from "jotai";
 import { useConfiguration } from "../hooks/useConfiguration";
 
-const METHODS: { icon: JSX.Element; keyMethod: IKeyTool }[] = [
-  {
-    icon: icons.cursor,
-    keyMethod: "MOVE",
-  },
-
-  {
-    icon: icons.box,
-    keyMethod: "BOX",
-  },
-  {
-    icon: icons.circle,
-    keyMethod: "CIRCLE",
-  },
-  {
-    icon: icons.line,
-    keyMethod: "LINE",
-  },
-  {
-    icon: icons.image,
-    keyMethod: "IMAGE",
-  },
-  {
-    icon: icons.text,
-    keyMethod: "TEXT",
-  },
-
-  {
-    icon: icons.peentool,
-    keyMethod: "DRAW",
-  },
-];
-
 export const Tools = () => {
   const { tool, setTool } = useTool();
   const { handleCleanShapeSelected } = useSelectedShape();
@@ -52,41 +19,66 @@ export const Tools = () => {
     <Section title="Tools">
       <section
         className={css({
-          display: "flex",
-          flexDirection: "row",
-          flexWrap: "wrap",
+          display: "grid",
           gap: "md",
+          gridTemplateColumns: "4",
         })}
       >
-        {METHODS?.filter((e) => config?.tools?.includes(e?.keyMethod))?.map(
-          (item) => {
-            const isSelected = item?.keyMethod === tool;
-            return (
-              <button
-                key={`sidebar-methods-key-${item.keyMethod}`}
+        {config.tools?.map((item) => {
+          const isSelected = item?.keyMethod === tool;
+          return (
+            <button
+              key={`sidebar-methods-key-${item.keyMethod}`}
+              className={css({
+                backgroundGradient: isSelected ? "primary" : "transparent",
+                borderRadius: "6px",
+                width: "40px",
+                height: "35px",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                border: "container",
+                cursor: "pointer",
+                flexGrow: 1,
+                position: "relative",
+              })}
+              onClick={() => {
+                setTool(item.keyMethod as IKeyTool);
+                handleCleanShapeSelected();
+                setshowClip(false);
+              }}
+            >
+              {item?.icon}
+              <div
                 className={css({
+                  position: "absolute",
+                  right: -5,
+                  bottom: -5,
                   backgroundGradient: isSelected ? "primary" : "transparent",
-                  borderRadius: "6px",
-                  width: "40px",
-                  height: "35px",
+                  backgroundColor: "primary",
+                  width: 10,
+                  height: 15,
+                  zIndex: 100,
                   display: "flex",
                   justifyContent: "center",
                   alignItems: "center",
-                  border: "container",
-                  cursor: "pointer",
-                  flexGrow: 1,
+                  padding: "9",
+                  borderRadius: "4px",
                 })}
-                onClick={() => {
-                  setTool(item.keyMethod as IKeyTool);
-                  handleCleanShapeSelected();
-                  setshowClip(false);
-                }}
               >
-                {item?.icon}
-              </button>
-            );
-          }
-        )}
+                <p
+                  className={css({
+                    fontSize: "x-small",
+                    color: "text",
+                    fontWeight: "bold",
+                  })}
+                >
+                  {item.keyBoard}
+                </p>
+              </div>
+            </button>
+          );
+        })}
       </section>
     </Section>
   );
