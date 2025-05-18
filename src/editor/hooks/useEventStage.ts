@@ -5,15 +5,18 @@ import useTool from "./useTool";
 import { shapeProgressEvent } from "../helpers/progressEvent";
 import { shapeStart } from "../helpers/startEvent";
 import stageAbsolutePosition from "../helpers/position";
-import { useSetAtom } from "jotai";
+import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import useSelectedShape from "./useSelectedShape";
-import useCurrentItem from "./useCurrentItem";
 import { IKeyMethods, IKeyTool } from "@/editor/states/tool";
 import { useStartDrawing } from "./useStartDrawing";
 import { showClipAtom } from "@/editor/states/clipImage";
 import { IShape } from "@/editor/shapes/type.shape";
 import { useConfiguration } from "./useConfiguration";
 import { CREATE_SHAPE_ATOM, DELETE_SHAPE_ATOM } from "../states/shapes";
+import CURRENT_ITEM_ATOM, {
+  CLEAR_CURRENT_ITEM_ATOM,
+  CREATE_CURRENT_ITEM_ATOM,
+} from "../states/currentItem";
 
 export type IRelativePosition = {
   x: number;
@@ -64,12 +67,10 @@ const useEventStage = () => {
   const { shapeSelected, handleCleanShapeSelected, handleSetShapeSelected } =
     useSelectedShape();
   const { state } = useStartDrawing();
-  const {
-    handleCleanTemporalShape,
-    handleCreateTemporalShape,
-    handleUpdateTemporalShape,
-    temporalShape,
-  } = useCurrentItem();
+
+  const SET_CREATE_CITEM = useSetAtom(CREATE_CURRENT_ITEM_ATOM);
+  const SET_CLEAR_CITEM = useSetAtom(CLEAR_CURRENT_ITEM_ATOM);
+  const [CURRENT_ITEM, SET_UPDATE_CITEM] = useAtom(CURRENT_ITEM_ATOM);
 
   const { config } = useConfiguration();
 
@@ -92,7 +93,7 @@ const useEventStage = () => {
         isWritingNow: false,
       });
 
-      handleCreateTemporalShape(createStartElement);
+      SET_CREATE_CITEM(createStartElement);
       return;
     }
 
@@ -106,7 +107,7 @@ const useEventStage = () => {
         isWritingNow: false,
       });
 
-      handleCreateTemporalShape(createStartElement);
+      SET_CREATE_CITEM(createStartElement);
     }
     if (isDrawing) {
       setEventStage("STAGE_IS_DRAWING_NOW");
@@ -124,56 +125,56 @@ const useEventStage = () => {
         bezier: false,
       });
 
-      handleCreateTemporalShape(createStartElement);
+      SET_CREATE_CITEM(createStartElement);
     }
   };
 
   const handleMouseMove = (event: KonvaEventObject<MouseEvent>) => {
-    if (!temporalShape?.tool) return;
+    if (!CURRENT_ITEM?.tool) return;
 
     if (eventStage === "STAGE_TEMPORAL_CREATING_SHAPE") {
       const { x, y } = stageAbsolutePosition(event);
-      const updateProgressElement = shapeProgressEvent[temporalShape.tool];
+      const updateProgressElement = shapeProgressEvent[CURRENT_ITEM.tool];
 
-      const updateShape = updateProgressElement(x, y, temporalShape);
-      handleUpdateTemporalShape(updateShape);
+      const updateShape = updateProgressElement(x, y, CURRENT_ITEM);
+      SET_UPDATE_CITEM(updateShape);
     }
 
     if (eventStage === "STAGE_IS_DRAWING_NOW") {
-      const updateProgressElement = shapeProgressEvent[temporalShape.tool];
+      const updateProgressElement = shapeProgressEvent[CURRENT_ITEM.tool];
       const { x: XStage, y: YStage } = stageAbsolutePosition(event);
       const x = XStage ?? 0;
       const y = YStage ?? 0;
       const updateShape = updateProgressElement(x, y, {
-        ...temporalShape,
-        points: temporalShape.points?.concat([x, y]),
+        ...CURRENT_ITEM,
+        points: CURRENT_ITEM.points?.concat([x, y]),
       });
-      handleUpdateTemporalShape(updateShape);
+      SET_UPDATE_CITEM(updateShape);
     }
     if (eventStage === "STAGE_CREATING_LINE") {
       const { x, y } = stageAbsolutePosition(event);
-      const updateProgressElement = shapeProgressEvent[temporalShape.tool];
+      const updateProgressElement = shapeProgressEvent[CURRENT_ITEM.tool];
 
       const updateShape = updateProgressElement(x, y, {
-        ...temporalShape,
+        ...CURRENT_ITEM,
         points: [
-          temporalShape?.points?.[0] ?? 0,
-          temporalShape?.points?.[1] ?? 0,
+          CURRENT_ITEM?.points?.[0] ?? 0,
+          CURRENT_ITEM?.points?.[1] ?? 0,
           x,
           y,
         ],
       });
 
-      handleUpdateTemporalShape(updateShape);
+      SET_UPDATE_CITEM(updateShape);
     }
   };
 
   const handleMouseUp = () => {
-    if (!temporalShape?.id) return;
+    if (!CURRENT_ITEM?.id) return;
 
     if (eventStage === "STAGE_TEMPORAL_CREATING_SHAPE") {
       const payload: IShape = {
-        ...temporalShape,
+        ...CURRENT_ITEM,
         isWritingNow: true,
         dashEnabled: false,
         shadowEnabled: false,
@@ -181,26 +182,26 @@ const useEventStage = () => {
       };
       handleSetShapeSelected(payload);
       SET_CREATE(payload);
-      handleCleanTemporalShape();
+      SET_CLEAR_CITEM();
       setEventStage("STAGE_IDLE");
       setTool("MOVE");
     }
     if (eventStage === "STAGE_IS_DRAWING_NOW") {
       SET_CREATE({
-        ...temporalShape,
+        ...CURRENT_ITEM,
         bezier: true,
       });
-      handleCleanTemporalShape();
+      SET_CLEAR_CITEM();
     }
 
     if (eventStage === "STAGE_CREATING_LINE") {
-      SET_CREATE(temporalShape);
-      handleCleanTemporalShape();
+      SET_CREATE(CURRENT_ITEM);
+      SET_CLEAR_CITEM();
     }
   };
   const handleResetElement = (kl: IKeyTool) => {
     setTool(kl);
-    handleCleanTemporalShape();
+    SET_CLEAR_CITEM();
     handleCleanShapeSelected();
   };
 
