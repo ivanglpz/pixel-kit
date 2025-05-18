@@ -7,6 +7,7 @@ import { atom, useAtomValue } from "jotai";
 
 import { STAGE_DIMENSION_ATOM } from "../states/dimension";
 import { SHAPES_NODES } from "../states/shapes";
+import { IShape } from "../shapes/type.shape";
 
 export const LayerImage = () => {
   const { img } = useImageRender();
@@ -21,7 +22,7 @@ export const LayerImage = () => {
         item={{
           id: "1c024656-106b-4d70-bc5c-845637d3344a",
           childrens: atom<SHAPES_NODES[]>([]),
-          state: atom({
+          state: atom<IShape>({
             ...dimension,
             id: "main-image-render-stage",
             src: img?.base64,
