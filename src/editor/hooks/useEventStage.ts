@@ -5,7 +5,7 @@ import useTool from "./useTool";
 import { shapeProgressEvent } from "../helpers/progressEvent";
 import { shapeStart } from "../helpers/startEvent";
 import stageAbsolutePosition from "../helpers/position";
-import { useAtom, useAtomValue, useSetAtom } from "jotai";
+import { useAtom, useSetAtom } from "jotai";
 import useSelectedShape from "./useSelectedShape";
 import { IKeyMethods, IKeyTool } from "@/editor/states/tool";
 import { useStartDrawing } from "./useStartDrawing";
@@ -47,16 +47,16 @@ export type IShapeProgressEvent = {
 };
 
 export type IStageEvents =
-  | "STAGE_COPY_IMAGE_SHAPE"
-  | "STAGE_IDLE"
-  | "STAGE_TEMPORAL_CREATING_SHAPE"
-  | "STAGE_TEMPORAL_UPDATING_SHAPE"
-  | "STAGE_COPY_TEXT_SHAPE"
-  | "STAGE_COPY_SHAPE_SVG"
-  | "STAGE_DELETE_SHAPES"
-  | "STAGE_COPY_SHAPE"
-  | "STAGE_IS_DRAWING_NOW"
-  | "STAGE_CREATING_LINE";
+  | "COPY_IMAGE_SHAPE"
+  | "IDLE"
+  | "CREATING_SHAPE"
+  | "UPDATING_SHAPE"
+  | "COPY_TEXT_SHAPE"
+  | "COPY_SHAPE_SVG"
+  | "DELETE_SHAPES"
+  | "COPY_SHAPE"
+  | "IS_DRAWING_NOW"
+  | "CREATING_LINE";
 
 const useEventStage = () => {
   const { isGoingToCreateAShape, tool, setTool, isNotWriting, isDrawing } =
@@ -76,11 +76,11 @@ const useEventStage = () => {
 
   const setshowClip = useSetAtom(showClipAtom);
 
-  const [eventStage, setEventStage] = useState<IStageEvents>("STAGE_IDLE");
+  const [eventStage, setEventStage] = useState<IStageEvents>("IDLE");
 
   const handleMouseDown = (event: KonvaEventObject<MouseEvent>) => {
     if (tool === "LINE") {
-      setEventStage("STAGE_CREATING_LINE");
+      setEventStage("CREATING_LINE");
       const { x, y } = stageAbsolutePosition(event);
       const createStartElement = shapeStart({
         tool,
@@ -98,7 +98,7 @@ const useEventStage = () => {
     }
 
     if (isGoingToCreateAShape) {
-      setEventStage("STAGE_TEMPORAL_CREATING_SHAPE");
+      setEventStage("CREATING_SHAPE");
       const { x, y } = stageAbsolutePosition(event);
       const createStartElement = shapeStart({
         tool,
@@ -110,7 +110,7 @@ const useEventStage = () => {
       SET_CREATE_CITEM(createStartElement);
     }
     if (isDrawing) {
-      setEventStage("STAGE_IS_DRAWING_NOW");
+      setEventStage("IS_DRAWING_NOW");
       const { x: XStage, y: YStage } = stageAbsolutePosition(event);
       const x = XStage ?? 0;
       const y = YStage ?? 0;
@@ -132,7 +132,7 @@ const useEventStage = () => {
   const handleMouseMove = (event: KonvaEventObject<MouseEvent>) => {
     if (!CURRENT_ITEM?.tool) return;
 
-    if (eventStage === "STAGE_TEMPORAL_CREATING_SHAPE") {
+    if (eventStage === "CREATING_SHAPE") {
       const { x, y } = stageAbsolutePosition(event);
       const updateProgressElement = shapeProgressEvent[CURRENT_ITEM.tool];
 
@@ -140,7 +140,7 @@ const useEventStage = () => {
       SET_UPDATE_CITEM(updateShape);
     }
 
-    if (eventStage === "STAGE_IS_DRAWING_NOW") {
+    if (eventStage === "IS_DRAWING_NOW") {
       const updateProgressElement = shapeProgressEvent[CURRENT_ITEM.tool];
       const { x: XStage, y: YStage } = stageAbsolutePosition(event);
       const x = XStage ?? 0;
@@ -151,7 +151,7 @@ const useEventStage = () => {
       });
       SET_UPDATE_CITEM(updateShape);
     }
-    if (eventStage === "STAGE_CREATING_LINE") {
+    if (eventStage === "CREATING_LINE") {
       const { x, y } = stageAbsolutePosition(event);
       const updateProgressElement = shapeProgressEvent[CURRENT_ITEM.tool];
 
@@ -172,7 +172,7 @@ const useEventStage = () => {
   const handleMouseUp = () => {
     if (!CURRENT_ITEM?.id) return;
 
-    if (eventStage === "STAGE_TEMPORAL_CREATING_SHAPE") {
+    if (eventStage === "CREATING_SHAPE") {
       const payload: IShape = {
         ...CURRENT_ITEM,
         isWritingNow: true,
@@ -183,10 +183,10 @@ const useEventStage = () => {
       handleSetShapeSelected(payload);
       SET_CREATE(payload);
       SET_CLEAR_CITEM();
-      setEventStage("STAGE_IDLE");
+      setEventStage("IDLE");
       setTool("MOVE");
     }
-    if (eventStage === "STAGE_IS_DRAWING_NOW") {
+    if (eventStage === "IS_DRAWING_NOW") {
       SET_CREATE({
         ...CURRENT_ITEM,
         bezier: true,
@@ -194,7 +194,7 @@ const useEventStage = () => {
       SET_CLEAR_CITEM();
     }
 
-    if (eventStage === "STAGE_CREATING_LINE") {
+    if (eventStage === "CREATING_LINE") {
       SET_CREATE(CURRENT_ITEM);
       SET_CLEAR_CITEM();
     }
@@ -217,7 +217,7 @@ const useEventStage = () => {
           }
         }
         if (KEY === "ALT") {
-          setEventStage("STAGE_COPY_SHAPE");
+          setEventStage("COPY_SHAPE");
         }
 
         const keysActions = Object.fromEntries(
@@ -231,7 +231,7 @@ const useEventStage = () => {
       }
     };
     const handleKeyUp = () => {
-      setEventStage("STAGE_IDLE");
+      setEventStage("IDLE");
     };
 
     const handlePaste = (event: globalThis.ClipboardEvent) => {
@@ -324,7 +324,7 @@ const useEventStage = () => {
   useEffect(() => {
     const handleVisibilityChange = () => {
       setTool("MOVE");
-      setEventStage("STAGE_IDLE");
+      setEventStage("IDLE");
     };
 
     document.addEventListener("visibilitychange", handleVisibilityChange);
