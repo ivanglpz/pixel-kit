@@ -6,10 +6,11 @@ import { InputSelect } from "@/editor/components/input-select";
 import { InputSlider } from "@/editor/components/input-slider";
 import { Section } from "@/editor/components/section";
 import { useSelectedShape } from "@/editor/hooks";
-import useShapes from "@/editor/hooks/useShapes";
 import { IShape } from "@/editor/shapes/type.shape";
 import { css } from "@stylespixelkit/css";
+import { useSetAtom } from "jotai";
 import { useRef, ChangeEvent } from "react";
+import { DELETE_SHAPE_ATOM } from "../states/shapes";
 
 type TChange = (key: keyof IShape, value: string | number | boolean) => void;
 
@@ -86,10 +87,12 @@ export const LayoutShapeConfig = (props: Props) => {
     };
     reader.readAsDataURL(file);
   };
-  const { handleDeleteShapeInShapes } = useShapes();
+
+  const DELETE_SHAPE = useSetAtom(DELETE_SHAPE_ATOM);
   const { handleCleanShapeSelected } = useSelectedShape();
   const handleDelete = () => {
-    handleDeleteShapeInShapes(id ?? "");
+    if (!id) return;
+    DELETE_SHAPE({ id });
     handleCleanShapeSelected();
   };
 
