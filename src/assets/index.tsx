@@ -1,91 +1,93 @@
+const size = 16;
+
 const icons = {
   cursor: (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      width="14"
-      height="14"
+      width={size}
+      height={size}
       viewBox="0 0 24 24"
       fill="none"
     >
       <path
         d="M17.2637 13.0216L14.53 13.9368C13.7715 14.1893 13.1868 14.7731 12.934 15.5305L12.0175 18.2602C11.2432 20.6112 7.92483 20.5639 7.19802 18.2129L4.11668 8.30375C3.51621 6.33139 5.33341 4.51684 7.27703 5.11644L17.2163 8.19328C19.5707 8.9349 19.6023 12.2485 17.2637 13.0216Z"
         stroke="white"
-        stroke-width="1.5"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
     </svg>
   ),
   box: (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      width="10"
-      height="10"
+      width={size}
+      height={size}
       viewBox="0 0 24 24"
       fill="none"
     >
       <path
         d="M9 22H15C20 22 22 20 22 15V9C22 4 20 2 15 2H9C4 2 2 4 2 9V15C2 20 4 22 9 22Z"
         stroke="white"
-        stroke-width="1.5"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
     </svg>
   ),
   frame: (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
+      width={size}
+      height={size}
       viewBox="0 0 24 24"
       fill="none"
     >
       <path
         d="M10.5 19.9V4.1C10.5 2.6 9.86 2 8.27 2H4.23C2.64 2 2 2.6 2 4.1V19.9C2 21.4 2.64 22 4.23 22H8.27C9.86 22 10.5 21.4 10.5 19.9Z"
         stroke="white"
-        stroke-width="1.5"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
       <path
         d="M22 10.9V4.1C22 2.6 21.36 2 19.77 2H15.73C14.14 2 13.5 2.6 13.5 4.1V10.9C13.5 12.4 14.14 13 15.73 13H19.77C21.36 13 22 12.4 22 10.9Z"
         stroke="white"
-        stroke-width="1.5"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
       <path
         d="M22 19.9V18.1C22 16.6 21.36 16 19.77 16H15.73C14.14 16 13.5 16.6 13.5 18.1V19.9C13.5 21.4 14.14 22 15.73 22H19.77C21.36 22 22 21.4 22 19.9Z"
         stroke="white"
-        stroke-width="1.5"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
     </svg>
   ),
   circle: (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      width="10"
-      height="10"
+      width={size}
+      height={size}
       viewBox="0 0 24 24"
       fill="none"
     >
       <path
         d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z"
         stroke="white"
-        stroke-width="1.5"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
     </svg>
   ),
   line: (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      width="10"
-      height="10"
+      width={size}
+      height={size}
       viewBox="0 0 14 14"
       fill="none"
     >
@@ -101,64 +103,64 @@ const icons = {
   image: (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      width="15"
-      height="15"
+      width={size}
+      height={size}
       viewBox="0 0 15 13"
       fill="none"
     >
       <path
         d="M12.5 1H2.5C1.67157 1 1 1.67157 1 2.5V10.5C1 11.3284 1.67157 12 2.5 12H12.5C13.3284 12 14 11.3284 14 10.5V2.5C14 1.67157 13.3284 1 12.5 1Z"
         stroke="white"
-        stroke-linejoin="round"
+        strokeLinejoin="round"
       />
       <path
         d="M10 5C10.5523 5 11 4.55228 11 4C11 3.44772 10.5523 3 10 3C9.44772 3 9 3.44772 9 4C9 4.55228 9.44772 5 10 5Z"
         stroke="white"
-        stroke-miterlimit="10"
+        strokeMiterlimit="10"
       />
       <path
         d="M9 9.05585L6.16687 6.28674C5.98659 6.11024 5.74428 6.00782 5.48947 6.00043C5.23465 5.99304 4.98657 6.08122 4.79594 6.24695L1 9.5519M6.5 12L10.3544 8.22563C10.5306 8.05268 10.7666 7.9505 11.0158 7.93918C11.2651 7.92785 11.5097 8.0082 11.7016 8.16443L14 10.0415"
         stroke="white"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
     </svg>
   ),
   text: (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      width="15"
-      height="15"
+      width={size}
+      height={size}
       viewBox="0 0 24 24"
       fill="none"
     >
       <path
         d="M2.66992 7.17003V5.35003C2.66992 4.20003 3.59992 3.28003 4.73992 3.28003H19.2599C20.4099 3.28003 21.3299 4.21003 21.3299 5.35003V7.17003"
         stroke="white"
-        stroke-width="1.5"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
       <path
         d="M12 20.7201V4.11011"
         stroke="white"
-        stroke-width="1.5"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
       <path
         d="M8.06006 20.72H15.9401"
         stroke="white"
-        stroke-width="1.5"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
     </svg>
   ),
   peentool: (
     <svg
-      width="15"
-      height="15"
+      width={size}
+      height={size}
       viewBox="0 0 618 591"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
@@ -172,55 +174,55 @@ const icons = {
   check: (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
+      width={size}
+      height={size}
       viewBox="0 0 24 24"
       fill="none"
     >
       <path
         d="M5 12L9.32824 17L18 7"
         stroke="white"
-        stroke-width="1.5"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
     </svg>
   ),
   grid_center: (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
+      width={size}
+      height={size}
       viewBox="0 0 24 24"
       fill="none"
     >
       <path
         d="M9 22H15C20 22 22 20 22 15V9C22 4 20 2 15 2H9C4 2 2 4 2 9V15C2 20 4 22 9 22Z"
         stroke="white"
-        stroke-width="1.5"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
       <path
         d="M12 2V22"
         stroke="white"
-        stroke-width="1.5"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
       <path
         d="M2 12H22"
         stroke="white"
-        stroke-width="1.5"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
     </svg>
   ),
   add: (
     <svg
-      width="15"
-      height="15"
+      width={size}
+      height={size}
       viewBox="0 0 15 15"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
@@ -234,52 +236,52 @@ const icons = {
   group: (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      width="20"
-      height="20"
+      width={size}
+      height={size}
       viewBox="0 0 24 24"
       fill="none"
     >
       <path
         d="M20 6.95V17.05C19.84 17.02 19.67 17 19.5 17C18.12 17 17 18.12 17 19.5C17 19.67 17.02 19.84 17.05 20H6.95C6.98 19.84 7 19.67 7 19.5C7 18.12 5.88 17 4.5 17C4.33 17 4.16 17.02 4 17.05V6.95C4.16 6.98 4.33 7 4.5 7C5.88 7 7 5.88 7 4.5C7 4.33 6.98 4.16 6.95 4H17.05C17.02 4.16 17 4.33 17 4.5C17 5.88 18.12 7 19.5 7C19.67 7 19.84 6.98 20 6.95Z"
         stroke="white"
-        stroke-width="1.5"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
       <path
         d="M7 4.5C7 5.88 5.88 7 4.5 7C4.33 7 4.16 6.98 4 6.95C2.86 6.72 2 5.71 2 4.5C2 3.12 3.12 2 4.5 2C5.71 2 6.72 2.86 6.95 4C6.98 4.16 7 4.33 7 4.5Z"
         stroke="white"
-        stroke-width="1.5"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
       <path
         d="M22 4.5C22 5.71 21.14 6.72 20 6.95C19.84 6.98 19.67 7 19.5 7C18.12 7 17 5.88 17 4.5C17 4.33 17.02 4.16 17.05 4C17.28 2.86 18.29 2 19.5 2C20.88 2 22 3.12 22 4.5Z"
         stroke="white"
-        stroke-width="1.5"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
       <path
         d="M7 19.5C7 19.67 6.98 19.84 6.95 20C6.72 21.14 5.71 22 4.5 22C3.12 22 2 20.88 2 19.5C2 18.29 2.86 17.28 4 17.05C4.16 17.02 4.33 17 4.5 17C5.88 17 7 18.12 7 19.5Z"
         stroke="white"
-        stroke-width="1.5"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
       <path
         d="M22 19.5C22 20.88 20.88 22 19.5 22C18.29 22 17.28 21.14 17.05 20C17.02 19.84 17 19.67 17 19.5C17 18.12 18.12 17 19.5 17C19.67 17 19.84 17.02 20 17.05C21.14 17.28 22 18.29 22 19.5Z"
         stroke="white"
-        stroke-width="1.5"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
     </svg>
   ),
   code: (
     <svg
-      width="33"
-      height="33"
+      width={size}
+      height={size}
       viewBox="0 0 33 33"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
@@ -292,8 +294,8 @@ const icons = {
   ),
   groupdrag: (
     <svg
-      width="20"
-      height="20"
+      width={size}
+      height={size}
       viewBox="0 0 24 24"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"

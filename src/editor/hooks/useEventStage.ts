@@ -209,7 +209,7 @@ const useEventStage = () => {
       const KEY = event.key?.toUpperCase();
 
       if (isNotWriting) {
-        if (KEY === "DELETE" || KEY === "BACKSPACE") {
+        if (["X", "DELETE", "BACKSPACE"].includes(KEY)) {
           if (shapeSelected?.id) {
             handleDeleteShapeInShapes(`${shapeSelected?.id}`);
             handleCleanShapeSelected();
