@@ -8,7 +8,7 @@ export type WithInitialValue<Value> = {
 export type SHAPES_NODES = {
   id: string;
   tool: IKeyMethods;
-  state: Atom<IShape>;
+  state: PrimitiveAtom<IShape> & WithInitialValue<IShape>;
   childrens: PrimitiveAtom<SHAPES_NODES[]> & WithInitialValue<SHAPES_NODES[]>;
 };
 
