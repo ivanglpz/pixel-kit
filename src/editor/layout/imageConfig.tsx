@@ -1,3 +1,4 @@
+import { IMAGE_DEFAULT, IMAGE_DEFAULT_DIMENSIONS } from "@/assets/data";
 import { Valid } from "@/components/valid";
 import { Button } from "@/editor/components/button";
 import { useImageRender } from "@/editor/hooks/useImageRender";
@@ -7,37 +8,18 @@ import { createPortal } from "react-dom";
 
 export const ImageConfiguration = () => {
   const { img, handleSetImageRender } = useImageRender();
-
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    const url =
-      "https://res.cloudinary.com/whil/image/upload/fl_preserve_transparency/v1747523035/app/pixel-kit/images/vki9p3syvur8bsjczld6.jpg?_s=public-apps";
-
     const loadImageFromURL = async () => {
       try {
-        const response = await fetch(url);
-        const blob = await response.blob();
-
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          const base64 = reader.result as string;
-
-          const image = new Image();
-          image.onload = () => {
-            handleSetImageRender({
-              base64,
-              name: "default-image.jpg",
-              height: image.height,
-              width: image.width,
-              x: 0,
-              y: 0,
-            });
-          };
-          image.src = base64;
-        };
-
-        reader.readAsDataURL(blob);
+        handleSetImageRender({
+          base64: IMAGE_DEFAULT,
+          name: "default-image.jpg",
+          ...IMAGE_DEFAULT_DIMENSIONS,
+          x: 0,
+          y: 0,
+        });
       } catch (error) {
         console.error("Failed to load default image:", error);
       }
