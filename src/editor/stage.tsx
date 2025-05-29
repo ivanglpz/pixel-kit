@@ -1,14 +1,14 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { FC, ReactNode, useEffect, useRef, useState } from "react";
-import { Stage } from "react-konva";
-import { useSelectedShape, useCanvas, useTool, useEventStage } from "./hooks";
+import { Valid } from "@/components/valid";
 import { css } from "@stylespixelkit/css";
-import { useReference } from "./hooks/useReference";
+import { useAtom } from "jotai";
 import Konva from "konva";
 import { KonvaEventObject } from "konva/lib/Node";
-import { useAtom } from "jotai";
+import { FC, ReactNode, useEffect, useRef, useState } from "react";
+import { Stage } from "react-konva";
+import { useCanvas, useEventStage, useSelectedShape, useTool } from "./hooks";
+import { useReference } from "./hooks/useReference";
 import { STAGE_DIMENSION_ATOM } from "./states/dimension";
-import { Valid } from "@/components/valid";
 
 type Props = {
   children: ReactNode;
@@ -42,7 +42,8 @@ const PxStage: FC<Props> = ({ children }) => {
     if (["DRAW", "LINE"].includes(tool)) return;
     if (
       !e.target?.attrs?.id ||
-      e.target?.attrs?.id?.includes("main-image-render-stage")
+      e.target?.attrs?.id?.includes("main-image-render-stage") ||
+      e?.target?.attrs?.id?.includes("pixel-kit-stage")
     ) {
       handleCleanShapeSelected();
       setTool("MOVE");
