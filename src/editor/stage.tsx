@@ -40,10 +40,13 @@ const PxStage: FC<Props> = ({ children }) => {
 
   const handleClear = (e: KonvaEventObject<MouseEvent>) => {
     if (["DRAW", "LINE"].includes(tool)) return;
+
+    const targetId = e?.target?.attrs?.id;
+
     if (
-      !e.target?.attrs?.id ||
-      e.target?.attrs?.id?.includes("main-image-render-stage") ||
-      e?.target?.attrs?.id?.includes("pixel-kit-stage")
+      [null, undefined, "main-image-render-stage", "pixel-kit-stage"]?.includes(
+        targetId
+      )
     ) {
       handleCleanShapeSelected();
       setTool("MOVE");
