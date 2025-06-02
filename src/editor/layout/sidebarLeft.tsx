@@ -1,4 +1,3 @@
-import { useConfiguration } from "@/editor/hooks/useConfiguration";
 import { css } from "@stylespixelkit/css";
 import { useAtomValue, useSetAtom } from "jotai";
 import { FC } from "react";
@@ -7,8 +6,6 @@ import { Section } from "../components/section";
 import SHAPES_ATOM, { CLEAR_SHAPES_ATOM } from "../states/shapes";
 
 export const SidebarLeft: FC = () => {
-  const { config } = useConfiguration();
-
   const SHAPES = useAtomValue(SHAPES_ATOM);
   const CLEAR = useSetAtom(CLEAR_SHAPES_ATOM);
   return (
