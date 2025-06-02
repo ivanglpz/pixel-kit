@@ -1,10 +1,10 @@
 /* eslint-disable react-hooks/exhaustive-deps */
+import icons from "@/assets";
 import { atom, useAtom, useSetAtom } from "jotai";
 import { useEffect } from "react";
-import useCanvas from "./useCanvas";
-import { IKeyTool } from "../states/tool";
-import icons from "@/assets";
 import { CLEAR_SHAPES_ATOM } from "../states/shapes";
+import { IKeyTool } from "../states/tool";
+import useCanvas from "./useCanvas";
 
 type Config = {
   showPreviewImage: boolean;

@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
+import { IShape } from "@/editor/shapes/type.shape";
 import { useAtom } from "jotai";
 import selectedShapeAtom from "../states/selectedShape";
-import { IShape } from "@/editor/shapes/type.shape";
 
 const useSelectedShape = () => {
   const [shapeSelected, setElement] = useAtom(selectedShapeAtom);

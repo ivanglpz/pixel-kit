@@ -1,8 +1,8 @@
+import { useAtomValue } from "jotai";
 import { Layer } from "react-konva";
 import { useSelectedShape, useTool } from "../hooks";
-import { FCShapeWEvents, IShape } from "../shapes/type.shape";
 import { Shapes } from "../shapes/shapes";
-import { useAtomValue } from "jotai";
+import { FCShapeWEvents, IShape } from "../shapes/type.shape";
 import { STAGE_DIMENSION_ATOM } from "../states/dimension";
 import SHAPES_ATOM from "../states/shapes";
 

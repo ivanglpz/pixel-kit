@@ -1,11 +1,10 @@
-import { FC } from "react";
-import { css } from "@stylespixelkit/css";
 import { useConfiguration } from "@/editor/hooks/useConfiguration";
+import { css } from "@stylespixelkit/css";
 import { useAtomValue, useSetAtom } from "jotai";
-import SHAPES_ATOM, { CLEAR_SHAPES_ATOM } from "../states/shapes";
+import { FC } from "react";
 import { Nodes } from "../components/Nodes";
 import { Section } from "../components/section";
-import { Button } from "../components/button";
+import SHAPES_ATOM, { CLEAR_SHAPES_ATOM } from "../states/shapes";
 
 export const SidebarLeft: FC = () => {
   const { config } = useConfiguration();

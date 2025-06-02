@@ -1,10 +1,10 @@
-import { useAtom, useAtomValue, useSetAtom } from "jotai";
-import { SHAPES_NODES } from "../states/shapes";
+import { iconsWithTools } from "@/assets";
 import { css } from "@stylespixelkit/css";
-import { CHANGE_SHAPE_NODE_ATOM, NODE_ATOM } from "../states/nodes";
-import icons, { iconsWithTools } from "@/assets";
-import { useSelectedShape } from "../hooks";
+import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { useState } from "react";
+import { useSelectedShape } from "../hooks";
+import { CHANGE_SHAPE_NODE_ATOM, NODE_ATOM } from "../states/nodes";
+import { SHAPES_NODES } from "../states/shapes";
 
 export const Nodes = ({ item }: { item: SHAPES_NODES }) => {
   const value = useAtomValue(item.state);

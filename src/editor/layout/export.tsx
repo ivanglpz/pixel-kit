@@ -3,9 +3,9 @@ import { Button } from "@/editor/components/button";
 import { InputSelect } from "@/editor/components/input-select";
 import { InputText } from "@/editor/components/input-text";
 import { Section } from "@/editor/components/section";
+import { useConfiguration } from "@/editor/hooks/useConfiguration";
 import { useImageRender } from "@/editor/hooks/useImageRender";
 import { useReference } from "@/editor/hooks/useReference";
-import { useConfiguration } from "@/editor/hooks/useConfiguration";
 import { showClipAtom } from "@/editor/states/clipImage";
 import { calculateDimension } from "@/editor/utils/calculateDimension";
 import { css } from "@stylespixelkit/css";
@@ -17,9 +17,9 @@ import { RefObject, useState } from "react";
 import { createPortal } from "react-dom";
 import { toast } from "sonner";
 import { v4 as uuidv4 } from "uuid";
-import { ImageConfiguration } from "./imageConfig";
 import { STAGE_DIMENSION_ATOM } from "../states/dimension";
 import { typeExportAtom } from "../states/export";
+import { ImageConfiguration } from "./imageConfig";
 
 const formats = {
   LOW: 0.8,

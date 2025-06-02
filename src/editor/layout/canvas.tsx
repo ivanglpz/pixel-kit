@@ -1,7 +1,6 @@
 import PixelKitInputColor from "@/editor/components/input-color";
 import { Section } from "@/editor/components/section";
 import { useCanvas } from "@/editor/hooks";
-import { css } from "@stylespixelkit/css";
 import { FC } from "react";
 
 const StageConfig: FC = () => {

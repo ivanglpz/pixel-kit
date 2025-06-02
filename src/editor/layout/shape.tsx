@@ -9,7 +9,7 @@ import { useSelectedShape } from "@/editor/hooks";
 import { IShape } from "@/editor/shapes/type.shape";
 import { css } from "@stylespixelkit/css";
 import { useSetAtom } from "jotai";
-import { useRef, ChangeEvent } from "react";
+import { ChangeEvent, useRef } from "react";
 import { DELETE_SHAPE_ATOM } from "../states/shapes";
 
 type TChange = (key: keyof IShape, value: string | number | boolean) => void;

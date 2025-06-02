@@ -1,13 +1,13 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { Layer } from "react-konva";
-import { ShapeImage } from "../shapes/image.shape";
-import { useImageRender } from "../hooks/useImageRender";
 import { calculateDimension } from "@/editor/utils/calculateDimension";
 import { atom, useAtomValue } from "jotai";
+import { Layer } from "react-konva";
+import { useImageRender } from "../hooks/useImageRender";
+import { ShapeImage } from "../shapes/image.shape";
 
+import { IShape } from "../shapes/type.shape";
 import { STAGE_DIMENSION_ATOM } from "../states/dimension";
 import { SHAPES_NODES } from "../states/shapes";
-import { IShape } from "../shapes/type.shape";
 
 export const LayerImage = () => {
   const { img } = useImageRender();
