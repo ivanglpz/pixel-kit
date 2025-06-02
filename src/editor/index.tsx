@@ -1,13 +1,13 @@
+import { css } from "@stylespixelkit/css";
 import dynamic from "next/dynamic";
 import useBrowser from "./hooks/useBrowser";
+import { useConfiguration } from "./hooks/useConfiguration";
 import useStopZoom from "./hooks/useStopZoom";
 import { AllLayers } from "./layers/AllLayers";
-import PxStage from "./stage";
-import { useConfiguration } from "./hooks/useConfiguration";
-import SidebarRight from "./layout/SidebarRight";
-import { css } from "@stylespixelkit/css";
 import { HeaderLogo } from "./layout/HeaderLogo";
 import { SidebarLeft } from "./layout/sidebarLeft";
+import SidebarRight from "./layout/SidebarRight";
+import PxStage from "./stage";
 
 const PixelEditor = () => {
   useStopZoom();
@@ -48,7 +48,6 @@ const PixelEditor = () => {
         })}
       >
         <SidebarLeft />
-
         <PxStage>
           <AllLayers />
         </PxStage>
