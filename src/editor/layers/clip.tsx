@@ -1,15 +1,15 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { Group, Layer, Rect, Transformer } from "react-konva";
-import { ShapeImage } from "../shapes/image.shape";
-import { useImageRender } from "../hooks/useImageRender";
 import { calculateDimension } from "@/editor/utils/calculateDimension";
 import { atom, useAtom, useAtomValue } from "jotai";
-import { MutableRefObject, useEffect, useMemo, useRef } from "react";
-import { IShape } from "../shapes/type.shape";
 import Konva from "konva";
 import { Shape, ShapeConfig } from "konva/lib/Shape";
-import { boxClipAtom, showClipAtom } from "../states/clipImage";
+import { MutableRefObject, useEffect, useMemo, useRef } from "react";
+import { Group, Layer, Rect, Transformer } from "react-konva";
+import { useImageRender } from "../hooks/useImageRender";
 import { useReference } from "../hooks/useReference";
+import { ShapeImage } from "../shapes/image.shape";
+import { IShape } from "../shapes/type.shape";
+import { boxClipAtom, showClipAtom } from "../states/clipImage";
 import { STAGE_DIMENSION_ATOM } from "../states/dimension";
 import { SHAPES_NODES } from "../states/shapes";
 

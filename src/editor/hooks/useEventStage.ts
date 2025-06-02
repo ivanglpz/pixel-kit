@@ -1,22 +1,22 @@
 /* eslint-disable react-hooks/exhaustive-deps */
+import { IShape } from "@/editor/shapes/type.shape";
+import { showClipAtom } from "@/editor/states/clipImage";
+import { IKeyMethods, IKeyTool } from "@/editor/states/tool";
+import { useAtom, useSetAtom } from "jotai";
 import { KonvaEventObject } from "konva/lib/Node";
 import { useEffect, useState } from "react";
-import useTool from "./useTool";
+import stageAbsolutePosition from "../helpers/position";
 import { shapeProgressEvent } from "../helpers/progressEvent";
 import { shapeStart } from "../helpers/startEvent";
-import stageAbsolutePosition from "../helpers/position";
-import { useAtom, useSetAtom } from "jotai";
-import useSelectedShape from "./useSelectedShape";
-import { IKeyMethods, IKeyTool } from "@/editor/states/tool";
-import { useStartDrawing } from "./useStartDrawing";
-import { showClipAtom } from "@/editor/states/clipImage";
-import { IShape } from "@/editor/shapes/type.shape";
-import { useConfiguration } from "./useConfiguration";
-import { CREATE_SHAPE_ATOM, DELETE_SHAPE_ATOM } from "../states/shapes";
 import CURRENT_ITEM_ATOM, {
   CLEAR_CURRENT_ITEM_ATOM,
   CREATE_CURRENT_ITEM_ATOM,
 } from "../states/currentItem";
+import { CREATE_SHAPE_ATOM, DELETE_SHAPE_ATOM } from "../states/shapes";
+import { useConfiguration } from "./useConfiguration";
+import useSelectedShape from "./useSelectedShape";
+import { useStartDrawing } from "./useStartDrawing";
+import useTool from "./useTool";
 
 export type IRelativePosition = {
   x: number;

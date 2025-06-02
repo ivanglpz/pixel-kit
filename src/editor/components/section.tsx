@@ -1,5 +1,5 @@
 import { css } from "@stylespixelkit/css";
-import { ReactNode, useState } from "react";
+import { ReactNode } from "react";
 
 type Props = {
   title: string;

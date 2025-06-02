@@ -1,10 +1,9 @@
-import { Layer } from "react-konva";
-import { useMemo } from "react";
-import { FCShapeWEvents } from "../shapes/type.shape";
-import { Shapes } from "../shapes/shapes";
 import { atom, useAtomValue } from "jotai";
-import { STAGE_DIMENSION_ATOM } from "../states/dimension";
+import { Layer } from "react-konva";
+import { Shapes } from "../shapes/shapes";
+import { FCShapeWEvents } from "../shapes/type.shape";
 import CURRENT_ITEM_ATOM from "../states/currentItem";
+import { STAGE_DIMENSION_ATOM } from "../states/dimension";
 import { SHAPES_NODES } from "../states/shapes";
 
 export const LayerPipe = () => {
