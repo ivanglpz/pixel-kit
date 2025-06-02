@@ -1,7 +1,8 @@
+import { Valid } from "@/components/valid";
+import { PrimitiveAtom, useAtom } from "jotai";
 import Konva from "konva";
-import { MutableRefObject, memo, useEffect, useRef, useState } from "react";
+import { memo, MutableRefObject, useEffect, useRef } from "react";
 import { Rect } from "react-konva";
-import { IShape, IShapeWithEvents, WithInitialValue } from "./type.shape";
 import { PortalConfigShape } from "./config.shape";
 import {
   shapeEventClick,
@@ -11,8 +12,7 @@ import {
   shapeTransformEnd,
 } from "./events.shape";
 import { Transform } from "./transformer";
-import { Valid } from "@/components/valid";
-import { PrimitiveAtom, useAtom } from "jotai";
+import { IShape, IShapeWithEvents, WithInitialValue } from "./type.shape";
 
 // eslint-disable-next-line react/display-name
 const ShapeBox = memo((item: IShapeWithEvents) => {
