@@ -148,7 +148,6 @@ export const ImageConfiguration = () => {
         accept="image/*"
         onChange={handleFiles}
         className={css({
-          backgroundColor: "red",
           width: 0,
           height: 0,
           display: "none",
