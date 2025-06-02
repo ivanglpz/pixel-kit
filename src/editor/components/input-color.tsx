@@ -108,9 +108,9 @@ const PixelKitInputColor: FC<Props> = ({
             "#FF0000",
             "#FFFF00",
             "#0000FF",
-            "#00FF00",
-            "#FF6600",
-            "#6600FF",
+            // "#00FF00",
+            // "#FF6600",
+            // "#6600FF",
             "#000000",
             "#FFFFFF",
           ].map((e) => (
