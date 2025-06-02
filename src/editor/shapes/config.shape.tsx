@@ -1,9 +1,9 @@
-import { Dispatch, SetStateAction } from "react";
-import { IShape } from "./type.shape";
-import { Html } from "react-konva-utils";
-import { createPortal } from "react-dom";
-import { LayoutShapeConfig } from "../layout/shape";
 import { Valid } from "@/components/valid";
+import { Dispatch, SetStateAction } from "react";
+import { createPortal } from "react-dom";
+import { Html } from "react-konva-utils";
+import { LayoutShapeConfig } from "../layout/shape-config";
+import { IShape } from "./type.shape";
 
 type Props = {
   setShape: Dispatch<SetStateAction<IShape>>;
