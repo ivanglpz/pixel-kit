@@ -1,10 +1,10 @@
 import { Valid } from "@/components/valid";
 import { useConfiguration } from "../hooks/useConfiguration";
-import { LayerBackground } from "./background";
-import { LayerClip } from "./clip";
-import { LayerImage } from "./image";
-import { LayerPipe } from "./pipe";
-import { LayerShapes } from "./shapes";
+import { LayerBackground } from "./layer.background";
+import { LayerClip } from "./layer.clip";
+import { LayerImage } from "./layer.image";
+import { LayerPipe } from "./layer.pipe";
+import { LayerShapes } from "./layer.shapes";
 
 export const AllLayers = () => {
   const { config } = useConfiguration();

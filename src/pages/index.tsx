@@ -88,14 +88,14 @@ const features = [
           d="M20.5 28.3333C25.1024 28.3333 28.8333 24.6023 28.8333 20C28.8333 15.3976 25.1024 11.6666 20.5 11.6666C15.8976 11.6666 12.1667 15.3976 12.1667 20C12.1667 24.6023 15.8976 28.3333 20.5 28.3333Z"
           stroke="white"
           strokeWidth="2"
-          strokeLinecapp="round"
+          strokeLinecap="round"
           strokeLinejoin="round"
         />
         <path
           d="M17.1667 21.6667C17.1667 21.6667 18.4167 23.3333 20.5 23.3333C22.5833 23.3333 23.8333 21.6667 23.8333 21.6667M18 17.5H18.0083M23 17.5H23.0083"
           stroke="white"
           strokeWidth="2"
-          strokeLinecapp="round"
+          strokeLinecap="round"
           strokeLinejoin="round"
         />
       </svg>
