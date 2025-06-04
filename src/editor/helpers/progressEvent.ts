@@ -1,10 +1,12 @@
 import { IShape } from "@/editor/shapes/type.shape";
-import { IShapeProgressEvent } from "../hooks/useEventStage";
+import { IKeyMethods } from "../states/tool";
 
 const isNotNegative = (value: number) => {
   return value < 1 ? 1 : value;
 };
-
+export type IShapeProgressEvent = {
+  [key in IKeyMethods]: (x: number, y: number, element: IShape) => IShape;
+};
 export const shapeBoxProgress = (
   x: number,
   y: number,

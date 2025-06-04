@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { IShape } from "@/editor/shapes/type.shape";
 import { showClipAtom } from "@/editor/states/clipImage";
-import TOOL_ATOM, { IKeyMethods, IKeyTool } from "@/editor/states/tool";
+import TOOL_ATOM, { IKeyTool } from "@/editor/states/tool";
 import { useAtom, useSetAtom } from "jotai";
 import { KonvaEventObject } from "konva/lib/Node";
 import { useEffect } from "react";
@@ -18,9 +18,6 @@ import { CREATE_SHAPE_ATOM, DELETE_SHAPE_ATOM } from "../states/shapes";
 import { useConfiguration } from "./useConfiguration";
 import { useStartDrawing } from "./useStartDrawing";
 
-export type IShapeProgressEvent = {
-  [key in IKeyMethods]: (x: number, y: number, element: IShape) => IShape;
-};
 const TOOLS_BOX_BASED = ["BOX", "CIRCLE", "IMAGE", "TEXT", "GROUP"];
 
 const TOOLS_DRAW_BASED = ["DRAW"];
