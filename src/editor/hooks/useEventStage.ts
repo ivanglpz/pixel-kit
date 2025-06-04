@@ -12,9 +12,9 @@ import CURRENT_ITEM_ATOM, {
   CLEAR_CURRENT_ITEM_ATOM,
   CREATE_CURRENT_ITEM_ATOM,
 } from "../states/currentItem";
+import { SHAPE_ID_ATOM } from "../states/shape";
 import { CREATE_SHAPE_ATOM, DELETE_SHAPE_ATOM } from "../states/shapes";
 import { useConfiguration } from "./useConfiguration";
-import useSelectedShape from "./useSelectedShape";
 import { useStartDrawing } from "./useStartDrawing";
 import useTool from "./useTool";
 
@@ -64,9 +64,8 @@ const useEventStage = () => {
 
   const SET_CREATE = useSetAtom(CREATE_SHAPE_ATOM);
   const DELETE_SHAPE = useSetAtom(DELETE_SHAPE_ATOM);
-  const { shapeSelected, handleCleanShapeSelected, handleSetShapeSelected } =
-    useSelectedShape();
   const { state } = useStartDrawing();
+  const [shapeId, setShapeId] = useAtom(SHAPE_ID_ATOM);
 
   const SET_CREATE_CITEM = useSetAtom(CREATE_CURRENT_ITEM_ATOM);
   const SET_CLEAR_CITEM = useSetAtom(CLEAR_CURRENT_ITEM_ATOM);
@@ -180,7 +179,8 @@ const useEventStage = () => {
         shadowEnabled: false,
         strokeEnabled: false,
       };
-      handleSetShapeSelected(payload);
+      setShapeId(payload?.id);
+
       SET_CREATE(payload);
       SET_CLEAR_CITEM();
       setEventStage("IDLE");
@@ -202,7 +202,7 @@ const useEventStage = () => {
   const handleResetElement = (kl: IKeyTool) => {
     setTool(kl);
     SET_CLEAR_CITEM();
-    handleCleanShapeSelected();
+    setShapeId(null);
   };
 
   useEffect(() => {
@@ -211,9 +211,9 @@ const useEventStage = () => {
 
       if (isNotWriting) {
         if (["X", "DELETE", "BACKSPACE"].includes(KEY)) {
-          if (shapeSelected?.id) {
-            DELETE_SHAPE({ id: shapeSelected?.id });
-            handleCleanShapeSelected();
+          if (shapeId) {
+            DELETE_SHAPE({ id: shapeId });
+            setShapeId(null);
           }
         }
         if (KEY === "ALT") {
@@ -319,7 +319,7 @@ const useEventStage = () => {
       document.removeEventListener("paste", handlePaste);
       document.removeEventListener("keyup", handleKeyUp);
     };
-  }, [isNotWriting, shapeSelected]);
+  }, [isNotWriting, shapeId]);
 
   useEffect(() => {
     const handleVisibilityChange = () => {

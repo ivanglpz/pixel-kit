@@ -1,34 +1,20 @@
-import { Valid } from "@/components/valid";
-import { PrimitiveAtom, useAtom } from "jotai";
+import { PrimitiveAtom, useAtom, useAtomValue } from "jotai";
 import Konva from "konva";
-import { memo, MutableRefObject, useEffect, useRef } from "react";
+import { memo, MutableRefObject, useRef } from "react";
 import { Rect } from "react-konva";
-import { PortalConfigShape } from "./config.shape";
+import { STAGE_DIMENSION_ATOM } from "../states/dimension";
+import { SHAPE_ID_ATOM } from "../states/shape";
 import {
-  shapeEventClick,
   shapeEventDragMove,
   ShapeEventDragStart,
   shapeEventDragStop,
-  shapeTransformEnd,
 } from "./events.shape";
-import { Transform } from "./transformer";
 import { IShape, IShapeWithEvents, WithInitialValue } from "./type.shape";
 
 // eslint-disable-next-line react/display-name
-const ShapeBox = memo((item: IShapeWithEvents) => {
-  const {
-    draggable,
-    isSelected,
-    onClick,
-    onDragMove,
-    onDragStart,
-    onDragStop,
-    screenHeight,
-    screenWidth,
-  } = item;
-
+const ShapeBox = memo(({ item }: IShapeWithEvents) => {
   const [box, setBox] = useAtom(
-    item.shape as PrimitiveAtom<IShape> & WithInitialValue<IShape>
+    item.state as PrimitiveAtom<IShape> & WithInitialValue<IShape>
   );
 
   const {
@@ -55,25 +41,27 @@ const ShapeBox = memo((item: IShapeWithEvents) => {
 
   const shapeRef = useRef<Konva.Rect>();
   const trRef = useRef<Konva.Transformer>();
+  const stageDimensions = useAtomValue(STAGE_DIMENSION_ATOM);
+  const [shapeId, setShapeId] = useAtom(SHAPE_ID_ATOM);
 
-  useEffect(() => {
-    if (isSelected) {
-      if (trRef.current && shapeRef.current) {
-        trRef.current.nodes([shapeRef.current]);
-        trRef.current?.getLayer()?.batchDraw();
-      }
-    }
-  }, [isSelected, trRef, shapeRef]);
+  // useEffect(() => {
+  //   if (isSelected) {
+  //     if (trRef.current && shapeRef.current) {
+  //       trRef.current.nodes([shapeRef.current]);
+  //       trRef.current?.getLayer()?.batchDraw();
+  //     }
+  //   }
+  // }, [isSelected, trRef, shapeRef]);
 
   return (
     <>
-      <Valid isValid={isSelected}>
+      {/* <Valid isValid={isSelected}>
         <PortalConfigShape
           isSelected={isSelected}
           setShape={setBox}
           shape={box}
         />
-      </Valid>
+      </Valid> */}
       <Rect
         id={box?.id}
         x={x}
@@ -94,22 +82,28 @@ const ShapeBox = memo((item: IShapeWithEvents) => {
         cornerRadius={borderRadius}
         fill={backgroundColor}
         ref={shapeRef as MutableRefObject<Konva.Rect>}
-        draggable={draggable}
+        draggable={true}
         stroke={stroke}
         strokeWidth={strokeWidth}
-        onTap={(e) => setBox(shapeEventClick(e, onClick))}
-        onClick={(e) => setBox(shapeEventClick(e, onClick))}
-        onDragStart={(e) => setBox(ShapeEventDragStart(e, onDragStart))}
-        onDragMove={(e) =>
-          setBox(shapeEventDragMove(e, onDragMove, screenWidth, screenHeight))
-        }
-        onDragEnd={(e) => setBox(shapeEventDragStop(e, onDragStop))}
-        onTransform={(e) => {
-          setBox(shapeEventDragMove(e, onDragMove, screenWidth, screenHeight));
+        onTap={(e) => {
+          setShapeId(box?.id);
         }}
-        onTransformEnd={(e) => setBox(shapeTransformEnd(e, onDragStop))}
+        onClick={() => {
+          setShapeId(box?.id);
+        }}
+        onDragStart={(e) => {
+          setBox(ShapeEventDragStart(e));
+        }}
+        onDragMove={(e) => {
+          setBox(
+            shapeEventDragMove(e, stageDimensions.width, stageDimensions.height)
+          );
+        }}
+        onDragEnd={(e) => {
+          setBox(shapeEventDragStop(e));
+        }}
       />
-      <Transform isSelected={isSelected} ref={trRef} />
+      {/* <Transform isSelected={isSelected} ref={trRef} /> */}
     </>
   );
 });

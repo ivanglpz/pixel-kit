@@ -1,8 +1,7 @@
-import { FC } from "react";
 import { LineCap, LineJoin } from "konva/lib/Shape";
-import { Atom } from "jotai";
-import { IKeyMethods } from "../states/tool";
+import { FC } from "react";
 import { SHAPES_NODES } from "../states/shapes";
+import { IKeyMethods } from "../states/tool";
 
 export type WithInitialValue<Value> = {
   init: Value;
@@ -57,17 +56,6 @@ export type IShape = {
 
 export type IShapeWithEvents = {
   item: SHAPES_NODES;
-  shape: Atom<IShape>;
-  draggable: boolean;
-  isSelected: boolean;
-  onDragStart: (item: IShape) => void;
-  onDragMove: (item: IShape) => void;
-  onDragStop: (item: IShape) => void;
-  onTransformStop: (item: IShape) => void;
-  onClick: (item: IShape) => void;
-  onDbClick?: (item: IShape) => void;
-  screenWidth: number;
-  screenHeight: number;
 };
 
 export type FCShapeWEvents = FC<IShapeWithEvents>;

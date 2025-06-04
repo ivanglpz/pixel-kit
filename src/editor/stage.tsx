@@ -1,14 +1,15 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { Valid } from "@/components/valid";
 import { css } from "@stylespixelkit/css";
-import { useAtom } from "jotai";
+import { useAtom, useSetAtom } from "jotai";
 import Konva from "konva";
 import { KonvaEventObject } from "konva/lib/Node";
 import { FC, ReactNode, useEffect, useRef, useState } from "react";
 import { Stage } from "react-konva";
-import { useCanvas, useEventStage, useSelectedShape, useTool } from "./hooks";
+import { useCanvas, useEventStage, useTool } from "./hooks";
 import { useReference } from "./hooks/useReference";
 import { STAGE_DIMENSION_ATOM } from "./states/dimension";
+import { SHAPE_ID_ATOM } from "./states/shape";
 
 type Props = {
   children: ReactNode;
@@ -21,7 +22,7 @@ const PxStage: FC<Props> = ({ children }) => {
   const [show, setShow] = useState(true);
 
   const { config } = useCanvas();
-  const { handleCleanShapeSelected } = useSelectedShape();
+  const setShapeId = useSetAtom(SHAPE_ID_ATOM);
   const { handleMouseDown, handleMouseUp, handleMouseMove } = useEventStage();
   const { tool, setTool } = useTool();
 
@@ -48,7 +49,7 @@ const PxStage: FC<Props> = ({ children }) => {
         targetId
       )
     ) {
-      handleCleanShapeSelected();
+      setShapeId(null);
       setTool("MOVE");
     }
   };
