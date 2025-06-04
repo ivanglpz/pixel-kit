@@ -94,15 +94,14 @@ const useEventStage = () => {
     if (!CURRENT_ITEM?.tool) return;
 
     if (eventStage === "CREATING") {
-      const cshape = CURRENT_ITEM;
-      if (TOOLS_BOX_BASED?.includes(cshape.tool)) {
+      if (TOOLS_BOX_BASED?.includes(CURRENT_ITEM.tool)) {
         const { x, y } = stageAbsolutePosition(event);
         const updateProgressElement = shapeProgressEvent[CURRENT_ITEM.tool];
 
         const updateShape = updateProgressElement(x, y, CURRENT_ITEM);
         SET_UPDATE_CITEM(updateShape);
       }
-      if (TOOLS_LINE_BASED?.includes(cshape.tool)) {
+      if (TOOLS_LINE_BASED?.includes(CURRENT_ITEM.tool)) {
         const { x, y } = stageAbsolutePosition(event);
         const updateProgressElement = shapeProgressEvent[CURRENT_ITEM.tool];
 
@@ -118,7 +117,7 @@ const useEventStage = () => {
 
         SET_UPDATE_CITEM(updateShape);
       }
-      if (TOOLS_DRAW_BASED?.includes(cshape.tool)) {
+      if (TOOLS_DRAW_BASED?.includes(CURRENT_ITEM.tool)) {
         const updateProgressElement = shapeProgressEvent[CURRENT_ITEM.tool];
         const { x: XStage, y: YStage } = stageAbsolutePosition(event);
         const x = XStage ?? 0;
@@ -136,8 +135,7 @@ const useEventStage = () => {
     if (!CURRENT_ITEM?.id) return;
 
     if (eventStage === "CREATING") {
-      const cshape = CURRENT_ITEM;
-      if (TOOLS_BOX_BASED?.includes(cshape.tool)) {
+      if (TOOLS_BOX_BASED?.includes(CURRENT_ITEM.tool)) {
         const payload: IShape = {
           ...CURRENT_ITEM,
           isWritingNow: true,
@@ -152,13 +150,13 @@ const useEventStage = () => {
         setEventStage("IDLE");
         setTool("MOVE");
       }
-      if (TOOLS_LINE_BASED?.includes(cshape.tool)) {
+      if (TOOLS_LINE_BASED?.includes(CURRENT_ITEM.tool)) {
         SET_CREATE(CURRENT_ITEM);
         SET_CLEAR_CITEM();
         setEventStage("CREATE");
         setTool("LINE");
       }
-      if (TOOLS_DRAW_BASED?.includes(cshape.tool)) {
+      if (TOOLS_DRAW_BASED?.includes(CURRENT_ITEM.tool)) {
         SET_CREATE({
           ...CURRENT_ITEM,
           bezier: true,
