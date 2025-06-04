@@ -1,10 +1,10 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { IShape } from "@/editor/shapes/type.shape";
 import { showClipAtom } from "@/editor/states/clipImage";
-import { IKeyMethods, IKeyTool } from "@/editor/states/tool";
+import TOOL_ATOM, { IKeyMethods, IKeyTool } from "@/editor/states/tool";
 import { useAtom, useSetAtom } from "jotai";
 import { KonvaEventObject } from "konva/lib/Node";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import stageAbsolutePosition from "../helpers/position";
 import { shapeProgressEvent } from "../helpers/progressEvent";
 import { shapeStart } from "../helpers/startEvent";
@@ -12,37 +12,22 @@ import CURRENT_ITEM_ATOM, {
   CLEAR_CURRENT_ITEM_ATOM,
   CREATE_CURRENT_ITEM_ATOM,
 } from "../states/currentItem";
+import { EVENT_ATOM } from "../states/event";
 import { SHAPE_ID_ATOM } from "../states/shape";
 import { CREATE_SHAPE_ATOM, DELETE_SHAPE_ATOM } from "../states/shapes";
 import { useConfiguration } from "./useConfiguration";
 import { useStartDrawing } from "./useStartDrawing";
-import useTool from "./useTool";
 
 export type IShapeProgressEvent = {
   [key in IKeyMethods]: (x: number, y: number, element: IShape) => IShape;
 };
 
-export type IStageEvents =
-  | "COPY_IMAGE_SHAPE"
-  | "IDLE"
-  | "CREATING_SHAPE"
-  | "UPDATING_SHAPE"
-  | "COPY_TEXT_SHAPE"
-  | "COPY_SHAPE_SVG"
-  | "DELETE_SHAPES"
-  | "COPY_SHAPE"
-  | "IS_DRAWING_NOW"
-  | "CREATING_LINE";
-
 const useEventStage = () => {
-  const { isGoingToCreateAShape, tool, setTool, isNotWriting, isDrawing } =
-    useTool();
-
+  const [tool, setTool] = useAtom(TOOL_ATOM);
   const SET_CREATE = useSetAtom(CREATE_SHAPE_ATOM);
   const DELETE_SHAPE = useSetAtom(DELETE_SHAPE_ATOM);
   const { state } = useStartDrawing();
   const [shapeId, setShapeId] = useAtom(SHAPE_ID_ATOM);
-
   const SET_CREATE_CITEM = useSetAtom(CREATE_CURRENT_ITEM_ATOM);
   const SET_CLEAR_CITEM = useSetAtom(CLEAR_CURRENT_ITEM_ATOM);
   const [CURRENT_ITEM, SET_UPDATE_CITEM] = useAtom(CURRENT_ITEM_ATOM);
@@ -51,131 +36,139 @@ const useEventStage = () => {
 
   const setshowClip = useSetAtom(showClipAtom);
 
-  const [eventStage, setEventStage] = useState<IStageEvents>("IDLE");
+  const [eventStage, setEventStage] = useAtom(EVENT_ATOM);
 
   const handleMouseDown = (event: KonvaEventObject<MouseEvent>) => {
-    if (tool === "LINE") {
-      setEventStage("CREATING_LINE");
-      const { x, y } = stageAbsolutePosition(event);
-      const createStartElement = shapeStart({
-        tool,
-        x: 0,
-        y: 0,
-        ...state,
-        strokeWidth: state.thickness,
-        stroke: state.color,
-        points: [x, y],
-        isWritingNow: false,
-      });
+    if (eventStage === "CREATE") {
+      if (["BOX", "CIRCLE", "IMAGE", "TEXT", "GROUP"]?.includes(tool)) {
+        setEventStage("CREATING");
+        const { x, y } = stageAbsolutePosition(event);
+        const createStartElement = shapeStart({
+          tool,
+          x,
+          y,
+          isWritingNow: false,
+        });
+        SET_CREATE_CITEM(createStartElement);
+      }
+      if (["LINE"]?.includes(tool)) {
+        setEventStage("CREATING");
 
-      SET_CREATE_CITEM(createStartElement);
-      return;
+        const { x, y } = stageAbsolutePosition(event);
+        const createStartElement = shapeStart({
+          tool,
+          x: 0,
+          y: 0,
+          ...state,
+          strokeWidth: state.thickness,
+          stroke: state.color,
+          points: [x, y],
+          isWritingNow: false,
+        });
+        SET_CREATE_CITEM(createStartElement);
+      }
+      if (["DRAW"]?.includes(tool)) {
+        setEventStage("CREATING");
+        const { x: XStage, y: YStage } = stageAbsolutePosition(event);
+        const x = XStage ?? 0;
+        const y = YStage ?? 0;
+        const createStartElement = shapeStart({
+          tool,
+          x: 0,
+          y: 0,
+          ...state,
+          strokeWidth: state.thickness,
+          stroke: state.color,
+          points: [x, y, x, y],
+          bezier: false,
+        });
+        SET_CREATE_CITEM(createStartElement);
+      }
     }
-
-    if (isGoingToCreateAShape) {
-      setEventStage("CREATING_SHAPE");
-      const { x, y } = stageAbsolutePosition(event);
-      const createStartElement = shapeStart({
-        tool,
-        x,
-        y,
-        isWritingNow: false,
-      });
-
-      SET_CREATE_CITEM(createStartElement);
-    }
-    if (isDrawing) {
-      setEventStage("IS_DRAWING_NOW");
-      const { x: XStage, y: YStage } = stageAbsolutePosition(event);
-      const x = XStage ?? 0;
-      const y = YStage ?? 0;
-      const createStartElement = shapeStart({
-        tool,
-        x: 0,
-        y: 0,
-        ...state,
-        strokeWidth: state.thickness,
-        stroke: state.color,
-        points: [x, y, x, y],
-        bezier: false,
-      });
-
-      SET_CREATE_CITEM(createStartElement);
+    if (eventStage === "COPY") {
     }
   };
 
   const handleMouseMove = (event: KonvaEventObject<MouseEvent>) => {
     if (!CURRENT_ITEM?.tool) return;
 
-    if (eventStage === "CREATING_SHAPE") {
-      const { x, y } = stageAbsolutePosition(event);
-      const updateProgressElement = shapeProgressEvent[CURRENT_ITEM.tool];
+    if (eventStage === "CREATING") {
+      const cshape = CURRENT_ITEM;
+      if (["BOX", "CIRCLE", "IMAGE", "TEXT", "GROUP"]?.includes(cshape.tool)) {
+        const { x, y } = stageAbsolutePosition(event);
+        const updateProgressElement = shapeProgressEvent[CURRENT_ITEM.tool];
 
-      const updateShape = updateProgressElement(x, y, CURRENT_ITEM);
-      SET_UPDATE_CITEM(updateShape);
-    }
+        const updateShape = updateProgressElement(x, y, CURRENT_ITEM);
+        SET_UPDATE_CITEM(updateShape);
+      }
+      if (["LINE"]?.includes(cshape.tool)) {
+        const { x, y } = stageAbsolutePosition(event);
+        const updateProgressElement = shapeProgressEvent[CURRENT_ITEM.tool];
 
-    if (eventStage === "IS_DRAWING_NOW") {
-      const updateProgressElement = shapeProgressEvent[CURRENT_ITEM.tool];
-      const { x: XStage, y: YStage } = stageAbsolutePosition(event);
-      const x = XStage ?? 0;
-      const y = YStage ?? 0;
-      const updateShape = updateProgressElement(x, y, {
-        ...CURRENT_ITEM,
-        points: CURRENT_ITEM.points?.concat([x, y]),
-      });
-      SET_UPDATE_CITEM(updateShape);
-    }
-    if (eventStage === "CREATING_LINE") {
-      const { x, y } = stageAbsolutePosition(event);
-      const updateProgressElement = shapeProgressEvent[CURRENT_ITEM.tool];
+        const updateShape = updateProgressElement(x, y, {
+          ...CURRENT_ITEM,
+          points: [
+            CURRENT_ITEM?.points?.[0] ?? 0,
+            CURRENT_ITEM?.points?.[1] ?? 0,
+            x,
+            y,
+          ],
+        });
 
-      const updateShape = updateProgressElement(x, y, {
-        ...CURRENT_ITEM,
-        points: [
-          CURRENT_ITEM?.points?.[0] ?? 0,
-          CURRENT_ITEM?.points?.[1] ?? 0,
-          x,
-          y,
-        ],
-      });
-
-      SET_UPDATE_CITEM(updateShape);
+        SET_UPDATE_CITEM(updateShape);
+      }
+      if (["DRAW"]?.includes(cshape.tool)) {
+        const updateProgressElement = shapeProgressEvent[CURRENT_ITEM.tool];
+        const { x: XStage, y: YStage } = stageAbsolutePosition(event);
+        const x = XStage ?? 0;
+        const y = YStage ?? 0;
+        const updateShape = updateProgressElement(x, y, {
+          ...CURRENT_ITEM,
+          points: CURRENT_ITEM.points?.concat([x, y]),
+        });
+        SET_UPDATE_CITEM(updateShape);
+      }
     }
   };
 
   const handleMouseUp = () => {
     if (!CURRENT_ITEM?.id) return;
 
-    if (eventStage === "CREATING_SHAPE") {
-      const payload: IShape = {
-        ...CURRENT_ITEM,
-        isWritingNow: true,
-        dashEnabled: false,
-        shadowEnabled: false,
-        strokeEnabled: false,
-      };
-      setShapeId(payload?.id);
+    if (eventStage === "CREATING") {
+      const cshape = CURRENT_ITEM;
+      if (["BOX", "CIRCLE", "IMAGE", "TEXT", "GROUP"]?.includes(cshape.tool)) {
+        const payload: IShape = {
+          ...CURRENT_ITEM,
+          isWritingNow: true,
+          dashEnabled: false,
+          shadowEnabled: false,
+          strokeEnabled: false,
+        };
+        setShapeId(payload?.id);
 
-      SET_CREATE(payload);
-      SET_CLEAR_CITEM();
-      setEventStage("IDLE");
-      setTool("MOVE");
-    }
-    if (eventStage === "IS_DRAWING_NOW") {
-      SET_CREATE({
-        ...CURRENT_ITEM,
-        bezier: true,
-      });
-      SET_CLEAR_CITEM();
-    }
-
-    if (eventStage === "CREATING_LINE") {
-      SET_CREATE(CURRENT_ITEM);
-      SET_CLEAR_CITEM();
+        SET_CREATE(payload);
+        SET_CLEAR_CITEM();
+        setEventStage("IDLE");
+        setTool("MOVE");
+      }
+      if (["LINE"]?.includes(cshape.tool)) {
+        SET_CREATE(CURRENT_ITEM);
+        SET_CLEAR_CITEM();
+        setEventStage("CREATE");
+        setTool("LINE");
+      }
+      if (["DRAW"]?.includes(cshape.tool)) {
+        SET_CREATE({
+          ...CURRENT_ITEM,
+          bezier: true,
+        });
+        SET_CLEAR_CITEM();
+        setEventStage("CREATE");
+        setTool("DRAW");
+      }
     }
   };
-  const handleResetElement = (kl: IKeyTool) => {
+  const toolKeydown = (kl: IKeyTool) => {
     setTool(kl);
     SET_CLEAR_CITEM();
     setShapeId(null);
@@ -185,7 +178,7 @@ const useEventStage = () => {
     const handleKeyDown = (event: KeyboardEvent) => {
       const KEY = event.key?.toUpperCase();
 
-      if (isNotWriting) {
+      if (tool !== "WRITING") {
         if (["X", "DELETE", "BACKSPACE"].includes(KEY)) {
           if (shapeId) {
             DELETE_SHAPE({ id: shapeId });
@@ -193,21 +186,25 @@ const useEventStage = () => {
           }
         }
         if (KEY === "ALT") {
-          setEventStage("COPY_SHAPE");
+          setEventStage("COPY");
         }
 
         const keysActions = Object.fromEntries(
-          config.tools.map((item) => [item.keyBoard, item.keyMethod])
+          config.tools.map((item) => [
+            item.keyBoard,
+            { keyMethod: item.keyMethod, eventStage: item.eventStage },
+          ])
         );
 
         if (keysActions[KEY]) {
           setshowClip(false);
-          handleResetElement(keysActions[KEY] as IKeyMethods);
+          toolKeydown(keysActions[KEY].keyMethod);
+          setEventStage(keysActions[KEY].eventStage);
         }
       }
     };
     const handleKeyUp = () => {
-      setEventStage("IDLE");
+      // setEventStage("IDLE");
     };
 
     const handlePaste = (event: globalThis.ClipboardEvent) => {
@@ -295,7 +292,7 @@ const useEventStage = () => {
       document.removeEventListener("paste", handlePaste);
       document.removeEventListener("keyup", handleKeyUp);
     };
-  }, [isNotWriting, shapeId]);
+  }, [tool, shapeId]);
 
   useEffect(() => {
     const handleVisibilityChange = () => {

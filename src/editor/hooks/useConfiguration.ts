@@ -2,6 +2,7 @@
 import icons from "@/assets";
 import { atom, useAtom, useSetAtom } from "jotai";
 import { useEffect } from "react";
+import { IStageEvents } from "../states/event";
 import { CLEAR_SHAPES_ATOM } from "../states/shapes";
 import { IKeyTool } from "../states/tool";
 import useCanvas from "./useCanvas";
@@ -13,7 +14,12 @@ type Config = {
   backgroundColor: string;
   showCanvasConfig: boolean;
   showClipImageConfig: boolean;
-  tools: { icon: JSX.Element; keyMethod: IKeyTool; keyBoard: string }[];
+  tools: {
+    icon: JSX.Element;
+    keyMethod: IKeyTool;
+    keyBoard: string;
+    eventStage: IStageEvents;
+  }[];
   showBackgroundColor: boolean;
   showClipImage: boolean;
 };
@@ -33,44 +39,52 @@ const configs: { [key in Keys]: Config } = {
         icon: icons.cursor,
         keyMethod: "MOVE",
         keyBoard: "Q",
+        eventStage: "IDLE",
       },
 
       {
         icon: icons.box,
         keyMethod: "BOX",
         keyBoard: "W",
+        eventStage: "CREATE",
       },
 
       {
         icon: icons.circle,
         keyMethod: "CIRCLE",
         keyBoard: "E",
+        eventStage: "CREATE",
       },
       {
         icon: icons.line,
         keyMethod: "LINE",
         keyBoard: "R",
+        eventStage: "CREATE",
       },
       {
         icon: icons.image,
         keyMethod: "IMAGE",
         keyBoard: "A",
+        eventStage: "CREATE",
       },
       {
         icon: icons.text,
         keyMethod: "TEXT",
         keyBoard: "S",
+        eventStage: "CREATE",
       },
 
       {
         icon: icons.peentool,
         keyMethod: "DRAW",
         keyBoard: "D",
+        eventStage: "CREATE",
       },
       {
         icon: icons.group,
         keyMethod: "GROUP",
         keyBoard: "F",
+        eventStage: "CREATE",
       },
     ],
     showBackgroundColor: false,
@@ -88,44 +102,52 @@ const configs: { [key in Keys]: Config } = {
         icon: icons.cursor,
         keyMethod: "MOVE",
         keyBoard: "Q",
+        eventStage: "IDLE",
       },
 
       {
         icon: icons.box,
         keyMethod: "BOX",
         keyBoard: "W",
+        eventStage: "CREATE",
       },
 
       {
         icon: icons.circle,
         keyMethod: "CIRCLE",
         keyBoard: "E",
+        eventStage: "CREATE",
       },
       {
         icon: icons.line,
         keyMethod: "LINE",
         keyBoard: "R",
+        eventStage: "CREATE",
       },
       {
         icon: icons.image,
         keyMethod: "IMAGE",
         keyBoard: "A",
+        eventStage: "CREATE",
       },
       {
         icon: icons.text,
         keyMethod: "TEXT",
         keyBoard: "S",
+        eventStage: "CREATE",
       },
 
       {
         icon: icons.peentool,
         keyMethod: "DRAW",
         keyBoard: "D",
+        eventStage: "CREATE",
       },
       {
         icon: icons.group,
         keyMethod: "GROUP",
         keyBoard: "F",
+        eventStage: "CREATE",
       },
     ],
     showBackgroundColor: true,

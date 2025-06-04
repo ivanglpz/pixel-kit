@@ -1,13 +1,13 @@
 import { image_stock } from "@/assets/image_stock";
 import { IShape } from "@/editor/shapes/type.shape";
-import { IKeyMethods } from "@/editor/states/tool";
+import { IKeyMethods, IKeyTool } from "@/editor/states/tool";
 import { LineCap, LineJoin } from "konva/lib/Shape";
 import { v4 as uuidv4 } from "uuid";
 
 type ShapeStartProps = {
   x: number;
   y: number;
-  tool: IKeyMethods;
+  tool: IKeyTool;
   text?: string;
   image?: string;
   height?: number;
@@ -63,7 +63,7 @@ export const shapeStart = (props: ShapeStartProps): IShape => {
     x,
     y,
     isBlocked: false,
-    tool: tool,
+    tool: tool as IKeyMethods,
     isWritingNow: isWritingNow ?? true,
     fillEnabled: true,
     strokeEnabled: true,
