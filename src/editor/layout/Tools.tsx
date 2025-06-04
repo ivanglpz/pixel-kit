@@ -1,19 +1,19 @@
 import { Section } from "@/editor/components/section";
-import { useSelectedShape, useTool } from "@/editor/hooks";
+import { useTool } from "@/editor/hooks";
 import { showClipAtom } from "@/editor/states/clipImage";
 import { IKeyTool } from "@/editor/states/tool";
 import { css } from "@stylespixelkit/css";
 import { useSetAtom } from "jotai";
 import { useConfiguration } from "../hooks/useConfiguration";
+import { SHAPE_ID_ATOM } from "../states/shape";
 
 export const Tools = () => {
   const { tool, setTool } = useTool();
-  const { handleCleanShapeSelected } = useSelectedShape();
 
   const setshowClip = useSetAtom(showClipAtom);
 
   const { config } = useConfiguration();
-
+  const setShapeId = useSetAtom(SHAPE_ID_ATOM);
   return (
     <Section title="Tools">
       <section
@@ -43,7 +43,7 @@ export const Tools = () => {
               })}
               onClick={() => {
                 setTool(item.keyMethod as IKeyTool);
-                handleCleanShapeSelected();
+                setShapeId(null);
                 setshowClip(false);
               }}
             >

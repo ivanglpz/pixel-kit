@@ -1,14 +1,14 @@
-import { FC } from "react";
-import StageConfig from "./canvas";
-import { css } from "@stylespixelkit/css";
-import { Drawing } from "./drawing";
-import { useConfiguration } from "@/editor/hooks/useConfiguration";
 import { Valid } from "@/components/valid";
-import { Clip } from "./clip";
-import { ExportStage } from "./export";
-import { Tools } from "./Tools";
-import { HeaderLogo } from "./HeaderLogo";
+import { useConfiguration } from "@/editor/hooks/useConfiguration";
+import { css } from "@stylespixelkit/css";
+import { FC } from "react";
 import { ChangeEnv } from "../components/ChangeEnv";
+import StageConfig from "./canvas";
+import { Clip } from "./clip";
+import { Drawing } from "./drawing";
+import { ExportStage } from "./export";
+import { LayoutShapeConfig } from "./shape-config";
+import { Tools } from "./Tools";
 
 const SidebarRight: FC = () => {
   const { config } = useConfiguration();
@@ -40,13 +40,8 @@ const SidebarRight: FC = () => {
         <Clip />
       </Valid>
       <Drawing />
-      <div
-        id="pixel-kit-sidebar-right"
-        style={{
-          padding: "0px",
-          margin: "0",
-        }}
-      ></div>
+      <LayoutShapeConfig />
+
       <ExportStage />
     </aside>
   );

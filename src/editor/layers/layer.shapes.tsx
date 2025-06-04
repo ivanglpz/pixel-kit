@@ -1,20 +1,15 @@
 import { useAtomValue } from "jotai";
 import { Layer } from "react-konva";
-import { useSelectedShape, useTool } from "../hooks";
 import { Shapes } from "../shapes/shapes";
-import { FCShapeWEvents, IShape } from "../shapes/type.shape";
-import { STAGE_DIMENSION_ATOM } from "../states/dimension";
+import { FCShapeWEvents } from "../shapes/type.shape";
 import SHAPES_ATOM from "../states/shapes";
 
 export const LayerShapes = () => {
-  const { shapeSelected, handleSetShapeSelected } = useSelectedShape();
-  const { isDrawing } = useTool();
+  // const { isDrawing } = useTool();
 
-  const onClick = (element: IShape) => {
-    handleSetShapeSelected(element);
-  };
-
-  const { height, width } = useAtomValue(STAGE_DIMENSION_ATOM);
+  // const onClick = (element: IShape) => {
+  //   handleSetShapeSelected(element);
+  // };
 
   const SHAPES = useAtomValue(SHAPES_ATOM);
 
@@ -23,23 +18,7 @@ export const LayerShapes = () => {
       <Layer id="layer-shapes">
         {SHAPES?.map((item) => {
           const Component = Shapes?.[item?.tool] as FCShapeWEvents;
-          const isSelected = item?.id === shapeSelected?.id;
-          return (
-            <Component
-              item={item}
-              screenHeight={height}
-              screenWidth={width}
-              key={`pixel-kit-shapes-${item?.id}`}
-              shape={item?.state}
-              draggable={!isDrawing && isSelected}
-              isSelected={!isDrawing && isSelected}
-              onClick={onClick}
-              onDragStart={() => {}}
-              onDragMove={() => {}}
-              onDragStop={() => {}}
-              onTransformStop={() => {}}
-            />
-          );
+          return <Component item={item} key={`pixel-kit-shapes-${item?.id}`} />;
         })}
       </Layer>
     </>

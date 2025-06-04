@@ -1,36 +1,25 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react/display-name */
+import { PrimitiveAtom, useAtom } from "jotai";
 import Konva from "konva";
-import { memo, MutableRefObject, useEffect, useRef } from "react";
+import { memo, MutableRefObject, useRef } from "react";
 import { Text } from "react-konva";
 import { IShape, IShapeWithEvents, WithInitialValue } from "./type.shape";
-import {
-  shapeEventClick,
-  shapeEventDragMove,
-  ShapeEventDragStart,
-  shapeEventDragStop,
-  shapeTransformEnd,
-} from "./events.shape";
-import { Transform } from "./transformer";
-import { PortalConfigShape } from "./config.shape";
-import { PortalTextWriting } from "./text.writing";
-import { Valid } from "@/components/valid";
-import { PrimitiveAtom, useAtom } from "jotai";
 
-export const ShapeText = memo((item: IShapeWithEvents) => {
-  const {
-    draggable,
-    isSelected,
-    onClick,
-    onDragMove,
-    onDragStart,
-    onDragStop,
-    screenHeight,
-    screenWidth,
-  } = item;
+export const ShapeText = memo(({ item }: IShapeWithEvents) => {
+  // const {
+  //   draggable,
+  //   isSelected,
+  //   onClick,
+  //   onDragMove,
+  //   onDragStart,
+  //   onDragStop,
+  //   screenHeight,
+  //   screenWidth,
+  // } = item;
 
   const [box, setBox] = useAtom(
-    item.shape as PrimitiveAtom<IShape> & WithInitialValue<IShape>
+    item.state as PrimitiveAtom<IShape> & WithInitialValue<IShape>
   );
 
   const {
@@ -60,25 +49,25 @@ export const ShapeText = memo((item: IShapeWithEvents) => {
   const shapeRef = useRef<Konva.Text>();
   const trRef = useRef<Konva.Transformer>();
 
-  useEffect(() => {
-    if (isSelected) {
-      if (trRef.current && shapeRef.current) {
-        trRef.current.nodes([shapeRef.current]);
-        trRef.current?.getLayer()?.batchDraw();
-      }
-    } else {
-    }
-  }, [isSelected, trRef, shapeRef]);
+  // useEffect(() => {
+  //   if (isSelected) {
+  //     if (trRef.current && shapeRef.current) {
+  //       trRef.current.nodes([shapeRef.current]);
+  //       trRef.current?.getLayer()?.batchDraw();
+  //     }
+  //   } else {
+  //   }
+  // }, [isSelected, trRef, shapeRef]);
 
-  useEffect(() => {
-    if (!isSelected && box.isWritingNow) {
-      setBox((prev) => ({ ...prev, isWritingNow: false }));
-    }
-  }, [isSelected, box.isWritingNow]);
+  // useEffect(() => {
+  //   if (!isSelected && box.isWritingNow) {
+  //     setBox((prev) => ({ ...prev, isWritingNow: false }));
+  //   }
+  // }, [isSelected, box.isWritingNow]);
 
   return (
     <>
-      <Valid isValid={box.isWritingNow}>
+      {/* <Valid isValid={box.isWritingNow}>
         <PortalTextWriting
           isSelected={isSelected}
           setShape={setBox}
@@ -91,7 +80,7 @@ export const ShapeText = memo((item: IShapeWithEvents) => {
           setShape={setBox}
           shape={box}
         />
-      </Valid>
+      </Valid> */}
       <Text
         id={box?.id}
         x={x}
@@ -116,12 +105,12 @@ export const ShapeText = memo((item: IShapeWithEvents) => {
         cornerRadius={borderRadius}
         fill={backgroundColor}
         ref={shapeRef as MutableRefObject<Konva.Text>}
-        draggable={draggable}
+        // draggable={draggable}
         fontSize={fontSize ?? 0 + 5}
         lineHeight={1.45}
         stroke={stroke}
         strokeWidth={strokeWidth}
-        onTap={(e) => setBox(shapeEventClick(e, onClick))}
+        // onTap={(e) => setBox(shapeEventClick(e, onClick))}
         onDblTap={() => {
           setBox((prev) => ({
             ...prev,
@@ -134,19 +123,19 @@ export const ShapeText = memo((item: IShapeWithEvents) => {
             isWritingNow: true,
           }));
         }}
-        onClick={(e) => setBox(shapeEventClick(e, onClick))}
-        onDragStart={(e) => setBox(ShapeEventDragStart(e, onDragStart))}
-        onDragMove={(e) =>
-          setBox(shapeEventDragMove(e, onDragMove, screenWidth, screenHeight))
-        }
-        onDragEnd={(e) => setBox(shapeEventDragStop(e, onDragStop))}
-        onTransform={(e) => {
-          setBox(shapeEventDragMove(e, onDragMove, screenWidth, screenHeight));
-          setBox(shapeTransformEnd(e, onDragMove));
-        }}
-        onTransformEnd={(e) => setBox(shapeTransformEnd(e, onDragStop))}
+        // onClick={(e) => setBox(shapeEventClick(e, onClick))}
+        // onDragStart={(e) => setBox(ShapeEventDragStart(e, onDragStart))}
+        // onDragMove={(e) =>
+        //   setBox(shapeEventDragMove(e, onDragMove, screenWidth, screenHeight))
+        // }
+        // onDragEnd={(e) => setBox(shapeEventDragStop(e, onDragStop))}
+        // onTransform={(e) => {
+        //   setBox(shapeEventDragMove(e, onDragMove, screenWidth, screenHeight));
+        //   setBox(shapeTransformEnd(e, onDragMove));
+        // }}
+        // onTransformEnd={(e) => setBox(shapeTransformEnd(e, onDragStop))}
       />
-      <Transform isSelected={isSelected && !box.isWritingNow} ref={trRef} />
+      {/* <Transform isSelected={isSelected && !box.isWritingNow} ref={trRef} /> */}
     </>
   );
 });

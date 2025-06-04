@@ -1,26 +1,10 @@
 /* eslint-disable react/display-name */
 /* eslint-disable jsx-a11y/alt-text */
-import Konva from "konva";
-import {
-  MutableRefObject,
-  memo,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
-import { IShape, IShapeWithEvents, WithInitialValue } from "./type.shape";
-import { Image as KonvaImage } from "react-konva";
-import { PortalConfigShape } from "./config.shape";
-import {
-  shapeEventClick,
-  shapeEventDragMove,
-  ShapeEventDragStart,
-  shapeEventDragStop,
-} from "./events.shape";
-import { Transform } from "./transformer";
-import { Valid } from "@/components/valid";
 import { PrimitiveAtom, useAtom } from "jotai";
+import Konva from "konva";
+import { memo, MutableRefObject, useMemo, useRef } from "react";
+import { Image as KonvaImage } from "react-konva";
+import { IShape, IShapeWithEvents, WithInitialValue } from "./type.shape";
 
 function urlToBase64(
   url: string,
@@ -40,19 +24,19 @@ function urlToBase64(
     });
 }
 
-export const ShapeImage = memo((item: IShapeWithEvents) => {
-  const {
-    draggable,
-    onClick,
-    onDragMove,
-    onDragStart,
-    onDragStop,
-    screenHeight,
-    screenWidth,
-    onDbClick,
-  } = item;
+export const ShapeImage = memo(({ item }: IShapeWithEvents) => {
+  // const {
+  //   draggable,
+  //   onClick,
+  //   onDragMove,
+  //   onDragStart,
+  //   onDragStop,
+  //   screenHeight,
+  //   screenWidth,
+  //   onDbClick,
+  // } = item;
   const [image, setImage] = useAtom(
-    item.shape as PrimitiveAtom<IShape> & WithInitialValue<IShape>
+    item.state as PrimitiveAtom<IShape> & WithInitialValue<IShape>
   );
   const {
     width,
@@ -89,28 +73,28 @@ export const ShapeImage = memo((item: IShapeWithEvents) => {
     return image;
   }, [src]);
 
-  const { isSelected } = item;
+  // const { isSelected } = item;
   const shapeRef = useRef<Konva.Image>();
   const trRef = useRef<Konva.Transformer>();
 
-  useEffect(() => {
-    if (isSelected) {
-      if (trRef.current && shapeRef.current) {
-        trRef.current.nodes([shapeRef.current]);
-        trRef.current?.getLayer()?.batchDraw();
-      }
-    }
-  }, [isSelected, item, trRef, shapeRef]);
+  // useEffect(() => {
+  //   if (isSelected) {
+  //     if (trRef.current && shapeRef.current) {
+  //       trRef.current.nodes([shapeRef.current]);
+  //       trRef.current?.getLayer()?.batchDraw();
+  //     }
+  //   }
+  // }, [isSelected, item, trRef, shapeRef]);
 
   return (
     <>
-      <Valid isValid={isSelected}>
+      {/* <Valid isValid={isSelected}>
         <PortalConfigShape
           isSelected={isSelected}
           setShape={setImage}
           shape={image}
         />
-      </Valid>
+      </Valid> */}
       <KonvaImage
         id={image?.id}
         x={x}
@@ -131,25 +115,25 @@ export const ShapeImage = memo((item: IShapeWithEvents) => {
         cornerRadius={borderRadius}
         fill={backgroundColor}
         ref={shapeRef as MutableRefObject<Konva.Image>}
-        draggable={draggable}
+        // draggable={draggable}
         stroke={stroke}
         strokeWidth={strokeWidth}
         image={imageInstance}
-        onTap={(e) => setImage(shapeEventClick(e, onClick))}
-        onDblClick={() => onDbClick?.(image)}
-        onClick={(e) => setImage(shapeEventClick(e, onClick))}
-        onDragStart={(e) => setImage(ShapeEventDragStart(e, onDragStart))}
-        onDragMove={(e) =>
-          setImage(shapeEventDragMove(e, onDragMove, screenWidth, screenHeight))
-        }
-        onTransform={(e) => {
-          setImage(
-            shapeEventDragMove(e, onDragMove, screenWidth, screenHeight)
-          );
-        }}
-        onDragEnd={(e) => setImage(shapeEventDragStop(e, onDragStop))}
+        // onTap={(e) => setImage(shapeEventClick(e, onClick))}
+        // onDblClick={() => onDbClick?.(image)}
+        // onClick={(e) => setImage(shapeEventClick(e, onClick))}
+        // onDragStart={(e) => setImage(ShapeEventDragStart(e, onDragStart))}
+        // onDragMove={(e) =>
+        //   setImage(shapeEventDragMove(e, onDragMove, screenWidth, screenHeight))
+        // }
+        // onTransform={(e) => {
+        //   setImage(
+        //     shapeEventDragMove(e, onDragMove, screenWidth, screenHeight)
+        //   );
+        // }}
+        // onDragEnd={(e) => setImage(shapeEventDragStop(e, onDragStop))}
       />
-      <Transform isSelected={isSelected} ref={trRef} keepRatio />
+      {/* <Transform isSelected={isSelected} ref={trRef} keepRatio /> */}
     </>
   );
 });

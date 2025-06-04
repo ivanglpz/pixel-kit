@@ -2,8 +2,8 @@ import { iconsWithTools } from "@/assets";
 import { css } from "@stylespixelkit/css";
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { useState } from "react";
-import { useSelectedShape } from "../hooks";
 import { CHANGE_SHAPE_NODE_ATOM, NODE_ATOM } from "../states/nodes";
+import { SHAPE_ID_ATOM } from "../states/shape";
 import { SHAPES_NODES } from "../states/shapes";
 
 export const Nodes = ({ item }: { item: SHAPES_NODES }) => {
@@ -25,8 +25,7 @@ export const Nodes = ({ item }: { item: SHAPES_NODES }) => {
     SET_CHANGE({ id: item.id });
   };
 
-  const { shapeSelected, handleSetShapeSelected } = useSelectedShape();
-
+  const [shapeId, setShapeId] = useAtom(SHAPE_ID_ATOM);
   const [isExpanded, setIsExpanded] = useState(true); // ← toggle state
 
   return (
@@ -56,7 +55,7 @@ export const Nodes = ({ item }: { item: SHAPES_NODES }) => {
           width: "100%", // ← importante para que crezca según los hijos
         })}
         onClick={() => {
-          handleSetShapeSelected(value);
+          setShapeId(value?.id);
         }}
       >
         {value.tool === "GROUP" && childrens.length > 0 ? (
@@ -117,7 +116,7 @@ export const Nodes = ({ item }: { item: SHAPES_NODES }) => {
         <div
           className={css({
             backgroundGradient:
-              value.id === shapeSelected.id ? "primary" : "transparent",
+              value.id === shapeId ? "primary" : "transparent",
             width: "100%",
             height: "10px",
             borderRadius: "lg",

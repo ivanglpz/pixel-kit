@@ -1,34 +1,24 @@
 /* eslint-disable react/display-name */
+import { PrimitiveAtom, useAtom } from "jotai";
 import Konva from "konva";
-import { memo, MutableRefObject, useEffect, useRef, useState } from "react";
+import { memo, MutableRefObject, useRef } from "react";
 import { Line } from "react-konva";
 import { IShape, IShapeWithEvents, WithInitialValue } from "./type.shape";
-import { PortalConfigShape } from "./config.shape";
-import {
-  shapeEventClick,
-  shapeEventDragMove,
-  ShapeEventDragStart,
-  shapeEventDragStop,
-  shapeTransformEnd,
-} from "./events.shape";
-import { Transform } from "./transformer";
-import { Valid } from "@/components/valid";
-import { PrimitiveAtom, useAtom } from "jotai";
 
-export const ShapeLine = memo((item: IShapeWithEvents) => {
-  const {
-    draggable,
-    isSelected,
-    onClick,
-    onDragMove,
-    onDragStart,
-    onDragStop,
-    screenHeight,
-    screenWidth,
-  } = item;
+export const ShapeLine = memo(({ item }: IShapeWithEvents) => {
+  // const {
+  //   draggable,
+  //   isSelected,
+  //   onClick,
+  //   onDragMove,
+  //   onDragStart,
+  //   onDragStop,
+  //   screenHeight,
+  //   screenWidth,
+  // } = item;
 
   const [box, setBox] = useAtom(
-    item.shape as PrimitiveAtom<IShape> & WithInitialValue<IShape>
+    item.state as PrimitiveAtom<IShape> & WithInitialValue<IShape>
   );
 
   const {
@@ -60,24 +50,24 @@ export const ShapeLine = memo((item: IShapeWithEvents) => {
   const shapeRef = useRef<Konva.Line>();
   const trRef = useRef<Konva.Transformer>();
 
-  useEffect(() => {
-    if (isSelected) {
-      if (trRef.current && shapeRef.current) {
-        trRef.current.nodes([shapeRef.current]);
-        trRef.current?.getLayer()?.batchDraw();
-      }
-    }
-  }, [isSelected, trRef, shapeRef]);
+  // useEffect(() => {
+  //   if (isSelected) {
+  //     if (trRef.current && shapeRef.current) {
+  //       trRef.current.nodes([shapeRef.current]);
+  //       trRef.current?.getLayer()?.batchDraw();
+  //     }
+  //   }
+  // }, [isSelected, trRef, shapeRef]);
 
   return (
     <>
-      <Valid isValid={isSelected}>
+      {/* <Valid isValid={isSelected}>
         <PortalConfigShape
           isSelected={isSelected}
           setShape={setBox}
           shape={box}
         />
-      </Valid>
+      </Valid> */}
       <Line
         id={box?.id}
         x={x}
@@ -103,22 +93,22 @@ export const ShapeLine = memo((item: IShapeWithEvents) => {
         cornerRadius={borderRadius}
         fill={backgroundColor}
         ref={shapeRef as MutableRefObject<Konva.Line>}
-        draggable={draggable}
+        // draggable={draggable}
         stroke={stroke}
         strokeWidth={strokeWidth}
-        onTap={(e) => setBox(shapeEventClick(e, onClick))}
-        onClick={(e) => setBox(shapeEventClick(e, onClick))}
-        onDragStart={(e) => setBox(ShapeEventDragStart(e, onDragStart))}
-        onDragMove={(e) =>
-          setBox(shapeEventDragMove(e, onDragMove, screenWidth, screenHeight))
-        }
-        onDragEnd={(e) => setBox(shapeEventDragStop(e, onDragStop))}
-        onTransform={(e) => {
-          setBox(shapeEventDragMove(e, onDragMove, screenWidth, screenHeight));
-        }}
-        onTransformEnd={(e) => setBox(shapeTransformEnd(e, onDragStop))}
+        // onTap={(e) => setBox(shapeEventClick(e, onClick))}
+        // onClick={(e) => setBox(shapeEventClick(e, onClick))}
+        // onDragStart={(e) => setBox(ShapeEventDragStart(e, onDragStart))}
+        // onDragMove={(e) =>
+        //   setBox(shapeEventDragMove(e, onDragMove, screenWidth, screenHeight))
+        // }
+        // onDragEnd={(e) => setBox(shapeEventDragStop(e, onDragStop))}
+        // onTransform={(e) => {
+        //   setBox(shapeEventDragMove(e, onDragMove, screenWidth, screenHeight));
+        // }}
+        // onTransformEnd={(e) => setBox(shapeTransformEnd(e, onDragStop))}
       />
-      <Transform isSelected={isSelected} ref={trRef} />
+      {/* <Transform isSelected={isSelected} ref={trRef} /> */}
     </>
   );
 });

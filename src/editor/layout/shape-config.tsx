@@ -5,18 +5,18 @@ import PixelKitInputColor from "@/editor/components/input-color";
 import { InputSelect } from "@/editor/components/input-select";
 import { InputSlider } from "@/editor/components/input-slider";
 import { Section } from "@/editor/components/section";
-import { useSelectedShape } from "@/editor/hooks";
 import { IShape } from "@/editor/shapes/type.shape";
 import { css } from "@stylespixelkit/css";
-import { useSetAtom } from "jotai";
+import { useAtomValue, useSetAtom } from "jotai";
 import { ChangeEvent, useRef } from "react";
+import { SHAPE_SELECTED_ATOM, SHAPE_UPDATE_ATOM } from "../states/shape";
 import { DELETE_SHAPE_ATOM } from "../states/shapes";
 
 type TChange = (key: keyof IShape, value: string | number | boolean) => void;
 
 type Props = {
-  shape: IShape;
-  onChange: TChange;
+  // shape: IShape;
+  // onChange: TChange;
 };
 
 const calculateScale = (
@@ -34,6 +34,15 @@ const calculateScale = (
 };
 
 export const LayoutShapeConfig = (props: Props) => {
+  // const onChange = props.onChange;
+
+  const shape = useAtomValue(SHAPE_SELECTED_ATOM);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const DELETE_SHAPE = useSetAtom(DELETE_SHAPE_ATOM);
+  const shapeUpdate = useSetAtom(SHAPE_UPDATE_ATOM);
+
+  if (shape === null) return null;
+
   const {
     backgroundColor,
     id,
@@ -56,10 +65,7 @@ export const LayoutShapeConfig = (props: Props) => {
     lineCap,
     lineJoin,
     fontWeight,
-  } = props.shape;
-  const onChange = props.onChange;
-
-  const inputRef = useRef<HTMLInputElement>(null);
+  } = shape;
   const handleFiles = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
@@ -68,19 +74,17 @@ export const LayoutShapeConfig = (props: Props) => {
     reader.onloadend = () => {
       const image = new Image();
       image.onload = () => {
-        const scale: number = calculateScale(
-          image.width,
-          image.height,
-          props.shape.width ?? 500,
-          props.shape.height ?? 500
-        );
-
-        const newWidth: number = image.width * scale;
-        const newHeight: number = image.height * scale;
-
-        onChange("src", reader?.result as string);
-        onChange("width", newWidth);
-        onChange("height", newHeight);
+        // const scale: number = calculateScale(
+        //   image.width,
+        //   image.height,
+        //   props.shape.width ?? 500,
+        //   props.shape.height ?? 500
+        // );
+        // const newWidth: number = image.width * scale;
+        // const newHeight: number = image.height * scale;
+        // onChange("src", reader?.result as string);
+        // onChange("width", newWidth);
+        // onChange("height", newHeight);
       };
 
       image.src = reader?.result as string;
@@ -88,12 +92,10 @@ export const LayoutShapeConfig = (props: Props) => {
     reader.readAsDataURL(file);
   };
 
-  const DELETE_SHAPE = useSetAtom(DELETE_SHAPE_ATOM);
-  const { handleCleanShapeSelected } = useSelectedShape();
   const handleDelete = () => {
-    if (!id) return;
-    DELETE_SHAPE({ id });
-    handleCleanShapeSelected();
+    // if (!id) return;
+    // DELETE_SHAPE({ id });
+    // handleCleanShapeSelected();
   };
 
   return (
@@ -139,14 +141,23 @@ export const LayoutShapeConfig = (props: Props) => {
           <InputCheckbox
             text="Bucket Fill"
             value={closed ?? false}
-            onCheck={(e) => onChange("closed", e)}
+            onCheck={(e) => {
+              shapeUpdate({
+                closed: e,
+              });
+            }}
           />
         </Valid>
         {/* <Valid isValid={tool !== "IMAGE"}> */}
         <InputCheckbox
           text="Fill"
           value={fillEnabled ?? true}
-          onCheck={(e) => onChange("fillEnabled", e)}
+          onCheck={(e) => {
+            shapeUpdate({
+              fillEnabled: e,
+            });
+            // onChange("fillEnabled", e)
+          }}
         />
         {/* </Valid> */}
         <Valid isValid={fillEnabled ?? false}>
@@ -154,7 +165,13 @@ export const LayoutShapeConfig = (props: Props) => {
             labelText="Fill Color"
             keyInput={`pixel-kit-shape-fill-${id}-${tool}`}
             color={backgroundColor}
-            onChangeColor={(e) => onChange("backgroundColor", e)}
+            onChangeColor={(e) => {
+              // onChange("backgroundColor", e)
+
+              shapeUpdate({
+                backgroundColor: e,
+              });
+            }}
             primaryColors
           />
         </Valid>
@@ -163,7 +180,12 @@ export const LayoutShapeConfig = (props: Props) => {
           <InputSelect
             labelText="Line Join"
             value={lineJoin ?? "round"}
-            onChange={(e) => onChange("lineJoin", e)}
+            onChange={(e) => {
+              shapeUpdate({
+                lineJoin: e,
+              });
+              // onChange("lineJoin", e)
+            }}
             options={[
               {
                 id: `line-join-1-round`,
@@ -186,7 +208,12 @@ export const LayoutShapeConfig = (props: Props) => {
           <InputSelect
             labelText="Line Cap"
             value={lineCap ?? "round"}
-            onChange={(e) => onChange("lineCap", e)}
+            onChange={(e) => {
+              shapeUpdate({
+                lineCap: e,
+              });
+              // onChange("lineCap", e)
+            }}
             options={[
               {
                 id: `line-cap-1-round`,
@@ -210,7 +237,12 @@ export const LayoutShapeConfig = (props: Props) => {
           <InputSelect
             labelText="Font Weight"
             value={fontWeight ?? "normal"}
-            onChange={(e) => onChange("fontWeight", e)}
+            onChange={(e) => {
+              shapeUpdate({
+                fontWeight: e,
+              });
+              // onChange("fontWeight", e)
+            }}
             options={[
               {
                 id: `font-weight-lighter`,
@@ -249,25 +281,48 @@ export const LayoutShapeConfig = (props: Props) => {
             min={12}
             max={72}
             step={4}
-            onChange={(e) => onChange("fontSize", e)}
+            onChange={(e) => {
+              shapeUpdate({
+                fontSize: e,
+              });
+
+              // onChange("fontSize", e)
+            }}
             value={fontSize || 0}
           />
         </Valid>
         <InputCheckbox
           text="Stroke"
           value={strokeEnabled ?? true}
-          onCheck={(e) => onChange("strokeEnabled", e)}
+          onCheck={(e) => {
+            shapeUpdate({
+              strokeEnabled: e,
+            });
+
+            // onChange("strokeEnabled", e)
+          }}
         />
         <Valid isValid={strokeEnabled ?? false}>
           <PixelKitInputColor
             labelText="Color"
             keyInput={`pixel-kit-shape-stroke-${id}-${tool}`}
             color={stroke}
-            onChangeColor={(e) => onChange("stroke", e)}
+            onChangeColor={(e) => {
+              shapeUpdate({
+                stroke: e,
+              });
+
+              // onChange("stroke", e)
+            }}
           />
           <InputSlider
             labelText={`Thickness (${strokeWidth})`}
-            onChange={(e) => onChange("strokeWidth", e)}
+            onChange={(e) => {
+              shapeUpdate({
+                strokeWidth: e,
+              });
+              // onChange("strokeWidth", e)
+            }}
             value={strokeWidth || 0}
           />
         </Valid>
@@ -275,12 +330,24 @@ export const LayoutShapeConfig = (props: Props) => {
         <InputCheckbox
           text="Dash"
           value={dashEnabled ?? true}
-          onCheck={(e) => onChange("dashEnabled", e)}
+          onCheck={(e) => {
+            shapeUpdate({
+              dashEnabled: e,
+            });
+
+            // onChange("dashEnabled", e)
+          }}
         />
         <Valid isValid={dashEnabled ?? false}>
           <InputSlider
             labelText={`Array (${dash})`}
-            onChange={(e) => onChange("dash", e)}
+            onChange={(e) => {
+              shapeUpdate({
+                dash: e,
+              });
+
+              // onChange("dash", e)
+            }}
             value={dash || 0}
           />
         </Valid>
@@ -288,28 +355,54 @@ export const LayoutShapeConfig = (props: Props) => {
         <InputCheckbox
           text="Shadow"
           value={shadowEnabled ?? true}
-          onCheck={(e) => onChange("shadowEnabled", e)}
+          onCheck={(e) => {
+            shapeUpdate({
+              shadowEnabled: e,
+            });
+
+            // onChange("shadowEnabled", e)
+          }}
         />
         <Valid isValid={shadowEnabled ?? false}>
           <PixelKitInputColor
             labelText="Color"
             keyInput={`pixel-kit-shape-shadow-${id}-${tool}`}
             color={shadowColor}
-            onChangeColor={(e) => onChange("shadowColor", e)}
+            onChangeColor={(e) => {
+              shapeUpdate({
+                shadowColor: e,
+              });
+              // onChange("shadowColor", e)
+            }}
           />
           <InputSlider
             labelText="X"
-            onChange={(e) => onChange("shadowOffsetX", e)}
+            onChange={(e) => {
+              shapeUpdate({
+                shadowOffsetX: e,
+              });
+              // onChange("shadowOffsetX", e)
+            }}
             value={shadowOffsetX || 0}
           />
           <InputSlider
             labelText="Y"
-            onChange={(e) => onChange("shadowOffsetY", e)}
+            onChange={(e) => {
+              shapeUpdate({
+                shadowOffsetY: e,
+              });
+              // onChange("shadowOffsetY", e)
+            }}
             value={shadowOffsetY || 0}
           />
           <InputSlider
             labelText="Blur"
-            onChange={(e) => onChange("shadowBlur", e)}
+            onChange={(e) => {
+              shapeUpdate({
+                shadowBlur: e,
+              });
+              // onChange("shadowBlur", e)
+            }}
             value={shadowBlur || 0}
           />
 
@@ -318,14 +411,24 @@ export const LayoutShapeConfig = (props: Props) => {
             labelText="Opacity"
             max={1}
             step={0.1}
-            onChange={(e) => onChange("shadowOpacity", e)}
+            onChange={(e) => {
+              shapeUpdate({
+                shadowOpacity: e,
+              });
+              // onChange("shadowOpacity", e)
+            }}
             value={shadowOpacity || 0}
           />
         </Valid>
 
         <InputSlider
           labelText="Border radius"
-          onChange={(e) => onChange("borderRadius", e)}
+          onChange={(e) => {
+            shapeUpdate({
+              borderRadius: e,
+            });
+            // onChange("borderRadius", e)
+          }}
           value={borderRadius || 0}
         />
       </div>
