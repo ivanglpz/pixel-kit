@@ -18,30 +18,6 @@ import { useConfiguration } from "./useConfiguration";
 import { useStartDrawing } from "./useStartDrawing";
 import useTool from "./useTool";
 
-export type IRelativePosition = {
-  x: number;
-  y: number;
-};
-
-export type IStartEvent = (
-  event: IRelativePosition,
-  params?: {
-    text?: string;
-    image?: string;
-    width?: number;
-    height?: number;
-  }
-) => IShape;
-
-export type IEndEvent = (event: IRelativePosition, element: IShape) => IShape;
-
-export type IEventElement = {
-  [key in IKeyTool]?: {
-    start: IStartEvent;
-    progress: IEndEvent;
-  };
-};
-
 export type IShapeProgressEvent = {
   [key in IKeyMethods]: (x: number, y: number, element: IShape) => IShape;
 };
