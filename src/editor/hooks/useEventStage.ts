@@ -21,6 +21,10 @@ import { useStartDrawing } from "./useStartDrawing";
 export type IShapeProgressEvent = {
   [key in IKeyMethods]: (x: number, y: number, element: IShape) => IShape;
 };
+const TOOLS_BOX_BASED = ["BOX", "CIRCLE", "IMAGE", "TEXT", "GROUP"];
+
+const TOOLS_DRAW_BASED = ["DRAW"];
+const TOOLS_LINE_BASED = ["LINE"];
 
 const useEventStage = () => {
   const [tool, setTool] = useAtom(TOOL_ATOM);
@@ -40,7 +44,7 @@ const useEventStage = () => {
 
   const handleMouseDown = (event: KonvaEventObject<MouseEvent>) => {
     if (eventStage === "CREATE") {
-      if (["BOX", "CIRCLE", "IMAGE", "TEXT", "GROUP"]?.includes(tool)) {
+      if (TOOLS_BOX_BASED?.includes(tool)) {
         setEventStage("CREATING");
         const { x, y } = stageAbsolutePosition(event);
         const createStartElement = shapeStart({
@@ -51,7 +55,7 @@ const useEventStage = () => {
         });
         SET_CREATE_CITEM(createStartElement);
       }
-      if (["LINE"]?.includes(tool)) {
+      if (TOOLS_LINE_BASED?.includes(tool)) {
         setEventStage("CREATING");
 
         const { x, y } = stageAbsolutePosition(event);
@@ -67,7 +71,7 @@ const useEventStage = () => {
         });
         SET_CREATE_CITEM(createStartElement);
       }
-      if (["DRAW"]?.includes(tool)) {
+      if (TOOLS_DRAW_BASED?.includes(tool)) {
         setEventStage("CREATING");
         const { x: XStage, y: YStage } = stageAbsolutePosition(event);
         const x = XStage ?? 0;
@@ -94,14 +98,14 @@ const useEventStage = () => {
 
     if (eventStage === "CREATING") {
       const cshape = CURRENT_ITEM;
-      if (["BOX", "CIRCLE", "IMAGE", "TEXT", "GROUP"]?.includes(cshape.tool)) {
+      if (TOOLS_BOX_BASED?.includes(cshape.tool)) {
         const { x, y } = stageAbsolutePosition(event);
         const updateProgressElement = shapeProgressEvent[CURRENT_ITEM.tool];
 
         const updateShape = updateProgressElement(x, y, CURRENT_ITEM);
         SET_UPDATE_CITEM(updateShape);
       }
-      if (["LINE"]?.includes(cshape.tool)) {
+      if (TOOLS_LINE_BASED?.includes(cshape.tool)) {
         const { x, y } = stageAbsolutePosition(event);
         const updateProgressElement = shapeProgressEvent[CURRENT_ITEM.tool];
 
@@ -117,7 +121,7 @@ const useEventStage = () => {
 
         SET_UPDATE_CITEM(updateShape);
       }
-      if (["DRAW"]?.includes(cshape.tool)) {
+      if (TOOLS_DRAW_BASED?.includes(cshape.tool)) {
         const updateProgressElement = shapeProgressEvent[CURRENT_ITEM.tool];
         const { x: XStage, y: YStage } = stageAbsolutePosition(event);
         const x = XStage ?? 0;
@@ -136,7 +140,7 @@ const useEventStage = () => {
 
     if (eventStage === "CREATING") {
       const cshape = CURRENT_ITEM;
-      if (["BOX", "CIRCLE", "IMAGE", "TEXT", "GROUP"]?.includes(cshape.tool)) {
+      if (TOOLS_BOX_BASED?.includes(cshape.tool)) {
         const payload: IShape = {
           ...CURRENT_ITEM,
           isWritingNow: true,
@@ -151,13 +155,13 @@ const useEventStage = () => {
         setEventStage("IDLE");
         setTool("MOVE");
       }
-      if (["LINE"]?.includes(cshape.tool)) {
+      if (TOOLS_LINE_BASED?.includes(cshape.tool)) {
         SET_CREATE(CURRENT_ITEM);
         SET_CLEAR_CITEM();
         setEventStage("CREATE");
         setTool("LINE");
       }
-      if (["DRAW"]?.includes(cshape.tool)) {
+      if (TOOLS_DRAW_BASED?.includes(cshape.tool)) {
         SET_CREATE({
           ...CURRENT_ITEM,
           bezier: true,
