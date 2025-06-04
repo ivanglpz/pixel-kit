@@ -3,7 +3,7 @@ import dynamic from "next/dynamic";
 import useBrowser from "./hooks/useBrowser";
 import { useConfiguration } from "./hooks/useConfiguration";
 import useStopZoom from "./hooks/useStopZoom";
-import { AllLayers } from "./layers/AllLayers";
+import { AllLayers } from "./layers/root.layers";
 import { HeaderLogo } from "./layout/HeaderLogo";
 import { SidebarLeft } from "./layout/sidebarLeft";
 import SidebarRight from "./layout/SidebarRight";
