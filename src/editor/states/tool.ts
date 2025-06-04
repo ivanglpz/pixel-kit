@@ -16,6 +16,6 @@ export type IKeyTool =
 
 export type IKeyMethods = Exclude<IKeyTool, "MOVE" | "FRAME" | "WRITING">;
 
-const toolEditorAtom = atom("MOVE" as IKeyTool);
+const TOOL_ATOM = atom("MOVE" as IKeyTool);
 
-export default toolEditorAtom;
+export default TOOL_ATOM;

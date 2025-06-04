@@ -5,6 +5,7 @@ import { IKeyTool } from "@/editor/states/tool";
 import { css } from "@stylespixelkit/css";
 import { useSetAtom } from "jotai";
 import { useConfiguration } from "../hooks/useConfiguration";
+import { EVENT_ATOM } from "../states/event";
 import { SHAPE_ID_ATOM } from "../states/shape";
 
 export const Tools = () => {
@@ -14,6 +15,7 @@ export const Tools = () => {
 
   const { config } = useConfiguration();
   const setShapeId = useSetAtom(SHAPE_ID_ATOM);
+  const setEventStage = useSetAtom(EVENT_ATOM);
   return (
     <Section title="Tools">
       <section
@@ -43,6 +45,7 @@ export const Tools = () => {
               })}
               onClick={() => {
                 setTool(item.keyMethod as IKeyTool);
+                setEventStage(item.eventStage);
                 setShapeId(null);
                 setshowClip(false);
               }}
