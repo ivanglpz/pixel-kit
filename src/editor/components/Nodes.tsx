@@ -83,8 +83,8 @@ export const Nodes = ({ item }: { item: SHAPES_NODES }) => {
                 xmlns="http://www.w3.org/2000/svg"
               >
                 <path
-                  fill-rule="evenodd"
-                  clip-rule="evenodd"
+                  fillRule="evenodd"
+                  clipRule="evenodd"
                   d="M9.42653 12.3894L3.76953 6.73236L5.18353 5.31836L10.1335 10.2684L15.0835 5.31836L16.4975 6.73236L10.8405 12.3894C10.653 12.5768 10.3987 12.6821 10.1335 12.6821C9.86837 12.6821 9.61406 12.5768 9.42653 12.3894Z"
                   fill="white"
                 />
@@ -98,8 +98,8 @@ export const Nodes = ({ item }: { item: SHAPES_NODES }) => {
                 xmlns="http://www.w3.org/2000/svg"
               >
                 <path
-                  fill-rule="evenodd"
-                  clip-rule="evenodd"
+                  fillRule="evenodd"
+                  clipRule="evenodd"
                   d="M12.8894 10.7063L7.23236 16.3633L5.81836 14.9493L10.7684 9.99928L5.81836 5.04928L7.23236 3.63528L12.8894 9.29228C13.0768 9.47981 13.1821 9.73412 13.1821 9.99928C13.1821 10.2644 13.0768 10.5188 12.8894 10.7063Z"
                   fill="white"
                 />
