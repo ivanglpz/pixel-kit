@@ -1,6 +1,6 @@
 import { PrimitiveAtom, useAtom, useAtomValue } from "jotai";
 import Konva from "konva";
-import { memo, MutableRefObject, useRef } from "react";
+import { memo, MutableRefObject, useEffect, useRef } from "react";
 import { Rect } from "react-konva";
 import { STAGE_DIMENSION_ATOM } from "../states/dimension";
 import { SHAPE_ID_ATOM } from "../states/shape";
@@ -8,7 +8,9 @@ import {
   shapeEventDragMove,
   ShapeEventDragStart,
   shapeEventDragStop,
+  shapeTransformEnd,
 } from "./events.shape";
+import { Transform } from "./transformer";
 import { IShape, IShapeWithEvents, WithInitialValue } from "./type.shape";
 
 // eslint-disable-next-line react/display-name
@@ -43,25 +45,18 @@ const ShapeBox = memo(({ item }: IShapeWithEvents) => {
   const trRef = useRef<Konva.Transformer>();
   const stageDimensions = useAtomValue(STAGE_DIMENSION_ATOM);
   const [shapeId, setShapeId] = useAtom(SHAPE_ID_ATOM);
-
-  // useEffect(() => {
-  //   if (isSelected) {
-  //     if (trRef.current && shapeRef.current) {
-  //       trRef.current.nodes([shapeRef.current]);
-  //       trRef.current?.getLayer()?.batchDraw();
-  //     }
-  //   }
-  // }, [isSelected, trRef, shapeRef]);
+  const isSelected = shapeId ? shapeId === box?.id : false;
+  useEffect(() => {
+    if (isSelected) {
+      if (trRef.current && shapeRef.current) {
+        trRef.current.nodes([shapeRef.current]);
+        trRef.current?.getLayer()?.batchDraw();
+      }
+    }
+  }, [isSelected, trRef, shapeRef]);
 
   return (
     <>
-      {/* <Valid isValid={isSelected}>
-        <PortalConfigShape
-          isSelected={isSelected}
-          setShape={setBox}
-          shape={box}
-        />
-      </Valid> */}
       <Rect
         id={box?.id}
         x={x}
@@ -102,8 +97,16 @@ const ShapeBox = memo(({ item }: IShapeWithEvents) => {
         onDragEnd={(e) => {
           setBox(shapeEventDragStop(e));
         }}
+        onTransform={(e) => {
+          console.log(e?.target?.rotation());
+
+          setBox(
+            shapeEventDragMove(e, stageDimensions.width, stageDimensions.height)
+          );
+        }}
+        onTransformEnd={(e) => setBox(shapeTransformEnd(e))}
       />
-      {/* <Transform isSelected={isSelected} ref={trRef} /> */}
+      <Transform isSelected={isSelected} ref={trRef} />
     </>
   );
 });
