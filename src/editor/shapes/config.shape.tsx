@@ -2,7 +2,7 @@ import { Valid } from "@/components/valid";
 import { Dispatch, SetStateAction } from "react";
 import { createPortal } from "react-dom";
 import { Html } from "react-konva-utils";
-import { LayoutShapeConfig } from "../layout/shape-config";
+import { LayoutShapeConfig } from "../sidebar/shape-config";
 import { IShape } from "./type.shape";
 
 type Props = {

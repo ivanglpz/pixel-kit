@@ -4,9 +4,9 @@ import useBrowser from "./hooks/useBrowser";
 import { useConfiguration } from "./hooks/useConfiguration";
 import useStopZoom from "./hooks/useStopZoom";
 import { AllLayers } from "./layers/root.layers";
-import { HeaderLogo } from "./layout/HeaderLogo";
-import { SidebarLeft } from "./layout/sidebarLeft";
-import SidebarRight from "./layout/SidebarRight";
+import { HeaderLogo } from "./sidebar/HeaderLogo";
+import { SidebarLeft } from "./sidebar/sidebar.left";
+import SidebarRight from "./sidebar/sidebar.right";
 import PxStage from "./stage";
 
 const PixelEditor = () => {
