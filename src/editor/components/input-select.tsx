@@ -36,12 +36,14 @@ export const InputSelect = ({ options, value, onChange, labelText }: Props) => {
         className={css({
           width: "100%",
           flex: 1,
-          border: "container",
-          backgroundColor: "primary",
           color: "text",
-          padding: "md",
-          borderRadius: "md",
           fontSize: "sm",
+          backgroundColor: "bg.muted", // Fondo más claro para el selector
+          borderRadius: "md",
+          padding: "md",
+          borderWidth: "1px",
+          borderStyle: "solid",
+          borderColor: "border.muted", // ← usa el semantic token
         })}
         onChange={(event) => onChange(event.target.value)}
       >
