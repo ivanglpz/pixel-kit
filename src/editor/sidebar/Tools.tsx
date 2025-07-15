@@ -1,11 +1,10 @@
-import { Section } from "@/editor/components/section";
 import { useTool } from "@/editor/hooks";
 import { showClipAtom } from "@/editor/states/clipImage";
 import { IKeyTool } from "@/editor/states/tool";
 import { css } from "@stylespixelkit/css";
 import { useSetAtom } from "jotai";
 import { useConfiguration } from "../hooks/useConfiguration";
-import { EVENT_ATOM } from "../states/event";
+import { EVENT_ATOM, IStageEvents } from "../states/event";
 import { SHAPE_ID_ATOM } from "../states/shape";
 
 export const Tools = () => {
@@ -17,71 +16,52 @@ export const Tools = () => {
   const setShapeId = useSetAtom(SHAPE_ID_ATOM);
   const setEventStage = useSetAtom(EVENT_ATOM);
   return (
-    <Section title="Tools">
-      <section
-        className={css({
-          display: "grid",
-          gap: "md",
-          gridTemplateColumns: "4",
-        })}
-      >
-        {config.tools?.map((item) => {
-          const isSelected = item?.keyMethod === tool;
+    <div
+      className={css({
+        display: "flex",
+        flexDirection: "row",
+        gap: "lg",
+      })}
+    >
+      {config.tools?.map((item, index) => {
+        const isSelected = item?.keyMethod === tool;
+        if (item?.isSeparation) {
           return (
-            <button
-              key={`sidebar-methods-key-${item.keyMethod}`}
+            <div
+              key={`separator-$${index}`}
               className={css({
-                backgroundGradient: isSelected ? "primary" : "transparent",
-                borderRadius: "6px",
-                width: "40px",
-                height: "35px",
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                border: "container",
-                cursor: "pointer",
-                flexGrow: 1,
-                position: "relative",
+                backgroundColor: "#242424",
+                height: "32px",
+                width: 1,
               })}
-              onClick={() => {
-                setTool(item.keyMethod as IKeyTool);
-                setEventStage(item.eventStage);
-                setShapeId(null);
-                setshowClip(false);
-              }}
-            >
-              {item?.icon}
-              <div
-                className={css({
-                  position: "absolute",
-                  right: -5,
-                  bottom: -5,
-                  backgroundGradient: isSelected ? "primary" : "transparent",
-                  backgroundColor: "primary",
-                  width: 10,
-                  height: 15,
-                  zIndex: 100,
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  padding: "9",
-                  borderRadius: "4px",
-                })}
-              >
-                <p
-                  className={css({
-                    fontSize: "x-small",
-                    color: "text",
-                    fontWeight: "bold",
-                  })}
-                >
-                  {item.keyBoard}
-                </p>
-              </div>
-            </button>
+            />
           );
-        })}
-      </section>
-    </Section>
+        }
+        return (
+          <button
+            key={`sidebar-methods-key-${item.keyMethod}`}
+            className={css({
+              backgroundGradient: isSelected ? "primary" : "",
+              borderRadius: "6px",
+              width: "30px",
+              height: "30px",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              cursor: "pointer",
+              position: "relative",
+            })}
+            onClick={() => {
+              setTool(item.keyMethod as IKeyTool);
+              setEventStage(item.eventStage as IStageEvents);
+              setShapeId(null);
+              setshowClip(false);
+            }}
+          >
+            {item?.icon}
+          </button>
+        );
+      })}
+    </div>
   );
 };

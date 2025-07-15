@@ -1,9 +1,10 @@
 import { PrimitiveAtom, useAtom, useAtomValue } from "jotai";
 import Konva from "konva";
-import { memo, MutableRefObject, useRef } from "react";
-import { Group, Rect } from "react-konva";
+import { memo, useRef } from "react";
+import { Group } from "react-konva";
 import { useTool } from "../hooks";
 import { STAGE_DIMENSION_ATOM } from "../states/dimension";
+import ShapeBox from "./box.shape";
 import { Shapes } from "./shapes";
 import {
   FCShapeWEvents,
@@ -75,41 +76,8 @@ export const ShapeGroup = memo(({ item }: IShapeWithEvents) => {
           shape={box}
         />
       </Valid> */}
-      <Rect
-        id={box?.id}
-        x={x}
-        y={y}
-        width={width}
-        height={height}
-        fillEnabled={fillEnabled ?? true}
-        rotationDeg={rotate}
-        shadowColor={shadowColor}
-        shadowOpacity={shadowOpacity}
-        shadowOffsetX={shadowOffsetX}
-        shadowOffsetY={shadowOffsetY}
-        shadowBlur={shadowBlur}
-        strokeEnabled={strokeEnabled ?? true}
-        shadowEnabled={shadowEnabled ?? true}
-        dashEnabled={dashEnabled ?? true}
-        dash={[dash, dash, dash, dash]}
-        cornerRadius={borderRadius}
-        fill={backgroundColor}
-        ref={shapeRef as MutableRefObject<Konva.Rect>}
-        // draggable={draggable}
-        stroke={stroke}
-        strokeWidth={strokeWidth}
-        // onTap={(e) => setBox(shapeEventClick(e, onClick))}
-        // onClick={(e) => setBox(shapeEventClick(e, onClick))}
-        // onDragStart={(e) => setBox(ShapeEventDragStart(e, onDragStart))}
-        // onDragMove={(e) =>
-        //   setBox(shapeEventDragMove(e, onDragMove, screenWidth, screenHeight))
-        // }
-        // onDragEnd={(e) => setBox(shapeEventDragStop(e, onDragStop))}
-        // onTransform={(e) => {
-        //   setBox(shapeEventDragMove(e, onDragMove, screenWidth, screenHeight));
-        // }}
-        // onTransformEnd={(e) => setBox(shapeTransformEnd(e, onDragStop))}
-      />
+      <ShapeBox item={item} />
+
       <Group x={x} y={y} width={width} height={height}>
         {childrens?.map((item) => {
           const Component = Shapes?.[item?.tool] as FCShapeWEvents;

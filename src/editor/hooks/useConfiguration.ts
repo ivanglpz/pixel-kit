@@ -15,10 +15,11 @@ type Config = {
   showCanvasConfig: boolean;
   showClipImageConfig: boolean;
   tools: {
-    icon: JSX.Element;
-    keyMethod: IKeyTool;
-    keyBoard: string;
-    eventStage: IStageEvents;
+    icon?: JSX.Element;
+    keyMethod?: IKeyTool;
+    keyBoard?: string;
+    eventStage?: IStageEvents;
+    isSeparation?: boolean;
   }[];
   showBackgroundColor: boolean;
   showClipImage: boolean;
@@ -41,7 +42,9 @@ const configs: { [key in Keys]: Config } = {
         keyBoard: "Q",
         eventStage: "IDLE",
       },
-
+      {
+        isSeparation: true,
+      },
       {
         icon: icons.box,
         keyMethod: "BOX",
@@ -72,6 +75,9 @@ const configs: { [key in Keys]: Config } = {
         keyMethod: "TEXT",
         keyBoard: "S",
         eventStage: "CREATE",
+      },
+      {
+        isSeparation: true,
       },
 
       {
