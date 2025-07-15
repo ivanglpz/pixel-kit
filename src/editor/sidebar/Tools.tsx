@@ -30,7 +30,7 @@ export const Tools = () => {
             <div
               key={`separator-$${index}`}
               className={css({
-                backgroundColor: "#242424",
+                backgroundColor: "#292929",
                 height: "32px",
                 width: 1,
               })}

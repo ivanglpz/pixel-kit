@@ -5,9 +5,9 @@ import useBrowser from "./hooks/useBrowser";
 import { useConfiguration } from "./hooks/useConfiguration";
 import useStopZoom from "./hooks/useStopZoom";
 import { AllLayers } from "./layers/root.layers";
-import { HeaderLogo } from "./sidebar/HeaderLogo";
 import { SidebarLeft } from "./sidebar/sidebar.left";
 import SidebarRight from "./sidebar/sidebar.right";
+import { Tools } from "./sidebar/Tools";
 import PxStage from "./stage";
 
 const PixelEditor = () => {
@@ -49,6 +49,7 @@ const PixelEditor = () => {
             className={css({
               color: "white",
               fontSize: "sm",
+              fontWeight: 600,
             })}
           >
             Draft /{" "}
@@ -61,7 +62,18 @@ const PixelEditor = () => {
             </span>
           </p>
         </div>
-        <HeaderLogo />
+        <div
+          className={css({
+            display: "flex",
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "center",
+            width: "100%",
+            gap: "md",
+          })}
+        >
+          <Tools />
+        </div>
         <div>
           <p>hello</p>
         </div>
