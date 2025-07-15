@@ -1,4 +1,5 @@
 import { css } from "@stylespixelkit/css";
+import { Menu } from "lucide-react";
 import dynamic from "next/dynamic";
 import useBrowser from "./hooks/useBrowser";
 import { useConfiguration } from "./hooks/useConfiguration";
@@ -23,19 +24,47 @@ const PixelEditor = () => {
         height: "100%",
         width: "100%",
         display: "grid",
-        gridTemplateRows: "35px 1fr",
+        gridTemplateRows: "60px 1fr",
       })}
     >
       <header
         className={css({
-          padding: "md",
-          display: "flex",
+          padding: "lg",
+          display: "grid",
           alignItems: "center",
-          justifyContent: "center",
           borderBottom: "1px solid gray",
+          gridTemplateColumns: "3",
         })}
       >
+        <div
+          className={css({
+            display: "flex",
+            flexDirection: "row",
+            alignItems: "center",
+            gap: "lg",
+          })}
+        >
+          <Menu color="white" size={28} />
+          <p
+            className={css({
+              color: "white",
+              fontSize: "sm",
+            })}
+          >
+            Draft /{" "}
+            <span
+              className={css({
+                opacity: 0.5,
+              })}
+            >
+              My file01
+            </span>
+          </p>
+        </div>
         <HeaderLogo />
+        <div>
+          <p>hello</p>
+        </div>
       </header>
       <div
         className={css({

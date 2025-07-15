@@ -8,7 +8,6 @@ import { Clip } from "./clip";
 import { Drawing } from "./drawing";
 import { ExportStage } from "./export";
 import { LayoutShapeConfig } from "./shape-config";
-import { Tools } from "./Tools";
 
 const SidebarRight: FC = () => {
   const { config } = useConfiguration();
@@ -32,7 +31,6 @@ const SidebarRight: FC = () => {
     >
       <ChangeEnv />
 
-      <Tools />
       <Valid isValid={config?.showCanvasConfig}>
         <StageConfig />
       </Valid>
