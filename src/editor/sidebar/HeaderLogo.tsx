@@ -1,5 +1,4 @@
 import { css } from "@stylespixelkit/css";
-import { Tools } from "./Tools";
 
 export function HeaderLogo() {
   return (
@@ -16,19 +15,6 @@ export function HeaderLogo() {
         alignItems: "center",
         gridTemplateColumns: "1fr 25px",
       })}
-    >
-      <div
-        className={css({
-          display: "flex",
-          flexDirection: "row",
-          alignItems: "center",
-          justifyContent: "start",
-          width: "100%",
-          gap: "md",
-        })}
-      >
-        <Tools />
-      </div>
-    </section>
+    ></section>
   );
 }
