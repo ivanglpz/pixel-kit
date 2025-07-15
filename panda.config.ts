@@ -515,8 +515,8 @@ export default defineConfig({
           },
         },
         gray: {
-          "50": { value: "hsl(0, 0%, 90%)" },
-          "100": { value: "hsl(0, 0%, 85.32%)" },
+          "50": { value: "hsl(0, 0%, 97%)" },
+          "100": { value: "hsl(0, 0%, 92%)" },
           "200": { value: "hsl(0, 0%, 70.63%)" },
           "300": { value: "hsl(0, 0%, 51.07%)" },
           "400": { value: "hsl(0, 0%, 36.42%)" },
@@ -571,16 +571,24 @@ export default defineConfig({
     /** ✅ Colores para Dark / Light */
     semanticTokens: {
       colors: {
-        // Backgrounds
         bg: {
           DEFAULT: {
-            value: { base: "{colors.gray.50}", _dark: "{colors.gray.950}" },
+            value: { base: "{colors.gray.50}", _dark: "{colors.gray.950}" }, // Fondo principal
           },
           muted: {
-            value: { base: "{colors.gray.100}", _dark: "{colors.gray.800}" },
+            value: { base: "{colors.gray.100}", _dark: "{colors.gray.800}" }, // Para secciones secundarias
           },
           elevated: {
-            value: { base: "{colors.white}", _dark: "{colors.gray.700}" },
+            value: { base: "{colors.white}", _dark: "{colors.gray.700}" }, // Para cards, modales, etc.
+          },
+          subtle: {
+            value: { base: "{colors.gray.200}", _dark: "{colors.gray.600}" }, // Contenedores suaves
+          },
+          accent: {
+            value: {
+              base: "{colors.blue.light.50}",
+              _dark: "{colors.blue.dark.700}",
+            }, // Para resaltar contenedores
           },
         },
 
@@ -620,9 +628,26 @@ export default defineConfig({
         // Borders
         border: {
           DEFAULT: {
-            value: { base: "{colors.gray.300}", _dark: "{colors.gray.700}" },
+            value: { base: "{colors.gray.100}", _dark: "{colors.gray.700}" },
           },
-          focus: { value: { base: "rgb(0,153,255)", _dark: "rgb(0,204,255)" } },
+          muted: {
+            value: { base: "{colors.gray.200}", _dark: "{colors.gray.600}" },
+          },
+          elevated: {
+            value: { base: "{colors.gray.300}", _dark: "{colors.gray.500}" },
+          },
+          subtle: {
+            value: { base: "{colors.gray.200}", _dark: "{colors.gray.600}" },
+          },
+          accent: {
+            value: {
+              base: "{colors.blue.light.300}",
+              _dark: "{colors.blue.dark.400}",
+            },
+          },
+          focus: {
+            value: { base: "rgb(0,153,255)", _dark: "rgb(0,204,255)" },
+          },
         },
       },
     },

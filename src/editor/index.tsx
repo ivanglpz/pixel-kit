@@ -32,7 +32,9 @@ const PixelEditor = () => {
           padding: "lg",
           display: "grid",
           alignItems: "center",
-          borderBottom: "1px solid #181818",
+          borderBottomWidth: "1px",
+          borderBottomStyle: "solid",
+          borderBottomColor: "border", // ← usa el semantic token
           gridTemplateColumns: "3",
         })}
       >
@@ -47,7 +49,7 @@ const PixelEditor = () => {
           <Menu color="white" size={28} />
           <p
             className={css({
-              color: "white",
+              color: "text",
               fontSize: "sm",
               fontWeight: 600,
             })}
