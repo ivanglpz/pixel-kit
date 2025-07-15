@@ -11,7 +11,7 @@ export const SidebarLeft: FC = () => {
   return (
     <ul
       className={css({
-        backgroundColor: "rgba(0,0,0,0.15)",
+        backgroundColor: "bg",
         zIndex: 9,
         width: "100%",
         display: "flex",
