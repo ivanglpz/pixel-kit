@@ -20,7 +20,7 @@ const PixelEditor = () => {
     <div
       id="pixel-app"
       className={css({
-        backgroundColor: "black",
+        backgroundColor: "bg",
         height: "100%",
         width: "100%",
         display: "grid",
@@ -32,7 +32,7 @@ const PixelEditor = () => {
           padding: "lg",
           display: "grid",
           alignItems: "center",
-          borderBottom: "1px solid gray",
+          borderBottom: "1px solid #181818",
           gridTemplateColumns: "3",
         })}
       >

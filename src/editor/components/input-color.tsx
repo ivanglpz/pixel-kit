@@ -98,17 +98,16 @@ const PixelKitInputColor: FC<Props> = ({
       {primaryColors ? (
         <div
           className={css({
-            display: "flex",
-            flexDirection: "row",
-            flexWrap: "wrap",
+            display: "grid",
             gap: "sm",
+            gridTemplateColumns: "6",
           })}
         >
           {[
-            "#FF0000",
+            "#e52e2e",
             "#FFFF00",
-            "#0000FF",
-            // "#00FF00",
+            "#3c3ce9",
+            "#47d847",
             // "#FF6600",
             // "#6600FF",
             "#000000",
@@ -118,7 +117,7 @@ const PixelKitInputColor: FC<Props> = ({
               key={e}
               className={css({
                 height: "30px",
-                width: "30px",
+                width: "100%",
                 borderRadius: "md",
                 border: "container",
                 display: "flex",

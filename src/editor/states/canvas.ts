@@ -8,7 +8,7 @@ export type IStageConfig = {
 const StageConfigAtom = atomWithStorage<IStageConfig>(
   "pixel-kit-canvas-config",
   {
-    backgroundColor: "#FFFFFF",
+    backgroundColor: "#000000",
     graphicMapped: true,
   }
 );

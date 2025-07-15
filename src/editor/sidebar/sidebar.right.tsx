@@ -15,11 +15,11 @@ const SidebarRight: FC = () => {
   return (
     <aside
       className={css({
-        backgroundColor: "rgba(0,0,0,0.15)",
         zIndex: 9,
         width: "100%",
         display: "flex",
         flexDirection: "column",
+        backgroundColor: "bg",
         gap: "md",
         overflow: "hidden",
         overflowX: "hidden",
