@@ -31,8 +31,7 @@ export const InputSelect = ({ options, value, onChange, labelText }: Props) => {
           {labelText}
         </p>
       ) : null}
-      <select
-        value={value}
+      <div
         className={css({
           width: "100%",
           flex: 1,
@@ -44,15 +43,29 @@ export const InputSelect = ({ options, value, onChange, labelText }: Props) => {
           borderWidth: "1px",
           borderStyle: "solid",
           borderColor: "border.muted", // ← usa el semantic token
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
         })}
-        onChange={(event) => onChange(event.target.value)}
       >
-        {options?.map((e) => (
-          <option key={e.id} value={e.value}>
-            {e.label}
-          </option>
-        ))}
-      </select>
+        <select
+          value={value}
+          className={css({
+            width: "100%",
+            flex: 1,
+            color: "text",
+            fontSize: "sm",
+            backgroundColor: "transparent",
+          })}
+          onChange={(event) => onChange(event.target.value)}
+        >
+          {options?.map((e) => (
+            <option key={e.id} value={e.value}>
+              {e.label}
+            </option>
+          ))}
+        </select>
+      </div>
     </div>
   );
 };

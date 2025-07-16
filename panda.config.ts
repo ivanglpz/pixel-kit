@@ -525,7 +525,7 @@ export default defineConfig({
           "700": { value: "hsl(0, 0%, 12.32%)" },
           "800": { value: "hsl(0, 0%, 7.65%)" },
           "900": { value: "hsl(0, 0%, 3.94%)" },
-          "950": { value: "hsl(0, 0%, 1%)" },
+          "950": { value: "hsl(0, 0%, 2.5%)" },
         },
       },
       fontSizes: {
@@ -606,7 +606,7 @@ export default defineConfig({
         // Primary & Secondary Variants
         primary: {
           DEFAULT: {
-            value: { base: "rgb(0, 153, 255)", _dark: "rgb(0, 204, 255)" },
+            value: { base: "#4B5EFC", _dark: "#4B5EFC" },
           },
           hover: {
             value: { base: "rgb(0, 130, 220)", _dark: "rgb(0, 180, 220)" },
