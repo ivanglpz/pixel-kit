@@ -4,7 +4,7 @@ import { atom, useAtom, useAtomValue } from "jotai";
 import Konva from "konva";
 import { Shape, ShapeConfig } from "konva/lib/Shape";
 import { MutableRefObject, useEffect, useMemo, useRef } from "react";
-import { Group, Layer, Rect, Transformer } from "react-konva";
+import { Group, Layer, Line, Rect, Transformer } from "react-konva";
 import { useImageRender } from "../hooks/useImageRender";
 import { useReference } from "../hooks/useReference";
 import { ShapeImage } from "../shapes/image.shape";
@@ -204,12 +204,62 @@ export const LayerClip = () => {
           }));
         }}
       />
+      {showClip && (
+        <>
+          {/* Líneas verticales */}
+          {[1, 2].map((i) => {
+            const x = Number(box?.x ?? 0);
+            const y = Number(box?.y ?? 0);
+            const width = Number(box?.width ?? 0);
+            const height = Number(box?.height ?? 0);
+
+            return (
+              <Line
+                key={`v-${i}`}
+                points={[
+                  x + (width / 3) * i,
+                  y,
+                  x + (width / 3) * i,
+                  y + height,
+                ]}
+                stroke="white"
+                opacity={0.6}
+                strokeWidth={1}
+              />
+            );
+          })}
+
+          {/* Líneas horizontales */}
+          {[1, 2].map((i) => {
+            const x = Number(box?.x ?? 0);
+            const y = Number(box?.y ?? 0);
+            const width = Number(box?.width ?? 0);
+            const height = Number(box?.height ?? 0);
+
+            return (
+              <Line
+                key={`h-${i}`}
+                points={[
+                  x,
+                  y + (height / 3) * i,
+                  x + width,
+                  y + (height / 3) * i,
+                ]}
+                stroke="white"
+                opacity={0.6}
+                strokeWidth={1}
+              />
+            );
+          })}
+        </>
+      )}
       <Transformer
         id="transformer-editable"
         ref={trRef}
         flipEnabled={false}
         keepRatio={false}
-        anchorStrokeWidth={3}
+        rotateEnabled={false}
+        anchorStrokeWidth={2}
         anchorStyleFunc={(configAnchor) => {
           const anchor = configAnchor as Shape<ShapeConfig> & {
             cornerRadius: (v: number) => void;
@@ -229,9 +279,11 @@ export const LayerClip = () => {
             anchor.offsetX(5);
           }
         }}
-        anchorSize={20}
-        borderStrokeWidth={4}
-        anchorCornerRadius={4}
+        anchorSize={15}
+        borderStroke="white"
+        borderStrokeWidth={2}
+        anchorCornerRadius={2}
+        anchorStroke="gray"
         boundBoxFunc={(oldBox, newBox) => {
           // limit resize
           if (Math.abs(newBox.width) < 5 || Math.abs(newBox.height) < 5) {
