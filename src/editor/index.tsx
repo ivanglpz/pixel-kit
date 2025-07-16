@@ -1,6 +1,7 @@
 import { css } from "@stylespixelkit/css";
-import { Menu } from "lucide-react";
+import { Menu, Play } from "lucide-react";
 import dynamic from "next/dynamic";
+import { InputSelect } from "./components/input-select";
 import useBrowser from "./hooks/useBrowser";
 import { useConfiguration } from "./hooks/useConfiguration";
 import useStopZoom from "./hooks/useStopZoom";
@@ -90,9 +91,53 @@ const PixelEditor = () => {
             width: "100%",
             display: "flex",
             justifyContent: "flex-end",
+            gap: "lg",
           })}
         >
-          <p>hello</p>
+          <button
+            className={css({
+              padding: "md",
+              borderColor: "border",
+              borderWidth: 1,
+              borderRadius: "md",
+              width: "37px",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            })}
+          >
+            <Play size={18} />
+          </button>
+          <InputSelect
+            onChange={() => {}}
+            options={[
+              {
+                id: "1",
+                label: "100%",
+                value: "100",
+              },
+            ]}
+            value={"100"}
+          />
+          <button
+            className={css({
+              padding: "md",
+              borderColor: "border",
+              borderWidth: 1,
+              borderRadius: "md",
+              backgroundColor: "primary",
+              py: "5",
+              px: "10",
+            })}
+          >
+            <p
+              className={css({
+                color: "white",
+              })}
+            >
+              Share
+            </p>
+          </button>
         </div>
       </header>
       <div
