@@ -98,8 +98,6 @@ const ShapeBox = memo(({ item }: IShapeWithEvents) => {
           setBox(shapeEventDragStop(e));
         }}
         onTransform={(e) => {
-          console.log(e?.target?.rotation());
-
           setBox(
             shapeEventDragMove(e, stageDimensions.width, stageDimensions.height)
           );

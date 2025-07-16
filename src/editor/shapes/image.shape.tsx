@@ -1,9 +1,10 @@
 /* eslint-disable react/display-name */
 /* eslint-disable jsx-a11y/alt-text */
-import { PrimitiveAtom, useAtom } from "jotai";
+import { PrimitiveAtom, useAtom, useAtomValue } from "jotai";
 import Konva from "konva";
 import { memo, MutableRefObject, useMemo, useRef } from "react";
 import { Image as KonvaImage } from "react-konva";
+import { STAGE_DIMENSION_ATOM } from "../states/dimension";
 import { IShape, IShapeWithEvents, WithInitialValue } from "./type.shape";
 
 function urlToBase64(
@@ -72,7 +73,7 @@ export const ShapeImage = memo(({ item }: IShapeWithEvents) => {
     urlToBase64(src ?? "", (b64) => (image.src = b64 as string));
     return image;
   }, [src]);
-
+  const stageDimensions = useAtomValue(STAGE_DIMENSION_ATOM);
   // const { isSelected } = item;
   const shapeRef = useRef<Konva.Image>();
   const trRef = useRef<Konva.Transformer>();

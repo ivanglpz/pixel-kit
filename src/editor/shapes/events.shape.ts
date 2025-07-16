@@ -2,7 +2,6 @@ import { KonvaEventObject } from "konva/lib/Node";
 import { IShape } from "./type.shape";
 
 type Drag = (shape: IShape) => void;
-type Click = Drag;
 
 export const ShapeEventDragStart =
   (evt: KonvaEventObject<DragEvent>) => (prev: IShape) => {
