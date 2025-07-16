@@ -113,35 +113,9 @@ export const LayerClip = () => {
               shadowEnabled: false,
               dashEnabled: false,
               bezier: false,
-              x: 0,
-              y: 0,
             }),
             tool: "IMAGE",
           }}
-          screenHeight={height}
-          screenWidth={width}
-          isSelected={false}
-          draggable={false}
-          onClick={() => {}}
-          onDragMove={() => {}}
-          onDragStart={() => {}}
-          onDragStop={() => {}}
-          onTransformStop={() => {}}
-          shape={atom({
-            ...dimension,
-            id: "main-image-render-stage",
-            src: img?.base64,
-            isBlocked: true,
-            tool: "IMAGE",
-            visible: true,
-            fillEnabled: true,
-            dash: 0,
-            isWritingNow: false,
-            strokeEnabled: false,
-            shadowEnabled: false,
-            dashEnabled: false,
-            bezier: false,
-          })}
         />
       </Group>
       <Rect

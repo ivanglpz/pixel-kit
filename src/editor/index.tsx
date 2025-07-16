@@ -46,7 +46,16 @@ const PixelEditor = () => {
             gap: "lg",
           })}
         >
-          <Menu color="white" size={28} />
+          <Menu
+            color="white"
+            size={28}
+            className={css({
+              stroke: "black",
+              _dark: {
+                stroke: "white",
+              },
+            })}
+          />
           <p
             className={css({
               color: "text",
@@ -76,7 +85,13 @@ const PixelEditor = () => {
         >
           <Tools />
         </div>
-        <div>
+        <div
+          className={css({
+            width: "100%",
+            display: "flex",
+            justifyContent: "flex-end",
+          })}
+        >
           <p>hello</p>
         </div>
       </header>
