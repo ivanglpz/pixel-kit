@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import { css } from "@stylespixelkit/css";
 import { Menu, Play } from "lucide-react";
 import dynamic from "next/dynamic";
@@ -39,7 +40,7 @@ const PixelEditor = () => {
           gridTemplateColumns: "3",
         })}
       >
-        <div
+        <section
           className={css({
             display: "flex",
             flexDirection: "row",
@@ -73,8 +74,8 @@ const PixelEditor = () => {
               My file01
             </span>
           </p>
-        </div>
-        <div
+        </section>
+        <section
           className={css({
             display: "flex",
             flexDirection: "row",
@@ -85,12 +86,13 @@ const PixelEditor = () => {
           })}
         >
           <Tools />
-        </div>
-        <div
+        </section>
+        <section
           className={css({
             width: "100%",
             display: "flex",
             justifyContent: "flex-end",
+            alignItems: "center",
             gap: "lg",
           })}
         >
@@ -128,17 +130,28 @@ const PixelEditor = () => {
               backgroundColor: "primary",
               py: "5",
               px: "10",
+              height: "35px",
             })}
           >
             <p
               className={css({
                 color: "white",
+                fontSize: "sm",
               })}
             >
               Share
             </p>
           </button>
-        </div>
+          <img
+            src="https://picsum.photos/200/300"
+            alt="profile-user"
+            className={css({
+              width: "35px",
+              height: "35px",
+              borderRadius: "100px",
+            })}
+          />
+        </section>
       </header>
       <div
         className={css({

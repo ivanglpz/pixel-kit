@@ -30,9 +30,9 @@ export const Tools = () => {
             <div
               key={`separator-$${index}`}
               className={css({
-                backgroundColor: "#292929",
                 height: "32px",
                 width: 1,
+                backgroundColor: "gray.200",
               })}
             />
           );
@@ -40,8 +40,8 @@ export const Tools = () => {
         return (
           <button
             key={`sidebar-methods-key-${item.keyMethod}`}
-            className={css({
-              backgroundGradient: isSelected ? "primary" : "",
+            className={`${css({
+              backgroundColor: isSelected ? "primary" : "",
               borderRadius: "6px",
               width: "30px",
               height: "30px",
@@ -50,7 +50,7 @@ export const Tools = () => {
               alignItems: "center",
               cursor: "pointer",
               position: "relative",
-            })}
+            })} ${isSelected ? "tool-stroke-active" : ""}`}
             onClick={() => {
               setTool(item.keyMethod as IKeyTool);
               setEventStage(item.eventStage as IStageEvents);

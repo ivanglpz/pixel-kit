@@ -62,3 +62,8 @@ body {
 .bar {
   max-height: fit-content;
 }
+.tool-stroke-active {
+  svg {
+    stroke: white;
+  }
+}
