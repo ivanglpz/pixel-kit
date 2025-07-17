@@ -23,17 +23,19 @@ const PixelEditor = () => {
       id="pixel-app"
       className={css({
         backgroundColor: "bg",
-        height: "100%",
+        height: "100dvh",
         width: "100%",
         display: "grid",
-        gridTemplateRows: "50px 1fr",
+        gridTemplateRows: "60px 1fr",
+        overflow: "hidden",
       })}
     >
       <header
         className={css({
-          padding: "md",
+          padding: "lg",
           display: "grid",
           alignItems: "center",
+          justifyContent: "center",
           borderBottomWidth: "1px",
           borderBottomStyle: "solid",
           borderBottomColor: "border", // ← usa el semantic token
@@ -158,7 +160,6 @@ const PixelEditor = () => {
           display: "grid",
           gridTemplateColumns: "240px 1fr 240px",
           backgroundColor: "black",
-          height: "100%",
           width: "100%",
           overflow: "hidden",
         })}
