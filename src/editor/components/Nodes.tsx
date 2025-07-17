@@ -1,6 +1,7 @@
 import { iconsWithTools } from "@/assets";
 import { css } from "@stylespixelkit/css";
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
+import { ChevronDown, ChevronRight } from "lucide-react";
 import { useState } from "react";
 import { CHANGE_SHAPE_NODE_ATOM, NODE_ATOM } from "../states/nodes";
 import { SHAPE_ID_ATOM } from "../states/shape";
@@ -38,11 +39,11 @@ export const Nodes = ({ item }: { item: SHAPES_NODES }) => {
         onDrop={handleDrop}
         className={css({
           color: "text",
-          py: "md",
+          padding: "md",
           fontSize: "sm",
           listStyle: "none",
           display: "grid",
-          gridTemplateColumns: "12px 10px 50px 10px",
+          gridTemplateColumns: "15px 15px 50px 10px",
           flexDirection: "row",
           alignItems: "center",
           gap: "lg",
@@ -67,67 +68,38 @@ export const Nodes = ({ item }: { item: SHAPES_NODES }) => {
             }}
             className={css({
               marginLeft: "auto",
-              backgroundColor: "transparent",
               border: "none",
               color: "white",
               cursor: "pointer",
               fontSize: "sm",
+              _hover: {
+                backgroundColor: "primary",
+              },
             })}
           >
             {isExpanded ? (
-              <svg
-                width="20"
-                height="18"
-                viewBox="0 0 20 18"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  fillRule="evenodd"
-                  clipRule="evenodd"
-                  d="M9.42653 12.3894L3.76953 6.73236L5.18353 5.31836L10.1335 10.2684L15.0835 5.31836L16.4975 6.73236L10.8405 12.3894C10.653 12.5768 10.3987 12.6821 10.1335 12.6821C9.86837 12.6821 9.61406 12.5768 9.42653 12.3894Z"
-                  fill="white"
-                />
-              </svg>
+              <ChevronDown size={18} />
             ) : (
-              <svg
-                width="19"
-                height="20"
-                viewBox="0 0 19 20"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  fillRule="evenodd"
-                  clipRule="evenodd"
-                  d="M12.8894 10.7063L7.23236 16.3633L5.81836 14.9493L10.7684 9.99928L5.81836 5.04928L7.23236 3.63528L12.8894 9.29228C13.0768 9.47981 13.1821 9.73412 13.1821 9.99928C13.1821 10.2644 13.0768 10.5188 12.8894 10.7063Z"
-                  fill="white"
-                />
-              </svg>
+              <ChevronRight size={18} />
             )}
-
-            {/* {isExpanded ? "➖" : "➕"} */}
           </button>
         ) : (
           <div></div>
         )}
         {iconsWithTools[value.tool]}
 
-        <p>{value.tool}</p>
-        <div
+        <p
           className={css({
-            backgroundGradient:
-              value.id === shapeId ? "primary" : "transparent",
-            width: "100%",
-            height: "10px",
-            borderRadius: "lg",
+            textTransform: "capitalize",
           })}
-        ></div>
+        >
+          {value.tool?.toLowerCase()}
+        </p>
       </li>
       {childrens?.length > 0 && isExpanded && (
         <ul
           className={css({
-            marginLeft: "15px",
+            marginLeft: "25px",
             display: "flex",
             flexDirection: "column",
             gap: "md",

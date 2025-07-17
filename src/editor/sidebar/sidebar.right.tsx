@@ -15,18 +15,12 @@ const SidebarRight: FC = () => {
   return (
     <aside
       className={css({
-        zIndex: 9,
-        width: "100%",
-        display: "flex",
-        flexDirection: "column",
+        padding: "lg",
         backgroundColor: "bg",
-        gap: "md",
+        borderLeftWidth: "1px",
+        borderLeftStyle: "solid",
+        borderLeftColor: "border", // ← usa el semantic token
         overflow: "hidden",
-        overflowX: "hidden",
-        overflowY: "scroll",
-        padding: "md",
-        borderLeft: "1px solid gray",
-        height: "100%",
       })}
     >
       <ChangeEnv />
