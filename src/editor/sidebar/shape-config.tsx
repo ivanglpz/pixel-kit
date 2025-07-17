@@ -8,6 +8,7 @@ import { Section } from "@/editor/components/section";
 import { IShape } from "@/editor/shapes/type.shape";
 import { css } from "@stylespixelkit/css";
 import { useAtomValue, useSetAtom } from "jotai";
+import { LineCap, LineJoin } from "konva/lib/Shape";
 import { ChangeEvent, useRef } from "react";
 import { SHAPE_SELECTED_ATOM, SHAPE_UPDATE_ATOM } from "../states/shape";
 import { DELETE_SHAPE_ATOM } from "../states/shapes";
@@ -182,7 +183,7 @@ export const LayoutShapeConfig = (props: Props) => {
             value={lineJoin ?? "round"}
             onChange={(e) => {
               shapeUpdate({
-                lineJoin: e,
+                lineJoin: e as LineJoin,
               });
               // onChange("lineJoin", e)
             }}
@@ -210,7 +211,7 @@ export const LayoutShapeConfig = (props: Props) => {
             value={lineCap ?? "round"}
             onChange={(e) => {
               shapeUpdate({
-                lineCap: e,
+                lineCap: e as LineCap,
               });
               // onChange("lineCap", e)
             }}
@@ -239,7 +240,7 @@ export const LayoutShapeConfig = (props: Props) => {
             value={fontWeight ?? "normal"}
             onChange={(e) => {
               shapeUpdate({
-                fontWeight: e,
+                fontWeight: e as IShape["fontWeight"],
               });
               // onChange("fontWeight", e)
             }}

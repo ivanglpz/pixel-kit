@@ -45,7 +45,7 @@ const useEventStage = () => {
         setEventStage("CREATING");
         const { x, y } = stageAbsolutePosition(event);
         const createStartElement = shapeStart({
-          tool,
+          tool: tool as IShape["tool"],
           x,
           y,
           isWritingNow: false,
@@ -57,7 +57,7 @@ const useEventStage = () => {
 
         const { x, y } = stageAbsolutePosition(event);
         const createStartElement = shapeStart({
-          tool,
+          tool: tool as IShape["tool"],
           x: 0,
           y: 0,
           ...state,
@@ -74,7 +74,7 @@ const useEventStage = () => {
         const x = XStage ?? 0;
         const y = YStage ?? 0;
         const createStartElement = shapeStart({
-          tool,
+          tool: tool as IShape["tool"],
           x: 0,
           y: 0,
           ...state,
@@ -223,7 +223,7 @@ const useEventStage = () => {
               tool: "IMAGE",
               x: 0,
               y: 0,
-              image: data?.target?.result,
+              src: data?.target?.result,
               width: image.width,
               height: image.height,
             });
@@ -268,7 +268,7 @@ const useEventStage = () => {
             tool: "IMAGE",
             x: 0,
             y: 0,
-            image: canvas?.toDataURL(),
+            src: canvas?.toDataURL(),
             width: img.width,
             height: img.height,
           });
