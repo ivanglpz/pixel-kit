@@ -22,96 +22,109 @@ export const SidebarLeft: FC = () => {
     >
       <Segmentation>
         <Segmentation.Item id="1" title="Layers">
-          <section
+          <div
             className={css({
-              paddingBottom: "lg",
+              display: "grid",
+              gridTemplateRows: "240px 1px 1fr",
+              overflow: "hidden",
+              height: "100%",
+              gap: "lg",
             })}
           >
-            <div
+            <section
               className={css({
                 display: "flex",
-                flexDirection: "row",
-                gap: "sm",
-                alignItems: "center",
-                justifyContent: "space-between",
+                flexDirection: "column",
               })}
             >
-              <p
-                className={css({
-                  fontSize: "md",
-                  fontWeight: 600,
-                })}
-              >
-                Pages
-              </p>
-              <button
+              <div
                 className={css({
                   display: "flex",
                   flexDirection: "row",
                   gap: "sm",
                   alignItems: "center",
+                  justifyContent: "space-between",
+                  paddingBottom: "lg",
                 })}
               >
-                <Plus size={14} />
                 <p
                   className={css({
-                    fontSize: "sm",
+                    fontSize: "md",
+                    fontWeight: 600,
                   })}
                 >
-                  Add
+                  Pages
                 </p>
-              </button>
-            </div>
-            <ul
-              className={css({
-                paddingTop: "md",
-                paddingLeft: "lg",
-              })}
-            >
-              {Array.from({ length: 5 })?.map((e, index) => {
-                return (
-                  <li
-                    key={`page-${index}`}
+                <button
+                  className={css({
+                    display: "flex",
+                    flexDirection: "row",
+                    gap: "sm",
+                    alignItems: "center",
+                  })}
+                >
+                  <Plus size={14} />
+                  <p
                     className={css({
-                      py: "md",
+                      fontSize: "sm",
                     })}
                   >
-                    <p
+                    Add
+                  </p>
+                </button>
+              </div>
+              <ul
+                className={css({
+                  paddingLeft: "lg",
+                  overflowY: "scroll",
+                  height: "100%",
+                })}
+              >
+                {Array.from({ length: 25 })?.map((e, index) => {
+                  return (
+                    <li
+                      key={`page-${index}`}
                       className={css({
-                        fontSize: "sm",
+                        py: "md",
                       })}
                     >
-                      Components {index + 1}
-                    </p>
-                  </li>
+                      <p
+                        className={css({
+                          fontSize: "sm",
+                        })}
+                      >
+                        My page {index + 1}
+                      </p>
+                    </li>
+                  );
+                })}
+              </ul>
+            </section>
+            <div
+              className={css({
+                backgroundColor: "gray.500",
+                width: "100%",
+                height: 1,
+                // paddingBottom: "lg",
+              })}
+            ></div>
+            <ul
+              className={css({
+                width: "100%",
+                display: "flex",
+                flexDirection: "column",
+                gap: "md",
+                overflowY: "scroll",
+                borderRight: "1px solid gray",
+              })}
+            >
+              {SHAPES?.map((e) => {
+                return (
+                  <Nodes key={`main-nodes-${e?.id}-${e?.tool}`} item={e} />
                 );
               })}
             </ul>
-          </section>
-          <div
-            className={css({
-              backgroundColor: "gray.500",
-              width: "100%",
-              height: 1,
-              marginBottom: "lg",
-            })}
-          ></div>
-          <ul
-            className={css({
-              zIndex: 9,
-              width: "100%",
-              display: "flex",
-              flexDirection: "column",
-              gap: "md",
-              // overflowX: "scroll",
-              overflowY: "scroll",
-              borderRight: "1px solid gray",
-            })}
-          >
-            {SHAPES?.map((e) => {
-              return <Nodes key={`main-nodes-${e?.id}-${e?.tool}`} item={e} />;
-            })}
-          </ul>
+          </div>
         </Segmentation.Item>
         <Segmentation.Item id="2" title="Assets">
           <p>Contenido 2</p>
