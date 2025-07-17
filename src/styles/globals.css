@@ -20,15 +20,12 @@ body {
   padding: 0;
   width: 100%;
   height: 100%;
-  box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  display: flex;
   cursor: url("/cursors/default.png"), auto;
-  box-sizing: border-box;
   font-family: "Plus Jakarta Sans", sans-serif;
   max-width: 100%;
-  overscroll-behavior: contain; /* o 'none' */
+  overscroll-behavior: contain;
 }
 
 .CursorPointer {
@@ -37,31 +34,40 @@ body {
 .CursorDefault {
   cursor: url("/cursors/default.png"), auto;
 }
-* {
-  ::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
-  }
-  ::-webkit-scrollbar-track {
-    box-shadow: inset 0 0 5px rgb(71, 71, 71);
-    background-color: rgb(71, 71, 71);
-    border-radius: 10px;
-  }
-  ::-webkit-scrollbar-thumb {
-    background: #ffffff67;
-    border-radius: 99px;
-  }
-  ::-webkit-scrollbar-thumb:hover {
-    width: 6px;
-    height: 6px;
-    background: black;
-    box-shadow: 0 0 2px 1px rgba(0, 0, 0, 0.2);
-  }
+
+/* ✅ Scroll oculto por defecto */
+*::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  border-right: 0px;
+}
+
+/* ✅ Aparece solo cuando pones el cursor encima */
+*:hover::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+*::-webkit-scrollbar-track {
+  box-shadow: inset 0 0 5px rgb(71, 71, 71);
+  background-color: rgb(71, 71, 71);
+  border-radius: 10px;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: #ffffff67;
+  border-radius: 99px;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: black;
+  box-shadow: 0 0 2px 1px rgba(0, 0, 0, 0.2);
 }
 
 .bar {
   max-height: fit-content;
 }
+
 .tool-stroke-active {
   svg {
     stroke: white;
