@@ -75,7 +75,6 @@ export const SidebarLeft: FC = () => {
               </div>
               <ul
                 className={css({
-                  paddingLeft: "lg",
                   overflowY: "scroll",
                   height: "100%",
                 })}
@@ -85,7 +84,14 @@ export const SidebarLeft: FC = () => {
                     <li
                       key={`page-${index}`}
                       className={css({
+                        padding: "lg",
                         py: "md",
+                        _hover: {
+                          backgroundColor: "gray.100",
+                          _dark: {
+                            backgroundColor: "gray.800",
+                          },
+                        },
                       })}
                     >
                       <p
