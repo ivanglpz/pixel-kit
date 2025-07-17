@@ -40,7 +40,7 @@ body {
 
 /* ✅ Scroll siempre con espacio, pero invisible por defecto */
 *::-webkit-scrollbar {
-  width: 6px;
+  width: 4px;
   height: 6px;
   background: transparent; /* invisible pero mantiene espacio */
 }
@@ -55,7 +55,7 @@ body {
 }
 
 *:hover::-webkit-scrollbar-thumb {
-  background: #ffffff67; /* aparece al hover */
+  background: var(--bar); /* aparece al hover */
 }
 
 *::-webkit-scrollbar-thumb:hover {
@@ -77,10 +77,12 @@ body {
 :root {
   --bg: #ffffff;
   --text: #000000;
+  --bar: #121212;
 }
 @media (prefers-color-scheme: dark) {
   :root {
     --bg: #121212;
     --text: #f5f5f5;
+    --bar: #f5f5f5;
   }
 }
