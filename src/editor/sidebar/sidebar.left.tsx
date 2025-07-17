@@ -115,7 +115,6 @@ export const SidebarLeft: FC = () => {
                 flexDirection: "column",
                 gap: "md",
                 overflowY: "scroll",
-                borderRight: "1px solid gray",
               })}
             >
               {SHAPES?.map((e) => {
