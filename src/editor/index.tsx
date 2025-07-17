@@ -26,12 +26,12 @@ const PixelEditor = () => {
         height: "100%",
         width: "100%",
         display: "grid",
-        gridTemplateRows: "60px 1fr",
+        gridTemplateRows: "50px 1fr",
       })}
     >
       <header
         className={css({
-          padding: "lg",
+          padding: "md",
           display: "grid",
           alignItems: "center",
           borderBottomWidth: "1px",
