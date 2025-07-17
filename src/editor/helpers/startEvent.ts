@@ -1,94 +1,41 @@
 import { image_stock } from "@/assets/image_stock";
 import { IShape } from "@/editor/shapes/type.shape";
-import { IKeyMethods, IKeyTool } from "@/editor/states/tool";
-import { LineCap, LineJoin } from "konva/lib/Shape";
 import { v4 as uuidv4 } from "uuid";
-
-type ShapeStartProps = {
-  x: number;
-  y: number;
-  tool: IKeyTool;
-  text?: string;
-  image?: string;
-  height?: number;
-  width?: number;
-  points?: number[];
-  stroke?: string;
-  strokeWidth?: number;
-  lineCap?: LineCap;
-  lineJoin?: LineJoin;
-  dash?: number;
-  dashEnable?: boolean;
-  shadowColor?: string;
-  shadowOffsetX?: number;
-  shadowOffsetY?: number;
-  shadowBlur?: number;
-  shadowEnabled?: boolean;
-  shadowOpacity?: number;
-  closed?: boolean;
-  isWritingNow?: boolean;
-  bezier?: boolean;
-};
 
 const thickness = 5;
 
-export const shapeStart = (props: ShapeStartProps): IShape => {
-  const {
-    tool,
-    x,
-    y,
-    image,
-    height,
-    text,
-    width,
-    points,
-    stroke,
-    strokeWidth,
-    lineCap,
-    lineJoin,
-    dash,
-    dashEnable,
-    shadowBlur,
-    shadowColor,
-    shadowEnabled,
-    shadowOffsetX,
-    shadowOffsetY,
-    shadowOpacity,
-    closed,
-    isWritingNow,
-    bezier,
-  } = props;
+export const shapeStart = (props: Partial<IShape>): IShape => {
   return {
     id: uuidv4(),
-    x,
-    y,
+    x: 0,
+    y: 0,
+    tool: "BOX",
     isBlocked: false,
-    tool: tool as IKeyMethods,
-    isWritingNow: isWritingNow ?? true,
+    isWritingNow: false,
     fillEnabled: true,
     strokeEnabled: true,
     visible: true,
     rotate: 0,
-    height: height ?? 100,
-    width: width ?? 100,
-    stroke: stroke ?? "#ffffff",
-    points: points ?? [],
-    strokeWidth: strokeWidth ?? thickness,
+    height: 100,
+    width: 100,
+    stroke: "#ffffff",
+    points: [],
+    strokeWidth: thickness,
     backgroundColor: "#ffffff",
-    lineCap: lineCap ?? "round",
-    lineJoin: lineJoin ?? "round",
-    shadowBlur: shadowBlur ?? 0,
-    shadowColor: shadowColor ?? "#000",
-    shadowOffsetY: shadowOffsetY ?? thickness,
-    shadowOffsetX: shadowOffsetX ?? thickness,
-    shadowEnabled: tool === "IMAGE" ? false : (shadowEnabled ?? true),
-    shadowOpacity: shadowOpacity ?? thickness,
+    lineCap: "round",
+    lineJoin: "round",
+    shadowBlur: 0,
+    shadowColor: "#000",
+    shadowOffsetY: thickness,
+    shadowOffsetX: thickness,
+    shadowEnabled: false,
+    shadowOpacity: thickness,
     isAllBorderRadius: false,
     borderRadius: 0,
     borderRadiusBottomLeft: 0,
     borderRadiusBottomRight: 0,
-    dash: dash ?? thickness,
-    dashEnabled: dashEnable ?? true,
+    dash: thickness,
+    dashEnabled: false,
     borderRadiusTopLeft: 0,
     borderRadiusTopRight: 0,
     closed: closed ?? false,
@@ -100,8 +47,9 @@ export const shapeStart = (props: ShapeStartProps): IShape => {
     fontFamily: "Roboto",
     fontSize: 24,
     resolution: "landscape",
-    src: image ?? image_stock,
+    src: image_stock,
     text: "",
-    bezier: bezier ?? false,
+    bezier: false,
+    ...props,
   };
 };
