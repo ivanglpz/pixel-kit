@@ -38,9 +38,7 @@ export const Nodes = ({ item }: { item: SHAPES_NODES }) => {
         onDrop={handleDrop}
         className={css({
           color: "text",
-          padding: "md",
-          borderTopRightRadius: "md",
-          borderBottomRightRadius: "md",
+          py: "md",
           fontSize: "sm",
           listStyle: "none",
           display: "grid",
@@ -49,7 +47,10 @@ export const Nodes = ({ item }: { item: SHAPES_NODES }) => {
           alignItems: "center",
           gap: "lg",
           _hover: {
-            backgroundColor: "primary",
+            backgroundColor: "gray.100",
+            _dark: {
+              backgroundColor: "gray.800",
+            },
           },
           cursor: "pointer",
           width: "100%", // ← importante para que crezca según los hijos
@@ -130,7 +131,6 @@ export const Nodes = ({ item }: { item: SHAPES_NODES }) => {
             display: "flex",
             flexDirection: "column",
             gap: "md",
-            borderLeft: "1px solid #212121",
             width: "max-content", // ← importante para que crezca según los hijos
           })}
         >
