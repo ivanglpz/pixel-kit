@@ -84,8 +84,7 @@ export const SidebarLeft: FC = () => {
                     <li
                       key={`page-${index}`}
                       className={css({
-                        padding: "lg",
-                        py: "md",
+                        padding: "md",
                         _hover: {
                           backgroundColor: "gray.100",
                           _dark: {
