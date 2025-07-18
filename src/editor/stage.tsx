@@ -1,13 +1,15 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { Valid } from "@/components/valid";
 import { css } from "@stylespixelkit/css";
-import { useAtom, useSetAtom } from "jotai";
+import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import Konva from "konva";
 import { KonvaEventObject } from "konva/lib/Node";
 import { FC, ReactNode, useEffect, useRef, useState } from "react";
 import { Stage } from "react-konva";
-import { useCanvas, useEventStage, useTool } from "./hooks";
+import { useEventStage, useTool } from "./hooks";
+import { useConfiguration } from "./hooks/useConfiguration";
 import { useReference } from "./hooks/useReference";
+import STAGE_CANVAS_BACKGROUND from "./states/canvas";
 import { STAGE_DIMENSION_ATOM } from "./states/dimension";
 import { SHAPE_ID_ATOM } from "./states/shape";
 
@@ -21,7 +23,10 @@ const PxStage: FC<Props> = ({ children }) => {
   const stageRef = useRef<Konva.Stage>(null);
   const [show, setShow] = useState(true);
 
-  const { config } = useCanvas();
+  const canvas = useAtomValue(STAGE_CANVAS_BACKGROUND);
+
+  const { config } = useConfiguration();
+
   const setShapeId = useSetAtom(SHAPE_ID_ATOM);
   const { handleMouseDown, handleMouseUp, handleMouseMove } = useEventStage();
   const { tool, setTool } = useTool();
@@ -107,7 +112,7 @@ const PxStage: FC<Props> = ({ children }) => {
         maxWidth: "100%",
       })}`}
       style={{
-        backgroundColor: config?.backgroundColor,
+        backgroundColor: canvas?.backgroundColor,
       }}
     >
       <Valid isValid={show}>

@@ -45,7 +45,8 @@ const ShapeBox = memo(({ item }: IShapeWithEvents) => {
   const trRef = useRef<Konva.Transformer>();
   const stageDimensions = useAtomValue(STAGE_DIMENSION_ATOM);
   const [shapeId, setShapeId] = useAtom(SHAPE_ID_ATOM);
-  const isSelected = shapeId ? shapeId === box?.id : false;
+  const isSelected = shapeId === box?.id;
+
   useEffect(() => {
     if (isSelected) {
       if (trRef.current && shapeRef.current) {
