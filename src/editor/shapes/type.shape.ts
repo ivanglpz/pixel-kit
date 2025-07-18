@@ -97,6 +97,8 @@ export type IShape = {
   shadowEnabled?: boolean;
   dash: number;
   backgroundColor?: string;
+  align: "left" | "center" | "right" | "justify";
+  verticalAlign: "top" | "middle" | "bottom";
   fontSize?: number;
   fontStyle?: string;
   fontFamily?: string;
