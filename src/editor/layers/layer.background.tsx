@@ -5,18 +5,12 @@ import { STAGE_DIMENSION_ATOM } from "../states/dimension";
 
 export const LayerBackground = () => {
   const { height, width } = useAtomValue(STAGE_DIMENSION_ATOM);
-  const config = useAtomValue(STAGE_CANVAS_BACKGROUND);
+  const background = useAtomValue(STAGE_CANVAS_BACKGROUND);
 
   return (
     <>
       <Layer id="layer-background-color">
-        <Rect
-          width={width}
-          height={height}
-          x={0}
-          y={0}
-          fill={config.backgroundColor}
-        />
+        <Rect width={width} height={height} x={0} y={0} fill={background} />
       </Layer>
     </>
   );
