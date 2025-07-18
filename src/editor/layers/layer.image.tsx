@@ -14,6 +14,7 @@ export const LayerImage = () => {
   const { height, width } = useAtomValue(STAGE_DIMENSION_ATOM);
 
   const dimension = calculateDimension(width, height, img?.width, img?.height);
+
   if (!img?.base64) return null;
 
   return (
@@ -36,7 +37,7 @@ export const LayerImage = () => {
             shadowEnabled: false,
             dashEnabled: false,
             bezier: false,
-          }),
+          } as IShape),
           tool: "IMAGE",
         }}
       />
