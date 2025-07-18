@@ -40,7 +40,7 @@ const PxStage: FC<Props> = ({ children }) => {
         ref: stageRef,
       });
     }
-  }, [height, width, stageRef]);
+  }, [height, width, stageRef, config.expand_stage]);
 
   const handleClear = (e: KonvaEventObject<MouseEvent>) => {
     if (["DRAW", "LINE"].includes(tool)) return;
@@ -56,36 +56,33 @@ const PxStage: FC<Props> = ({ children }) => {
     }
   };
 
-  useEffect(() => {
-    const timeout = requestAnimationFrame(() => {
-      if (containerRef.current) {
-        const { width, height } = containerRef.current.getBoundingClientRect();
-        setDimension({ width, height });
-      }
+  const updateSize = () => {
+    if (!containerRef.current) return;
+
+    setShow(false); // 🔄 Oculta el Stage mientras actualiza
+
+    const { width, height } = containerRef.current.getBoundingClientRect();
+
+    if (!config.expand_stage) {
+      setDimension({ width, height });
+    }
+    if (config.expand_stage && config.expand_stage_resolution) {
+      setDimension(config.expand_stage_resolution);
+    }
+
+    requestAnimationFrame(() => {
+      setShow(true);
     });
+  };
+
+  useEffect(() => {
+    const timeout = requestAnimationFrame(updateSize);
 
     return () => cancelAnimationFrame(timeout);
   }, []);
 
   useEffect(() => {
     if (!containerRef.current) return;
-
-    const updateSize = () => {
-      if (!containerRef.current) return;
-
-      if (config.expand_stage && config.expand_stage_resolution) {
-        setDimension(config.expand_stage_resolution);
-        return;
-      }
-      setShow(false); // 🔄 Oculta el Stage mientras actualiza
-
-      const { width, height } = containerRef.current.getBoundingClientRect();
-      setDimension({ width, height });
-
-      requestAnimationFrame(() => {
-        setShow(true);
-      });
-    };
 
     const resizeObserver = new ResizeObserver(updateSize);
     resizeObserver.observe(containerRef.current);
