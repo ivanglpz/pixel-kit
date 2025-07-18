@@ -7,11 +7,75 @@ export type WithInitialValue<Value> = {
   init: Value;
 };
 
+export type Fill = {
+  color: string;
+  opacity?: number;
+  visible: boolean;
+};
+
+export type Stroke = {
+  color: string;
+  width: number;
+  position: "inside" | "outside";
+  opacity: number;
+  style: "solid" | "dashed";
+  width_profile: "solid";
+  join: "normal";
+  frequency: number;
+  wiggle: number;
+  smoothen: number;
+  borderPlacement: "all";
+  visible: boolean;
+};
+
+export type Effect = {
+  type: "shadow" | "blur" | "glow";
+  visible: boolean;
+  position: {
+    x: number;
+    y: number;
+    blur: number;
+    spread: number;
+    color: string;
+    opacity: number;
+  };
+  blur: number;
+  progressive: {
+    start: number;
+    end: number;
+  };
+  mono: {
+    noiseSize: number;
+    density: number;
+    color: string;
+    opacity: number;
+  };
+  duo: {
+    noiseSize: number;
+    density: number;
+    colorStart: string;
+    colorEnd: string;
+    opacity: number;
+  };
+  multi: {
+    noiseSize: number;
+    density: number;
+    opacity: number;
+  };
+  value: number;
+};
+
 export type IShape = {
   id: string;
   tool: IKeyMethods;
   x: number;
   y: number;
+  parentId: string | null;
+  rotation: number;
+  fills?: Fill[];
+  strokes?: Stroke[];
+  effects?: Effect[];
+  bordersRadius: number[];
   width?: number;
   height?: number;
   text?: string;

@@ -9,6 +9,8 @@ import SHAPES_ATOM, { CLEAR_SHAPES_ATOM } from "../states/shapes";
 export const SidebarLeft: FC = () => {
   const SHAPES = useAtomValue(SHAPES_ATOM);
   const CLEAR = useSetAtom(CLEAR_SHAPES_ATOM);
+  console.log(SHAPES, "SHAPES");
+
   return (
     <aside
       className={css({
