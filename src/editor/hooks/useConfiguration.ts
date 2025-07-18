@@ -43,7 +43,7 @@ const configs: { [key in Keys]: Config } = {
     expand_stage: true,
     expand_stage_resolution: {
       width: 3840,
-      height: 3840,
+      height: 2160,
     },
     tools: [
       {
