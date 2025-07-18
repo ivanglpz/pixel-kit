@@ -35,7 +35,7 @@ type Keys = "EDIT_IMAGE" | "FREE_DRAW" | "DESIGN_MODE";
 const configs: { [key in Keys]: Config } = {
   DESIGN_MODE: {
     show_layer_image: false,
-    export_mode: "FREE_DRAW",
+    export_mode: "DESIGN_MODE",
     show_files_browser: false,
     background_color: "#FFFFFF",
     show_canvas_config: true,

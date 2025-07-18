@@ -13,7 +13,7 @@ import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { Group } from "konva/lib/Group";
 import { Stage } from "konva/lib/Stage";
 import Link from "next/link";
-import { RefObject, useState } from "react";
+import { RefObject, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
 import { toast } from "sonner";
 import { v4 as uuidv4 } from "uuid";
@@ -86,6 +86,22 @@ export const ExportStage = () => {
     });
 
     setloading(true);
+    if (config?.export_mode === "DESIGN_MODE") {
+      destroyTransforms(ref);
+      await new Promise(() => {
+        setTimeout(() => {
+          const image = ref?.current?.toDataURL({
+            quality: 1,
+            pixelRatio: formats[format as keyof typeof formats],
+            width,
+            height,
+          });
+          if (!image) return;
+          downloadBase64Image(image);
+          setloading(false);
+        }, 100);
+      });
+    }
     if (config?.export_mode === "FREE_DRAW") {
       destroyTransforms(ref);
       await new Promise(() => {
@@ -133,7 +149,16 @@ export const ExportStage = () => {
   };
 
   const Container = document.getElementById("pixel-app");
-
+  const imagetest = useMemo(
+    () =>
+      ref?.current?.toDataURL({
+        quality: 1,
+        pixelRatio: formats[format as keyof typeof formats],
+        width,
+        height,
+      }),
+    [ref?.current, width, height]
+  );
   return (
     <>
       <Valid isValid={showExport}>
@@ -296,6 +321,7 @@ export const ExportStage = () => {
             type="success"
           ></Button>
         </div>
+        <img src={imagetest} alt="test" />
       </Section>
     </>
   );
