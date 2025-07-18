@@ -5,11 +5,10 @@ export type IStageConfig = {
   graphicMapped?: boolean;
 };
 
-const StageConfigAtom = atomWithStorage<IStageConfig>(
+const STAGE_CANVAS_BACKGROUND = atomWithStorage<IStageConfig>(
   "pixel-kit-canvas-config",
   {
     backgroundColor: "#000000",
-    graphicMapped: true,
   }
 );
-export default StageConfigAtom;
+export default STAGE_CANVAS_BACKGROUND;

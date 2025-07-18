@@ -1,11 +1,11 @@
 import { useAtomValue } from "jotai";
 import { Layer, Rect } from "react-konva";
-import { useCanvas } from "../hooks";
+import STAGE_CANVAS_BACKGROUND from "../states/canvas";
 import { STAGE_DIMENSION_ATOM } from "../states/dimension";
 
 export const LayerBackground = () => {
   const { height, width } = useAtomValue(STAGE_DIMENSION_ATOM);
-  const { config } = useCanvas();
+  const config = useAtomValue(STAGE_CANVAS_BACKGROUND);
 
   return (
     <>

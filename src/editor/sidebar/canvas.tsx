@@ -1,15 +1,16 @@
 import PixelKitInputColor from "@/editor/components/input-color";
-import { useCanvas } from "@/editor/hooks";
+import { useAtom } from "jotai";
 import { FC } from "react";
+import STAGE_CANVAS_BACKGROUND from "../states/canvas";
 
 const StageConfig: FC = () => {
-  const { config, handleConfig } = useCanvas();
+  const [config, setConfig] = useAtom(STAGE_CANVAS_BACKGROUND);
 
   return (
     <PixelKitInputColor
       color={config?.backgroundColor}
       onChangeColor={(backgroundColor) =>
-        handleConfig({
+        setConfig({
           backgroundColor,
         })
       }
