@@ -40,9 +40,9 @@ body {
 
 /* ✅ Scroll siempre con espacio, pero invisible por defecto */
 *::-webkit-scrollbar {
-  width: 4px;
-  height: 6px;
-  background: transparent; /* invisible pero mantiene espacio */
+  width: 3.7px;
+  height: 3.7px;
+  background: var(--bg); /* invisible pero mantiene espacio */
 }
 
 *::-webkit-scrollbar-track {
@@ -59,7 +59,7 @@ body {
 }
 
 *::-webkit-scrollbar-thumb:hover {
-  background: black;
+  background: var(--bg);
   box-shadow: 0 0 2px 1px rgba(0, 0, 0, 0.2);
 }
 

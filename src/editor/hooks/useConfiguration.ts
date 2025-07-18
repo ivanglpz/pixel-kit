@@ -35,7 +35,7 @@ type Keys = "EDIT_IMAGE" | "FREE_DRAW" | "DESIGN_MODE";
 const configs: { [key in Keys]: Config } = {
   DESIGN_MODE: {
     show_layer_image: false,
-    export_mode: "DESIGN_MODE",
+    export_mode: "FREE_DRAW",
     show_files_browser: false,
     background_color: "#FFFFFF",
     show_canvas_config: true,
@@ -184,8 +184,8 @@ const configs: { [key in Keys]: Config } = {
     show_clip_config: false,
     expand_stage: true,
     expand_stage_resolution: {
-      width: 4840,
-      height: 4840,
+      width: 3840,
+      height: 3840,
     },
     tools: [
       {
