@@ -77,12 +77,11 @@ body {
 :root {
   --bg: #ffffff;
   --text: #000000;
-  --bar: #121212;
+  --bar: #4b5efc;
 }
 @media (prefers-color-scheme: dark) {
   :root {
     --bg: #121212;
     --text: #f5f5f5;
-    --bar: #f5f5f5;
   }
 }

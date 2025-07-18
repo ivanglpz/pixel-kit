@@ -268,10 +268,10 @@ export const useConfiguration = (props?: Props) => {
     const tconfig = configs[type as Keys];
     setConfig(tconfig);
     SET_RESET();
-    setBackground({
-      backgroundColor:
-        tconfig?.background_color ?? configs?.DESIGN_MODE?.background_color,
-    });
+    // setBackground({
+    //   backgroundColor:
+    //     tconfig?.background_color ?? configs?.DESIGN_MODE?.background_color,
+    // });
   };
   useEffect(() => {
     handleChangeConfig();
