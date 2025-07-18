@@ -21,6 +21,9 @@ const SidebarRight: FC = () => {
         borderLeftStyle: "solid",
         borderLeftColor: "border", // ← usa el semantic token
         overflow: "hidden",
+        gap: "lg",
+        display: "flex",
+        flexDirection: "column",
       })}
     >
       <ChangeEnv />

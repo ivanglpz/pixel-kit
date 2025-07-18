@@ -1,20 +1,17 @@
-import { css } from "@stylespixelkit/css";
-import { InputSelect } from "./input-select";
 import {
   optionsEnviroments,
   useConfiguration,
 } from "../hooks/useConfiguration";
-import { Section } from "./section";
+import { InputSelect } from "./input-select";
 
 export const ChangeEnv = () => {
   const { config, change } = useConfiguration();
   return (
-    <Section title="Enviroment">
-      <InputSelect
-        onChange={(value) => change(value)}
-        options={optionsEnviroments}
-        value={config?.exportMode ?? "EDIT_IMAGE"}
-      />
-    </Section>
+    <InputSelect
+      labelText="Enviroment"
+      onChange={(value) => change(value)}
+      options={optionsEnviroments}
+      value={config?.exportMode ?? "EDIT_IMAGE"}
+    />
   );
 };
