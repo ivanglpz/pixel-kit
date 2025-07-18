@@ -89,12 +89,10 @@ const PxStage: FC<Props> = ({ children }) => {
 
   // ✅ Definimos el tamaño final del Stage
   // ✅ Versión 4K
-  const stageWidth = config.expand_stage
-    ? config.expand_stage_resolution?.width
-    : width; // 4K horizontal
-  const stageHeight = config.expand_stage
-    ? config.expand_stage_resolution?.height
-    : height; // 4K vertical
+
+  const rstage = config.expand_stage_resolution;
+  const stageWidth = config.expand_stage ? rstage?.width : width; // 4K horizontal
+  const stageHeight = config.expand_stage ? rstage?.height : height; // 4K vertical
 
   useEffect(() => {
     if (stageRef?.current) {

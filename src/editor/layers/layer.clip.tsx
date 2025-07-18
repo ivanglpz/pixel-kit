@@ -113,7 +113,7 @@ export const LayerClip = () => {
               shadowEnabled: false,
               dashEnabled: false,
               bezier: false,
-            }),
+            } as IShape),
             tool: "IMAGE",
           }}
         />
