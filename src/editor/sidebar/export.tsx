@@ -38,6 +38,35 @@ function downloadBase64Image(base64String: string) {
   document.body.removeChild(link);
 }
 
+const getBoundingBox = (
+  ref: RefObject<Stage> | RefObject<Group> | undefined
+) => {
+  const childrens = ref?.current?.getStage?.()?.children;
+  if (!childrens) return;
+  const layerShapes = childrens?.find((e) => e?.attrs?.id === "layer-shapes");
+  if (!layerShapes) return;
+
+  let minX = Infinity,
+    minY = Infinity,
+    maxX = -Infinity,
+    maxY = -Infinity;
+
+  layerShapes?.children.forEach((node) => {
+    const box = node.getClientRect({ relativeTo: layerShapes });
+    minX = Math.min(minX, box.x);
+    minY = Math.min(minY, box.y);
+    maxX = Math.max(maxX, box.x + box.width);
+    maxY = Math.max(maxY, box.y + box.height);
+  });
+
+  return {
+    x: minX,
+    y: minY,
+    width: maxX - minX,
+    height: maxY - minY,
+  };
+};
+
 const destroyTransforms = (
   ref: RefObject<Stage> | RefObject<Group> | undefined
 ) => {
@@ -88,6 +117,9 @@ export const ExportStage = () => {
     setloading(true);
     if (config?.export_mode === "DESIGN_MODE") {
       destroyTransforms(ref);
+      const dimension = getBoundingBox(ref);
+      console.log(dimension, "dimension");
+
       await new Promise(() => {
         setTimeout(() => {
           const image = ref?.current?.toDataURL({
@@ -95,6 +127,7 @@ export const ExportStage = () => {
             pixelRatio: formats[format as keyof typeof formats],
             width,
             height,
+            ...dimension,
           });
           if (!image) return;
           downloadBase64Image(image);
