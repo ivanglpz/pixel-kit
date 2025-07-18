@@ -25,32 +25,6 @@ const PxStage: FC<Props> = ({ children }) => {
   const { config } = useConfiguration(); // ✅ Ahora usamos config.expand2K
   const [scale, setScale] = useState(1);
 
-  const handleWheel = (e: Konva.KonvaEventObject<WheelEvent>) => {
-    e.evt.preventDefault();
-    const stage = stageRef.current;
-    if (!stage) return;
-
-    const scaleBy = 1.05;
-    const oldScale = stage.scaleX();
-    const newScale = e.evt.deltaY > 0 ? oldScale / scaleBy : oldScale * scaleBy;
-
-    const pointer = stage.getPointerPosition();
-    if (!pointer) return;
-
-    const mousePointTo = {
-      x: (pointer.x - stage.x()) / oldScale,
-      y: (pointer.y - stage.y()) / oldScale,
-    };
-
-    stage.scale({ x: newScale, y: newScale });
-    stage.position({
-      x: pointer.x - mousePointTo.x * newScale,
-      y: pointer.y - mousePointTo.y * newScale,
-    });
-
-    stage.batchDraw();
-    setScale(newScale);
-  };
   const setShapeId = useSetAtom(SHAPE_ID_ATOM);
   const { handleMouseDown, handleMouseUp, handleMouseMove } = useEventStage();
   const { tool, setTool } = useTool();
@@ -118,8 +92,72 @@ const PxStage: FC<Props> = ({ children }) => {
   // ✅ Versión 4K
 
   const rstage = config.expand_stage_resolution;
-  const stageWidth = config.expand_stage ? rstage?.width : width; // 4K horizontal
-  const stageHeight = config.expand_stage ? rstage?.height : height; // 4K vertical
+  const stageWidth = config.expand_stage ? Number(rstage?.width) : width; // 4K horizontal
+  const stageHeight = config.expand_stage ? Number(rstage?.height) : height; // 4K vertical
+
+  const MAX_SCALE = 5; // Máximo zoom permitido
+  const MIN_SCALE = 1; // Mínimo zoom permitido
+
+  const handleWheel = (e: Konva.KonvaEventObject<WheelEvent>) => {
+    const stage = stageRef.current;
+    if (!stage) return;
+
+    if (e.evt.ctrlKey || e.evt.metaKey) {
+      e.evt.preventDefault();
+
+      const scaleBy = 1.05;
+      const oldScale = stage.scaleX();
+      let newScale = e.evt.deltaY > 0 ? oldScale / scaleBy : oldScale * scaleBy;
+
+      // ✅ Limitar zoom
+      newScale = Math.max(MIN_SCALE, Math.min(MAX_SCALE, newScale));
+
+      // if (newScale < 1) return;
+      const pointer = stage.getPointerPosition();
+      if (!pointer) return;
+
+      const mousePointTo = {
+        x: (pointer.x - stage.x()) / oldScale,
+        y: (pointer.y - stage.y()) / oldScale,
+      };
+
+      stage.scale({ x: newScale, y: newScale });
+
+      // ✅ Nueva posición basada en el puntero
+      let newX = pointer.x - mousePointTo.x * newScale;
+      let newY = pointer.y - mousePointTo.y * newScale;
+
+      // ✅ Medidas escaladas del contenido (Stage real)
+      const scaledWidth = stageWidth * newScale;
+      const scaledHeight = stageHeight * newScale;
+
+      const containerWidth = stage.width(); // Tamaño visible del Stage en el canvas
+      const containerHeight = stage.height();
+
+      // ✅ Limitar horizontalmente
+      if (scaledWidth <= containerWidth) {
+        // Si el contenido es más pequeño que el contenedor, centramos
+        newX = (containerWidth - scaledWidth) / 2;
+      } else {
+        const minX = containerWidth - scaledWidth;
+        const maxX = 0;
+        newX = Math.max(minX, Math.min(maxX, newX));
+      }
+
+      // ✅ Limitar verticalmente
+      if (scaledHeight <= containerHeight) {
+        newY = (containerHeight - scaledHeight) / 2;
+      } else {
+        const minY = containerHeight - scaledHeight;
+        const maxY = 0;
+        newY = Math.max(minY, Math.min(maxY, newY));
+      }
+
+      stage.position({ x: newX, y: newY });
+      stage.batchDraw();
+      setScale(newScale);
+    }
+  };
 
   useEffect(() => {
     if (stageRef?.current) {
