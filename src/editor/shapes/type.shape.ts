@@ -72,6 +72,8 @@ export type IShape = {
   y: number;
   parentId: string | null;
   rotation: number;
+  isLocked: boolean;
+  label: string;
   fills?: Fill[];
   strokes?: Stroke[];
   effects?: Effect[];
