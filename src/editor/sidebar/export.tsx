@@ -86,7 +86,7 @@ export const ExportStage = () => {
     });
 
     setloading(true);
-    if (config?.exportMode === "FREE_DRAW") {
+    if (config?.export_mode === "FREE_DRAW") {
       destroyTransforms(ref);
       await new Promise(() => {
         setTimeout(() => {
@@ -100,7 +100,7 @@ export const ExportStage = () => {
         }, 100);
       });
     }
-    if (config?.exportMode === "EDIT_IMAGE") {
+    if (config?.export_mode === "EDIT_IMAGE") {
       setshowClip(false);
       destroyTransforms(ref);
       // destroyTransforms(ref, 2);
@@ -258,7 +258,7 @@ export const ExportStage = () => {
                       onChange={(e) => setformat(e)}
                       value={format}
                     />
-                    <Valid isValid={config?.exportMode === "EDIT_IMAGE"}>
+                    <Valid isValid={config?.export_mode === "EDIT_IMAGE"}>
                       <InputText
                         labelText="Resolution"
                         value={`${img.width}x${img?.height}`}
@@ -287,7 +287,7 @@ export const ExportStage = () => {
             gap: "md",
           })}
         >
-          <Valid isValid={config?.showFilesBrowser}>
+          <Valid isValid={config?.show_files_browser}>
             <ImageConfiguration />
           </Valid>
           <Button

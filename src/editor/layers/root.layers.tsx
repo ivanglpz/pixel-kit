@@ -8,15 +8,16 @@ import { LayerShapes } from "./layer.shapes";
 
 export const AllLayers = () => {
   const { config } = useConfiguration();
+
   return (
     <>
-      <Valid isValid={config?.showBackgroundColor}>
+      <Valid isValid={config?.show_layer_background}>
         <LayerBackground />
       </Valid>
-      <Valid isValid={config?.showPreviewImage}>
+      <Valid isValid={config?.show_layer_image}>
         <LayerImage />
       </Valid>
-      <Valid isValid={config.showClipImage}>
+      <Valid isValid={config.show_layer_clip}>
         <LayerClip />
       </Valid>
       <LayerShapes />
