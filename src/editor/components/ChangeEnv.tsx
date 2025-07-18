@@ -11,7 +11,7 @@ export const ChangeEnv = () => {
       labelText="Enviroment"
       onChange={(value) => change(value)}
       options={optionsEnviroments}
-      value={config?.exportMode ?? "EDIT_IMAGE"}
+      value={config?.export_mode ?? "EDIT_IMAGE"}
     />
   );
 };

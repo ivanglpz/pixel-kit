@@ -15,7 +15,7 @@ export const LayerBackground = () => {
           height={height}
           x={0}
           y={0}
-          fill={config?.backgroundColor}
+          fill={config.backgroundColor}
         />
       </Layer>
     </>

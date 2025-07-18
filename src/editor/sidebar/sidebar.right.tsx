@@ -28,10 +28,10 @@ const SidebarRight: FC = () => {
     >
       <ChangeEnv />
 
-      <Valid isValid={config?.showCanvasConfig}>
+      <Valid isValid={config?.show_canvas_config}>
         <StageConfig />
       </Valid>
-      <Valid isValid={config?.showClipImageConfig}>
+      <Valid isValid={config?.show_clip_config}>
         <Clip />
       </Valid>
       <Drawing />

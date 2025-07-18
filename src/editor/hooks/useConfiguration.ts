@@ -8,12 +8,12 @@ import { CLEAR_SHAPES_ATOM } from "../states/shapes";
 import { IKeyTool } from "../states/tool";
 
 type Config = {
-  showPreviewImage: boolean;
-  exportMode: "FREE_DRAW" | "EDIT_IMAGE" | "DESIGN_MODE";
-  showFilesBrowser: boolean;
-  backgroundColor: string;
-  showCanvasConfig: boolean;
-  showClipImageConfig: boolean;
+  show_layer_image: boolean;
+  export_mode: "FREE_DRAW" | "EDIT_IMAGE" | "DESIGN_MODE";
+  show_files_browser: boolean;
+  background_color: string;
+  show_canvas_config: boolean;
+  show_clip_config: boolean;
   tools: {
     icon?: JSX.Element;
     keyMethod?: IKeyTool;
@@ -21,22 +21,30 @@ type Config = {
     eventStage?: IStageEvents;
     isSeparation?: boolean;
   }[];
-  showBackgroundColor: boolean;
-  showClipImage: boolean;
-  expand: boolean;
+  show_layer_background: boolean;
+  show_layer_clip: boolean;
+  expand_stage: boolean;
+  expand_stage_resolution?: {
+    width: number;
+    height: number;
+  };
 };
 
 type Keys = "EDIT_IMAGE" | "FREE_DRAW" | "DESIGN_MODE";
 
 const configs: { [key in Keys]: Config } = {
   DESIGN_MODE: {
-    showPreviewImage: true,
-    exportMode: "DESIGN_MODE",
-    showFilesBrowser: true,
-    backgroundColor: "#FFFFFF",
-    showCanvasConfig: true,
-    showClipImageConfig: true,
-    expand: false,
+    show_layer_image: false,
+    export_mode: "DESIGN_MODE",
+    show_files_browser: false,
+    background_color: "#FFFFFF",
+    show_canvas_config: true,
+    show_clip_config: false,
+    expand_stage: true,
+    expand_stage_resolution: {
+      width: 3840,
+      height: 3840,
+    },
     tools: [
       {
         icon: icons.cursor,
@@ -95,17 +103,17 @@ const configs: { [key in Keys]: Config } = {
         eventStage: "CREATE",
       },
     ],
-    showBackgroundColor: false,
-    showClipImage: true,
+    show_layer_background: true,
+    show_layer_clip: false,
   },
   EDIT_IMAGE: {
-    showPreviewImage: true,
-    exportMode: "EDIT_IMAGE",
-    showFilesBrowser: true,
-    backgroundColor: "#FFFFFF",
-    showCanvasConfig: true,
-    showClipImageConfig: true,
-    expand: false,
+    show_layer_image: true,
+    export_mode: "EDIT_IMAGE",
+    show_files_browser: true,
+    background_color: "#FFFFFF",
+    show_canvas_config: true,
+    show_clip_config: true,
+    expand_stage: false,
     tools: [
       {
         icon: icons.cursor,
@@ -164,17 +172,21 @@ const configs: { [key in Keys]: Config } = {
         eventStage: "CREATE",
       },
     ],
-    showBackgroundColor: false,
-    showClipImage: true,
+    show_layer_background: true,
+    show_layer_clip: true,
   },
   FREE_DRAW: {
-    showPreviewImage: false,
-    showFilesBrowser: false,
-    exportMode: "FREE_DRAW",
-    backgroundColor: "#ffffff",
-    showCanvasConfig: true,
-    showClipImageConfig: false,
-    expand: true,
+    show_layer_image: false,
+    show_files_browser: false,
+    export_mode: "FREE_DRAW",
+    background_color: "#ffffff",
+    show_canvas_config: true,
+    show_clip_config: false,
+    expand_stage: true,
+    expand_stage_resolution: {
+      width: 4840,
+      height: 4840,
+    },
     tools: [
       {
         icon: icons.cursor,
@@ -228,8 +240,8 @@ const configs: { [key in Keys]: Config } = {
         eventStage: "CREATE",
       },
     ],
-    showBackgroundColor: true,
-    showClipImage: false,
+    show_layer_background: true,
+    show_layer_clip: false,
   },
 };
 
@@ -258,7 +270,7 @@ export const useConfiguration = (props?: Props) => {
     SET_RESET();
     setBackground({
       backgroundColor:
-        tconfig?.backgroundColor ?? configs?.DESIGN_MODE?.backgroundColor,
+        tconfig?.background_color ?? configs?.DESIGN_MODE?.background_color,
     });
   };
   useEffect(() => {
