@@ -23,7 +23,34 @@ const PxStage: FC<Props> = ({ children }) => {
   const [show, setShow] = useState(true);
 
   const { config } = useConfiguration(); // ✅ Ahora usamos config.expand2K
+  const [scale, setScale] = useState(1);
 
+  const handleWheel = (e: Konva.KonvaEventObject<WheelEvent>) => {
+    e.evt.preventDefault();
+    const stage = stageRef.current;
+    if (!stage) return;
+
+    const scaleBy = 1.05;
+    const oldScale = stage.scaleX();
+    const newScale = e.evt.deltaY > 0 ? oldScale / scaleBy : oldScale * scaleBy;
+
+    const pointer = stage.getPointerPosition();
+    if (!pointer) return;
+
+    const mousePointTo = {
+      x: (pointer.x - stage.x()) / oldScale,
+      y: (pointer.y - stage.y()) / oldScale,
+    };
+
+    stage.scale({ x: newScale, y: newScale });
+    stage.position({
+      x: pointer.x - mousePointTo.x * newScale,
+      y: pointer.y - mousePointTo.y * newScale,
+    });
+
+    stage.batchDraw();
+    setScale(newScale);
+  };
   const setShapeId = useSetAtom(SHAPE_ID_ATOM);
   const { handleMouseDown, handleMouseUp, handleMouseMove } = useEventStage();
   const { tool, setTool } = useTool();
@@ -126,6 +153,7 @@ const PxStage: FC<Props> = ({ children }) => {
           height={stageHeight}
           onMouseDown={handleMouseDown}
           onMousemove={handleMouseMove}
+          onWheel={handleWheel} // 👈 Zoom real en HD
           onMouseup={handleMouseUp}
           onTouchStart={(e) =>
             handleMouseDown(e as unknown as KonvaEventObject<MouseEvent>)
