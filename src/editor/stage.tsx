@@ -33,15 +33,6 @@ const PxStage: FC<Props> = ({ children }) => {
     ref: stageRef,
   });
 
-  useEffect(() => {
-    if (stageRef?.current) {
-      handleSetRef({
-        type: "STAGE",
-        ref: stageRef,
-      });
-    }
-  }, [height, width, stageRef, config.expand_stage]);
-
   const handleClear = (e: KonvaEventObject<MouseEvent>) => {
     if (["DRAW", "LINE"].includes(tool)) return;
 
@@ -105,14 +96,23 @@ const PxStage: FC<Props> = ({ children }) => {
     ? config.expand_stage_resolution?.height
     : height; // 4K vertical
 
+  useEffect(() => {
+    if (stageRef?.current) {
+      handleSetRef({
+        type: "STAGE",
+        ref: stageRef,
+      });
+    }
+  }, [stageHeight, stageWidth, stageRef, config.expand_stage]);
+
   return (
     <main
       ref={containerRef}
       className={`CursorDefault ${css({
         display: "flex",
         flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
+        alignItems: "flex-start",
+        justifyContent: "flex-start",
         maxWidth: "100%",
       })}`}
       style={{

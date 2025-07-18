@@ -111,7 +111,7 @@ const configs: { [key in Keys]: Config } = {
     export_mode: "EDIT_IMAGE",
     show_files_browser: true,
     background_color: "#FFFFFF",
-    show_canvas_config: true,
+    show_canvas_config: false,
     show_clip_config: true,
     expand_stage: false,
     tools: [
@@ -172,7 +172,7 @@ const configs: { [key in Keys]: Config } = {
         eventStage: "CREATE",
       },
     ],
-    show_layer_background: true,
+    show_layer_background: false,
     show_layer_clip: true,
   },
   FREE_DRAW: {

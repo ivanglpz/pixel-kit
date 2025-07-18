@@ -138,6 +138,8 @@ export const LayoutShapeConfig = (props: Props) => {
             })}
           />
         </Valid>
+        <p>x: {shape?.x}</p>
+        <p>y: {shape?.y}</p>
         <Valid isValid={tool === "DRAW"}>
           <InputCheckbox
             text="Bucket Fill"
