@@ -102,7 +102,7 @@ const PxStage: FC<Props> = ({ children }) => {
     ? config.expand_stage_resolution?.width
     : width; // 4K horizontal
   const stageHeight = config.expand_stage
-    ? config.expand_stage_resolution?.width
+    ? config.expand_stage_resolution?.height
     : height; // 4K vertical
 
   return (
