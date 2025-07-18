@@ -39,17 +39,32 @@ function downloadBase64Image(base64String: string) {
 }
 
 const getBoundingBox = (
-  ref: RefObject<Stage> | RefObject<Group> | undefined
+  ref: RefObject<Stage> | RefObject<Group> | undefined,
+  props: {
+    pixelRatio?: number;
+    mimeType?: string;
+    quality?: number;
+  }
 ) => {
   const childrens = ref?.current?.getStage?.()?.children;
   if (!childrens) return;
   const layerShapes = childrens?.find((e) => e?.attrs?.id === "layer-shapes");
   if (!layerShapes) return;
 
+  layerShapes?.children
+    ?.filter?.((child) => child?.attrs?.id === "transformer-editable")
+    ?.forEach?.((child) => {
+      child?.destroy?.();
+    });
   let minX = Infinity,
     minY = Infinity,
     maxX = -Infinity,
     maxY = -Infinity;
+  layerShapes.scale({ x: 1, y: 1 });
+  layerShapes.position({ x: 0, y: 0 });
+
+  ref?.current.scale({ x: 1, y: 1 });
+  ref?.current.position({ x: 0, y: 0 });
 
   layerShapes?.children.forEach((node) => {
     const box = node.getClientRect({ relativeTo: layerShapes });
@@ -58,13 +73,13 @@ const getBoundingBox = (
     maxX = Math.max(maxX, box.x + box.width);
     maxY = Math.max(maxY, box.y + box.height);
   });
-
-  return {
+  return layerShapes?.toDataURL({
+    ...props,
     x: minX,
     y: minY,
     width: maxX - minX,
     height: maxY - minY,
-  };
+  });
 };
 
 const destroyTransforms = (
@@ -117,18 +132,20 @@ export const ExportStage = () => {
     setloading(true);
     if (config?.export_mode === "DESIGN_MODE") {
       destroyTransforms(ref);
-      const dimension = getBoundingBox(ref);
-      console.log(dimension, "dimension");
+      const image = getBoundingBox(ref, {
+        quality: 1,
+        pixelRatio: formats[format as keyof typeof formats],
+      });
 
       await new Promise(() => {
         setTimeout(() => {
-          const image = ref?.current?.toDataURL({
-            quality: 1,
-            pixelRatio: formats[format as keyof typeof formats],
-            width,
-            height,
-            ...dimension,
-          });
+          // const image = ref?.current?.toDataURL({
+          //   quality: 1,
+          //   pixelRatio: formats[format as keyof typeof formats],
+          //   width,
+          //   height,
+          //   ...dimension,
+          // });
           if (!image) return;
           downloadBase64Image(image);
           setloading(false);
