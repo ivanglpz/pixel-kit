@@ -2,7 +2,6 @@ import { Valid } from "@/components/valid";
 import { Button } from "@/editor/components/button";
 import { InputCheckbox } from "@/editor/components/input-checkbox";
 import { InputText } from "@/editor/components/input-text";
-import { Section } from "@/editor/components/section";
 import { useTool } from "@/editor/hooks";
 import { useImageRender } from "@/editor/hooks/useImageRender";
 import { useReference } from "@/editor/hooks/useReference";
@@ -17,86 +16,84 @@ export const Clip = () => {
   const { ref } = useReference({ type: "CLIP" });
   const box = useAtomValue(boxClipAtom);
   return (
-    <Section title=" Clip Image">
-      <div
+    <div
+      className={css({
+        display: "flex",
+        flexDirection: "column",
+        gap: "md",
+      })}
+    >
+      <InputCheckbox
+        value={showClip}
+        onCheck={(v) => {
+          setTool("MOVE");
+          setshowClip(v);
+        }}
+        text="Clip"
+      />
+      <Valid isValid={showClip}>
+        <div>
+          <InputText
+            labelText="Width"
+            value={`${Math.round(box.width || 0)}px`}
+            onChange={() => {}}
+          />
+          <InputText
+            labelText="Height"
+            value={`${Math.round(box.height || 0)}px`}
+            onChange={() => {}}
+          />
+        </div>
+      </Valid>
+      <section
         className={css({
           display: "flex",
-          flexDirection: "column",
-          gap: "md",
+          flexDirection: "row",
+          gap: "lg",
         })}
       >
-        <InputCheckbox
-          value={showClip}
-          onCheck={(v) => {
-            setTool("MOVE");
-            setshowClip(v);
-          }}
-          text="Clip"
-        />
         <Valid isValid={showClip}>
-          <div>
-            <InputText
-              labelText="Width"
-              value={`${Math.round(box.width || 0)}px`}
-              onChange={() => {}}
-            />
-            <InputText
-              labelText="Height"
-              value={`${Math.round(box.height || 0)}px`}
-              onChange={() => {}}
-            />
-          </div>
+          <Button
+            onClick={() => {
+              setTool("MOVE");
+              handleResetImage();
+            }}
+          >
+            Reset Clip
+          </Button>
         </Valid>
-        <section
-          className={css({
-            display: "flex",
-            flexDirection: "row",
-            gap: "lg",
-          })}
-        >
-          <Valid isValid={showClip}>
-            <Button
-              onClick={() => {
-                setTool("MOVE");
-                handleResetImage();
-              }}
-            >
-              Reset Clip
-            </Button>
-          </Valid>
-          <Valid isValid={showClip}>
-            <Button
-              type="success"
-              onClick={() => {
-                setTool("MOVE");
-                const base64 = ref?.current?.toDataURL({
-                  quality: 1,
-                  //   pixelRatio: 3,
-                  x: box.x,
-                  y: box.y,
-                  width: box.width,
-                  height: box.height,
+        <Valid isValid={showClip}>
+          <Button
+            type="success"
+            onClick={() => {
+              setTool("MOVE");
+              const base64 = ref?.current?.toDataURL({
+                quality: 1,
+                //   pixelRatio: 3,
+                x: box.x,
+                y: box.y,
+                width: box.width,
+                height: box.height,
+              });
+              const image = new Image();
+              image.onload = () => {
+                handleSetClipImage({
+                  base64: base64 ?? "",
+                  name: "cliped",
+                  height: image.height,
+                  width: image.width,
+                  x: 0,
+                  y: 0,
                 });
-                const image = new Image();
-                image.onload = () => {
-                  handleSetClipImage({
-                    base64: base64 ?? "",
-                    name: "cliped",
-                    height: image.height,
-                    width: image.width,
-                    x: 0,
-                    y: 0,
-                  });
-                  setshowClip(false);
-                };
-                image.src = base64 ?? "";
-              }}
-            >
-              Save Clip
-            </Button>
-          </Valid>
-        </section>
-      </div>
-    </Section>
+                setshowClip(false);
+              };
+              image.src = base64 ?? "";
+            }}
+          >
+            Save Clip
+          </Button>
+        </Valid>
+      </section>
+    </div>
   );
 };
