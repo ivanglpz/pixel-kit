@@ -2,7 +2,6 @@ import { Valid } from "@/components/valid";
 import { Button } from "@/editor/components/button";
 import { InputSelect } from "@/editor/components/input-select";
 import { InputText } from "@/editor/components/input-text";
-import { Section } from "@/editor/components/section";
 import { useConfiguration } from "@/editor/hooks/useConfiguration";
 import { useImageRender } from "@/editor/hooks/useImageRender";
 import { useReference } from "@/editor/hooks/useReference";
@@ -22,6 +21,7 @@ import { v4 as uuidv4 } from "uuid";
 import { AllLayers } from "../layers/root.layers";
 import { STAGE_DIMENSION_ATOM } from "../states/dimension";
 import { typeExportAtom } from "../states/export";
+import SHAPES_ATOM from "../states/shapes";
 import { ImageConfiguration } from "./imageConfig";
 
 const formats = {
@@ -106,7 +106,7 @@ export const ExportStage = () => {
   const { img } = useImageRender();
   const [loading, setloading] = useState(false);
   const { height, width } = useAtomValue(STAGE_DIMENSION_ATOM);
-
+  const SHAPES = useAtomValue(SHAPES_ATOM);
   const [format, setformat] = useAtom(typeExportAtom);
   const [showExport, setShowExport] = useState(false);
   const setshowClip = useSetAtom(showClipAtom);
@@ -203,62 +203,54 @@ export const ExportStage = () => {
 
   const Container = document.getElementById("pixel-app");
 
-  const stageWidth = 200;
-  const stageHeight = 200;
+  const stageWidth = 210;
+  const stageHeight = 210;
   const stageRef = useRef<Konva.Stage>(null);
 
-  function fitStageIntoParentContainer(
-    stage: Konva.Stage,
-    targetWidth = 210,
-    targetHeight = 210
-  ) {
-    if (!stage) return;
-
-    // 1. Calcular el bounding box de todo el contenido
-    let minX = Infinity,
-      minY = Infinity,
-      maxX = -Infinity,
-      maxY = -Infinity;
-
-    stage.children.forEach((layer) => {
-      layer.children.forEach((node) => {
-        const box = node.getClientRect();
-        minX = Math.min(minX, box.x);
-        minY = Math.min(minY, box.y);
-        maxX = Math.max(maxX, box.x + box.width);
-        maxY = Math.max(maxY, box.y + box.height);
-      });
-    });
-
-    const contentWidth = maxX - minX;
-    const contentHeight = maxY - minY;
-
-    // 2. Escalar para que el contenido quepa en 210x210
-    const scale = Math.min(
-      targetWidth / contentWidth,
-      targetHeight / contentHeight
-    );
-
-    stage.width(targetWidth);
-    stage.height(targetHeight);
-    stage.scale({ x: scale, y: scale });
-
-    // 3. Centrar el contenido en el stage
-    const offsetX = (targetWidth - contentWidth * scale) / 2 - minX * scale;
-    const offsetY = (targetHeight - contentHeight * scale) / 2 - minY * scale;
-
-    stage.position({ x: offsetX, y: offsetY });
-
-    stage.batchDraw();
-  }
   useEffect(() => {
     if (!stageRef.current) return;
-    fitStageIntoParentContainer(
-      stageRef.current.getStage(),
-      stageWidth,
-      stageHeight
+    const stage = stageRef.current;
+    const childrens = stage?.children;
+    if (!childrens) return;
+    const layers = childrens?.filter(
+      (e) =>
+        e?.attrs?.id === "layer-shapes" ||
+        e?.attrs?.id === "layer-clip-image-preview"
     );
-  }, [width, height, ref, showExport, config.export_mode]);
+    if (!layers) return;
+
+    layers?.forEach((layer) => {
+      if (layer?.attrs?.id === "layer-clip-image-preview") {
+        layer?.destroy();
+        return;
+      }
+      layer?.children
+        ?.filter?.((child) => child?.attrs?.id === "transformer-editable")
+        ?.forEach?.((child) => {
+          child?.destroy?.();
+        });
+    });
+    // Usar las dimensiones estáticas del stage (o las de config)
+    const contentWidth = width;
+    const contentHeight = height;
+
+    // 1. Escalar proporcionalmente para que encaje en 210x210
+    const scale = Math.min(
+      stageWidth / contentWidth,
+      stageHeight / contentHeight
+    );
+
+    stage.width(stageWidth);
+    stage.height(stageHeight);
+    stage.scale({ x: scale, y: scale });
+
+    // 2. Centrarlo simplemente (sin minX/minY)
+    const offsetX = (stageWidth - contentWidth * scale) / 2;
+    const offsetY = (stageHeight - contentHeight * scale) / 2;
+
+    stage.position({ x: offsetX, y: offsetY });
+    stage.batchDraw();
+  }, [width, height, config.export_mode, SHAPES]);
 
   return (
     <>
@@ -405,32 +397,38 @@ export const ExportStage = () => {
             )
           : null}
       </Valid>
-      <Section title="Export">
-        <div
-          className={css({
-            display: "grid",
-            gridTemplateColumns: "2",
-            gap: "md",
-          })}
-        >
-          <Valid isValid={config?.show_files_browser}>
-            <ImageConfiguration />
-          </Valid>
-          <Button
-            text="Export"
-            onClick={() => setShowExport(true)}
-            type="success"
-          ></Button>
-        </div>
-        <StageContainer
-          id="preview-stage"
-          ref={stageRef}
-          width={stageWidth}
-          height={stageHeight}
-        >
-          <AllLayers />
-        </StageContainer>
-      </Section>
+      <div
+        className={css({
+          display: "grid",
+          gridTemplateColumns: "2",
+          gap: "md",
+        })}
+      >
+        <Valid isValid={config?.show_files_browser}>
+          <ImageConfiguration />
+        </Valid>
+        <Button
+          text="Export"
+          onClick={() => setShowExport(true)}
+          type="success"
+        ></Button>
+      </div>
+      <StageContainer
+        id="preview-stage"
+        ref={stageRef}
+        width={stageWidth}
+        height={stageHeight}
+        className={css({
+          backgroundColor: "gray.100",
+          borderColor: "border",
+          borderWidth: 1,
+          _dark: {
+            backgroundColor: "gray.800",
+          },
+        })}
+      >
+        <AllLayers />
+      </StageContainer>
     </>
   );
 };
