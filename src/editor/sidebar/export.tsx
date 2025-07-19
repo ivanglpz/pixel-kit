@@ -211,29 +211,6 @@ export const ExportStage = () => {
     const stage = stageRef.current;
     const childrens = stage?.children;
     if (!childrens) return;
-    const layers = childrens?.filter(
-      (e) =>
-        e?.attrs?.id === "layer-shapes" ||
-        e?.attrs?.id === "layer-clip-image-preview"
-    );
-    if (!layers) return;
-
-    layers?.forEach((layer) => {
-      if (layer?.attrs?.id === "layer-clip-image-preview") {
-        console.log(layer?.attrs?.id);
-        console.log("LAYER CLIP");
-
-        // ✅ En vez de destruir, solo ocúltalo
-        layer.visible(false);
-        return;
-      }
-
-      layer?.children
-        ?.filter?.((child) => child?.attrs?.id === "transformer-editable")
-        ?.forEach?.((child) => {
-          child?.destroy?.();
-        });
-    });
 
     // Usar las dimensiones estáticas del stage (o las de config)
     const contentWidth = width;
@@ -423,6 +400,7 @@ export const ExportStage = () => {
         ref={stageRef}
         width={stageWidth}
         height={stageHeight}
+        listening={false} //
         className={css({
           backgroundColor: "gray.100",
           borderColor: "border",

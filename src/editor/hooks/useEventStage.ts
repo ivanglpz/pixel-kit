@@ -291,7 +291,7 @@ const useEventStage = () => {
       document.removeEventListener("paste", handlePaste);
       document.removeEventListener("keyup", handleKeyUp);
     };
-  }, [tool, shapeId]);
+  }, [tool, shapeId, config.tools]);
 
   useEffect(() => {
     const handleVisibilityChange = () => {
