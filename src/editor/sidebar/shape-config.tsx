@@ -9,15 +9,9 @@ import { css } from "@stylespixelkit/css";
 import { useAtomValue, useSetAtom } from "jotai";
 import { LineCap, LineJoin } from "konva/lib/Shape";
 import { ChangeEvent, useRef } from "react";
+import { InputNumber } from "../components/input-number";
 import { SHAPE_SELECTED_ATOM, SHAPE_UPDATE_ATOM } from "../states/shape";
 import { DELETE_SHAPE_ATOM } from "../states/shapes";
-
-type TChange = (key: keyof IShape, value: string | number | boolean) => void;
-
-type Props = {
-  // shape: IShape;
-  // onChange: TChange;
-};
 
 const calculateScale = (
   originalWidth: number,
@@ -33,7 +27,24 @@ const calculateScale = (
   return scale;
 };
 
-export const LayoutShapeConfig = (props: Props) => {
+const Separator = () => {
+  return (
+    <div
+      className={css({
+        marginTop: "md",
+        height: 2,
+        width: "100%",
+        backgroundColor: "gray.200",
+        opacity: 0.5,
+        _dark: {
+          backgroundColor: "gray.700",
+        },
+      })}
+    ></div>
+  );
+};
+
+export const LayoutShapeConfig = () => {
   // const onChange = props.onChange;
 
   const shape = useAtomValue(SHAPE_SELECTED_ATOM);
@@ -103,9 +114,101 @@ export const LayoutShapeConfig = (props: Props) => {
       className={`${css({
         display: "flex",
         flexDirection: "column",
-        gap: "lg",
+        gap: "md",
       })} scrollbar_container`}
     >
+      <p
+        className={css({
+          paddingBottom: "md",
+          paddingTop: "sm",
+          fontWeight: "bold",
+          fontSize: "sm",
+        })}
+      >
+        Position
+      </p>
+      <div
+        className={css({
+          display: "grid",
+          gridTemplateColumns: "2",
+          gap: "lg",
+        })}
+      >
+        <InputNumber
+          iconType="x"
+          labelText="Position"
+          value={shape.x}
+          onChange={() => {}}
+        />
+        <InputNumber
+          iconType="y"
+          labelText=""
+          value={shape.x}
+          onChange={() => {}}
+        />
+      </div>
+      <Separator />
+      <p
+        className={css({
+          paddingBottom: "md",
+          paddingTop: "sm",
+          fontWeight: "bold",
+          fontSize: "sm",
+        })}
+      >
+        Layout
+      </p>
+      <div
+        className={css({
+          display: "grid",
+          gridTemplateColumns: "2",
+          gap: "lg",
+        })}
+      >
+        <InputNumber
+          iconType="width"
+          labelText="Dimensions"
+          value={shape.x}
+          onChange={() => {}}
+        />
+        <InputNumber
+          iconType="height"
+          labelText=""
+          value={shape.x}
+          onChange={() => {}}
+        />
+      </div>
+      <Separator />
+      <p
+        className={css({
+          paddingBottom: "md",
+          paddingTop: "sm",
+          fontWeight: "bold",
+          fontSize: "sm",
+        })}
+      >
+        Appearance
+      </p>
+      <div
+        className={css({
+          display: "grid",
+          gridTemplateColumns: "2",
+          gap: "lg",
+        })}
+      >
+        <InputNumber
+          iconType="opacity"
+          labelText="Opacity"
+          value={shape.x}
+          onChange={() => {}}
+        />
+        <InputNumber
+          iconType="br"
+          labelText="Corner Radius"
+          value={shape.x}
+          onChange={() => {}}
+        />
+      </div>
       <Valid isValid={tool === "IMAGE"}>
         <p
           className={css({
@@ -135,10 +238,6 @@ export const LayoutShapeConfig = (props: Props) => {
           })}
         />
       </Valid>
-      <p>x: {shape?.x}</p>
-      <p>y: {shape?.y}</p>
-      <p>width: {shape?.width}</p>
-      <p>height: {shape?.height}</p>
       <Valid isValid={tool === "DRAW"}>
         <InputCheckbox
           text="Bucket Fill"

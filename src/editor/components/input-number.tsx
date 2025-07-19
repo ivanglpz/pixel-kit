@@ -1,6 +1,15 @@
 import { css } from "@stylespixelkit/css";
-import { LineSquiggle } from "lucide-react";
+import { Blend, LineSquiggle, Scan, X } from "lucide-react";
 
+const typeIcon = {
+  "draw-weight": <LineSquiggle size={14} />,
+  x: <X size={14} />,
+  y: "Y",
+  width: "W",
+  height: "H",
+  opacity: <Blend size={14} />,
+  br: <Scan size={14} />,
+};
 type Props = {
   value: number;
   onChange: (value: number) => void;
@@ -8,6 +17,7 @@ type Props = {
   max?: number;
   step?: number;
   labelText: string;
+  iconType: keyof typeof typeIcon;
 };
 
 export const InputNumber = ({
@@ -17,6 +27,7 @@ export const InputNumber = ({
   max = 100,
   step = 1,
   labelText,
+  iconType = "draw-weight",
 }: Props) => {
   const handleNumberChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = Number(event.target.value);
@@ -38,6 +49,7 @@ export const InputNumber = ({
           color: "text",
           fontWeight: "600",
           fontSize: "x-small",
+          height: "15px",
         })}
       >
         {labelText}
@@ -61,7 +73,29 @@ export const InputNumber = ({
           gap: "md",
         })}
       >
-        <LineSquiggle size={17} />
+        <div
+          className={css({
+            width: "17px",
+            height: "17px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          })}
+        >
+          {}
+          {typeof typeIcon[iconType] === "string" ? (
+            <p
+              className={css({
+                fontWeight: 600,
+                fontSize: "10px",
+              })}
+            >
+              {typeIcon[iconType]}
+            </p>
+          ) : (
+            typeIcon[iconType]
+          )}
+        </div>
         {/* Input number */}
         <input
           type="number"

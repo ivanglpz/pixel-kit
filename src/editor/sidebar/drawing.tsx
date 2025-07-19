@@ -75,6 +75,7 @@ export const Drawing = () => {
         })}
       >
         <InputNumber
+          iconType="draw-weight"
           labelText="Weight"
           value={thickness}
           onChange={handleThickness}
