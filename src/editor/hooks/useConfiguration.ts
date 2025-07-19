@@ -10,6 +10,7 @@ import { IKeyTool } from "../states/tool";
 type Config = {
   show_layer_image: boolean;
   export_mode: "FREE_DRAW" | "EDIT_IMAGE" | "DESIGN_MODE";
+  mode: "FREE_DRAW" | "EDIT_IMAGE" | "DESIGN_MODE";
   show_files_browser: boolean;
   background_color: string;
   show_canvas_config: boolean;
@@ -28,6 +29,7 @@ type Config = {
     width: number;
     height: number;
   };
+  scrollInsideStage: boolean;
 };
 
 type Keys = "EDIT_IMAGE" | "FREE_DRAW" | "DESIGN_MODE";
@@ -36,6 +38,7 @@ const configs: { [key in Keys]: Config } = {
   DESIGN_MODE: {
     show_layer_image: false,
     export_mode: "DESIGN_MODE",
+    mode: "DESIGN_MODE",
     show_files_browser: false,
     background_color: "#FFFFFF",
     show_canvas_config: true,
@@ -105,10 +108,12 @@ const configs: { [key in Keys]: Config } = {
     ],
     show_layer_background: true,
     show_layer_clip: false,
+    scrollInsideStage: false,
   },
   EDIT_IMAGE: {
     show_layer_image: true,
     export_mode: "EDIT_IMAGE",
+    mode: "EDIT_IMAGE",
     show_files_browser: true,
     background_color: "#FFFFFF",
     show_canvas_config: false,
@@ -174,10 +179,12 @@ const configs: { [key in Keys]: Config } = {
     ],
     show_layer_background: false,
     show_layer_clip: true,
+    scrollInsideStage: true,
   },
   FREE_DRAW: {
     show_layer_image: false,
     export_mode: "FREE_DRAW",
+    mode: "FREE_DRAW",
     show_files_browser: false,
     background_color: "#FFFFFF",
     show_canvas_config: true,
@@ -242,6 +249,7 @@ const configs: { [key in Keys]: Config } = {
     ],
     show_layer_background: true,
     show_layer_clip: false,
+    scrollInsideStage: false,
   },
 };
 
