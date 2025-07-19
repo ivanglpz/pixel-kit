@@ -177,15 +177,15 @@ const configs: { [key in Keys]: Config } = {
   },
   FREE_DRAW: {
     show_layer_image: false,
-    show_files_browser: false,
     export_mode: "FREE_DRAW",
-    background_color: "#ffffff",
+    show_files_browser: false,
+    background_color: "#FFFFFF",
     show_canvas_config: true,
     show_clip_config: false,
     expand_stage: true,
     expand_stage_resolution: {
       width: 3840,
-      height: 3840,
+      height: 2160,
     },
     tools: [
       {
@@ -195,37 +195,37 @@ const configs: { [key in Keys]: Config } = {
         eventStage: "IDLE",
       },
 
-      {
-        icon: icons.box,
-        keyMethod: "BOX",
-        keyBoard: "W",
-        eventStage: "CREATE",
-      },
+      // {
+      //   icon: icons.box,
+      //   keyMethod: "BOX",
+      //   keyBoard: "W",
+      //   eventStage: "CREATE",
+      // },
 
-      {
-        icon: icons.circle,
-        keyMethod: "CIRCLE",
-        keyBoard: "E",
-        eventStage: "CREATE",
-      },
-      {
-        icon: icons.line,
-        keyMethod: "LINE",
-        keyBoard: "R",
-        eventStage: "CREATE",
-      },
+      // {
+      //   icon: icons.circle,
+      //   keyMethod: "CIRCLE",
+      //   keyBoard: "E",
+      //   eventStage: "CREATE",
+      // },
+      // {
+      //   icon: icons.line,
+      //   keyMethod: "LINE",
+      //   keyBoard: "R",
+      //   eventStage: "CREATE",
+      // },
       {
         icon: icons.image,
         keyMethod: "IMAGE",
         keyBoard: "A",
         eventStage: "CREATE",
       },
-      {
-        icon: icons.text,
-        keyMethod: "TEXT",
-        keyBoard: "S",
-        eventStage: "CREATE",
-      },
+      // {
+      //   icon: icons.text,
+      //   keyMethod: "TEXT",
+      //   keyBoard: "S",
+      //   eventStage: "CREATE",
+      // },
 
       {
         icon: icons.peentool,
@@ -233,12 +233,12 @@ const configs: { [key in Keys]: Config } = {
         keyBoard: "D",
         eventStage: "CREATE",
       },
-      {
-        icon: icons.group,
-        keyMethod: "GROUP",
-        keyBoard: "F",
-        eventStage: "CREATE",
-      },
+      // {
+      //   icon: icons.group,
+      //   keyMethod: "GROUP",
+      //   keyBoard: "F",
+      //   eventStage: "CREATE",
+      // },
     ],
     show_layer_background: true,
     show_layer_clip: false,

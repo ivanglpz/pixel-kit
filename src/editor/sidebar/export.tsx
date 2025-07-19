@@ -8,7 +8,7 @@ import { useReference } from "@/editor/hooks/useReference";
 import { showClipAtom } from "@/editor/states/clipImage";
 import { calculateDimension } from "@/editor/utils/calculateDimension";
 import { css } from "@stylespixelkit/css";
-import { useAtom, useAtomValue, useSetAtom } from "jotai";
+import { useAtom, useAtomValue } from "jotai";
 import Konva from "konva";
 import { Group } from "konva/lib/Group";
 import { Stage } from "konva/lib/Stage";
@@ -109,8 +109,7 @@ export const ExportStage = () => {
   const SHAPES = useAtomValue(SHAPES_ATOM);
   const [format, setformat] = useAtom(typeExportAtom);
   const [showExport, setShowExport] = useState(false);
-  const setshowClip = useSetAtom(showClipAtom);
-
+  const [showClip, setshowClip] = useAtom(showClipAtom);
   const handleExport = async () => {
     toast.success("Thank you very much for using pixel kit!", {
       description: (
@@ -221,15 +220,21 @@ export const ExportStage = () => {
 
     layers?.forEach((layer) => {
       if (layer?.attrs?.id === "layer-clip-image-preview") {
-        layer?.destroy();
+        console.log(layer?.attrs?.id);
+        console.log("LAYER CLIP");
+
+        // ✅ En vez de destruir, solo ocúltalo
+        layer.visible(false);
         return;
       }
+
       layer?.children
         ?.filter?.((child) => child?.attrs?.id === "transformer-editable")
         ?.forEach?.((child) => {
           child?.destroy?.();
         });
     });
+
     // Usar las dimensiones estáticas del stage (o las de config)
     const contentWidth = width;
     const contentHeight = height;
@@ -250,7 +255,7 @@ export const ExportStage = () => {
 
     stage.position({ x: offsetX, y: offsetY });
     stage.batchDraw();
-  }, [width, height, config.export_mode, SHAPES]);
+  }, [width, height, config.export_mode, showClip, SHAPES]);
 
   return (
     <>
