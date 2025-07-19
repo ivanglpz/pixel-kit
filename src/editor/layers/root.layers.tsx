@@ -6,6 +6,10 @@ import { LayerImage } from "./layer.image";
 import { LayerPipe } from "./layer.pipe";
 import { LayerShapes } from "./layer.shapes";
 
+export type AllLayerProps = {
+  type: "edit" | "preview";
+};
+
 export const AllLayers = () => {
   const { config } = useConfiguration();
 
