@@ -102,6 +102,7 @@ const PxStage: FC<Props> = ({ children }) => {
     const stage = stageRef.current;
     if (!stage) return;
 
+    // ✅ 1. ZOOM con CTRL o META
     if (e.evt.ctrlKey || e.evt.metaKey) {
       e.evt.preventDefault();
 
@@ -109,10 +110,9 @@ const PxStage: FC<Props> = ({ children }) => {
       const oldScale = stage.scaleX();
       let newScale = e.evt.deltaY > 0 ? oldScale / scaleBy : oldScale * scaleBy;
 
-      // ✅ Limitar zoom
+      // Limitar zoom
       newScale = Math.max(MIN_SCALE, Math.min(MAX_SCALE, newScale));
 
-      // if (newScale < 1) return;
       const pointer = stage.getPointerPosition();
       if (!pointer) return;
 
@@ -123,20 +123,17 @@ const PxStage: FC<Props> = ({ children }) => {
 
       stage.scale({ x: newScale, y: newScale });
 
-      // ✅ Nueva posición basada en el puntero
       let newX = pointer.x - mousePointTo.x * newScale;
       let newY = pointer.y - mousePointTo.y * newScale;
 
-      // ✅ Medidas escaladas del contenido (Stage real)
       const scaledWidth = stageWidth * newScale;
       const scaledHeight = stageHeight * newScale;
 
-      const containerWidth = stage.width(); // Tamaño visible del Stage en el canvas
+      const containerWidth = stage.width();
       const containerHeight = stage.height();
 
-      // ✅ Limitar horizontalmente
+      // Limitar horizontalmente
       if (scaledWidth <= containerWidth) {
-        // Si el contenido es más pequeño que el contenedor, centramos
         newX = (containerWidth - scaledWidth) / 2;
       } else {
         const minX = containerWidth - scaledWidth;
@@ -144,7 +141,7 @@ const PxStage: FC<Props> = ({ children }) => {
         newX = Math.max(minX, Math.min(maxX, newX));
       }
 
-      // ✅ Limitar verticalmente
+      // Limitar verticalmente
       if (scaledHeight <= containerHeight) {
         newY = (containerHeight - scaledHeight) / 2;
       } else {
@@ -156,6 +153,55 @@ const PxStage: FC<Props> = ({ children }) => {
       stage.position({ x: newX, y: newY });
       stage.batchDraw();
       setScale(newScale);
+
+      return; // ✅ Evita seguir al scroll
+    }
+
+    // ✅ 2. SCROLL (solo si scrollInsideStage es true)
+    if (config.scrollInsideStage) {
+      e.evt.preventDefault();
+
+      const currentPos = stage.position();
+      const currentScale = stage.scaleX();
+
+      const scaledWidth = stageWidth * currentScale;
+      const scaledHeight = stageHeight * currentScale;
+
+      const containerWidth = stage.width();
+      const containerHeight = stage.height();
+
+      let newX = currentPos.x;
+      let newY = currentPos.y;
+
+      if (e.evt.shiftKey) {
+        // ✅ Shift = scroll horizontal (usar deltaX si lo hay, sino deltaY)
+        const delta = e.evt.deltaX !== 0 ? e.evt.deltaX : e.evt.deltaY;
+        newX -= delta;
+      } else {
+        // ✅ Scroll vertical
+        newY -= e.evt.deltaY;
+      }
+
+      // 🔒 Limitar horizontalmente
+      if (scaledWidth <= containerWidth) {
+        newX = (containerWidth - scaledWidth) / 2;
+      } else {
+        const minX = containerWidth - scaledWidth;
+        const maxX = 0;
+        newX = Math.max(minX, Math.min(maxX, newX));
+      }
+
+      // 🔒 Limitar verticalmente
+      if (scaledHeight <= containerHeight) {
+        newY = (containerHeight - scaledHeight) / 2;
+      } else {
+        const minY = containerHeight - scaledHeight;
+        const maxY = 0;
+        newY = Math.max(minY, Math.min(maxY, newY));
+      }
+
+      stage.position({ x: newX, y: newY });
+      stage.batchDraw();
     }
   };
 
