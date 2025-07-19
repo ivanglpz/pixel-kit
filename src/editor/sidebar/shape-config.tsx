@@ -1,7 +1,7 @@
 import { Valid } from "@/components/valid";
 import { Button } from "@/editor/components/button";
 import { InputCheckbox } from "@/editor/components/input-checkbox";
-import PixelKitInputColor from "@/editor/components/input-color";
+import InputColor from "@/editor/components/input-color";
 import { InputSelect } from "@/editor/components/input-select";
 import { InputSlider } from "@/editor/components/input-slider";
 import { IShape } from "@/editor/shapes/type.shape";
@@ -163,7 +163,7 @@ export const LayoutShapeConfig = (props: Props) => {
       />
       {/* </Valid> */}
       <Valid isValid={fillEnabled ?? false}>
-        <PixelKitInputColor
+        <InputColor
           labelText="Fill Color"
           keyInput={`pixel-kit-shape-fill-${id}-${tool}`}
           color={backgroundColor}
@@ -305,7 +305,7 @@ export const LayoutShapeConfig = (props: Props) => {
         }}
       />
       <Valid isValid={strokeEnabled ?? false}>
-        <PixelKitInputColor
+        <InputColor
           labelText="Color"
           keyInput={`pixel-kit-shape-stroke-${id}-${tool}`}
           color={stroke}
@@ -366,7 +366,7 @@ export const LayoutShapeConfig = (props: Props) => {
         }}
       />
       <Valid isValid={shadowEnabled ?? false}>
-        <PixelKitInputColor
+        <InputColor
           labelText="Color"
           keyInput={`pixel-kit-shape-shadow-${id}-${tool}`}
           color={shadowColor}

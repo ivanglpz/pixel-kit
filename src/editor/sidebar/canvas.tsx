@@ -1,4 +1,4 @@
-import PixelKitInputColor from "@/editor/components/input-color";
+import InputColor from "@/editor/components/input-color";
 import { useAtom, useAtomValue } from "jotai";
 import { useTheme } from "next-themes";
 import { FC, useEffect } from "react";
@@ -18,7 +18,7 @@ export const StageCanvasColor: FC = () => {
   if (tool !== "MOVE") return null;
 
   return (
-    <PixelKitInputColor
+    <InputColor
       color={config}
       onChangeColor={(bg) => setConfig(bg)}
       labelText="Canvas color"

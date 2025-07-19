@@ -9,7 +9,7 @@ type Props = {
   primaryColors?: boolean;
 };
 
-const PixelKitInputColor: FC<Props> = ({
+const InputColor: FC<Props> = ({
   color,
   onChangeColor,
   keyInput,
@@ -50,6 +50,7 @@ const PixelKitInputColor: FC<Props> = ({
           display: "flex",
           alignItems: "center",
           justifyContent: "start",
+          gap: "md",
         })}
       >
         <div
@@ -64,6 +65,8 @@ const PixelKitInputColor: FC<Props> = ({
             borderWidth: "1px",
             borderStyle: "solid",
             borderColor: "border.muted", // ← usa el semantic token
+            alignItems: "center",
+            justifyContent: "center",
           })}
           style={{
             backgroundColor: color ?? "#ffffff",
@@ -85,22 +88,21 @@ const PixelKitInputColor: FC<Props> = ({
             onChange={(event) => onChangeColor(event.target.value)}
           />
         </div>
-        <input
-          type="text"
-          value={`#${color?.replace(/#/, "") ?? "ffffff"}`}
-          disabled
+        <label
+          htmlFor={keyInput}
           className={css({
             backgroundColor: "transparent",
             color: "text",
-            padding: "sm",
             height: "20px",
             fontSize: "sm",
             border: "none",
           })}
-        />
+        >
+          #{color?.replace(/#/, "") ?? "ffffff"}
+        </label>
       </label>
     </div>
   );
 };
 
-export default PixelKitInputColor;
+export default InputColor;
