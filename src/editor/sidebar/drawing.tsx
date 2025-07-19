@@ -1,6 +1,6 @@
 import { Valid } from "@/components/valid";
 import { InputCheckbox } from "@/editor/components/input-checkbox";
-import PixelKitInputColor from "@/editor/components/input-color";
+import InputColor from "@/editor/components/input-color";
 import { InputSlider } from "@/editor/components/input-slider";
 import { useTool } from "@/editor/hooks";
 import { useStartDrawing } from "@/editor/hooks/useStartDrawing";
@@ -61,7 +61,7 @@ export const Drawing = () => {
         value={closed ?? false}
         onCheck={(e) => handleChangeLine("closed", e)}
       /> */}
-      <PixelKitInputColor
+      <InputColor
         labelText="Stroke"
         keyInput={`pixel-kit-draw`}
         color={color}
@@ -81,9 +81,9 @@ export const Drawing = () => {
         />
         <div
           className={css({
-            display: "flex",
-            gap: "8px",
             alignItems: "flex-end",
+            display: "grid",
+            gridTemplateColumns: "3",
           })}
         >
           <button
@@ -91,13 +91,14 @@ export const Drawing = () => {
             className={css({
               background: drawMode === "soft" ? "bg.muted" : "transparent",
               borderRadius: "6px",
-              padding: "6px",
+              padding: "sm",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
+              height: "33.5px",
             })}
           >
-            <Brush size={20} />
+            <Brush size={16} />
           </button>
 
           <button
@@ -109,9 +110,10 @@ export const Drawing = () => {
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
+              height: "33.5px",
             })}
           >
-            <Ruler size={20} />
+            <Ruler size={16} />
           </button>
 
           <button
@@ -123,9 +125,10 @@ export const Drawing = () => {
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
+              height: "33.5px",
             })}
           >
-            <PenTool size={20} />
+            <PenTool size={16} />
           </button>
         </div>
       </div>
@@ -148,7 +151,7 @@ export const Drawing = () => {
         onCheck={(e) => handleChangeLine("shadowEnabled", e)}
       />
       <Valid isValid={shadowEnabled ?? false}>
-        <PixelKitInputColor
+        <InputColor
           labelText="Color"
           keyInput={`pixel-kit-draw-before-shadowcolor`}
           color={shadowColor}
