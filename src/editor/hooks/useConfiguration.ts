@@ -217,7 +217,7 @@ const configs: { [key in Keys]: Config } = {
       {
         icon: icons.image,
         keyMethod: "IMAGE",
-        keyBoard: "A",
+        keyBoard: "W",
         eventStage: "CREATE",
       },
       // {
@@ -230,7 +230,7 @@ const configs: { [key in Keys]: Config } = {
       {
         icon: icons.peentool,
         keyMethod: "DRAW",
-        keyBoard: "D",
+        keyBoard: "E",
         eventStage: "CREATE",
       },
       // {
