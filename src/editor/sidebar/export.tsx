@@ -10,13 +10,16 @@ import { showClipAtom } from "@/editor/states/clipImage";
 import { calculateDimension } from "@/editor/utils/calculateDimension";
 import { css } from "@stylespixelkit/css";
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
+import Konva from "konva";
 import { Group } from "konva/lib/Group";
 import { Stage } from "konva/lib/Stage";
 import Link from "next/link";
-import { RefObject, useMemo, useState } from "react";
+import { RefObject, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
+import { Stage as StageContainer } from "react-konva";
 import { toast } from "sonner";
 import { v4 as uuidv4 } from "uuid";
+import { AllLayers } from "../layers/root.layers";
 import { STAGE_DIMENSION_ATOM } from "../states/dimension";
 import { typeExportAtom } from "../states/export";
 import { ImageConfiguration } from "./imageConfig";
@@ -199,16 +202,64 @@ export const ExportStage = () => {
   };
 
   const Container = document.getElementById("pixel-app");
-  const imagetest = useMemo(
-    () =>
-      ref?.current?.toDataURL({
-        quality: 1,
-        pixelRatio: formats[format as keyof typeof formats],
-        width,
-        height,
-      }),
-    [ref?.current, width, height]
-  );
+
+  const stageWidth = 200;
+  const stageHeight = 200;
+  const stageRef = useRef<Konva.Stage>(null);
+
+  function fitStageIntoParentContainer(
+    stage: Konva.Stage,
+    targetWidth = 210,
+    targetHeight = 210
+  ) {
+    if (!stage) return;
+
+    // 1. Calcular el bounding box de todo el contenido
+    let minX = Infinity,
+      minY = Infinity,
+      maxX = -Infinity,
+      maxY = -Infinity;
+
+    stage.children.forEach((layer) => {
+      layer.children.forEach((node) => {
+        const box = node.getClientRect();
+        minX = Math.min(minX, box.x);
+        minY = Math.min(minY, box.y);
+        maxX = Math.max(maxX, box.x + box.width);
+        maxY = Math.max(maxY, box.y + box.height);
+      });
+    });
+
+    const contentWidth = maxX - minX;
+    const contentHeight = maxY - minY;
+
+    // 2. Escalar para que el contenido quepa en 210x210
+    const scale = Math.min(
+      targetWidth / contentWidth,
+      targetHeight / contentHeight
+    );
+
+    stage.width(targetWidth);
+    stage.height(targetHeight);
+    stage.scale({ x: scale, y: scale });
+
+    // 3. Centrar el contenido en el stage
+    const offsetX = (targetWidth - contentWidth * scale) / 2 - minX * scale;
+    const offsetY = (targetHeight - contentHeight * scale) / 2 - minY * scale;
+
+    stage.position({ x: offsetX, y: offsetY });
+
+    stage.batchDraw();
+  }
+  useEffect(() => {
+    if (!stageRef.current) return;
+    fitStageIntoParentContainer(
+      stageRef.current.getStage(),
+      stageWidth,
+      stageHeight
+    );
+  }, [width, height, ref, showExport, config.export_mode]);
+
   return (
     <>
       <Valid isValid={showExport}>
@@ -371,7 +422,14 @@ export const ExportStage = () => {
             type="success"
           ></Button>
         </div>
-        <img src={imagetest} alt="test" />
+        <StageContainer
+          id="preview-stage"
+          ref={stageRef}
+          width={stageWidth}
+          height={stageHeight}
+        >
+          <AllLayers />
+        </StageContainer>
       </Section>
     </>
   );
