@@ -2,8 +2,8 @@ import { Valid } from "@/components/valid";
 import { useConfiguration } from "@/editor/hooks/useConfiguration";
 import { css } from "@stylespixelkit/css";
 import { FC } from "react";
-import { ChangeEnv } from "../components/ChangeEnv";
-import StageConfig from "./canvas";
+import { StageMode } from "../components/ChangeEnv";
+import { StageCanvasColor } from "./canvas";
 import { Clip } from "./clip";
 import { Drawing } from "./drawing";
 import { ExportStage } from "./export";
@@ -27,10 +27,9 @@ const SidebarRight: FC = () => {
         flexDirection: "column",
       })}
     >
-      <ChangeEnv />
-
+      <StageMode />
       <Valid isValid={config?.show_canvas_config}>
-        <StageConfig />
+        <StageCanvasColor />
       </Valid>
       <Valid isValid={config?.show_clip_config}>
         <Clip />

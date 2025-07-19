@@ -23,7 +23,6 @@ const PxStage: FC<Props> = ({ children }) => {
   const [show, setShow] = useState(true);
 
   const { config } = useConfiguration(); // ✅ Ahora usamos config.expand2K
-  const [scale, setScale] = useState(1);
 
   const setShapeId = useSetAtom(SHAPE_ID_ATOM);
   const { handleMouseDown, handleMouseUp, handleMouseMove } = useEventStage();
@@ -152,7 +151,6 @@ const PxStage: FC<Props> = ({ children }) => {
 
       stage.position({ x: newX, y: newY });
       stage.batchDraw();
-      setScale(newScale);
 
       return; // ✅ Evita seguir al scroll
     }
@@ -225,8 +223,7 @@ const PxStage: FC<Props> = ({ children }) => {
         maxWidth: "100%",
       })}`}
       style={{
-        overflowX: config.expand_stage ? "scroll" : "hidden", // ✅ Scroll horizontal si es expandido
-        overflowY: config.expand_stage ? "scroll" : "hidden", // ✅ Scroll vertical si es expandido
+        overflow: config.expand_stage ? "scroll" : "hidden",
       }}
     >
       <Valid isValid={show}>

@@ -516,7 +516,7 @@ export default defineConfig({
         },
         gray: {
           "50": { value: "hsl(0, 0%, 97%)" },
-          "100": { value: "hsl(0, 0%, 92%)" },
+          "100": { value: "hsl(0, 0%, 95%)" },
           "200": { value: "hsl(0, 0%, 70.63%)" },
           "300": { value: "hsl(0, 0%, 51.07%)" },
           "400": { value: "hsl(0, 0%, 36.42%)" },

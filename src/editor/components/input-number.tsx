@@ -1,4 +1,5 @@
 import { css } from "@stylespixelkit/css";
+import { LineSquiggle } from "lucide-react";
 
 type Props = {
   value: number;
@@ -9,7 +10,21 @@ type Props = {
   labelText: string;
 };
 
-export const InputSlider = ({ onChange, value, labelText }: Props) => {
+export const InputNumber = ({
+  onChange,
+  value,
+  min = 1,
+  max = 100,
+  step = 1,
+  labelText,
+}: Props) => {
+  const handleNumberChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const newValue = Number(event.target.value);
+    if (!isNaN(newValue)) {
+      onChange(newValue);
+    }
+  };
+
   return (
     <div
       className={css({
@@ -27,6 +42,7 @@ export const InputSlider = ({ onChange, value, labelText }: Props) => {
       >
         {labelText}
       </p>
+
       <div
         className={css({
           width: "100%",
@@ -42,25 +58,26 @@ export const InputSlider = ({ onChange, value, labelText }: Props) => {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
+          gap: "md",
         })}
       >
-        <select
+        <LineSquiggle size={17} />
+        {/* Input number */}
+        <input
+          type="number"
+          min={min}
+          max={max}
+          step={step}
           value={value}
+          onChange={handleNumberChange}
           className={css({
-            width: "100%",
-            flex: 1,
             color: "text",
             fontSize: "sm",
             backgroundColor: "transparent",
+            flex: 1,
+            outline: "none",
           })}
-          onChange={(event) => onChange(Number(event.target.value))}
-        >
-          {[1, 2, 3, 4, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55]?.map((e) => (
-            <option key={`selector-slider-${e}`} value={e}>
-              {e}
-            </option>
-          ))}
-        </select>
+        />
       </div>
     </div>
   );
