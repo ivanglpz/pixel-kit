@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import InputColor from "@/editor/components/input-color";
 import { useAtom, useAtomValue } from "jotai";
 import { useTheme } from "next-themes";
