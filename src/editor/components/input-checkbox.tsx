@@ -18,16 +18,18 @@ export const InputCheckbox = ({ text, value, onCheck }: Props) => {
         height: "100%",
       })}
     >
-      <label
-        htmlFor={text}
-        className={css({
-          color: "text",
-          fontWeight: "600",
-          fontSize: "x-small",
-        })}
-      >
-        {text}
-      </label>
+      {text ? (
+        <label
+          htmlFor={text}
+          className={css({
+            color: "text",
+            fontWeight: "600",
+            fontSize: "x-small",
+          })}
+        >
+          {text}
+        </label>
+      ) : null}
       <label className="switch">
         <input
           name="scales"
