@@ -579,7 +579,7 @@ export default defineConfig({
             value: { base: "{colors.gray.100}", _dark: "{colors.gray.800}" }, // Para secciones secundarias
           },
           elevated: {
-            value: { base: "{colors.white}", _dark: "{colors.gray.700}" }, // Para cards, modales, etc.
+            value: { base: "{colors.gray.50}", _dark: "{colors.gray.700}" }, // Para cards, modales, etc.
           },
           subtle: {
             value: { base: "{colors.gray.200}", _dark: "{colors.gray.600}" }, // Contenedores suaves
