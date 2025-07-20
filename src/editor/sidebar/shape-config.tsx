@@ -209,6 +209,103 @@ export const LayoutShapeConfig = () => {
           onChange={() => {}}
         />
       </div>
+      <Separator />
+      <div
+        className={css({
+          display: "flex",
+          flexDirection: "row",
+          justifyContent: "space-between",
+          alignItems: "center",
+        })}
+      >
+        <p
+          className={css({
+            paddingBottom: "md",
+            paddingTop: "sm",
+            fontWeight: "bold",
+            fontSize: "sm",
+          })}
+        >
+          Fill
+        </p>
+        <InputCheckbox
+          text=""
+          value={fillEnabled ?? true}
+          onCheck={(e) => {
+            shapeUpdate({
+              fillEnabled: e,
+            });
+          }}
+        />
+      </div>
+      <Valid isValid={fillEnabled ?? false}>
+        <InputColor
+          labelText=""
+          keyInput={`pixel-kit-shape-fill-${id}-${tool}`}
+          color={backgroundColor}
+          onChangeColor={(e) => {
+            // onChange("backgroundColor", e)
+
+            shapeUpdate({
+              backgroundColor: e,
+            });
+          }}
+          primaryColors
+        />
+      </Valid>
+      <Separator />
+      <div
+        className={css({
+          display: "flex",
+          flexDirection: "row",
+          justifyContent: "space-between",
+          alignItems: "center",
+        })}
+      >
+        <p
+          className={css({
+            paddingBottom: "md",
+            paddingTop: "sm",
+            fontWeight: "bold",
+            fontSize: "sm",
+          })}
+        >
+          Stroke
+        </p>
+        <InputCheckbox
+          text=""
+          value={strokeEnabled ?? true}
+          onCheck={(e) => {
+            shapeUpdate({
+              strokeEnabled: e,
+            });
+          }}
+        />
+      </div>
+      <Valid isValid={strokeEnabled ?? false}>
+        <InputColor
+          labelText=""
+          keyInput={`pixel-kit-shape-stroke-${id}-${tool}`}
+          color={stroke}
+          onChangeColor={(e) => {
+            shapeUpdate({
+              stroke: e,
+            });
+
+            // onChange("stroke", e)
+          }}
+        />
+        <InputSlider
+          labelText={`Thickness (${strokeWidth})`}
+          onChange={(e) => {
+            shapeUpdate({
+              strokeWidth: e,
+            });
+            // onChange("strokeWidth", e)
+          }}
+          value={strokeWidth || 0}
+        />
+      </Valid>
       <Valid isValid={tool === "IMAGE"}>
         <p
           className={css({
@@ -250,32 +347,8 @@ export const LayoutShapeConfig = () => {
         />
       </Valid>
       {/* <Valid isValid={tool !== "IMAGE"}> */}
-      <InputCheckbox
-        text="Fill"
-        value={fillEnabled ?? true}
-        onCheck={(e) => {
-          shapeUpdate({
-            fillEnabled: e,
-          });
-          // onChange("fillEnabled", e)
-        }}
-      />
-      {/* </Valid> */}
-      <Valid isValid={fillEnabled ?? false}>
-        <InputColor
-          labelText="Fill Color"
-          keyInput={`pixel-kit-shape-fill-${id}-${tool}`}
-          color={backgroundColor}
-          onChangeColor={(e) => {
-            // onChange("backgroundColor", e)
 
-            shapeUpdate({
-              backgroundColor: e,
-            });
-          }}
-          primaryColors
-        />
-      </Valid>
+      {/* </Valid> */}
 
       <Valid isValid={tool === "LINE" || tool === "DRAW"}>
         <InputSelect
@@ -390,41 +463,6 @@ export const LayoutShapeConfig = () => {
             // onChange("fontSize", e)
           }}
           value={fontSize || 0}
-        />
-      </Valid>
-      <InputCheckbox
-        text="Stroke"
-        value={strokeEnabled ?? true}
-        onCheck={(e) => {
-          shapeUpdate({
-            strokeEnabled: e,
-          });
-
-          // onChange("strokeEnabled", e)
-        }}
-      />
-      <Valid isValid={strokeEnabled ?? false}>
-        <InputColor
-          labelText="Color"
-          keyInput={`pixel-kit-shape-stroke-${id}-${tool}`}
-          color={stroke}
-          onChangeColor={(e) => {
-            shapeUpdate({
-              stroke: e,
-            });
-
-            // onChange("stroke", e)
-          }}
-        />
-        <InputSlider
-          labelText={`Thickness (${strokeWidth})`}
-          onChange={(e) => {
-            shapeUpdate({
-              strokeWidth: e,
-            });
-            // onChange("strokeWidth", e)
-          }}
-          value={strokeWidth || 0}
         />
       </Valid>
 
