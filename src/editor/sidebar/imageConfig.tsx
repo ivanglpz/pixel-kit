@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { IMAGE_DEFAULT, IMAGE_DEFAULT_DIMENSIONS } from "@/assets/data";
 import { Valid } from "@/components/valid";
 import { Button } from "@/editor/components/button";
