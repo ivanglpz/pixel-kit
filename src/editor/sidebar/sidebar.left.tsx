@@ -13,7 +13,7 @@ export const SidebarLeft: FC = () => {
   const SHAPES_NOPARENTS = useAtomValue(SHAPES_NO_PARENTS_ATOM);
   const SHAPES = useAtomValue(SHAPES_ATOM);
   const CLEAR = useSetAtom(CLEAR_SHAPES_ATOM);
-  console.log(SHAPES_NOPARENTS, "SHAPES");
+  console.log(SHAPES, "SHAPES");
 
   return (
     <aside
