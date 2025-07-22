@@ -40,9 +40,9 @@ body {
 
 /* ✅ Scroll siempre con espacio, pero invisible por defecto */
 *::-webkit-scrollbar {
-  width: 3.7px;
-  height: 3.7px;
-  background: var(--bg); /* invisible pero mantiene espacio */
+  width: 4px;
+  height: 4px;
+  background: transparent; /* invisible pero mantiene espacio */
 }
 
 *::-webkit-scrollbar-track {
@@ -52,6 +52,9 @@ body {
 *::-webkit-scrollbar-thumb {
   background: transparent; /* no se ve por defecto */
   border-radius: 99px;
+}
+*:hover::-webkit-scrollbar {
+  background: var(--bar-bg);
 }
 
 *:hover::-webkit-scrollbar-thumb {
@@ -78,10 +81,12 @@ body {
   --bg: #ffffff;
   --text: #000000;
   --bar: #4b5efc;
+  --bar-bg: #e2e2e2;
 }
 @media (prefers-color-scheme: dark) {
   :root {
     --bg: #121212;
     --text: #f5f5f5;
+    --bar-bg: #2a2a2a;
   }
 }

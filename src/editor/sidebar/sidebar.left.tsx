@@ -14,12 +14,10 @@ export const SidebarLeft: FC = () => {
   const ROOT_SHAPES = useAtomValue(ROOT_SHAPES_ATOM);
   const ALL_SHAPES = useAtomValue(ALL_SHAPES_ATOM);
   const CLEAR = useSetAtom(CLEAR_SHAPES_ATOM);
-  // console.log(ALL_SHAPES, "SHAPES");
   const SET_PARENT_CHANGE = useSetAtom(CHANGE_PARENT_ID_ATOM);
 
   const handleDropOutside = (e: React.DragEvent) => {
     e.preventDefault();
-    console.log("Drop fuera de cualquier nodo");
     SET_PARENT_CHANGE({ endId: null });
 
     // CLEAR_PARENT({ endId: null }); // <- Esto quitará el parentId
