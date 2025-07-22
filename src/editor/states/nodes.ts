@@ -1,64 +1,40 @@
 import { atom } from "jotai";
-import SHAPES_ATOM, { SHAPES_NODES } from "./shapes";
-
-export const NODE_ATOM = atom<SHAPES_NODES | null>(null);
+import { SHAPE_ID_ATOM } from "./shape";
+import SHAPES_ATOM from "./shapes";
 
 export const CHANGE_SHAPE_NODE_ATOM = atom(
   null,
-  (get, set, args: { id: string }) => {
-    const nodes = get(SHAPES_ATOM);
-    const changeNode = get(NODE_ATOM);
-    if (!changeNode) return;
+  (get, set, args: { endId: string }) => {
+    const shapes = get(SHAPES_ATOM);
+    const startId = get(SHAPE_ID_ATOM);
+    const findStart = shapes?.find((e) => e?.id === startId);
 
-    // Flatten recursivo
-    function flatten(nodes: SHAPES_NODES[]): SHAPES_NODES[] {
-      return nodes.flatMap((node) => {
-        const children = get(node.childrens);
-        return [node, ...flatten(children)];
-      });
-    }
+    const findEnd = shapes?.find((i) => i?.id === args?.endId);
 
-    const allNodes = flatten(nodes);
+    if (!findEnd || !findStart) return;
 
-    // 1. Filtrar solo GROUPS
-    const allGroups = allNodes.filter((node) => node.tool === "GROUP");
+    const shapeEnd = get(findEnd.state);
+    const shapeStart = get(findStart.state);
 
-    // 2. Eliminar el changeNode de cualquier grupo que lo tenga como hijo
-    allGroups.forEach((group) => {
-      const children = get(group.childrens);
-      const filtered = children.filter((child) => child.id !== changeNode.id);
-      if (filtered.length !== children.length) {
-        set(group.childrens, filtered);
-      }
-    });
+    const relativeX = shapeStart.x - shapeEnd.x;
+    const relativeY = shapeStart.y - shapeEnd.y;
 
-    // 3. Buscar el nuevo grupo destino
-    const targetGroup = allGroups.find((g) => g.id === args.id);
-    if (!targetGroup) return;
-
-    // 4. Insertar el nodo dentro del grupo destino
-    const currentChildren = get(targetGroup.childrens);
-    const shapeGroup = get(targetGroup.state);
-    const shapeNodo = get(changeNode.state);
-
-    const relativeX = shapeNodo.x - shapeGroup.x;
-    const relativeY = shapeNodo.y - shapeGroup.y;
-
-    // 5. Actualizar la posición del nodo
-    set(changeNode.state, {
-      ...shapeNodo,
+    const newState = {
+      ...shapeStart,
+      parentId: shapeEnd?.id,
       x: relativeX,
       y: relativeY,
-    });
-    set(targetGroup.childrens, [...currentChildren, changeNode]);
+    };
 
-    // 5. Eliminar el nodo de la raíz
+    set(findStart?.state, newState);
+
     set(
       SHAPES_ATOM,
-      nodes.filter((n) => n.id !== changeNode.id)
+      shapes?.map((shape) =>
+        shape?.id === findStart?.id
+          ? { ...shape, parentId: newState?.parentId }
+          : shape
+      )
     );
-
-    // 6. Resetear selección
-    set(NODE_ATOM, null);
   }
 );

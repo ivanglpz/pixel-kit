@@ -7,7 +7,6 @@ import { ShapeImage } from "../shapes/image.shape";
 
 import { IShape } from "../shapes/type.shape";
 import { STAGE_DIMENSION_ATOM } from "../states/dimension";
-import { SHAPES_NODES } from "../states/shapes";
 
 export const LayerImage = () => {
   const { img } = useImageRender();
@@ -20,9 +19,10 @@ export const LayerImage = () => {
   return (
     <Layer id="layer-image-preview">
       <ShapeImage
+        SHAPES={[]}
         item={{
           id: "1c024656-106b-4d70-bc5c-845637d3344a",
-          childrens: atom<SHAPES_NODES[]>([]),
+          parentId: null,
           state: atom<IShape>({
             ...dimension,
             id: "main-image-render-stage",

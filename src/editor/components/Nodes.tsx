@@ -3,32 +3,43 @@ import { css } from "@stylespixelkit/css";
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { ChevronDown, ChevronRight } from "lucide-react";
 import { useState } from "react";
-import { CHANGE_SHAPE_NODE_ATOM, NODE_ATOM } from "../states/nodes";
+import { CHANGE_SHAPE_NODE_ATOM } from "../states/nodes";
 import { SHAPE_ID_ATOM } from "../states/shape";
 import { SHAPES_NODES } from "../states/shapes";
 
-export const Nodes = ({ item }: { item: SHAPES_NODES }) => {
+export const Nodes = ({
+  item,
+  SHAPES,
+}: {
+  item: SHAPES_NODES;
+  SHAPES: SHAPES_NODES[];
+}) => {
   const value = useAtomValue(item.state);
-  const setDraggedNode = useSetAtom(NODE_ATOM);
-  const [childrens] = useAtom(item.childrens);
-
   const SET_CHANGE = useSetAtom(CHANGE_SHAPE_NODE_ATOM);
-  const handleDragStart = (e: React.DragEvent) => {
-    setDraggedNode(item);
-  };
 
+  const [shapeId, setShapeId] = useAtom(SHAPE_ID_ATOM);
+
+  const [isExpanded, setIsExpanded] = useState(true);
+
+  const handleDragStart = (e: React.DragEvent) => {
+    setShapeId(item?.id);
+  };
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
+    console.log("hover");
   };
 
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
-    SET_CHANGE({ id: item.id });
+    console.log("end");
+    console.log(item?.id);
+
+    SET_CHANGE({ endId: item.id });
   };
-
-  const [shapeId, setShapeId] = useAtom(SHAPE_ID_ATOM);
-  const [isExpanded, setIsExpanded] = useState(true); // ← toggle state
-
+  const childrens =
+    item?.tool === "GROUP"
+      ? SHAPES?.filter((e) => e?.parentId === item?.id)
+      : [];
   return (
     <>
       <li
@@ -37,6 +48,7 @@ export const Nodes = ({ item }: { item: SHAPES_NODES }) => {
         onDragStart={handleDragStart}
         onDragOver={handleDragOver}
         onDrop={handleDrop}
+        // onDrop={handleDrop}
         className={css({
           color: "text",
           padding: "md",
@@ -56,9 +68,7 @@ export const Nodes = ({ item }: { item: SHAPES_NODES }) => {
           cursor: "pointer",
           width: "100%", // ← importante para que crezca según los hijos
         })}
-        onClick={() => {
-          setShapeId(value?.id);
-        }}
+        onClick={() => setShapeId(value?.id)}
       >
         {value.tool === "GROUP" && childrens.length > 0 ? (
           <button
@@ -92,10 +102,12 @@ export const Nodes = ({ item }: { item: SHAPES_NODES }) => {
           className={css({
             textTransform: "capitalize",
           })}
+          // onPointerDown={(e) => controls.start(e)}
         >
           {value.tool?.toLowerCase()}
         </p>
       </li>
+
       {childrens?.length > 0 && isExpanded && (
         <ul
           className={css({
@@ -103,11 +115,10 @@ export const Nodes = ({ item }: { item: SHAPES_NODES }) => {
             display: "flex",
             flexDirection: "column",
             gap: "md",
-            width: "max-content", // ← importante para que crezca según los hijos
           })}
         >
-          {childrens.map((e) => (
-            <Nodes key={value.id + e.tool + e.id + "childrens"} item={e} />
+          {childrens.map((child) => (
+            <Nodes key={`child-${child.id}`} SHAPES={SHAPES} item={child} />
           ))}
         </ul>
       )}
