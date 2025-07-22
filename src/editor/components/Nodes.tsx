@@ -3,7 +3,7 @@ import { css } from "@stylespixelkit/css";
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { ChevronDown, ChevronRight } from "lucide-react";
 import { useState } from "react";
-import { CHANGE_SHAPE_NODE_ATOM } from "../states/nodes";
+import { CHANGE_PARENT_ID_ATOM, CHANGE_SHAPE_NODE_ATOM } from "../states/nodes";
 import { SHAPE_ID_ATOM } from "../states/shape";
 import { SHAPES_NODES } from "../states/shapes";
 
@@ -16,7 +16,7 @@ export const Nodes = ({
 }) => {
   const value = useAtomValue(item.state);
   const SET_CHANGE = useSetAtom(CHANGE_SHAPE_NODE_ATOM);
-
+  const SET_PARENT_CHANGE = useSetAtom(CHANGE_PARENT_ID_ATOM);
   const [shapeId, setShapeId] = useAtom(SHAPE_ID_ATOM);
 
   const [isExpanded, setIsExpanded] = useState(true);
@@ -31,11 +31,23 @@ export const Nodes = ({
 
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
+    e.stopPropagation(); // ✅ Detiene la propagación hacia el ul contenedor
+
     console.log("end");
     console.log(item?.id);
 
     SET_CHANGE({ endId: item.id });
   };
+  const handleDropOutside = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation(); // ✅ Detiene la propagación hacia el ul contenedor
+    console.log(item?.id);
+
+    console.log("Drop fuera de cualquier nodo GROUP");
+    SET_PARENT_CHANGE({ endId: item?.id });
+    // CLEAR_PARENT({ endId: null }); // <- Esto quitará el parentId
+  };
+
   const childrens =
     item?.tool === "GROUP"
       ? SHAPES?.filter((e) => e?.parentId === item?.id)
@@ -51,7 +63,7 @@ export const Nodes = ({
         // onDrop={handleDrop}
         className={css({
           color: "text",
-          padding: "md",
+          padding: "sm",
           fontSize: "sm",
           listStyle: "none",
           display: "grid",
@@ -88,9 +100,9 @@ export const Nodes = ({
             })}
           >
             {isExpanded ? (
-              <ChevronDown size={18} />
+              <ChevronDown size={14} />
             ) : (
-              <ChevronRight size={18} />
+              <ChevronRight size={14} />
             )}
           </button>
         ) : (
@@ -101,6 +113,7 @@ export const Nodes = ({
         <p
           className={css({
             textTransform: "capitalize",
+            fontSize: "11px",
           })}
           // onPointerDown={(e) => controls.start(e)}
         >
@@ -114,8 +127,12 @@ export const Nodes = ({
             marginLeft: "25px",
             display: "flex",
             flexDirection: "column",
-            gap: "md",
+            gap: "lg",
+            borderLeftColor: "primary",
+            borderLeftWidth: 2,
           })}
+          onDragOver={(e) => e.preventDefault()}
+          onDrop={handleDropOutside}
         >
           {childrens.map((child) => (
             <Nodes key={`child-${child.id}`} SHAPES={SHAPES} item={child} />

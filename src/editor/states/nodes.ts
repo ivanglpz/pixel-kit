@@ -42,3 +42,49 @@ export const CHANGE_SHAPE_NODE_ATOM = atom(
     );
   }
 );
+
+export const CHANGE_PARENT_ID_ATOM = atom(
+  null,
+  (get, set, args: { endId: string | null }) => {
+    const shapes = get(ALL_SHAPES_ATOM);
+    const startId = get(SHAPE_ID_ATOM);
+
+    // 🔍 Encontramos el shape que estamos moviendo
+    const findStart = shapes.find((e) => e.id === startId);
+    if (!findStart) return;
+
+    // ✅ Caso 1: Soltado fuera → parentId null
+    if (args.endId === null) {
+      set(findStart.state, { ...get(findStart.state), parentId: null });
+
+      set(
+        ALL_SHAPES_ATOM,
+        shapes.map((shape) =>
+          shape.id === findStart.id ? { ...shape, parentId: null } : shape
+        )
+      );
+
+      return;
+    }
+
+    // ✅ Caso 2: Verificar si el endId existe y es GROUP
+    const findEnd = shapes.find((i) => i.id === args.endId);
+    if (!findEnd || findEnd.tool !== "GROUP") return;
+
+    // ❌ Evitar relacionarse con uno mismo
+    if (findStart.id === findEnd.id) return;
+
+    // ✅ Actualizar solo el parentId
+    set(findStart.state, {
+      ...get(findStart.state),
+      parentId: findEnd.id,
+    });
+
+    set(
+      ALL_SHAPES_ATOM,
+      shapes.map((shape) =>
+        shape.id === findStart.id ? { ...shape, parentId: findEnd.id } : shape
+      )
+    );
+  }
+);

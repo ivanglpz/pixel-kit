@@ -12,7 +12,7 @@ import {
   Type,
 } from "lucide-react";
 
-const size = 16;
+const size = 14;
 
 const icons = {
   cursor: (
