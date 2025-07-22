@@ -4,16 +4,16 @@ import { Plus } from "lucide-react";
 import { FC } from "react";
 import { Nodes } from "../components/Nodes";
 import { Segmentation } from "../components/segmentation";
-import SHAPES_ATOM, {
+import ALL_SHAPES_ATOM, {
   CLEAR_SHAPES_ATOM,
-  SHAPES_NO_PARENTS_ATOM,
+  ROOT_SHAPES_ATOM,
 } from "../states/shapes";
 
 export const SidebarLeft: FC = () => {
-  const SHAPES_NOPARENTS = useAtomValue(SHAPES_NO_PARENTS_ATOM);
-  const SHAPES = useAtomValue(SHAPES_ATOM);
+  const ROOT_SHAPES = useAtomValue(ROOT_SHAPES_ATOM);
+  const ALL_SHAPES = useAtomValue(ALL_SHAPES_ATOM);
   const CLEAR = useSetAtom(CLEAR_SHAPES_ATOM);
-  console.log(SHAPES, "SHAPES");
+  console.log(ALL_SHAPES, "SHAPES");
 
   return (
     <aside
@@ -128,11 +128,11 @@ export const SidebarLeft: FC = () => {
                 overflowY: "scroll",
               })}
             >
-              {SHAPES_NOPARENTS?.map((e) => {
+              {ROOT_SHAPES?.map((e) => {
                 return (
                   <Nodes
                     key={`main-nodes-${e?.id}-${e?.tool}`}
-                    SHAPES={SHAPES}
+                    SHAPES={ALL_SHAPES}
                     item={e}
                   />
                 );
