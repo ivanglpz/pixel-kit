@@ -10,7 +10,6 @@ export type SHAPES_NODES = {
   tool: IKeyMethods;
   parentId: string | null;
   state: PrimitiveAtom<IShape> & WithInitialValue<IShape>;
-  // childrens: PrimitiveAtom<SHAPES_NODES[]> & WithInitialValue<SHAPES_NODES[]>;
 };
 
 const SHAPES_ATOM = atom([] as SHAPES_NODES[]);
@@ -26,21 +25,34 @@ export const CLEAR_SHAPES_ATOM = atom(null, (get, set) => {
 export const DELETE_SHAPE_ATOM = atom(
   null,
   (get, set, args: { id: string }) => {
-    function deleteRecursive(nodes: SHAPES_NODES[]): SHAPES_NODES[] {
-      return nodes
-        .map((node) => {
-          // const children = get(node.childrens);
-          // const newChildren = deleteRecursive(children);
-          // if (children.length !== newChildren.length) {
-          //   set(node.childrens, newChildren);
-          // }
-          return node;
-        })
-        .filter((node) => node.id !== args.id);
-    }
-
     const currentShapes = get(SHAPES_ATOM);
-    const newShapes = deleteRecursive(currentShapes);
+    const shape = currentShapes.find((e) => e.id === args.id);
+    if (!shape) return;
+
+    // ✅ 1. Función recursiva para obtener todos los hijos en cascada
+    const getAllChildrenIds = (
+      parentId: string,
+      shapes: SHAPES_NODES[]
+    ): string[] => {
+      const directChildren = shapes.filter((s) => s.parentId === parentId);
+      if (directChildren.length === 0) return [];
+
+      // Recorremos cada hijo, y si es GROUP también obtenemos sus hijos
+      return directChildren.flatMap((child) => [
+        child.id,
+        ...getAllChildrenIds(child.id, shapes),
+      ]);
+    };
+
+    // ✅ 2. Obtenemos todos los hijos en cascada (si es GROUP)
+    const idsToDelete =
+      shape.tool === "GROUP"
+        ? [shape.id, ...getAllChildrenIds(shape.id, currentShapes)]
+        : [shape.id];
+
+    // ✅ 3. Filtramos
+    const newShapes = currentShapes.filter((s) => !idsToDelete.includes(s.id));
+
     set(SHAPES_ATOM, newShapes);
   }
 );
@@ -55,7 +67,6 @@ export const CREATE_SHAPE_ATOM = atom(null, (get, set, args: IShape) => {
       tool: args?.tool,
       state: atom(args),
       parentId: null,
-      // childrens: atom<SHAPES_NODES[]>([]),
     },
   ]);
 });

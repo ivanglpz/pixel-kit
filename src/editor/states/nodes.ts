@@ -13,6 +13,10 @@ export const CHANGE_SHAPE_NODE_ATOM = atom(
 
     if (!findEnd || !findStart) return;
 
+    if (findStart?.id === findEnd?.id) return;
+    if (findStart?.id === findEnd?.parentId) return;
+    if (findEnd?.tool !== "GROUP") return;
+
     const shapeEnd = get(findEnd.state);
     const shapeStart = get(findStart.state);
 
