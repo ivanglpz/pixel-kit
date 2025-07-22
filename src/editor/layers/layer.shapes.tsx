@@ -2,7 +2,7 @@ import { useAtomValue } from "jotai";
 import { Layer } from "react-konva";
 import { Shapes } from "../shapes/shapes";
 import { FCShapeWEvents } from "../shapes/type.shape";
-import SHAPES_ATOM, { SHAPES_NO_PARENTS_ATOM } from "../states/shapes";
+import ALL_SHAPES_ATOM, { ROOT_SHAPES_ATOM } from "../states/shapes";
 
 export const LayerShapes = () => {
   // const { isDrawing } = useTool();
@@ -11,16 +11,16 @@ export const LayerShapes = () => {
   //   handleSetShapeSelected(element);
   // };
 
-  const SHAPES_NOPARENTS = useAtomValue(SHAPES_NO_PARENTS_ATOM);
-  const SHAPES = useAtomValue(SHAPES_ATOM);
+  const ROOT_SHAPES = useAtomValue(ROOT_SHAPES_ATOM);
+  const ALL_SHAPES = useAtomValue(ALL_SHAPES_ATOM);
   return (
     <>
       <Layer id="layer-shapes">
-        {SHAPES_NOPARENTS?.map((item) => {
+        {ROOT_SHAPES?.map((item) => {
           const Component = Shapes?.[item?.tool] as FCShapeWEvents;
           return (
             <Component
-              SHAPES={SHAPES}
+              SHAPES={ALL_SHAPES}
               item={item}
               key={`pixel-kit-shapes-${item?.id}`}
             />

@@ -12,20 +12,20 @@ export type SHAPES_NODES = {
   state: PrimitiveAtom<IShape> & WithInitialValue<IShape>;
 };
 
-const SHAPES_ATOM = atom([] as SHAPES_NODES[]);
+const ALL_SHAPES_ATOM = atom([] as SHAPES_NODES[]);
 
-export const SHAPES_NO_PARENTS_ATOM = atom((get) =>
-  get(SHAPES_ATOM)?.filter((e) => e?.parentId === null)
+export const ROOT_SHAPES_ATOM = atom((get) =>
+  get(ALL_SHAPES_ATOM)?.filter((e) => e?.parentId === null)
 );
 
 export const CLEAR_SHAPES_ATOM = atom(null, (get, set) => {
-  set(SHAPES_ATOM, []);
+  set(ALL_SHAPES_ATOM, []);
 });
 
 export const DELETE_SHAPE_ATOM = atom(
   null,
   (get, set, args: { id: string }) => {
-    const currentShapes = get(SHAPES_ATOM);
+    const currentShapes = get(ALL_SHAPES_ATOM);
     const shape = currentShapes.find((e) => e.id === args.id);
     if (!shape) return;
 
@@ -53,15 +53,15 @@ export const DELETE_SHAPE_ATOM = atom(
     // ✅ 3. Filtramos
     const newShapes = currentShapes.filter((s) => !idsToDelete.includes(s.id));
 
-    set(SHAPES_ATOM, newShapes);
+    set(ALL_SHAPES_ATOM, newShapes);
   }
 );
 
 export const CREATE_SHAPE_ATOM = atom(null, (get, set, args: IShape) => {
   if (!args || !args?.id) return;
 
-  set(SHAPES_ATOM, [
-    ...get(SHAPES_ATOM),
+  set(ALL_SHAPES_ATOM, [
+    ...get(ALL_SHAPES_ATOM),
     {
       id: args?.id,
       tool: args?.tool,
@@ -71,4 +71,4 @@ export const CREATE_SHAPE_ATOM = atom(null, (get, set, args: IShape) => {
   ]);
 });
 
-export default SHAPES_ATOM;
+export default ALL_SHAPES_ATOM;

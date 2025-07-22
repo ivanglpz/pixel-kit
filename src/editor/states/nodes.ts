@@ -1,11 +1,11 @@
 import { atom } from "jotai";
 import { SHAPE_ID_ATOM } from "./shape";
-import SHAPES_ATOM from "./shapes";
+import ALL_SHAPES_ATOM from "./shapes";
 
 export const CHANGE_SHAPE_NODE_ATOM = atom(
   null,
   (get, set, args: { endId: string }) => {
-    const shapes = get(SHAPES_ATOM);
+    const shapes = get(ALL_SHAPES_ATOM);
     const startId = get(SHAPE_ID_ATOM);
     const findStart = shapes?.find((e) => e?.id === startId);
 
@@ -33,7 +33,7 @@ export const CHANGE_SHAPE_NODE_ATOM = atom(
     set(findStart?.state, newState);
 
     set(
-      SHAPES_ATOM,
+      ALL_SHAPES_ATOM,
       shapes?.map((shape) =>
         shape?.id === findStart?.id
           ? { ...shape, parentId: newState?.parentId }

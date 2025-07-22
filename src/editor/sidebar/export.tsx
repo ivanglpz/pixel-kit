@@ -21,7 +21,7 @@ import { v4 as uuidv4 } from "uuid";
 import { AllLayers } from "../layers/root.layers";
 import { STAGE_DIMENSION_ATOM } from "../states/dimension";
 import { typeExportAtom } from "../states/export";
-import SHAPES_ATOM from "../states/shapes";
+import ALL_SHAPES_ATOM from "../states/shapes";
 import { ImageConfiguration } from "./imageConfig";
 
 const formats = {
@@ -106,7 +106,7 @@ export const ExportStage = () => {
   const { img } = useImageRender();
   const [loading, setloading] = useState(false);
   const { height, width } = useAtomValue(STAGE_DIMENSION_ATOM);
-  const SHAPES = useAtomValue(SHAPES_ATOM);
+  const ALL_SHAPES = useAtomValue(ALL_SHAPES_ATOM);
   const [format, setformat] = useAtom(typeExportAtom);
   const [showExport, setShowExport] = useState(false);
   const [showClip, setshowClip] = useAtom(showClipAtom);
@@ -232,7 +232,7 @@ export const ExportStage = () => {
 
     stage.position({ x: offsetX, y: offsetY });
     stage.batchDraw();
-  }, [width, height, config.export_mode, showClip, SHAPES]);
+  }, [width, height, config.export_mode, showClip, ALL_SHAPES]);
 
   return (
     <>
