@@ -26,24 +26,17 @@ export const Nodes = ({
   };
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
-    console.log("hover");
   };
 
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation(); // ✅ Detiene la propagación hacia el ul contenedor
 
-    console.log("end");
-    console.log(item?.id);
-
     SET_CHANGE({ endId: item.id });
   };
   const handleDropOutside = (e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation(); // ✅ Detiene la propagación hacia el ul contenedor
-    console.log(item?.id);
-
-    console.log("Drop fuera de cualquier nodo GROUP");
     SET_PARENT_CHANGE({ endId: item?.id });
     // CLEAR_PARENT({ endId: null }); // <- Esto quitará el parentId
   };
@@ -78,7 +71,8 @@ export const Nodes = ({
             },
           },
           cursor: "pointer",
-          width: "100%", // ← importante para que crezca según los hijos
+          // width: "100%", // ← importante para que crezca según los hijos
+          minWidth: 200,
         })}
         onClick={() => setShapeId(value?.id)}
       >
