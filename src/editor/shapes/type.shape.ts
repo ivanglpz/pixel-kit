@@ -124,6 +124,7 @@ export type IShape = {
 
 export type IShapeWithEvents = {
   item: SHAPES_NODES;
+  SHAPES: SHAPES_NODES[];
 };
 
 export type FCShapeWEvents = FC<IShapeWithEvents>;

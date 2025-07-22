@@ -14,7 +14,7 @@ import {
 } from "./type.shape";
 
 // eslint-disable-next-line react/display-name
-export const ShapeGroup = memo(({ item }: IShapeWithEvents) => {
+export const ShapeGroup = memo(({ item, SHAPES }: IShapeWithEvents) => {
   // const {
   //   draggable,
   //   isSelected,
@@ -56,7 +56,7 @@ export const ShapeGroup = memo(({ item }: IShapeWithEvents) => {
   const trRef = useRef<Konva.Transformer>();
   const { isDrawing } = useTool();
   const stage = useAtomValue(STAGE_DIMENSION_ATOM);
-  const [childrens] = useAtom(item.childrens);
+  // const [childrens] = useAtom(item.childrens);
 
   // useEffect(() => {
   //   if (isSelected) {
@@ -67,6 +67,7 @@ export const ShapeGroup = memo(({ item }: IShapeWithEvents) => {
   //   }
   // }, [isSelected, trRef, shapeRef]);
 
+  const childrens = SHAPES?.filter((e) => e?.parentId === box?.id);
   return (
     <>
       {/* <Valid isValid={isSelected}>
@@ -76,13 +77,14 @@ export const ShapeGroup = memo(({ item }: IShapeWithEvents) => {
           shape={box}
         />
       </Valid> */}
-      <ShapeBox item={item} />
+      <ShapeBox item={item} SHAPES={[]} />
 
       <Group x={x} y={y} width={width} height={height}>
         {childrens?.map((item) => {
           const Component = Shapes?.[item?.tool] as FCShapeWEvents;
           return (
             <Component
+              SHAPES={SHAPES}
               item={item}
               // screenHeight={stage.height}
               // screenWidth={stage.width}
