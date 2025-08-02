@@ -43,7 +43,7 @@ export const CHANGE_SHAPE_NODE_ATOM = atom(
   }
 );
 
-export const CHANGE_PARENT_ID_ATOM = atom(
+export const CHANGE_PARENTID_NODE_ATOM = atom(
   null,
   (get, set, args: { endId: string | null }) => {
     const shapes = get(ALL_SHAPES_ATOM);

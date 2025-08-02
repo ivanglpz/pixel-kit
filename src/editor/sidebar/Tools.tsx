@@ -2,7 +2,7 @@ import { useTool } from "@/editor/hooks";
 import { showClipAtom } from "@/editor/states/clipImage";
 import { IKeyTool } from "@/editor/states/tool";
 import { css } from "@stylespixelkit/css";
-import { useSetAtom } from "jotai";
+import { useAtom, useSetAtom } from "jotai";
 import { useConfiguration } from "../hooks/useConfiguration";
 import { EVENT_ATOM, IStageEvents } from "../states/event";
 import { SHAPE_ID_ATOM } from "../states/shape";
@@ -10,7 +10,7 @@ import { SHAPE_ID_ATOM } from "../states/shape";
 export const Tools = () => {
   const { tool, setTool } = useTool();
 
-  const setshowClip = useSetAtom(showClipAtom);
+  const [showClip, setshowClip] = useAtom(showClipAtom);
 
   const { config } = useConfiguration();
   const setShapeId = useSetAtom(SHAPE_ID_ATOM);
@@ -52,9 +52,25 @@ export const Tools = () => {
               position: "relative",
             })} ${isSelected ? "tool-stroke-active" : ""}`}
             onClick={() => {
+              if (item.keyMethod === "CLIP") {
+                if (showClip) {
+                  setTool("MOVE");
+                  setEventStage("IDLE");
+                  setShapeId(null);
+                  setshowClip(false);
+                  return;
+                }
+                setTool(item.keyMethod as IKeyTool);
+                setEventStage(item.eventStage as IStageEvents);
+                setShapeId(null);
+                setshowClip(true);
+
+                return;
+              }
               setTool(item.keyMethod as IKeyTool);
               setEventStage(item.eventStage as IStageEvents);
               setShapeId(null);
+              setshowClip((s) => !s);
               setshowClip(false);
             }}
           >

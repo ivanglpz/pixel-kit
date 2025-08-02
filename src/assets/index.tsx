@@ -3,6 +3,7 @@ import { IKeyTool } from "@/editor/states/tool";
 import { css } from "@stylespixelkit/css";
 import {
   Circle,
+  Frame,
   Group,
   Image,
   MousePointer2,
@@ -224,6 +225,17 @@ const icons = {
       />
     </svg>
   ),
+  clip: (
+    <Frame
+      size={size}
+      className={css({
+        stroke: "black",
+        _dark: {
+          stroke: "white",
+        },
+      })}
+    />
+  ),
 };
 
 export const iconsWithTools: { [key in IKeyTool]?: JSX.Element } = {
@@ -234,5 +246,6 @@ export const iconsWithTools: { [key in IKeyTool]?: JSX.Element } = {
   IMAGE: icons.image,
   TEXT: icons.text,
   LINE: icons.line,
+  CLIP: icons.clip,
 };
 export default icons;

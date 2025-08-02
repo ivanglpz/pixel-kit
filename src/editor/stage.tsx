@@ -34,7 +34,7 @@ const PxStage: FC<Props> = ({ children }) => {
   });
 
   const handleClear = (e: KonvaEventObject<MouseEvent>) => {
-    if (["DRAW", "LINE"].includes(tool)) return;
+    if (["DRAW", "LINE", "CLIP"].includes(tool)) return;
 
     const targetId = e?.target?.attrs?.id;
     if (
@@ -248,34 +248,6 @@ const PxStage: FC<Props> = ({ children }) => {
         >
           {children}
         </Stage>
-      </Valid>
-      <Valid isValid={!show}>
-        <p
-          className={css({
-            color: "text",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center",
-          })}
-        >
-          {/* LOADER */}
-          <svg
-            width="20"
-            height="20"
-            viewBox="0 0 60 60"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <mask id="path-1-inside-1_865_433" fill="white">
-              <path d="M43.5714 11H49V27.2857H43.5714V16.4286H16.4286V43.5714H27.2857V49H11V11H43.5714ZM32.7143 38.1429V32.7143H49V38.1429H43.5714V43.5714H38.1429V49H32.7143V38.1429ZM43.5714 43.5714V49H49V43.5714H43.5714Z" />
-            </mask>
-            <path
-              d="M43.5714 11H49V27.2857H43.5714V16.4286H16.4286V43.5714H27.2857V49H11V11H43.5714ZM32.7143 38.1429V32.7143H49V38.1429H43.5714V43.5714H38.1429V49H32.7143V38.1429ZM43.5714 43.5714V49H49V43.5714H43.5714Z"
-              fill="black"
-            />
-          </svg>
-        </p>
       </Valid>
     </main>
   );

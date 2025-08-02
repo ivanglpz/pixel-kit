@@ -2,7 +2,6 @@
 import icons from "@/assets";
 import { atom, useAtom, useSetAtom } from "jotai";
 import { useEffect } from "react";
-import STAGE_CANVAS_BACKGROUND from "../states/canvas";
 import { IStageEvents } from "../states/event";
 import { CLEAR_SHAPES_ATOM } from "../states/shapes";
 import { IKeyTool } from "../states/tool";
@@ -21,6 +20,7 @@ type Config = {
     keyBoard?: string;
     eventStage?: IStageEvents;
     isSeparation?: boolean;
+    showClip?: boolean;
   }[];
   show_layer_background: boolean;
   show_layer_clip: boolean;
@@ -176,6 +176,13 @@ const configs: { [key in Keys]: Config } = {
         keyBoard: "F",
         eventStage: "CREATE",
       },
+      {
+        icon: icons.clip,
+        keyMethod: "CLIP",
+        keyBoard: "Z",
+        eventStage: "IDLE",
+        showClip: true,
+      },
     ],
     show_layer_background: false,
     show_layer_clip: true,
@@ -269,7 +276,6 @@ export const useConfiguration = (props?: Props) => {
   const type = props?.type;
   const [config, setConfig] = useAtom(configAtom);
   const SET_RESET = useSetAtom(CLEAR_SHAPES_ATOM);
-  const setBackground = useSetAtom(STAGE_CANVAS_BACKGROUND);
 
   const handleChangeConfig = (type?: Keys | string) => {
     if (!type) return;

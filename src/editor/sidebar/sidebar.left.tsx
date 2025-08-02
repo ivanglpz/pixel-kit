@@ -4,7 +4,7 @@ import { Plus } from "lucide-react";
 import { FC } from "react";
 import { Nodes } from "../components/Nodes";
 import { Segmentation } from "../components/segmentation";
-import { CHANGE_PARENT_ID_ATOM } from "../states/nodes";
+import { CHANGE_PARENTID_NODE_ATOM } from "../states/nodes";
 import ALL_SHAPES_ATOM, {
   CLEAR_SHAPES_ATOM,
   ROOT_SHAPES_ATOM,
@@ -14,7 +14,7 @@ export const SidebarLeft: FC = () => {
   const ROOT_SHAPES = useAtomValue(ROOT_SHAPES_ATOM);
   const ALL_SHAPES = useAtomValue(ALL_SHAPES_ATOM);
   const CLEAR = useSetAtom(CLEAR_SHAPES_ATOM);
-  const SET_PARENT_CHANGE = useSetAtom(CHANGE_PARENT_ID_ATOM);
+  const SET_PARENT_CHANGE = useSetAtom(CHANGE_PARENTID_NODE_ATOM);
 
   const handleDropOutside = (e: React.DragEvent) => {
     e.preventDefault();
