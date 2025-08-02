@@ -76,6 +76,7 @@ export const LayerClip = () => {
     }
     return payload;
   };
+
   if (!showClip) return null;
 
   return (
