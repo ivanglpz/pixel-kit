@@ -21,11 +21,11 @@ export const AllLayers = () => {
       <Valid isValid={config?.show_layer_image}>
         <LayerImage />
       </Valid>
+      <LayerShapes />
+      <LayerPipe />
       <Valid isValid={config.show_layer_clip}>
         <LayerClip />
       </Valid>
-      <LayerShapes />
-      <LayerPipe />
     </>
   );
 };
