@@ -35,7 +35,7 @@ export const Clip = () => {
         className={css({
           display: "grid",
           gridTemplateColumns: "2",
-          gap: "lg",
+          gap: "md",
         })}
       >
         <InputNumber
@@ -56,24 +56,43 @@ export const Clip = () => {
         className={css({
           display: "flex",
           flexDirection: "row",
-          gap: "lg",
+          gap: "md",
+          justifyContent: "end",
         })}
       >
         <button
           className={css({
+            padding: "md",
+            borderColor: "border",
+            borderWidth: 1,
+            borderRadius: "md",
             backgroundColor: "gray.800",
-            flex: 1,
+            py: "5",
+            px: "10",
+            height: "35px",
           })}
           onClick={() => {
             handleResetImage();
           }}
         >
-          Reset
+          <p
+            className={css({
+              fontSize: "sm",
+            })}
+          >
+            Reset
+          </p>
         </button>
         <button
           className={css({
-            backgroundColor: "gray.800",
-            flex: 1,
+            padding: "md",
+            borderColor: "border",
+            borderWidth: 1,
+            borderRadius: "md",
+            backgroundColor: "primary",
+            py: "5",
+            px: "10",
+            height: "35px",
           })}
           onClick={() => {
             setTool("MOVE");
@@ -100,7 +119,13 @@ export const Clip = () => {
             image.src = base64 ?? "";
           }}
         >
-          Save
+          <p
+            className={css({
+              fontSize: "sm",
+            })}
+          >
+            Save
+          </p>
         </button>
       </section>
     </div>

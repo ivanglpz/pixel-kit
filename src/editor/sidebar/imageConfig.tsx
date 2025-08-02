@@ -141,7 +141,27 @@ export const ImageConfiguration = () => {
             )
           : null}
       </Valid>
-      <Button text="Change Image" onClick={() => inputRef.current?.click()} />
+      <button
+        className={css({
+          padding: "md",
+          borderColor: "border",
+          borderWidth: 1,
+          borderRadius: "md",
+          backgroundColor: "gray.800",
+          py: "5",
+          px: "10",
+          height: "35px",
+        })}
+        onClick={() => inputRef.current?.click()}
+      >
+        <p
+          className={css({
+            fontSize: "sm",
+          })}
+        >
+          Change
+        </p>
+      </button>
       <input
         ref={inputRef}
         type="file"
