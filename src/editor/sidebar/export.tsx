@@ -379,6 +379,16 @@ export const ExportStage = () => {
             )
           : null}
       </Valid>
+      <p
+        className={css({
+          paddingBottom: "md",
+          paddingTop: "sm",
+          fontWeight: "bold",
+          fontSize: "sm",
+        })}
+      >
+        Export
+      </p>
       <div
         className={css({
           display: "grid",

@@ -1,9 +1,12 @@
 import { iconsWithTools } from "@/assets";
 import { css } from "@stylespixelkit/css";
-import { useAtom, useAtomValue, useSetAtom } from "jotai";
+import { useAtomValue, useSetAtom } from "jotai";
 import { ChevronDown, ChevronRight } from "lucide-react";
 import { useState } from "react";
-import { CHANGE_PARENT_ID_ATOM, CHANGE_SHAPE_NODE_ATOM } from "../states/nodes";
+import {
+  CHANGE_PARENTID_NODE_ATOM,
+  CHANGE_SHAPE_NODE_ATOM,
+} from "../states/nodes";
 import { SHAPE_ID_ATOM } from "../states/shape";
 import { SHAPES_NODES } from "../states/shapes";
 
@@ -16,8 +19,8 @@ export const Nodes = ({
 }) => {
   const value = useAtomValue(item.state);
   const SET_CHANGE = useSetAtom(CHANGE_SHAPE_NODE_ATOM);
-  const SET_PARENT_CHANGE = useSetAtom(CHANGE_PARENT_ID_ATOM);
-  const [shapeId, setShapeId] = useAtom(SHAPE_ID_ATOM);
+  const SET_PARENT_CHANGE = useSetAtom(CHANGE_PARENTID_NODE_ATOM);
+  const setShapeId = useSetAtom(SHAPE_ID_ATOM);
 
   const [isExpanded, setIsExpanded] = useState(true);
 

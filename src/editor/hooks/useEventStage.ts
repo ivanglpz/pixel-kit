@@ -191,12 +191,16 @@ const useEventStage = () => {
         const keysActions = Object.fromEntries(
           config.tools.map((item) => [
             item.keyBoard,
-            { keyMethod: item.keyMethod, eventStage: item.eventStage },
+            {
+              keyMethod: item.keyMethod,
+              eventStage: item.eventStage,
+              showClip: Boolean(item?.showClip),
+            },
           ])
         );
 
         if (keysActions[KEY]) {
-          setshowClip(false);
+          setshowClip(Boolean(keysActions[KEY].showClip));
           toolKeydown(keysActions[KEY].keyMethod);
           setEventStage(keysActions[KEY].eventStage);
         }
