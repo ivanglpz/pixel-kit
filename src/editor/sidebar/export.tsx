@@ -399,11 +399,29 @@ export const ExportStage = () => {
         <Valid isValid={config?.show_files_browser}>
           <ImageConfiguration />
         </Valid>
-        <Button
-          text="Export"
+        <button
+          className={css({
+            padding: "md",
+            borderColor: "border",
+            borderWidth: 1,
+            borderRadius: "md",
+            backgroundColor: "green.dark.600",
+            py: "5",
+            px: "10",
+            height: "35px",
+          })}
           onClick={() => setShowExport(true)}
-          type="success"
-        ></Button>
+        >
+          <p
+            className={css({
+              fontSize: "sm",
+              color: "black",
+              fontWeight: "600",
+            })}
+          >
+            Export
+          </p>
+        </button>
       </div>
       <StageContainer
         id="preview-stage"
