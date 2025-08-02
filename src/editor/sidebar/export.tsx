@@ -389,6 +389,23 @@ export const ExportStage = () => {
       >
         Export
       </p>
+      <StageContainer
+        id="preview-stage"
+        ref={stageRef}
+        width={stageWidth}
+        height={stageHeight}
+        listening={false} //
+        className={css({
+          backgroundColor: "gray.100",
+          borderColor: "border",
+          borderWidth: 1,
+          _dark: {
+            backgroundColor: "gray.800",
+          },
+        })}
+      >
+        <AllLayers />
+      </StageContainer>
       <div
         className={css({
           display: "grid",
@@ -399,10 +416,13 @@ export const ExportStage = () => {
         <Valid isValid={config?.show_files_browser}>
           <ImageConfiguration />
         </Valid>
+        <Valid isValid={!config?.show_files_browser}>
+          <div></div>
+        </Valid>
         <button
           className={css({
             padding: "md",
-            borderColor: "border",
+            borderColor: "green.light.200",
             borderWidth: 1,
             borderRadius: "md",
             backgroundColor: "green.dark.600",
@@ -423,23 +443,6 @@ export const ExportStage = () => {
           </p>
         </button>
       </div>
-      <StageContainer
-        id="preview-stage"
-        ref={stageRef}
-        width={stageWidth}
-        height={stageHeight}
-        listening={false} //
-        className={css({
-          backgroundColor: "gray.100",
-          borderColor: "border",
-          borderWidth: 1,
-          _dark: {
-            backgroundColor: "gray.800",
-          },
-        })}
-      >
-        <AllLayers />
-      </StageContainer>
     </>
   );
 };
