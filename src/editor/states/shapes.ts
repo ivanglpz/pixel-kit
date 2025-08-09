@@ -1,5 +1,6 @@
 import { IShape } from "@/editor/shapes/type.shape";
 import { atom, PrimitiveAtom } from "jotai";
+import { PAGE_ID_ATOM } from "./pages";
 import { IKeyMethods } from "./tool";
 
 export type WithInitialValue<Value> = {
@@ -9,13 +10,16 @@ export type SHAPES_NODES = {
   id: string;
   tool: IKeyMethods;
   parentId: string | null;
+  pageId: string;
   state: PrimitiveAtom<IShape> & WithInitialValue<IShape>;
 };
 
 const ALL_SHAPES_ATOM = atom([] as SHAPES_NODES[]);
 
 export const ROOT_SHAPES_ATOM = atom((get) =>
-  get(ALL_SHAPES_ATOM)?.filter((e) => e?.parentId === null)
+  get(ALL_SHAPES_ATOM)?.filter(
+    (e) => e?.parentId === null && e?.pageId === get(PAGE_ID_ATOM)
+  )
 );
 
 export const CLEAR_SHAPES_ATOM = atom(null, (get, set) => {
@@ -67,6 +71,7 @@ export const CREATE_SHAPE_ATOM = atom(null, (get, set, args: IShape) => {
       tool: args?.tool,
       state: atom(args),
       parentId: null,
+      pageId: get(PAGE_ID_ATOM),
     },
   ]);
 });
