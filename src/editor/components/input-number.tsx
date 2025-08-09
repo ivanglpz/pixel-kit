@@ -114,6 +114,12 @@ export const InputNumber = ({
               backgroundColor: "transparent",
               flex: 1,
               outline: "none",
+              boxSizing: "border-box",
+              whiteSpace: "nowrap",
+              textOverflow: "ellipsis", // Añade los puntos suspensivos
+              width: "100%",
+              maxWidth: "60px", // Limita el ancho del input
+              padding: "0 4px",
             })}
           />
         ) : (

@@ -63,14 +63,19 @@ export const LayoutShapeConfig = () => {
     reader.onloadend = () => {
       const image = new Image();
       image.onload = () => {
-        // const scale: number = calculateScale(
-        //   image.width,
-        //   image.height,
-        //   props.shape.width ?? 500,
-        //   props.shape.height ?? 500
-        // );
-        // const newWidth: number = image.width * scale;
-        // const newHeight: number = image.height * scale;
+        const scale: number = calculateScale(
+          image.width,
+          image.height,
+          shape.width ?? 500,
+          shape.height ?? 500
+        );
+        const newWidth: number = image.width * scale;
+        const newHeight: number = image.height * scale;
+        shapeUpdate({
+          src: reader?.result as string,
+          width: newWidth,
+          height: newHeight,
+        });
         // onChange("src", reader?.result as string);
         // onChange("width", newWidth);
         // onChange("height", newHeight);
@@ -437,18 +442,7 @@ export const LayoutShapeConfig = () => {
             </button>
           </div>
         ))}
-      {/* <InputColor
-        labelText=""
-        keyInput={`pixel-kit-shape-fill-${shape.id}-${shape.tool}`}
-        color={shape.backgroundColor}
-        onChangeColor={(e) => {
-          // onChange("backgroundColor", e)
 
-          shapeUpdate({
-            backgroundColor: e,
-          });
-        }}
-      /> */}
       <Separator />
       <div
         className={css({
@@ -468,199 +462,267 @@ export const LayoutShapeConfig = () => {
         >
           Stroke
         </p>
-        <InputCheckbox
-          text=""
-          value={shape.strokeEnabled ?? true}
-          onCheck={(e) => {
-            shapeUpdate({
-              strokeEnabled: e,
-            });
-          }}
-        />
-      </div>
-      <Valid isValid={shape.strokeEnabled ?? false}>
-        <InputColor
-          labelText=""
-          keyInput={`pixel-kit-shape-stroke-${shape.id}-${shape.tool}`}
-          color={shape.stroke}
-          onChangeColor={(e) => {
-            shapeUpdate({
-              stroke: e,
-            });
-
-            // onChange("stroke", e)
-          }}
-        />
-        <InputSlider
-          labelText={`Thickness (${shape.strokeWidth})`}
-          onChange={(e) => {
-            shapeUpdate({
-              strokeWidth: e,
-            });
-            // onChange("strokeWidth", e)
-          }}
-          value={shape.strokeWidth || 0}
-        />
-      </Valid>
-      <Valid isValid={shape.tool === "IMAGE"}>
-        <p
+        <button
           className={css({
-            color: "text",
-            fontWeight: "600",
-            fontSize: "sm",
+            color: "white",
+            border: "none",
+            padding: "sm",
+            cursor: "pointer",
+            borderRadius: "md",
           })}
+          onClick={() => {
+            shapeUpdate({
+              strokes: [
+                ...(shape.strokes || []),
+                {
+                  color: "#000000",
+                  visible: true,
+                },
+              ],
+            });
+          }}
         >
-          Image
-        </p>
-        <Button
-          text="Browser Files"
-          onClick={() => inputRef.current?.click()}
-        />
-        <input
-          ref={inputRef}
-          type="file"
-          color="white"
-          accept="image/*"
-          onChange={handleFiles}
-          className={css({
-            backgroundColor: "red",
-            width: 0,
-            height: 0,
-            opacity: 0,
-            display: "none",
-          })}
-        />
-      </Valid>
-      <Valid isValid={shape.tool === "DRAW"}>
-        <InputCheckbox
-          text="Bucket Fill"
-          value={closed ?? false}
-          onCheck={(e) => {
-            shapeUpdate({
-              closed: e,
-            });
-          }}
-        />
-      </Valid>
+          <Plus size={14} />
+        </button>
+      </div>
+      {shape.strokes?.length ? (
+        <>
+          {shape.strokes.map((stroke, index) => (
+            <div
+              key={`pixel-kit-shape-stroke-${shape.id}-${shape.tool}-${index}`}
+              className={css({
+                display: "grid",
+                gridTemplateColumns: "1fr 33.5px 33.5px",
+                alignItems: "end",
+
+                gap: "md",
+              })}
+            >
+              <InputColor
+                key={`pixel-kit-shape-stroke-${shape.id}-${shape.tool}-${index}`}
+                keyInput={`pixel-kit-shape-stroke-${shape.id}-${shape.tool}-${index}`}
+                labelText=""
+                color={stroke.color}
+                onChangeColor={(e) => {
+                  const newStrokes = [...shape.strokes];
+                  newStrokes[index].color = e;
+                  shapeUpdate({
+                    strokes: newStrokes,
+                  });
+                }}
+              />
+
+              <button
+                onClick={() => {
+                  const newStrokes = [...shape.strokes];
+                  newStrokes[index].visible = !newStrokes[index].visible;
+                  shapeUpdate({
+                    strokes: newStrokes,
+                  });
+                }}
+                className={css({
+                  backgroundColor: "transparent",
+                  border: "none",
+                  cursor: "pointer",
+                  height: 33.5,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                })}
+              >
+                {stroke.visible ? <Eye size={18} /> : <EyeOff size={18} />}
+              </button>
+              <button
+                onClick={() => {
+                  const newStrokes = [...shape.strokes];
+                  newStrokes.splice(index, 1);
+                  shapeUpdate({
+                    strokes: newStrokes,
+                  });
+                }}
+                className={css({
+                  backgroundColor: "transparent",
+                  border: "none",
+                  cursor: "pointer",
+                  height: 33.5,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                })}
+              >
+                <Minus size={18} />
+              </button>
+            </div>
+          ))}
+          <InputNumber
+            iconType="width"
+            labelText="Weight"
+            value={shape.strokeWidth || 0}
+            onChange={(v) => {
+              shapeUpdate({
+                strokeWidth: v,
+              });
+            }}
+          />
+        </>
+      ) : null}
+
+      {/* <Valid isValid={shape.tool === "IMAGE"}> */}
+      <p
+        className={css({
+          color: "text",
+          fontWeight: "600",
+          fontSize: "sm",
+        })}
+      >
+        Image
+      </p>
+      <Button text="Browser Files" onClick={() => inputRef.current?.click()} />
+      <input
+        ref={inputRef}
+        type="file"
+        color="white"
+        accept="image/*"
+        onChange={handleFiles}
+        className={css({
+          backgroundColor: "red",
+          width: 0,
+          height: 0,
+          opacity: 0,
+          display: "none",
+        })}
+      />
+      {/* </Valid> */}
+      {/* <Valid isValid={shape.tool === "DRAW"}> */}
+      <InputCheckbox
+        text="Bucket Fill"
+        value={closed ?? false}
+        onCheck={(e) => {
+          shapeUpdate({
+            closed: e,
+          });
+        }}
+      />
+      {/* </Valid> */}
       {/* <Valid isValid={tool !== "IMAGE"}> */}
 
       {/* </Valid> */}
 
-      <Valid isValid={shape.tool === "LINE" || shape.tool === "DRAW"}>
-        <InputSelect
-          labelText="Line Join"
-          value={shape.lineJoin ?? "round"}
-          onChange={(e) => {
-            shapeUpdate({
-              lineJoin: e as LineJoin,
-            });
-            // onChange("lineJoin", e)
-          }}
-          options={[
-            {
-              id: `line-join-1-round`,
-              label: "Round",
-              value: "round",
-            },
-            {
-              id: `line-join-2-bevel`,
-              label: "Bevel",
-              value: "bevel",
-            },
-            {
-              id: `line-join-3-miter`,
-              label: "Miter",
-              value: "miter",
-            },
-          ]}
-        />
+      {/* <Valid isValid={shape.tool === "LINE" || shape.tool === "DRAW"}> */}
+      <InputSelect
+        labelText="Line Join"
+        value={shape.lineJoin ?? "round"}
+        onChange={(e) => {
+          shapeUpdate({
+            lineJoin: e as LineJoin,
+          });
+          // onChange("lineJoin", e)
+        }}
+        options={[
+          {
+            id: `line-join-1-round`,
+            label: "Round",
+            value: "round",
+          },
+          {
+            id: `line-join-2-bevel`,
+            label: "Bevel",
+            value: "bevel",
+          },
+          {
+            id: `line-join-3-miter`,
+            label: "Miter",
+            value: "miter",
+          },
+        ]}
+      />
 
-        <InputSelect
-          labelText="Line Cap"
-          value={shape.lineCap ?? "round"}
-          onChange={(e) => {
-            shapeUpdate({
-              lineCap: e as LineCap,
-            });
-            // onChange("lineCap", e)
-          }}
-          options={[
-            {
-              id: `line-cap-1-round`,
-              label: "Round",
-              value: "round",
-            },
-            {
-              id: `line-cap-2-butt`,
-              label: "Butt",
-              value: "butt",
-            },
-            {
-              id: `line-cap-3-square`,
-              label: "Square",
-              value: "square",
-            },
-          ]}
-        />
-      </Valid>
-      <Valid isValid={shape.tool === "TEXT"}>
-        <InputSelect
-          labelText="Font Weight"
-          value={shape.fontWeight ?? "normal"}
-          onChange={(e) => {
-            shapeUpdate({
-              fontWeight: e as IShape["fontWeight"],
-            });
-            // onChange("fontWeight", e)
-          }}
-          options={[
-            {
-              id: `font-weight-lighter`,
-              label: "Lighter",
-              value: "lighter",
-            },
-            {
-              id: `font-weight-normal`,
-              label: "Normal",
-              value: "normal",
-            },
-            {
-              id: `font-weight-medium`,
-              label: "Medium",
-              value: "500",
-            },
-            {
-              id: `font-weight-semi-bold`,
-              label: "Semi Bold",
-              value: "600",
-            },
-            {
-              id: `font-weight-bold`,
-              label: "Bold",
-              value: "bold",
-            },
-            {
-              id: `font-weight-bolder`,
-              label: "Bolder",
-              value: "bolder",
-            },
-          ]}
-        />
-        <InputSlider
-          labelText="Font size"
-          min={12}
-          max={72}
-          step={4}
-          onChange={(e) => {
-            shapeUpdate({
-              fontSize: e,
-            });
+      <InputSelect
+        labelText="Line Cap"
+        value={shape.lineCap ?? "round"}
+        onChange={(e) => {
+          shapeUpdate({
+            lineCap: e as LineCap,
+          });
+          // onChange("lineCap", e)
+        }}
+        options={[
+          {
+            id: `line-cap-1-round`,
+            label: "Round",
+            value: "round",
+          },
+          {
+            id: `line-cap-2-butt`,
+            label: "Butt",
+            value: "butt",
+          },
+          {
+            id: `line-cap-3-square`,
+            label: "Square",
+            value: "square",
+          },
+        ]}
+      />
+      {/* </Valid> */}
+      {/* <Valid isValid={shape.tool === "TEXT"}> */}
+      <InputSelect
+        labelText="Font Weight"
+        value={shape.fontWeight ?? "normal"}
+        onChange={(e) => {
+          shapeUpdate({
+            fontWeight: e as IShape["fontWeight"],
+          });
+          // onChange("fontWeight", e)
+        }}
+        options={[
+          {
+            id: `font-weight-lighter`,
+            label: "Lighter",
+            value: "lighter",
+          },
+          {
+            id: `font-weight-normal`,
+            label: "Normal",
+            value: "normal",
+          },
+          {
+            id: `font-weight-medium`,
+            label: "Medium",
+            value: "500",
+          },
+          {
+            id: `font-weight-semi-bold`,
+            label: "Semi Bold",
+            value: "600",
+          },
+          {
+            id: `font-weight-bold`,
+            label: "Bold",
+            value: "bold",
+          },
+          {
+            id: `font-weight-bolder`,
+            label: "Bolder",
+            value: "bolder",
+          },
+        ]}
+      />
+      <InputSlider
+        labelText="Font size"
+        min={12}
+        max={72}
+        step={4}
+        onChange={(e) => {
+          shapeUpdate({
+            fontSize: e,
+          });
 
-            // onChange("fontSize", e)
-          }}
-          value={shape.fontSize || 0}
-        />
-      </Valid>
+          // onChange("fontSize", e)
+        }}
+        value={shape.fontSize || 0}
+      />
+      {/* </Valid> */}
 
       <InputCheckbox
         text="Dash"
@@ -698,73 +760,61 @@ export const LayoutShapeConfig = () => {
           // onChange("shadowEnabled", e)
         }}
       />
-      <Valid isValid={shape.shadowEnabled ?? false}>
-        <InputColor
-          labelText="Color"
-          keyInput={`pixel-kit-shape-shadow-${shape.id}-${shape.tool}`}
-          color={shape.shadowColor}
-          onChangeColor={(e) => {
-            shapeUpdate({
-              shadowColor: e,
-            });
-            // onChange("shadowColor", e)
-          }}
-        />
-        <InputSlider
-          labelText="X"
-          onChange={(e) => {
-            shapeUpdate({
-              shadowOffsetX: e,
-            });
-            // onChange("shadowOffsetX", e)
-          }}
-          value={shape.shadowOffsetX || 0}
-        />
-        <InputSlider
-          labelText="Y"
-          onChange={(e) => {
-            shapeUpdate({
-              shadowOffsetY: e,
-            });
-            // onChange("shadowOffsetY", e)
-          }}
-          value={shape.shadowOffsetY || 0}
-        />
-        <InputSlider
-          labelText="Blur"
-          onChange={(e) => {
-            shapeUpdate({
-              shadowBlur: e,
-            });
-            // onChange("shadowBlur", e)
-          }}
-          value={shape.shadowBlur || 0}
-        />
-
-        <InputSlider
-          min={0}
-          labelText="Opacity"
-          max={1}
-          step={0.1}
-          onChange={(e) => {
-            shapeUpdate({
-              shadowOpacity: e,
-            });
-            // onChange("shadowOpacity", e)
-          }}
-          value={shape.shadowOpacity || 0}
-        />
-      </Valid>
-
+      {/* <Valid isValid={shape.shadowEnabled ?? false}> */}
+      <InputColor
+        labelText="Color"
+        keyInput={`pixel-kit-shape-shadow-${shape.id}-${shape.tool}`}
+        color={shape.shadowColor}
+        onChangeColor={(e) => {
+          shapeUpdate({
+            shadowColor: e,
+          });
+          // onChange("shadowColor", e)
+        }}
+      />
       <InputSlider
-        labelText="Border radius"
+        labelText="X"
         onChange={(e) => {
           shapeUpdate({
-            borderRadius: e,
+            shadowOffsetX: e,
           });
-          // onChange("borderRadius", e)
+          // onChange("shadowOffsetX", e)
         }}
-        value={shape.borderRadius || 0}
+        value={shape.shadowOffsetX || 0}
+      />
+      <InputSlider
+        labelText="Y"
+        onChange={(e) => {
+          shapeUpdate({
+            shadowOffsetY: e,
+          });
+          // onChange("shadowOffsetY", e)
+        }}
+        value={shape.shadowOffsetY || 0}
+      />
+      <InputSlider
+        labelText="Blur"
+        onChange={(e) => {
+          shapeUpdate({
+            shadowBlur: e,
+          });
+          // onChange("shadowBlur", e)
+        }}
+        value={shape.shadowBlur || 0}
+      />
+
+      <InputSlider
+        min={0}
+        labelText="Opacity"
+        max={1}
+        step={0.1}
+        onChange={(e) => {
+          shapeUpdate({
+            shadowOpacity: e,
+          });
+          // onChange("shadowOpacity", e)
+        }}
+        value={shape.shadowOpacity || 0}
       />
     </div>
   );
