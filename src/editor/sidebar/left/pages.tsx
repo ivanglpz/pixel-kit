@@ -1,5 +1,6 @@
 import { InputAtomText } from "@/editor/components/input-atom-text";
 import {
+  IPage,
   NEW_PAGE,
   PAGE_ID_ATOM,
   PAGES_BY_TYPE_ATOM,
@@ -7,6 +8,58 @@ import {
 import { css } from "@stylespixelkit/css";
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { Plus } from "lucide-react";
+import { useState } from "react";
+
+const TogglePage = ({
+  page,
+  isSelected,
+  onClick,
+}: {
+  page: IPage;
+  isSelected: boolean;
+  onClick: () => void;
+}) => {
+  const [show, setShow] = useState(false);
+  const [name, setName] = useAtom(page.name);
+  return (
+    <li
+      key={`page-${page.id}`}
+      className={css({
+        padding: "md",
+        flex: 1,
+        borderRadius: "md",
+        backgroundColor: isSelected ? "gray.900" : "transparent",
+        _hover: {
+          backgroundColor: "gray.100",
+          _dark: {
+            backgroundColor: "gray.800",
+          },
+        },
+      })}
+      onClick={onClick}
+      onDoubleClick={() => {
+        setShow(true);
+        onClick();
+      }}
+      onBlur={() => setShow(false)}
+      // quiero que si el cursor se salga entonces lo ponga en show false
+      onMouseLeave={() => setShow(false)}
+      //  onClick={onClick}
+    >
+      {show ? (
+        <InputAtomText atom={page.name} />
+      ) : (
+        <span
+          className={css({
+            fontSize: "sm",
+          })}
+        >
+          {name}
+        </span>
+      )}
+    </li>
+  );
+};
 
 export const SidebarLeftPages = () => {
   const pages = useAtomValue(PAGES_BY_TYPE_ATOM);
@@ -31,7 +84,7 @@ export const SidebarLeftPages = () => {
       >
         <p
           className={css({
-            fontSize: "md",
+            fontSize: "sm",
             fontWeight: 600,
           })}
         >
@@ -47,13 +100,6 @@ export const SidebarLeftPages = () => {
           onClick={() => newPage()}
         >
           <Plus size={14} />
-          <p
-            className={css({
-              fontSize: "sm",
-            })}
-          >
-            Add
-          </p>
         </button>
       </div>
       <ul
@@ -64,24 +110,12 @@ export const SidebarLeftPages = () => {
       >
         {pages?.map((page) => {
           return (
-            <li
-              key={`page-${page.id}`}
-              className={css({
-                padding: "md",
-                flex: 1,
-                backgroundColor:
-                  page.id === selectedPage ? "gray.600" : "transparent",
-                _hover: {
-                  backgroundColor: "gray.100",
-                  _dark: {
-                    backgroundColor: "gray.800",
-                  },
-                },
-              })}
+            <TogglePage
+              key={page.id}
+              page={page}
+              isSelected={selectedPage === page.id}
               onClick={() => setSelectedPage(page.id)}
-            >
-              <InputAtomText atom={page.name} />
-            </li>
+            />
           );
         })}
       </ul>
