@@ -15,17 +15,17 @@ export type Fill = {
 
 export type Stroke = {
   color: string;
-  width: number;
-  position: "inside" | "outside";
-  opacity: number;
-  style: "solid" | "dashed";
-  width_profile: "solid";
-  join: "normal";
-  frequency: number;
-  wiggle: number;
-  smoothen: number;
-  borderPlacement: "all";
   visible: boolean;
+
+  // position: "inside" | "outside";
+  // opacity: number;
+  // style: "solid" | "dashed";
+  // width_profile: "solid";
+  // join: "normal";
+  // frequency: number;
+  // wiggle: number;
+  // smoothen: number;
+  // borderPlacement: "all";
 };
 
 export type Effect = {
@@ -75,7 +75,8 @@ export type IShape = {
   isLocked: boolean;
   label: string;
   fills: Fill[];
-  strokes?: Stroke[];
+  strokes: Stroke[];
+  strokeWidth: number;
   effects?: Effect[];
   bordersRadius: number[];
   width?: number;
@@ -115,7 +116,6 @@ export type IShape = {
   zIndex?: number;
   colorText?: string;
   stroke?: string;
-  strokeWidth?: number;
   bezier: boolean;
 };
 

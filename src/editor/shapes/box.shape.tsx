@@ -63,7 +63,7 @@ const ShapeBox = memo(({ item }: IShapeWithEvents) => {
         x={x}
         y={y}
         width={width}
-        fillEnabled={fillEnabled ?? true}
+        fillEnabled={true}
         height={height}
         rotationDeg={rotate}
         shadowColor={shadowColor}
@@ -71,7 +71,7 @@ const ShapeBox = memo(({ item }: IShapeWithEvents) => {
         shadowOffsetX={shadowOffsetX}
         shadowOffsetY={shadowOffsetY}
         shadowBlur={shadowBlur}
-        strokeEnabled={strokeEnabled ?? true}
+        strokeEnabled={true}
         shadowEnabled={shadowEnabled ?? true}
         dashEnabled={dashEnabled ?? true}
         dash={[dash, dash, dash, dash]}
@@ -82,7 +82,7 @@ const ShapeBox = memo(({ item }: IShapeWithEvents) => {
         fill={box?.fills?.filter((e) => e?.visible)?.at(0)?.color}
         ref={shapeRef as MutableRefObject<Konva.Rect>}
         draggable={true}
-        stroke={stroke}
+        stroke={box?.strokes?.filter((e) => e?.visible)?.at(0)?.color}
         strokeWidth={strokeWidth}
         onTap={(e) => {
           setShapeId(box?.id);
