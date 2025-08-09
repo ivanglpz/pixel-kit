@@ -15,7 +15,10 @@ export type IKeyTool =
   | "GROUP"
   | "CLIP";
 
-export type IKeyMethods = Exclude<IKeyTool, "MOVE" | "FRAME" | "WRITING">;
+export type IKeyMethods = Exclude<
+  IKeyTool,
+  "MOVE" | "FRAME" | "WRITING" | "CLIP"
+>;
 
 const TOOL_ATOM = atom("MOVE" as IKeyTool);
 

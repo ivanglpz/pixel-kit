@@ -97,6 +97,7 @@ export const LayerClip = () => {
           SHAPES={[]}
           item={{
             id: "1c024656-106b-4d70-bc5c-845637d3344a",
+            pageId: "main-image-render-stage",
             parentId: null,
             state: atom<IShape>({
               ...dimension,

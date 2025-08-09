@@ -18,6 +18,7 @@ export const LayerPipe = () => {
           item={{
             id: "1",
             state: atom(CURRENT_ITEM),
+            pageId: "main-image-render-stage",
             tool: CURRENT_ITEM.tool,
             parentId: null,
           }}
