@@ -3,7 +3,7 @@ import { atomWithDefault } from "jotai/utils";
 import { MODE, MODE_ATOM } from "../hooks/useConfiguration";
 import { WithInitialValue } from "./shapes";
 
-type IPage = {
+export type IPage = {
   id: string;
   name: PrimitiveAtom<string> & WithInitialValue<string>;
   color: PrimitiveAtom<string> & WithInitialValue<string>;
