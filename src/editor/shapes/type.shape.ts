@@ -9,7 +9,7 @@ export type WithInitialValue<Value> = {
 
 export type Fill = {
   color: string;
-  opacity?: number;
+  opacity: number;
   visible: boolean;
 };
 
@@ -74,7 +74,7 @@ export type IShape = {
   rotation: number;
   isLocked: boolean;
   label: string;
-  fills?: Fill[];
+  fills: Fill[];
   strokes?: Stroke[];
   effects?: Effect[];
   bordersRadius: number[];
@@ -96,6 +96,7 @@ export type IShape = {
   strokeEnabled?: boolean;
   shadowEnabled?: boolean;
   dash: number;
+  opacity: number;
   backgroundColor?: string;
   align: "left" | "center" | "right" | "justify";
   verticalAlign: "top" | "middle" | "bottom";

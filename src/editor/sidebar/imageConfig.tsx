@@ -1,33 +1,14 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { IMAGE_DEFAULT, IMAGE_DEFAULT_DIMENSIONS } from "@/assets/data";
 import { Valid } from "@/components/valid";
 import { Button } from "@/editor/components/button";
 import { useImageRender } from "@/editor/hooks/useImageRender";
 import { css } from "@stylespixelkit/css";
-import { ChangeEvent, useEffect, useRef } from "react";
+import { ChangeEvent, useRef } from "react";
 import { createPortal } from "react-dom";
 
 export const ImageConfiguration = () => {
   const { img, handleSetImageRender } = useImageRender();
   const inputRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    const loadImageFromURL = async () => {
-      try {
-        handleSetImageRender({
-          base64: IMAGE_DEFAULT,
-          name: "default-image.jpg",
-          ...IMAGE_DEFAULT_DIMENSIONS,
-          x: 0,
-          y: 0,
-        });
-      } catch (error) {
-        console.error("Failed to load default image:", error);
-      }
-    };
-
-    loadImageFromURL();
-  }, []);
 
   const handleFiles = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -83,7 +64,7 @@ export const ImageConfiguration = () => {
                     alignItems: "flex-start",
                     justifyContent: "space-between",
                     gap: "lg",
-                    backgroundColor: "primary",
+                    backgroundColor: "bg",
                     borderRadius: "lg",
                     border: "container",
                     width: 280,
