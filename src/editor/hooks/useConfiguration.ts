@@ -3,6 +3,7 @@ import icons from "@/assets";
 import { atom, useAtomValue, useSetAtom } from "jotai";
 import { useEffect } from "react";
 import { IStageEvents } from "../states/event";
+import { RESET_PAGE_ID_ATOM } from "../states/pages";
 import { IKeyTool } from "../states/tool";
 
 export type MODE = "EDIT_IMAGE" | "FREE_DRAW" | "DESIGN_MODE";
@@ -276,11 +277,13 @@ export const useConfiguration = (props?: Props) => {
   const type = props?.type;
   const config = useAtomValue(configAtom);
   const setMode = useSetAtom(MODE_ATOM);
+  const setResetPage = useSetAtom(RESET_PAGE_ID_ATOM);
   // const SET_RESET = useSetAtom(CLEAR_SHAPES_ATOM);
 
   const change = (type?: MODE | string) => {
     if (!type) return;
     setMode(type as MODE);
+    setResetPage();
     // const tconfig = configs[type as MODE];
     // setConfig(tconfig);
     // SET_RESET();
