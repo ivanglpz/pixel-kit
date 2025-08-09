@@ -16,7 +16,7 @@ export const LayerClip = () => {
   const { img } = useImageRender();
   const { height, width } = useAtomValue(STAGE_DIMENSION_ATOM);
   const showClip = useAtomValue(showClipAtom);
-
+  const [box, setBox] = useAtom(boxClipAtom);
   const dimension = useMemo(
     () => calculateDimension(width, height, img?.width, img?.height),
     [width, height, img?.width, img?.height]
@@ -29,8 +29,6 @@ export const LayerClip = () => {
     type: "CLIP",
     ref: gshRef,
   });
-
-  const [box, setBox] = useAtom(boxClipAtom);
 
   useEffect(() => {
     setBox({

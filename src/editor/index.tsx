@@ -16,7 +16,7 @@ const PixelEditor = () => {
   useStopZoom();
   useBrowser();
   useConfiguration({
-    type: "EDIT_IMAGE",
+    type: "DESIGN_MODE",
   });
   return (
     <div

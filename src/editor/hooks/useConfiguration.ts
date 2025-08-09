@@ -1,15 +1,16 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import icons from "@/assets";
-import { atom, useAtom, useSetAtom } from "jotai";
+import { atom, useAtomValue, useSetAtom } from "jotai";
 import { useEffect } from "react";
 import { IStageEvents } from "../states/event";
-import { CLEAR_SHAPES_ATOM } from "../states/shapes";
 import { IKeyTool } from "../states/tool";
+
+export type MODE = "EDIT_IMAGE" | "FREE_DRAW" | "DESIGN_MODE";
 
 type Config = {
   show_layer_image: boolean;
-  export_mode: "FREE_DRAW" | "EDIT_IMAGE" | "DESIGN_MODE";
-  mode: "FREE_DRAW" | "EDIT_IMAGE" | "DESIGN_MODE";
+  export_mode: MODE;
+  mode: MODE;
   show_files_browser: boolean;
   background_color: string;
   show_canvas_config: boolean;
@@ -32,9 +33,7 @@ type Config = {
   scrollInsideStage: boolean;
 };
 
-type Keys = "EDIT_IMAGE" | "FREE_DRAW" | "DESIGN_MODE";
-
-const configs: { [key in Keys]: Config } = {
+const configs: { [key in MODE]: Config } = {
   DESIGN_MODE: {
     show_layer_image: false,
     export_mode: "DESIGN_MODE",
@@ -266,34 +265,37 @@ export const optionsEnviroments = Object.keys(configs)?.map((e, index) => ({
   value: e,
 }));
 
-const configAtom = atom(configs.DESIGN_MODE);
+export const MODE_ATOM = atom<MODE>("DESIGN_MODE");
+const configAtom = atom((get) => configs[get(MODE_ATOM)]);
 
 type Props = {
-  type?: Keys;
+  type?: MODE;
 };
 
 export const useConfiguration = (props?: Props) => {
   const type = props?.type;
-  const [config, setConfig] = useAtom(configAtom);
-  const SET_RESET = useSetAtom(CLEAR_SHAPES_ATOM);
+  const config = useAtomValue(configAtom);
+  const setMode = useSetAtom(MODE_ATOM);
+  // const SET_RESET = useSetAtom(CLEAR_SHAPES_ATOM);
 
-  const handleChangeConfig = (type?: Keys | string) => {
+  const change = (type?: MODE | string) => {
     if (!type) return;
-    const tconfig = configs[type as Keys];
-    setConfig(tconfig);
-    SET_RESET();
+    setMode(type as MODE);
+    // const tconfig = configs[type as MODE];
+    // setConfig(tconfig);
+    // SET_RESET();
     // setBackground({
     //   backgroundColor:
     //     tconfig?.background_color ?? configs?.DESIGN_MODE?.background_color,
     // });
   };
   useEffect(() => {
-    handleChangeConfig();
+    change(type);
   }, [type]);
 
   return {
     config,
-    change: handleChangeConfig,
+    change,
     type,
   };
 };
