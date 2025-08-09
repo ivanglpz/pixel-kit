@@ -112,11 +112,7 @@ export type IShape = {
   shadowOpacity?: number;
   borderRadius?: number;
   isAllBorderRadius?: boolean;
-  borderRadiusTopLeft?: number;
   zIndex?: number;
-  borderRadiusTopRight?: number;
-  borderRadiusBottomRight?: number;
-  borderRadiusBottomLeft?: number;
   colorText?: string;
   stroke?: string;
   strokeWidth?: number;

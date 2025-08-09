@@ -75,7 +75,9 @@ const ShapeBox = memo(({ item }: IShapeWithEvents) => {
         shadowEnabled={shadowEnabled ?? true}
         dashEnabled={dashEnabled ?? true}
         dash={[dash, dash, dash, dash]}
-        cornerRadius={box?.bordersRadius}
+        cornerRadius={
+          box?.isAllBorderRadius ? box.bordersRadius : box.borderRadius
+        }
         opacity={box?.opacity ?? 1}
         fill={box?.fills?.filter((e) => e?.visible)?.at(0)?.color}
         ref={shapeRef as MutableRefObject<Konva.Rect>}

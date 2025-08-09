@@ -116,13 +116,21 @@ export const LayoutShapeConfig = () => {
           iconType="x"
           labelText="Position"
           value={shape.x}
-          onChange={() => {}}
+          onChange={(v) => {
+            shapeUpdate({
+              x: v,
+            });
+          }}
         />
         <InputNumber
           iconType="y"
           labelText=""
-          value={shape.x}
-          onChange={() => {}}
+          value={shape.y}
+          onChange={(v) => {
+            shapeUpdate({
+              y: v,
+            });
+          }}
         />
       </div>
       <Separator />
@@ -147,13 +155,21 @@ export const LayoutShapeConfig = () => {
           iconType="width"
           labelText="Dimensions"
           value={Number(shape.width) || 0}
-          onChange={() => {}}
+          onChange={(v) => {
+            shapeUpdate({
+              width: v,
+            });
+          }}
         />
         <InputNumber
           iconType="height"
           labelText=""
           value={Number(shape.height) || 0}
-          onChange={() => {}}
+          onChange={(v) => {
+            shapeUpdate({
+              height: v,
+            });
+          }}
         />
       </div>
       <Separator />
@@ -198,17 +214,23 @@ export const LayoutShapeConfig = () => {
           <InputNumber
             iconType="br"
             labelText="Corner Radius"
-            value={shape.bordersRadius?.[0] || 0}
+            min={0}
+            max={9999}
+            step={1}
+            type={shape.isAllBorderRadius ? "text" : "number"}
+            value={shape.isAllBorderRadius ? "Mixed" : shape.borderRadius || 0}
             onChange={(e) => {
               shapeUpdate({
-                bordersRadius: [e || 0, e || 0, e || 0, e || 0],
+                borderRadius: e,
               });
             }}
           />
         </div>
         <button
           className={css({
-            backgroundColor: showBorders ? "transparent" : "gray.700",
+            backgroundColor: shape.isAllBorderRadius
+              ? "gray.800"
+              : "transparent",
             border: "none",
             cursor: "pointer",
             height: 33.5,
@@ -217,13 +239,15 @@ export const LayoutShapeConfig = () => {
             justifyContent: "center",
           })}
           onClick={() => {
-            setShowBorders(!showBorders);
+            shapeUpdate({
+              isAllBorderRadius: !shape.isAllBorderRadius,
+            });
           }}
         >
           <Scan size={14} />
         </button>
       </div>
-      {showBorders && (
+      {shape.isAllBorderRadius && (
         <div
           className={css({
             display: "grid",
@@ -233,7 +257,7 @@ export const LayoutShapeConfig = () => {
         >
           <InputNumber
             iconType="br"
-            labelText="Top Left"
+            labelText="T.Left"
             value={shape.bordersRadius?.[0] || 0}
             onChange={(e) => {
               shapeUpdate({
@@ -249,7 +273,7 @@ export const LayoutShapeConfig = () => {
           />
           <InputNumber
             iconType="br"
-            labelText="Top Right"
+            labelText="T.Right"
             value={shape.bordersRadius?.[1] || 0}
             onChange={(e) => {
               shapeUpdate({
@@ -264,22 +288,7 @@ export const LayoutShapeConfig = () => {
           />
           <InputNumber
             iconType="br"
-            labelText="Bottom Left"
-            value={shape.bordersRadius?.[2] || 0}
-            onChange={(e) => {
-              shapeUpdate({
-                bordersRadius: [
-                  shape.bordersRadius?.[0] || 0,
-                  shape.bordersRadius?.[1] || 0,
-                  e || 0,
-                  shape.bordersRadius?.[3] || 0,
-                ],
-              });
-            }}
-          />
-          <InputNumber
-            iconType="br"
-            labelText="Bottom Right"
+            labelText="B.Left"
             value={shape.bordersRadius?.[3] || 0}
             onChange={(e) => {
               shapeUpdate({
@@ -288,6 +297,21 @@ export const LayoutShapeConfig = () => {
                   shape.bordersRadius?.[1] || 0,
                   shape.bordersRadius?.[2] || 0,
                   e || 0,
+                ],
+              });
+            }}
+          />
+          <InputNumber
+            iconType="br"
+            labelText="B.Right"
+            value={shape.bordersRadius?.[2] || 0}
+            onChange={(e) => {
+              shapeUpdate({
+                bordersRadius: [
+                  shape.bordersRadius?.[0] || 0,
+                  shape.bordersRadius?.[1] || 0,
+                  e || 0,
+                  shape.bordersRadius?.[3] || 0,
                 ],
               });
             }}
