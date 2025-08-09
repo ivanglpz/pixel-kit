@@ -1,16 +1,9 @@
-import { atom, useAtom } from "jotai";
-
-const initialRenderImage = {
-  base64: "",
-  x: 0,
-  y: 0,
-  width: 0,
-  name: "",
-  height: 0,
-};
-
-export const imageRenderAtom = atom(initialRenderImage);
-export const imageOriginalAtom = atom<typeof initialRenderImage | null>(null);
+import { useAtom } from "jotai";
+import {
+  imageOriginalAtom,
+  imageRenderAtom,
+  initialRenderImage,
+} from "../states/image";
 
 export const useImageRender = () => {
   const [img, setImg] = useAtom(imageRenderAtom);
