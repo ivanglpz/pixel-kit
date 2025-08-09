@@ -1,5 +1,6 @@
 import { css } from "@stylespixelkit/css";
 import { Blend, LineSquiggle, Scan, X } from "lucide-react";
+import { HTMLInputTypeAttribute } from "react";
 
 const typeIcon = {
   "draw-weight": <LineSquiggle size={14} />,
@@ -11,23 +12,25 @@ const typeIcon = {
   br: <Scan size={14} />,
 };
 type Props = {
-  value: number;
+  value: number | string;
   onChange: (value: number) => void;
   min?: number;
   max?: number;
   step?: number;
   labelText: string;
   iconType: keyof typeof typeIcon;
+  type?: HTMLInputTypeAttribute;
 };
 
 export const InputNumber = ({
   onChange,
   value,
   min = 1,
-  max = 100,
+  max = Infinity,
   step = 1,
   labelText,
   iconType = "draw-weight",
+  type = "number",
 }: Props) => {
   const handleNumberChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = Number(event.target.value);
@@ -67,10 +70,10 @@ export const InputNumber = ({
           borderWidth: "1px",
           borderStyle: "solid",
           borderColor: "border.muted", // ← usa el semantic token
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
           gap: "md",
+          display: "grid",
+          gridTemplateColumns: "17px 1fr",
+          alignItems: "center",
         })}
       >
         <div
@@ -97,21 +100,34 @@ export const InputNumber = ({
           )}
         </div>
         {/* Input number */}
-        <input
-          type="number"
-          min={min}
-          max={max}
-          step={step}
-          value={value}
-          onChange={handleNumberChange}
-          className={css({
-            color: "text",
-            fontSize: "sm",
-            backgroundColor: "transparent",
-            flex: 1,
-            outline: "none",
-          })}
-        />
+        {typeof value === "number" ? (
+          <input
+            type={type}
+            min={min}
+            max={max}
+            step={step}
+            value={value}
+            onChange={handleNumberChange}
+            className={css({
+              color: "text",
+              fontSize: "sm",
+              backgroundColor: "transparent",
+              flex: 1,
+              outline: "none",
+            })}
+          />
+        ) : (
+          <p
+            className={css({
+              color: "text",
+              fontSize: "sm",
+              backgroundColor: "transparent",
+              flex: 1,
+            })}
+          >
+            {value}
+          </p>
+        )}
       </div>
     </div>
   );
