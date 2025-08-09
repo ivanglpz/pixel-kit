@@ -21,7 +21,14 @@ export const shapeStart = (props: Partial<IShape>): IShape => {
     label: props?.tool ?? "DEFAULT",
     parentId: null,
     rotation: 0,
-    fills: [],
+    opacity: 1,
+    fills: [
+      {
+        visible: true,
+        color: "#ffffff",
+        opacity: 1,
+      },
+    ],
     strokes: [],
     strokeEnabled: true,
     visible: true,
