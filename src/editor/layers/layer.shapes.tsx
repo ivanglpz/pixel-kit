@@ -5,12 +5,6 @@ import { FCShapeWEvents } from "../shapes/type.shape";
 import ALL_SHAPES_ATOM, { ROOT_SHAPES_ATOM } from "../states/shapes";
 
 export const LayerShapes = () => {
-  // const { isDrawing } = useTool();
-
-  // const onClick = (element: IShape) => {
-  //   handleSetShapeSelected(element);
-  // };
-
   const ROOT_SHAPES = useAtomValue(ROOT_SHAPES_ATOM);
   const ALL_SHAPES = useAtomValue(ALL_SHAPES_ATOM);
   return (
