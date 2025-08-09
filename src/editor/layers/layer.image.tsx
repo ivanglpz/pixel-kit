@@ -23,6 +23,7 @@ export const LayerImage = () => {
         item={{
           id: "1c024656-106b-4d70-bc5c-845637d3344a",
           parentId: null,
+          pageId: "f860ad7b-27ac-491a-ba77-1a81f004dac1",
           state: atom<IShape>({
             ...dimension,
             id: "main-image-render-stage",
