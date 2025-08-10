@@ -63,6 +63,12 @@ const useEventStage = () => {
           ...state,
           strokeWidth: state.thickness,
           stroke: state.color,
+          strokes: [
+            {
+              visible: true,
+              color: state.color,
+            },
+          ],
           points: [x, y],
           isWritingNow: false,
         });

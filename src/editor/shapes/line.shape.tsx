@@ -1,10 +1,19 @@
 /* eslint-disable react/display-name */
-import { PrimitiveAtom, useAtom } from "jotai";
+import { PrimitiveAtom, useAtom, useAtomValue } from "jotai";
 import Konva from "konva";
-import { memo, MutableRefObject, useRef } from "react";
+import { memo, MutableRefObject, useEffect, useRef } from "react";
 import { Line } from "react-konva";
+import { STAGE_DIMENSION_ATOM } from "../states/dimension";
+import { SHAPE_ID_ATOM } from "../states/shape";
+import { Transform } from "./transformer";
 import { IShape, IShapeWithEvents, WithInitialValue } from "./type.shape";
 
+import {
+  shapeEventDragMove,
+  ShapeEventDragStart,
+  shapeEventDragStop,
+  shapeTransformEnd,
+} from "./events.shape";
 export const ShapeLine = memo(({ item }: IShapeWithEvents) => {
   // const {
   //   draggable,
@@ -49,7 +58,18 @@ export const ShapeLine = memo(({ item }: IShapeWithEvents) => {
 
   const shapeRef = useRef<Konva.Line>();
   const trRef = useRef<Konva.Transformer>();
+  const stageDimensions = useAtomValue(STAGE_DIMENSION_ATOM);
+  const [shapeId, setShapeId] = useAtom(SHAPE_ID_ATOM);
+  const isSelected = shapeId === box?.id;
 
+  useEffect(() => {
+    if (isSelected) {
+      if (trRef.current && shapeRef.current) {
+        trRef.current.nodes([shapeRef.current]);
+        trRef.current?.getLayer()?.batchDraw();
+      }
+    }
+  }, [isSelected, trRef, shapeRef]);
   // useEffect(() => {
   //   if (isSelected) {
   //     if (trRef.current && shapeRef.current) {
@@ -73,42 +93,56 @@ export const ShapeLine = memo(({ item }: IShapeWithEvents) => {
         x={x}
         y={y}
         width={width}
-        fillEnabled={fillEnabled ?? true}
+        fillEnabled={true}
         height={height}
         rotationDeg={rotate}
         shadowColor={shadowColor}
-        closed={closed ?? false}
         shadowOpacity={shadowOpacity}
         shadowOffsetX={shadowOffsetX}
         shadowOffsetY={shadowOffsetY}
         shadowBlur={shadowBlur}
         lineCap={lineCap}
+        strokeEnabled={box.strokeWidth > 0}
+        dashEnabled={box?.dash > 0}
         lineJoin={lineJoin}
-        strokeEnabled={strokeEnabled ?? true}
         points={points ?? [5, 70, 140, 23]}
         globalCompositeOperation="source-over"
         shadowEnabled={shadowEnabled ?? true}
-        dashEnabled={dashEnabled ?? true}
         dash={[dash, dash, dash, dash]}
-        cornerRadius={borderRadius}
-        fill={backgroundColor}
+        cornerRadius={
+          box?.isAllBorderRadius ? box.bordersRadius : box.borderRadius
+        }
+        opacity={box?.opacity ?? 1}
+        fill={box?.fills?.filter((e) => e?.visible)?.at(0)?.color}
         ref={shapeRef as MutableRefObject<Konva.Line>}
-        // draggable={draggable}
-        stroke={stroke}
+        draggable={shapeId === box?.id}
+        stroke={box?.strokes?.filter((e) => e?.visible)?.at(0)?.color}
         strokeWidth={strokeWidth}
-        // onTap={(e) => setBox(shapeEventClick(e, onClick))}
-        // onClick={(e) => setBox(shapeEventClick(e, onClick))}
-        // onDragStart={(e) => setBox(ShapeEventDragStart(e, onDragStart))}
-        // onDragMove={(e) =>
-        //   setBox(shapeEventDragMove(e, onDragMove, screenWidth, screenHeight))
-        // }
-        // onDragEnd={(e) => setBox(shapeEventDragStop(e, onDragStop))}
-        // onTransform={(e) => {
-        //   setBox(shapeEventDragMove(e, onDragMove, screenWidth, screenHeight));
-        // }}
-        // onTransformEnd={(e) => setBox(shapeTransformEnd(e, onDragStop))}
+        onTap={(e) => {
+          setShapeId(box?.id);
+        }}
+        onClick={() => {
+          setShapeId(box?.id);
+        }}
+        onDragStart={(e) => {
+          setBox(ShapeEventDragStart(e));
+        }}
+        onDragMove={(e) => {
+          setBox(
+            shapeEventDragMove(e, stageDimensions.width, stageDimensions.height)
+          );
+        }}
+        onDragEnd={(e) => {
+          setBox(shapeEventDragStop(e));
+        }}
+        onTransform={(e) => {
+          setBox(
+            shapeEventDragMove(e, stageDimensions.width, stageDimensions.height)
+          );
+        }}
+        onTransformEnd={(e) => setBox(shapeTransformEnd(e))}
       />
-      {/* <Transform isSelected={isSelected} ref={trRef} /> */}
+      <Transform isSelected={isSelected} ref={trRef} />
     </>
   );
 });
