@@ -2,9 +2,17 @@
 /* eslint-disable jsx-a11y/alt-text */
 import { PrimitiveAtom, useAtom, useAtomValue } from "jotai";
 import Konva from "konva";
-import { memo, MutableRefObject, useMemo, useRef } from "react";
+import { memo, MutableRefObject, useEffect, useMemo, useRef } from "react";
 import { Image as KonvaImage } from "react-konva";
 import { STAGE_DIMENSION_ATOM } from "../states/dimension";
+import { SHAPE_ID_ATOM } from "../states/shape";
+import {
+  shapeEventDragMove,
+  ShapeEventDragStart,
+  shapeEventDragStop,
+  shapeTransformEnd,
+} from "./events.shape";
+import { Transform } from "./transformer";
 import { IShape, IShapeWithEvents, WithInitialValue } from "./type.shape";
 
 function urlToBase64(
@@ -26,66 +34,36 @@ function urlToBase64(
 }
 
 export const ShapeImage = memo(({ item }: IShapeWithEvents) => {
-  // const {
-  //   draggable,
-  //   onClick,
-  //   onDragMove,
-  //   onDragStart,
-  //   onDragStop,
-  //   screenHeight,
-  //   screenWidth,
-  //   onDbClick,
-  // } = item;
-  const [image, setImage] = useAtom(
+  const [box, setBox] = useAtom(
     item.state as PrimitiveAtom<IShape> & WithInitialValue<IShape>
   );
-  const {
-    width,
-    height,
-    shadowColor,
-    shadowOpacity,
-    rotate,
-    x,
-    y,
-    shadowOffsetY,
-    shadowOffsetX,
-    shadowBlur,
-    stroke,
-    strokeWidth,
-    backgroundColor,
-    borderRadius,
-    fillEnabled,
-    shadowEnabled,
-    strokeEnabled,
-    dash,
-    src,
-    dashEnabled,
-  } = image;
-
+  const { width, height, rotate, x, y, strokeWidth, dash } = box;
   const imageInstance = useMemo(() => {
-    if (src?.includes("data:image")) {
+    if (box?.src?.includes("data:image")) {
       const image = new Image();
-      image.src = src;
+      image.src = box.src ?? "";
       return image;
     }
 
     const image = new Image();
-    urlToBase64(src ?? "", (b64) => (image.src = b64 as string));
+    urlToBase64(box.src ?? "", (b64) => (image.src = b64 as string));
     return image;
-  }, [src]);
-  const stageDimensions = useAtomValue(STAGE_DIMENSION_ATOM);
+  }, [box.src]);
   // const { isSelected } = item;
   const shapeRef = useRef<Konva.Image>();
   const trRef = useRef<Konva.Transformer>();
+  const stageDimensions = useAtomValue(STAGE_DIMENSION_ATOM);
+  const [shapeId, setShapeId] = useAtom(SHAPE_ID_ATOM);
+  const isSelected = shapeId === box?.id;
 
-  // useEffect(() => {
-  //   if (isSelected) {
-  //     if (trRef.current && shapeRef.current) {
-  //       trRef.current.nodes([shapeRef.current]);
-  //       trRef.current?.getLayer()?.batchDraw();
-  //     }
-  //   }
-  // }, [isSelected, item, trRef, shapeRef]);
+  useEffect(() => {
+    if (isSelected) {
+      if (trRef.current && shapeRef.current) {
+        trRef.current.nodes([shapeRef.current]);
+        trRef.current?.getLayer()?.batchDraw();
+      }
+    }
+  }, [isSelected, trRef, shapeRef]);
 
   return (
     <>
@@ -97,44 +75,80 @@ export const ShapeImage = memo(({ item }: IShapeWithEvents) => {
         />
       </Valid> */}
       <KonvaImage
-        id={image?.id}
+        // 1. Identificación y referencia
+        id={box?.id}
+        ref={shapeRef as MutableRefObject<Konva.Image>}
+        // 2. Posición y tamaño
         x={x}
         y={y}
         width={width}
-        fillEnabled={fillEnabled ?? true}
         height={height}
-        rotationDeg={rotate}
-        shadowColor={shadowColor}
-        shadowOpacity={shadowOpacity}
-        shadowOffsetX={shadowOffsetX}
-        shadowOffsetY={shadowOffsetY}
-        shadowBlur={shadowBlur}
-        strokeEnabled={strokeEnabled ?? true}
-        shadowEnabled={shadowEnabled ?? true}
-        dashEnabled={dashEnabled ?? true}
-        dash={[dash, dash, dash, dash]}
-        cornerRadius={borderRadius}
-        fill={backgroundColor}
-        ref={shapeRef as MutableRefObject<Konva.Image>}
-        // draggable={draggable}
-        stroke={stroke}
-        strokeWidth={strokeWidth}
+        points={box.points ?? []}
+        globalCompositeOperation="source-over"
         image={imageInstance}
-        // onTap={(e) => setImage(shapeEventClick(e, onClick))}
-        // onDblClick={() => onDbClick?.(image)}
-        // onClick={(e) => setImage(shapeEventClick(e, onClick))}
-        // onDragStart={(e) => setImage(ShapeEventDragStart(e, onDragStart))}
-        // onDragMove={(e) =>
-        //   setImage(shapeEventDragMove(e, onDragMove, screenWidth, screenHeight))
-        // }
-        // onTransform={(e) => {
-        //   setImage(
-        //     shapeEventDragMove(e, onDragMove, screenWidth, screenHeight)
-        //   );
-        // }}
-        // onDragEnd={(e) => setImage(shapeEventDragStop(e, onDragStop))}
+        // 3. Rotación
+        rotationDeg={rotate}
+        // 4. Relleno y color
+        fillEnabled={box?.fills?.filter((e) => e?.visible)?.length > 0}
+        fill={box?.fills?.filter((e) => e?.visible)?.at(0)?.color}
+        // 5. Bordes y trazos
+        stroke={box?.strokes?.filter((e) => e?.visible)?.at(0)?.color}
+        strokeWidth={strokeWidth}
+        strokeEnabled={box.strokeWidth > 0}
+        dash={[dash, dash, dash, dash]}
+        dashEnabled={box?.dash > 0}
+        cornerRadius={
+          box?.isAllBorderRadius ? box.bordersRadius : box.borderRadius
+        }
+        // 6. Sombras
+        shadowColor={
+          box?.effects?.filter((e) => e?.visible && e?.type === "shadow").at(0)
+            ?.color
+        }
+        shadowOpacity={
+          box?.effects?.filter((e) => e?.visible && e?.type === "shadow").at(0)
+            ?.opacity
+        }
+        shadowOffsetX={
+          box?.effects?.filter((e) => e?.visible && e?.type === "shadow").at(0)
+            ?.x
+        }
+        shadowOffsetY={
+          box?.effects?.filter((e) => e?.visible && e?.type === "shadow").at(0)
+            ?.y
+        }
+        shadowBlur={
+          box?.effects?.filter((e) => e?.visible && e?.type === "shadow").at(0)
+            ?.blur
+        }
+        shadowEnabled={
+          Number(
+            box?.effects?.filter((e) => e?.visible && e?.type === "shadow")
+              ?.length
+          ) > 0
+        }
+        // 7. Apariencia y opacidad
+        opacity={box?.opacity ?? 1}
+        // 8. Interactividad y arrastre
+        draggable={shapeId === box?.id}
+        // 9. Eventos
+        onTap={() => setShapeId(box?.id)}
+        onClick={() => setShapeId(box?.id)}
+        onDragStart={(e) => setBox(ShapeEventDragStart(e))}
+        onDragMove={(e) =>
+          setBox(
+            shapeEventDragMove(e, stageDimensions.width, stageDimensions.height)
+          )
+        }
+        onDragEnd={(e) => setBox(shapeEventDragStop(e))}
+        onTransform={(e) =>
+          setBox(
+            shapeEventDragMove(e, stageDimensions.width, stageDimensions.height)
+          )
+        }
+        onTransformEnd={(e) => setBox(shapeTransformEnd(e))}
       />
-      {/* <Transform isSelected={isSelected} ref={trRef} keepRatio /> */}
+      <Transform isSelected={isSelected} ref={trRef} keepRatio />
     </>
   );
 });
