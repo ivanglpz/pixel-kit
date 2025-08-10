@@ -1,6 +1,5 @@
 import { css } from "@stylespixelkit/css";
 import { FC } from "react";
-import { Chat } from "../components/chat";
 import { Segmentation } from "../components/segmentation";
 import { SidebarLeftPages } from "./left/pages";
 import { SidebarLeftShapes } from "./left/shapes";
@@ -43,9 +42,9 @@ export const SidebarLeft: FC = () => {
         {/* <Segmentation.Item id="2" title="Assets">
           <p>Contenido 2</p>
         </Segmentation.Item> */}
-        <Segmentation.Item id="2" title="Chat">
+        {/* <Segmentation.Item id="2" title="Chat">
           <Chat />
-        </Segmentation.Item>
+        </Segmentation.Item> */}
       </Segmentation>
     </aside>
   );
