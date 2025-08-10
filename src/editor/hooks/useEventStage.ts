@@ -5,6 +5,7 @@ import TOOL_ATOM, { IKeyTool } from "@/editor/states/tool";
 import { useAtom, useSetAtom } from "jotai";
 import { KonvaEventObject } from "konva/lib/Node";
 import { useEffect } from "react";
+import { v4 as uuidv4 } from "uuid";
 import stageAbsolutePosition from "../helpers/position";
 import { shapeProgressEvent } from "../helpers/progressEvent";
 import { shapeStart } from "../helpers/startEvent";
@@ -57,20 +58,21 @@ const useEventStage = () => {
 
         const { x, y } = stageAbsolutePosition(event);
         const createStartElement = shapeStart({
+          ...state,
           tool: tool as IShape["tool"],
           x: 0,
           y: 0,
-          ...state,
-          strokeWidth: state.thickness,
-          stroke: state.color,
-          strokes: [
-            {
-              visible: true,
-              color: state.color,
-            },
-          ],
+          // strokeWidth: state.thickness,
+          // stroke: state.color,
+          // strokes: [
+          //   {
+          //     visible: true,
+          //     color: state.color,
+          //   },
+          // ],
           points: [x, y],
           isWritingNow: false,
+          id: uuidv4(),
         });
         SET_CREATE_CITEM(createStartElement);
       }
@@ -80,20 +82,21 @@ const useEventStage = () => {
         const x = XStage ?? 0;
         const y = YStage ?? 0;
         const createStartElement = shapeStart({
+          ...state,
           tool: tool as IShape["tool"],
           x: 0,
           y: 0,
-          ...state,
-          strokeWidth: state.thickness,
-          stroke: state.color,
+          // strokeWidth: state.thickness,
+          // stroke: state.color,
           points: [x, y, x, y],
           bezier: false,
-          strokes: [
-            {
-              visible: true,
-              color: state.color,
-            },
-          ],
+          id: uuidv4(),
+          // strokes: [
+          //   {
+          //     visible: true,
+          //     color: state.color,
+          //   },
+          // ],
         });
         SET_CREATE_CITEM(createStartElement);
       }

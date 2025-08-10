@@ -1,53 +1,135 @@
-import { Valid } from "@/components/valid";
-import { InputCheckbox } from "@/editor/components/input-checkbox";
 import InputColor from "@/editor/components/input-color";
-import { InputSlider } from "@/editor/components/input-slider";
 import { useTool } from "@/editor/hooks";
-import { useStartDrawing } from "@/editor/hooks/useStartDrawing";
 import { css } from "@stylespixelkit/css";
-import { Brush, PenTool, Ruler } from "lucide-react";
-import { useState } from "react";
+import { useAtom } from "jotai";
+import { Brush, Eye, EyeOff, Minus, PenTool, Ruler } from "lucide-react";
 import { InputNumber } from "../components/input-number";
-
-const modes = {
-  soft: { lineJoin: "round", lineCap: "round" },
-  straight: { lineJoin: "miter", lineCap: "butt" },
-  marker: { lineJoin: "bevel", lineCap: "square" },
-};
+import { IShape } from "../shapes/type.shape";
+import { DrawingBeforeStartAtom } from "../states/drawing";
+import { commonStyles, SectionHeader } from "./right/shape-config";
 
 export const Drawing = () => {
   const { isDrawing, tool } = useTool();
-  const {
-    color,
-    handleChangeColor,
-    handleThickness,
-    thickness,
-    handleChangeLine,
-    shadowOpacity,
-    lineCap,
-    lineJoin,
-    dash,
-    dashEnable,
-    handleDash,
-    shadowBlur,
-    shadowColor,
-    shadowEnabled,
-    shadowOffsetX,
-    shadowOffsetY,
-    closed,
-  } = useStartDrawing();
-  const [drawMode, setDrawMode] = useState<"soft" | "straight" | "marker">(
-    "soft"
-  );
-
-  const handleModeChange = (mode: "soft" | "straight" | "marker") => {
-    setDrawMode(mode);
-    const { lineJoin, lineCap } = modes[mode];
-    handleChangeLine("lineJoin", lineJoin);
-    handleChangeLine("lineCap", lineCap);
-  };
+  const [shape, setShape] = useAtom(DrawingBeforeStartAtom);
 
   if (!isDrawing && tool !== "LINE") return null;
+
+  // Manejadores para strokes
+  const handleAddStroke = () => {
+    setShape({
+      ...shape,
+
+      strokes: [...(shape.strokes || []), { color: "#000000", visible: true }],
+    });
+  };
+
+  const handleStrokeColorChange = (index: number, color: string) => {
+    const newStrokes = [...shape.strokes];
+    newStrokes[index].color = color;
+    setShape({
+      ...shape,
+
+      strokes: newStrokes,
+    });
+  };
+
+  const handleStrokeVisibilityToggle = (index: number) => {
+    const newStrokes = [...shape.strokes];
+    newStrokes[index].visible = !newStrokes[index].visible;
+    setShape({
+      ...shape,
+
+      strokes: newStrokes,
+    });
+  };
+
+  const handleStrokeRemove = (index: number) => {
+    const newStrokes = [...shape.strokes];
+    newStrokes.splice(index, 1);
+    setShape({
+      ...shape,
+
+      strokes: newStrokes,
+    });
+  };
+
+  // Manejadores para effects
+  const handleAddEffect = () => {
+    setShape({
+      ...shape,
+
+      effects: [
+        ...(shape.effects || []),
+        {
+          type: "shadow",
+          visible: true,
+          blur: 0,
+          color: "#000",
+          opacity: 1,
+          x: 5,
+          y: 5,
+        },
+      ],
+    });
+  };
+
+  const handleEffectColorChange = (index: number, color: string) => {
+    const newEffects = [...(shape.effects ?? [])];
+    newEffects[index].color = color;
+    setShape({
+      ...shape,
+
+      effects: newEffects,
+    });
+  };
+
+  const handleEffectVisibilityToggle = (index: number) => {
+    const newEffects = [...(shape.effects ?? [])];
+    newEffects[index].visible = !newEffects[index].visible;
+    setShape({
+      ...shape,
+
+      effects: newEffects,
+    });
+  };
+
+  const handleEffectRemove = (index: number) => {
+    const newEffects = [...(shape.effects ?? [])];
+    newEffects.splice(index, 1);
+    setShape({
+      ...shape,
+
+      effects: newEffects,
+    });
+  };
+
+  // Manejadores específicos para propiedades de effects
+  const handleEffectPropertyChange = (
+    index: number,
+    property: "x" | "y" | "blur" | "opacity",
+    value: number
+  ) => {
+    const newEffects = [...(shape.effects ?? [])];
+    newEffects[index][property] = value;
+    setShape({
+      ...shape,
+
+      effects: newEffects,
+    });
+  };
+
+  // Manejadores para line styles
+  const handleLineStyleChange = (
+    lineJoin: IShape["lineJoin"],
+    lineCap: IShape["lineCap"]
+  ) => {
+    setShape({
+      ...shape,
+
+      lineJoin,
+      lineCap,
+    });
+  };
   return (
     <div
       className={`${css({
@@ -56,135 +138,226 @@ export const Drawing = () => {
         gap: "lg",
       })} `}
     >
-      {/* <InputCheckbox
-        text="Bucket Fill"
-        value={closed ?? false}
-        onCheck={(e) => handleChangeLine("closed", e)}
-      /> */}
-      <InputColor
-        labelText="Stroke"
-        keyInput={`pixel-kit-draw`}
-        color={color}
-        onChangeColor={(e) => handleChangeColor(e)}
-      />
-      <div
-        className={css({
-          display: "grid",
-          gridTemplateColumns: "2",
-          gap: "lg",
-        })}
-      >
-        <InputNumber
-          iconType="draw-weight"
-          labelText="Weight"
-          value={thickness}
-          onChange={handleThickness}
-        />
-        <div
+      {" "}
+      {/* SECCIÓN: STROKE - Bordes */}
+      <SectionHeader title="Stroke" onAdd={handleAddStroke} />
+      {shape.strokes?.length ? (
+        <>
+          {/* Lista de strokes */}
+          {shape.strokes.map((stroke, index) => (
+            <div
+              key={`pixel-kit-shape-stroke-${shape.id}-${shape.tool}-${index}`}
+              className={commonStyles.threeColumnGrid}
+            >
+              <InputColor
+                keyInput={`pixel-kit-shape-stroke-${shape.id}-${shape.tool}-${index}`}
+                labelText=""
+                color={stroke.color}
+                onChangeColor={(e) => handleStrokeColorChange(index, e)}
+              />
+
+              {/* Botón visibility toggle */}
+              <button
+                onClick={() => handleStrokeVisibilityToggle(index)}
+                className={commonStyles.iconButton}
+              >
+                {stroke.visible ? <Eye size={18} /> : <EyeOff size={18} />}
+              </button>
+
+              {/* Botón remove */}
+              <button
+                onClick={() => handleStrokeRemove(index)}
+                className={commonStyles.iconButton}
+              >
+                <Minus size={18} />
+              </button>
+            </div>
+          ))}
+
+          {/* Configuraciones de stroke */}
+          <div className={commonStyles.twoColumnGrid}>
+            {/* Stroke Weight */}
+            <InputNumber
+              iconType="width"
+              min={0}
+              max={9999}
+              step={1}
+              labelText="Weight"
+              value={shape.strokeWidth || 0}
+              onChange={(v) =>
+                setShape({
+                  ...shape,
+
+                  strokeWidth: v,
+                })
+              }
+            />
+
+            {/* Line Style Buttons */}
+            <div
+              className={css({
+                alignItems: "flex-end",
+                display: "grid",
+                gridTemplateColumns: "3",
+              })}
+            >
+              <button
+                onClick={() => handleLineStyleChange("round", "round")}
+                className={css({
+                  background:
+                    shape.lineJoin === "round" && shape.lineCap === "round"
+                      ? "bg.muted"
+                      : "transparent",
+                  borderRadius: "6px",
+                  padding: "sm",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  height: "33.5px",
+                })}
+              >
+                <Brush size={16} />
+              </button>
+
+              <button
+                onClick={() => handleLineStyleChange("miter", "round")}
+                className={css({
+                  background:
+                    shape.lineJoin === "miter" && shape.lineCap === "round"
+                      ? "bg.muted"
+                      : "transparent",
+                  borderRadius: "6px",
+                  padding: "6px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  height: "33.5px",
+                })}
+              >
+                <Ruler size={16} />
+              </button>
+
+              <button
+                onClick={() => handleLineStyleChange("bevel", "square")}
+                className={css({
+                  background:
+                    shape.lineJoin === "bevel" && shape.lineCap === "square"
+                      ? "bg.muted"
+                      : "transparent",
+                  borderRadius: "6px",
+                  padding: "6px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  height: "33.5px",
+                })}
+              >
+                <PenTool size={16} />
+              </button>
+            </div>
+          </div>
+
+          {/* Dash */}
+          <InputNumber
+            iconType="dashed"
+            labelText="Dash"
+            min={0}
+            max={100}
+            onChange={(e) =>
+              setShape({
+                ...shape,
+
+                dash: e,
+              })
+            }
+            value={shape.dash || 0}
+          />
+        </>
+      ) : null}
+      {/* SECCIÓN: EFFECTS - Efectos */}
+      <SectionHeader title="Effects" onAdd={handleAddEffect} />
+      {/* Lista de efectos */}
+      {shape.effects?.map?.((effect, index) => (
+        <section
+          key={`pixel-kit-shape-effect-${shape.id}-${shape.tool}-${index}`}
           className={css({
-            alignItems: "flex-end",
-            display: "grid",
-            gridTemplateColumns: "3",
+            display: "flex",
+            flexDirection: "column",
+            gap: "lg",
           })}
         >
-          <button
-            onClick={() => handleModeChange("soft")}
+          {/* Controles principales del efecto */}
+          <div className={commonStyles.threeColumnGrid}>
+            <InputColor
+              keyInput={`pixel-kit-shape-effect-${shape.id}-${shape.tool}-${index}`}
+              labelText=""
+              color={effect.color}
+              onChangeColor={(e) => handleEffectColorChange(index, e)}
+            />
+
+            {/* Botón visibility toggle */}
+            <button
+              onClick={() => handleEffectVisibilityToggle(index)}
+              className={commonStyles.iconButton}
+            >
+              {effect.visible ? <Eye size={18} /> : <EyeOff size={18} />}
+            </button>
+
+            {/* Botón remove */}
+            <button
+              onClick={() => handleEffectRemove(index)}
+              className={commonStyles.iconButton}
+            >
+              <Minus size={18} />
+            </button>
+          </div>
+
+          {/* Controles detallados del efecto */}
+          <div
             className={css({
-              background: drawMode === "soft" ? "bg.muted" : "transparent",
-              borderRadius: "6px",
-              padding: "sm",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              height: "33.5px",
+              display: "grid",
+              gridTemplateColumns: 2,
+              gridTemplateRows: 2,
+              gap: "lg",
             })}
           >
-            <Brush size={16} />
-          </button>
-
-          <button
-            onClick={() => handleModeChange("straight")}
-            className={css({
-              background: drawMode === "straight" ? "bg.muted" : "transparent",
-              borderRadius: "6px",
-              padding: "6px",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              height: "33.5px",
-            })}
-          >
-            <Ruler size={16} />
-          </button>
-
-          <button
-            onClick={() => handleModeChange("marker")}
-            className={css({
-              background: drawMode === "marker" ? "bg.muted" : "transparent",
-              borderRadius: "6px",
-              padding: "6px",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              height: "33.5px",
-            })}
-          >
-            <PenTool size={16} />
-          </button>
-        </div>
-      </div>
-
-      <InputCheckbox
-        text="Dash"
-        value={dashEnable ?? true}
-        onCheck={(e) => handleDash("dashEnable", e)}
-      />
-      <Valid isValid={dashEnable ?? false}>
-        <InputSlider
-          labelText={`Array (${dash})`}
-          onChange={(e) => handleDash("dash", e)}
-          value={dash || 0}
-        />
-      </Valid>
-      <InputCheckbox
-        text="Shadow"
-        value={shadowEnabled ?? true}
-        onCheck={(e) => handleChangeLine("shadowEnabled", e)}
-      />
-      <Valid isValid={shadowEnabled ?? false}>
-        <InputColor
-          labelText="Color"
-          keyInput={`pixel-kit-draw-before-shadowcolor`}
-          color={shadowColor}
-          onChangeColor={(e) => handleChangeLine("shadowColor", e)}
-        />
-        <InputSlider
-          labelText="X"
-          onChange={(e) => handleChangeLine("shadowOffsetX", e)}
-          value={shadowOffsetX || 0}
-        />
-
-        <InputSlider
-          labelText="Y"
-          onChange={(e) => handleChangeLine("shadowOffsetY", e)}
-          value={shadowOffsetY || 0}
-        />
-
-        <InputSlider
-          labelText="Blur"
-          onChange={(e) => handleChangeLine("shadowBlur", e)}
-          value={shadowBlur || 0}
-        />
-
-        <InputSlider
-          min={0}
-          labelText="Opacity"
-          max={1}
-          step={0.1}
-          onChange={(e) => handleChangeLine("shadowOpacity", e)}
-          value={shadowOpacity || 0}
-        />
-      </Valid>
+            {/* TODO: Corregir los manejadores - actualmente todos actualizan 'dash' */}
+            <InputNumber
+              iconType="x"
+              min={0}
+              labelText="x"
+              max={100}
+              onChange={(e) => handleEffectPropertyChange(index, "x", e)} // FIXME: debería actualizar effect.x
+              value={effect.x}
+            />
+            <InputNumber
+              iconType="y"
+              labelText="y"
+              min={0}
+              max={100}
+              onChange={(e) => handleEffectPropertyChange(index, "y", e)} // FIXME: debería actualizar effect.y
+              value={effect.y}
+            />
+            <InputNumber
+              iconType="square"
+              labelText="blur"
+              min={0}
+              max={100}
+              onChange={(e) => handleEffectPropertyChange(index, "blur", e)} // FIXME: debería actualizar effect.blur
+              value={effect.blur}
+            />
+            <InputNumber
+              iconType="opacity"
+              labelText="opacity"
+              min={0}
+              max={1}
+              step={0.1}
+              onChange={(e) => handleEffectPropertyChange(index, "opacity", e)} // FIXME: debería actualizar effect.opacity
+              value={effect.opacity}
+            />
+          </div>
+        </section>
+      ))}
     </div>
   );
 };
