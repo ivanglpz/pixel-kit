@@ -2,7 +2,14 @@
 /* eslint-disable jsx-a11y/alt-text */
 import { PrimitiveAtom, useAtom, useAtomValue } from "jotai";
 import Konva from "konva";
-import { memo, MutableRefObject, useEffect, useMemo, useRef } from "react";
+import {
+  memo,
+  MutableRefObject,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { Image as KonvaImage } from "react-konva";
 import { STAGE_DIMENSION_ATOM } from "../states/dimension";
 import { SHAPE_ID_ATOM } from "../states/shape";
@@ -33,23 +40,94 @@ function urlToBase64(
     });
 }
 
+// Función para calcular crop con object-fit: cover
+function calculateCoverCrop(
+  imageWidth: number,
+  imageHeight: number,
+  containerWidth: number,
+  containerHeight: number
+) {
+  const imageRatio = imageWidth / imageHeight;
+  const containerRatio = containerWidth / containerHeight;
+
+  let cropX = 0;
+  let cropY = 0;
+  let cropWidth = imageWidth;
+  let cropHeight = imageHeight;
+
+  if (imageRatio > containerRatio) {
+    // La imagen es más ancha que el contenedor
+    // Recortamos los lados
+    cropWidth = imageHeight * containerRatio;
+    cropX = (imageWidth - cropWidth) / 2;
+  } else {
+    // La imagen es más alta que el contenedor
+    // Recortamos arriba y abajo
+    cropHeight = imageWidth / containerRatio;
+    cropY = (imageHeight - cropHeight) / 2;
+  }
+
+  return {
+    x: cropX,
+    y: cropY,
+    width: cropWidth,
+    height: cropHeight,
+  };
+}
+
 export const ShapeImage = memo(({ item }: IShapeWithEvents) => {
   const [box, setBox] = useAtom(
     item.state as PrimitiveAtom<IShape> & WithInitialValue<IShape>
   );
   const { width, height, rotate, x, y, strokeWidth, dash } = box;
+  const [imageDimensions, setImageDimensions] = useState({
+    width: 0,
+    height: 0,
+  });
+
   const imageInstance = useMemo(() => {
+    const image = new Image();
+
+    const handleImageLoad = () => {
+      setImageDimensions({
+        width: image.naturalWidth,
+        height: image.naturalHeight,
+      });
+    };
+
     if (box?.src?.includes("data:image")) {
-      const image = new Image();
       image.src = box.src ?? "";
+      image.onload = handleImageLoad;
       return image;
     }
 
-    const image = new Image();
-    urlToBase64(box.src ?? "", (b64) => (image.src = b64 as string));
+    urlToBase64(box.src ?? "", (b64) => {
+      image.src = b64 as string;
+      image.onload = handleImageLoad;
+    });
+
     return image;
   }, [box.src]);
-  // const { isSelected } = item;
+
+  // Calcular crop para object-fit: cover
+  const cropConfig = useMemo(() => {
+    if (imageDimensions.width === 0 || imageDimensions.height === 0) {
+      return {
+        x: 0,
+        y: 0,
+        width: imageDimensions.width,
+        height: imageDimensions.height,
+      };
+    }
+
+    return calculateCoverCrop(
+      imageDimensions.width,
+      imageDimensions.height,
+      Number(width),
+      Number(height)
+    );
+  }, [imageDimensions.width, imageDimensions.height, width, height]);
+
   const shapeRef = useRef<Konva.Image>();
   const trRef = useRef<Konva.Transformer>();
   const stageDimensions = useAtomValue(STAGE_DIMENSION_ATOM);
@@ -67,13 +145,6 @@ export const ShapeImage = memo(({ item }: IShapeWithEvents) => {
 
   return (
     <>
-      {/* <Valid isValid={isSelected}>
-        <PortalConfigShape
-          isSelected={isSelected}
-          setShape={setImage}
-          shape={image}
-        />
-      </Valid> */}
       <KonvaImage
         // 1. Identificación y referencia
         id={box?.id}
@@ -97,6 +168,8 @@ export const ShapeImage = memo(({ item }: IShapeWithEvents) => {
         strokeEnabled={box.strokeWidth > 0}
         dash={[dash, dash, dash, dash]}
         dashEnabled={box?.dash > 0}
+        // CROP CONFIGURADO PARA OBJECT-FIT: COVER
+        crop={cropConfig}
         cornerRadius={
           box?.isAllBorderRadius ? box.bordersRadius : box.borderRadius
         }
@@ -141,14 +214,15 @@ export const ShapeImage = memo(({ item }: IShapeWithEvents) => {
           )
         }
         onDragEnd={(e) => setBox(shapeEventDragStop(e))}
-        onTransform={(e) =>
+        onTransform={(e) => {
           setBox(
             shapeEventDragMove(e, stageDimensions.width, stageDimensions.height)
-          )
-        }
+          );
+          setBox(shapeTransformEnd(e));
+        }}
         onTransformEnd={(e) => setBox(shapeTransformEnd(e))}
       />
-      <Transform isSelected={isSelected} ref={trRef} keepRatio />
+      <Transform isSelected={isSelected} ref={trRef} />
     </>
   );
 });

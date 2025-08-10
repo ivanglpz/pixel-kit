@@ -16,16 +16,6 @@ export type Fill = {
 export type Stroke = {
   color: string;
   visible: boolean;
-
-  // position: "inside" | "outside";
-  // opacity: number;
-  // style: "solid" | "dashed";
-  // width_profile: "solid";
-  // join: "normal";
-  // frequency: number;
-  // wiggle: number;
-  // smoothen: number;
-  // borderPlacement: "all";
 };
 
 export type Effect = {
