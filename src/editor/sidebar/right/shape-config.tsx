@@ -33,7 +33,7 @@ const calculateScale = (
 };
 
 // Estilos reutilizables
-const commonStyles = {
+export const commonStyles = {
   sectionTitle: css({
     paddingBottom: "md",
     paddingTop: "sm",
@@ -100,7 +100,7 @@ const Separator = () => (
 );
 
 // Componente para título de sección con botón opcional
-const SectionHeader = ({
+export const SectionHeader = ({
   title,
   onAdd,
 }: {
@@ -126,6 +126,7 @@ export const LayoutShapeConfig = () => {
 
   // Si no hay shape seleccionado, no renderizar nada
   if (shape === null) return null;
+  console.log(shape, "shape");
 
   // Opciones para selects
   const fontFamilyOptions = [

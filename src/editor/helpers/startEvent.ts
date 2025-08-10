@@ -1,11 +1,20 @@
-import { image_stock } from "@/assets/image_stock";
 import { IShape } from "@/editor/shapes/type.shape";
 import { v4 as uuidv4 } from "uuid";
 
 const thickness = 5;
 
+export const cloneDeep = (value: Object) => {
+  if (!value) {
+    return {};
+  }
+  if (typeof value !== "object") {
+    return {};
+  }
+  return { ...JSON.parse(JSON.stringify(value)) };
+};
+
 export const shapeStart = (props: Partial<IShape>): IShape => {
-  return {
+  return cloneDeep({
     id: uuidv4(),
     x: 0,
     y: 0,
@@ -60,9 +69,9 @@ export const shapeStart = (props: Partial<IShape>): IShape => {
     fontFamily: "Roboto",
     fontSize: 24,
     resolution: "landscape",
-    src: image_stock,
+    src: "",
     text: "",
     bezier: false,
     ...props,
-  };
+  });
 };
