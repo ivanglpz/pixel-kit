@@ -1,6 +1,6 @@
 import { iconsWithTools } from "@/assets";
 import { css } from "@stylespixelkit/css";
-import { useAtomValue, useSetAtom } from "jotai";
+import { useAtom, useSetAtom } from "jotai";
 import { ChevronDown, ChevronRight } from "lucide-react";
 import { useState } from "react";
 import {
@@ -17,10 +17,11 @@ export const Nodes = ({
   item: SHAPES_NODES;
   SHAPES: SHAPES_NODES[];
 }) => {
-  const value = useAtomValue(item.state);
+  const [value, setShape] = useAtom(item.state);
   const SET_CHANGE = useSetAtom(CHANGE_SHAPE_NODE_ATOM);
   const SET_PARENT_CHANGE = useSetAtom(CHANGE_PARENTID_NODE_ATOM);
   const setShapeId = useSetAtom(SHAPE_ID_ATOM);
+  const [show, setShow] = useState(false);
 
   const [isExpanded, setIsExpanded] = useState(true);
 
@@ -63,7 +64,7 @@ export const Nodes = ({
           fontSize: "sm",
           listStyle: "none",
           display: "grid",
-          gridTemplateColumns: "15px 15px 50px 10px",
+          gridTemplateColumns: "15px 15px 150px",
           flexDirection: "row",
           alignItems: "center",
           gap: "lg",
@@ -106,16 +107,38 @@ export const Nodes = ({
           <div></div>
         )}
         {iconsWithTools[value.tool]}
-
-        <p
-          className={css({
-            textTransform: "capitalize",
-            fontSize: "11px",
-          })}
-          // onPointerDown={(e) => controls.start(e)}
+        <div
+          onClick={() => {}}
+          onDoubleClick={() => {
+            setShow(true);
+          }}
+          onBlur={() => setShow(false)}
+          // quiero que si el cursor se salga entonces lo ponga en show false
+          onMouseLeave={() => setShow(false)}
+          //  onClick={onClick}
         >
-          {value.tool?.toLowerCase()}
-        </p>
+          {show ? (
+            <input
+              type="text"
+              value={value?.label}
+              onChange={(e) => setShape({ ...value, label: e.target.value })}
+              className={css({
+                backgroundColor: "transparent",
+                fontSize: "11px",
+                border: "none",
+              })}
+            />
+          ) : (
+            <p
+              className={css({
+                textTransform: "capitalize",
+                fontSize: "11px",
+              })}
+            >
+              {value.label}
+            </p>
+          )}
+        </div>
       </li>
 
       {childrens?.length > 0 && isExpanded && (
