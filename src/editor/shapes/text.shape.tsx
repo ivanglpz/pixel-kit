@@ -5,75 +5,56 @@ import Konva from "konva";
 import { memo, MutableRefObject, useRef } from "react";
 import { Text } from "react-konva";
 import { IShape, IShapeWithEvents, WithInitialValue } from "./type.shape";
+/* eslint-disable react/display-name */
+import { useAtomValue } from "jotai";
+import { useEffect } from "react";
+import { STAGE_DIMENSION_ATOM } from "../states/dimension";
+import { SHAPE_ID_ATOM } from "../states/shape";
 
+import { Valid } from "@/components/valid";
+import {
+  shapeEventDragMove,
+  ShapeEventDragStart,
+  shapeEventDragStop,
+  shapeTransformEnd,
+} from "./events.shape";
+import { PortalTextWriting } from "./text.writing";
+import { Transform } from "./transformer";
 export const ShapeText = memo(({ item }: IShapeWithEvents) => {
-  // const {
-  //   draggable,
-  //   isSelected,
-  //   onClick,
-  //   onDragMove,
-  //   onDragStart,
-  //   onDragStop,
-  //   screenHeight,
-  //   screenWidth,
-  // } = item;
-
   const [box, setBox] = useAtom(
     item.state as PrimitiveAtom<IShape> & WithInitialValue<IShape>
   );
 
-  const {
-    width,
-    height,
-    shadowColor,
-    shadowOpacity,
-    rotate,
-    x,
-    y,
-    shadowOffsetY,
-    shadowOffsetX,
-    shadowBlur,
-    stroke,
-    strokeWidth,
-    backgroundColor,
-    borderRadius,
-    fillEnabled,
-    fontWeight,
-    shadowEnabled,
-    strokeEnabled,
-    dash,
-    dashEnabled,
-    fontSize,
-  } = box;
+  const { width, height, rotate, x, y, strokeWidth, dash } = box;
 
   const shapeRef = useRef<Konva.Text>();
   const trRef = useRef<Konva.Transformer>();
 
-  // useEffect(() => {
-  //   if (isSelected) {
-  //     if (trRef.current && shapeRef.current) {
-  //       trRef.current.nodes([shapeRef.current]);
-  //       trRef.current?.getLayer()?.batchDraw();
-  //     }
-  //   } else {
-  //   }
-  // }, [isSelected, trRef, shapeRef]);
+  const stageDimensions = useAtomValue(STAGE_DIMENSION_ATOM);
+  const [shapeId, setShapeId] = useAtom(SHAPE_ID_ATOM);
+  const isSelected = shapeId === box?.id;
 
-  // useEffect(() => {
-  //   if (!isSelected && box.isWritingNow) {
-  //     setBox((prev) => ({ ...prev, isWritingNow: false }));
-  //   }
-  // }, [isSelected, box.isWritingNow]);
+  useEffect(() => {
+    if (isSelected) {
+      if (trRef.current && shapeRef.current) {
+        trRef.current.nodes([shapeRef.current]);
+        trRef.current?.getLayer()?.batchDraw();
+      }
+    }
+  }, [isSelected, trRef, shapeRef]);
+
+  useEffect(() => {
+    if (!isSelected && box.isWritingNow) {
+      setBox((prev) => ({ ...prev, isWritingNow: false }));
+    }
+  }, [isSelected, box.isWritingNow]);
 
   return (
     <>
-      {/* <Valid isValid={box.isWritingNow}>
-        <PortalTextWriting
-          isSelected={isSelected}
-          setShape={setBox}
-          shape={box}
-        />
+      <Valid isValid={box.isWritingNow}>
+        <PortalTextWriting item={item} />
       </Valid>
+      {/*
       <Valid isValid={isSelected}>
         <PortalConfigShape
           isSelected={isSelected}
@@ -82,35 +63,83 @@ export const ShapeText = memo(({ item }: IShapeWithEvents) => {
         />
       </Valid> */}
       <Text
+        // 1. Identificación y referencia
         id={box?.id}
+        visible={!box?.isWritingNow}
+        ref={shapeRef as MutableRefObject<Konva.Text>}
+        // 2. Posición y tamaño
         x={x}
         y={y}
         width={width}
-        fontFamily="Plus Jakarta Sans"
-        fontVariant={fontWeight ?? "normal"}
-        visible={!box.isWritingNow}
-        text={box.text}
-        fillEnabled={fillEnabled ?? true}
         height={height}
-        rotationDeg={rotate}
-        shadowColor={shadowColor}
-        shadowOpacity={shadowOpacity}
-        shadowOffsetX={shadowOffsetX}
-        shadowOffsetY={shadowOffsetY}
-        shadowBlur={shadowBlur}
-        strokeEnabled={strokeEnabled ?? true}
-        shadowEnabled={shadowEnabled ?? true}
-        dashEnabled={dashEnabled ?? true}
-        dash={[dash, dash, dash, dash]}
-        cornerRadius={borderRadius}
-        fill={backgroundColor}
-        ref={shapeRef as MutableRefObject<Konva.Text>}
-        // draggable={draggable}
-        fontSize={fontSize ?? 0 + 5}
+        points={box.points ?? [5, 70, 140, 23]}
+        globalCompositeOperation="source-over"
+        fontFamily={box?.fontFamily}
+        fontVariant={box?.fontWeight}
+        text={box?.text}
+        fontSize={box?.fontSize}
         lineHeight={1.45}
-        stroke={stroke}
+        // 3. Rotación
+        rotationDeg={rotate}
+        // 4. Relleno y color
+        fillEnabled={box?.fills?.filter((e) => e?.visible)?.length > 0}
+        fill={box?.fills?.filter((e) => e?.visible)?.at(0)?.color}
+        // 5. Bordes y trazos
+        stroke={box?.strokes?.filter((e) => e?.visible)?.at(0)?.color}
         strokeWidth={strokeWidth}
-        // onTap={(e) => setBox(shapeEventClick(e, onClick))}
+        strokeEnabled={box.strokeWidth > 0}
+        dash={[dash, dash, dash, dash]}
+        dashEnabled={box?.dash > 0}
+        cornerRadius={
+          box?.isAllBorderRadius ? box.bordersRadius : box.borderRadius
+        }
+        // 6. Sombras
+        shadowColor={
+          box?.effects?.filter((e) => e?.visible && e?.type === "shadow").at(0)
+            ?.color
+        }
+        shadowOpacity={
+          box?.effects?.filter((e) => e?.visible && e?.type === "shadow").at(0)
+            ?.opacity
+        }
+        shadowOffsetX={
+          box?.effects?.filter((e) => e?.visible && e?.type === "shadow").at(0)
+            ?.x
+        }
+        shadowOffsetY={
+          box?.effects?.filter((e) => e?.visible && e?.type === "shadow").at(0)
+            ?.y
+        }
+        shadowBlur={
+          box?.effects?.filter((e) => e?.visible && e?.type === "shadow").at(0)
+            ?.blur
+        }
+        shadowEnabled={
+          Number(
+            box?.effects?.filter((e) => e?.visible && e?.type === "shadow")
+              ?.length
+          ) > 0
+        }
+        // 7. Apariencia y opacidad
+        opacity={box?.opacity ?? 1}
+        // 8. Interactividad y arrastre
+        draggable={shapeId === box?.id}
+        // 9. Eventos
+        onTap={() => setShapeId(box?.id)}
+        onClick={() => setShapeId(box?.id)}
+        onDragStart={(e) => setBox(ShapeEventDragStart(e))}
+        onDragMove={(e) =>
+          setBox(
+            shapeEventDragMove(e, stageDimensions.width, stageDimensions.height)
+          )
+        }
+        onDragEnd={(e) => setBox(shapeEventDragStop(e))}
+        onTransform={(e) =>
+          setBox(
+            shapeEventDragMove(e, stageDimensions.width, stageDimensions.height)
+          )
+        }
+        onTransformEnd={(e) => setBox(shapeTransformEnd(e))}
         onDblTap={() => {
           setBox((prev) => ({
             ...prev,
@@ -123,19 +152,8 @@ export const ShapeText = memo(({ item }: IShapeWithEvents) => {
             isWritingNow: true,
           }));
         }}
-        // onClick={(e) => setBox(shapeEventClick(e, onClick))}
-        // onDragStart={(e) => setBox(ShapeEventDragStart(e, onDragStart))}
-        // onDragMove={(e) =>
-        //   setBox(shapeEventDragMove(e, onDragMove, screenWidth, screenHeight))
-        // }
-        // onDragEnd={(e) => setBox(shapeEventDragStop(e, onDragStop))}
-        // onTransform={(e) => {
-        //   setBox(shapeEventDragMove(e, onDragMove, screenWidth, screenHeight));
-        //   setBox(shapeTransformEnd(e, onDragMove));
-        // }}
-        // onTransformEnd={(e) => setBox(shapeTransformEnd(e, onDragStop))}
       />
-      {/* <Transform isSelected={isSelected && !box.isWritingNow} ref={trRef} /> */}
+      <Transform isSelected={isSelected} ref={trRef} />
     </>
   );
 });
