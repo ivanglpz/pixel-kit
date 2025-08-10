@@ -31,38 +31,11 @@ export type Stroke = {
 export type Effect = {
   type: "shadow" | "blur" | "glow";
   visible: boolean;
-  position: {
-    x: number;
-    y: number;
-    blur: number;
-    spread: number;
-    color: string;
-    opacity: number;
-  };
+  x: number;
+  y: number;
+  color: string;
+  opacity: number;
   blur: number;
-  progressive: {
-    start: number;
-    end: number;
-  };
-  mono: {
-    noiseSize: number;
-    density: number;
-    color: string;
-    opacity: number;
-  };
-  duo: {
-    noiseSize: number;
-    density: number;
-    colorStart: string;
-    colorEnd: string;
-    opacity: number;
-  };
-  multi: {
-    noiseSize: number;
-    density: number;
-    opacity: number;
-  };
-  value: number;
 };
 
 export type IShape = {
@@ -77,7 +50,7 @@ export type IShape = {
   fills: Fill[];
   strokes: Stroke[];
   strokeWidth: number;
-  effects?: Effect[];
+  effects: Effect[];
   bordersRadius: number[];
   width?: number;
   height?: number;

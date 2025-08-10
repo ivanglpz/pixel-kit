@@ -1,9 +1,7 @@
 import { Button } from "@/editor/components/button";
-import { InputCheckbox } from "@/editor/components/input-checkbox";
 import InputColor from "@/editor/components/input-color";
 import { InputNumber } from "@/editor/components/input-number";
 import { InputSelect } from "@/editor/components/input-select";
-import { InputSlider } from "@/editor/components/input-slider";
 import { InputTextArea } from "@/editor/components/input-textarea";
 import { IShape } from "@/editor/shapes/type.shape";
 import { SHAPE_SELECTED_ATOM, SHAPE_UPDATE_ATOM } from "@/editor/states/shape";
@@ -41,7 +39,7 @@ const Separator = () => {
     <div
       className={css({
         marginTop: "md",
-        height: 3.5,
+        height: 1,
         width: "100%",
         backgroundColor: "gray.700",
         // opacity: 0,
@@ -842,74 +840,194 @@ export const LayoutShapeConfig = () => {
           display: "none",
         })}
       />
+      <Separator />
 
-      <InputCheckbox
-        text="Shadow"
-        value={shape.shadowEnabled ?? true}
-        onCheck={(e) => {
-          shapeUpdate({
-            shadowEnabled: e,
-          });
+      <div
+        className={css({
+          display: "flex",
+          flexDirection: "row",
+          justifyContent: "space-between",
+          alignItems: "center",
+        })}
+      >
+        <p
+          className={css({
+            paddingBottom: "md",
+            paddingTop: "sm",
+            fontWeight: "bold",
+            fontSize: "sm",
+          })}
+        >
+          Effects
+        </p>
+        <button
+          className={css({
+            color: "white",
+            border: "none",
+            padding: "sm",
+            cursor: "pointer",
+            borderRadius: "md",
+          })}
+          onClick={() => {
+            shapeUpdate({
+              effects: [
+                ...(shape.effects || []),
+                {
+                  type: "shadow",
+                  visible: true,
+                  blur: 0,
+                  color: "#000",
+                  opacity: 1,
+                  x: 0,
+                  y: 0,
+                },
+              ],
+            });
+          }}
+        >
+          <Plus size={14} />
+        </button>
+      </div>
 
-          // onChange("shadowEnabled", e)
-        }}
-      />
-      {/* <Valid isValid={shape.shadowEnabled ?? false}> */}
-      <InputColor
-        labelText="Color"
-        keyInput={`pixel-kit-shape-shadow-${shape.id}-${shape.tool}`}
-        color={shape.shadowColor}
-        onChangeColor={(e) => {
-          shapeUpdate({
-            shadowColor: e,
-          });
-          // onChange("shadowColor", e)
-        }}
-      />
-      <InputSlider
-        labelText="X"
-        onChange={(e) => {
-          shapeUpdate({
-            shadowOffsetX: e,
-          });
-          // onChange("shadowOffsetX", e)
-        }}
-        value={shape.shadowOffsetX || 0}
-      />
-      <InputSlider
-        labelText="Y"
-        onChange={(e) => {
-          shapeUpdate({
-            shadowOffsetY: e,
-          });
-          // onChange("shadowOffsetY", e)
-        }}
-        value={shape.shadowOffsetY || 0}
-      />
-      <InputSlider
-        labelText="Blur"
-        onChange={(e) => {
-          shapeUpdate({
-            shadowBlur: e,
-          });
-          // onChange("shadowBlur", e)
-        }}
-        value={shape.shadowBlur || 0}
-      />
+      {shape.effects?.map?.((effect, index) => (
+        <section
+          key={`pixel-kit-shape-effect-${shape.id}-${shape.tool}-${index}`}
+          className={css({
+            display: "flex",
+            flexDirection: "column",
+            gap: "lg",
+          })}
+        >
+          <div
+            className={css({
+              display: "grid",
+              gridTemplateColumns: "1fr 33.5px 33.5px",
+              alignItems: "end",
+              gap: "md",
+            })}
+          >
+            <InputColor
+              key={`pixel-kit-shape-stroke-${shape.id}-${shape.tool}-${index}`}
+              keyInput={`pixel-kit-shape-stroke-${shape.id}-${shape.tool}-${index}`}
+              labelText=""
+              color={effect.color}
+              onChangeColor={(e) => {
+                const newEffects = [...(shape.effects ?? [])];
+                newEffects[index].color = e;
+                shapeUpdate({
+                  effects: newEffects,
+                });
+              }}
+            />
 
-      <InputSlider
-        min={0}
-        labelText="Opacity"
-        max={1}
-        step={0.1}
-        onChange={(e) => {
-          shapeUpdate({
-            shadowOpacity: e,
-          });
-          // onChange("shadowOpacity", e)
-        }}
-        value={shape.shadowOpacity || 0}
-      />
+            <button
+              onClick={() => {
+                const newEffects = [...(shape.effects ?? [])];
+                newEffects[index].visible = !newEffects[index].visible;
+                shapeUpdate({
+                  effects: newEffects,
+                });
+              }}
+              className={css({
+                backgroundColor: "transparent",
+                border: "none",
+                cursor: "pointer",
+                height: 33.5,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              })}
+            >
+              {effect.visible ? <Eye size={18} /> : <EyeOff size={18} />}
+            </button>
+            <button
+              onClick={() => {
+                const newEffects = [...(shape.effects ?? [])];
+                newEffects.splice(index, 1);
+                shapeUpdate({
+                  effects: newEffects,
+                });
+              }}
+              className={css({
+                backgroundColor: "transparent",
+                border: "none",
+                cursor: "pointer",
+                height: 33.5,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              })}
+            >
+              <Minus size={18} />
+            </button>
+          </div>
+          <div
+            className={css({
+              display: "grid",
+              gridTemplateColumns: 2,
+              gridTemplateRows: 2,
+              gap: "lg",
+            })}
+          >
+            <InputNumber
+              iconType="x"
+              min={0}
+              labelText="x"
+              max={100}
+              onChange={(e) => {
+                shapeUpdate({
+                  dash: e,
+                });
+
+                // onChange("dash", e)
+              }}
+              value={effect.x}
+            />
+            <InputNumber
+              iconType="y"
+              labelText="x"
+              min={0}
+              max={100}
+              onChange={(e) => {
+                shapeUpdate({
+                  dash: e,
+                });
+
+                // onChange("dash", e)
+              }}
+              value={effect.x}
+            />
+            <InputNumber
+              iconType="square"
+              labelText="blur"
+              min={0}
+              max={100}
+              onChange={(e) => {
+                shapeUpdate({
+                  dash: e,
+                });
+
+                // onChange("dash", e)
+              }}
+              value={effect.x}
+            />
+            <InputNumber
+              iconType="opacity"
+              labelText="opacity"
+              min={0}
+              max={100}
+              onChange={(e) => {
+                shapeUpdate({
+                  dash: e,
+                });
+
+                // onChange("dash", e)
+              }}
+              value={effect.x}
+            />
+          </div>
+        </section>
+      ))}
     </div>
   );
 };
