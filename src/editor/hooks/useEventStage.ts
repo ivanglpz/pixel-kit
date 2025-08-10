@@ -143,12 +143,14 @@ const useEventStage = () => {
           shadowEnabled: false,
           strokeEnabled: false,
         };
-        setShapeId(payload?.id);
 
         SET_CREATE(payload);
         SET_CLEAR_CITEM();
         setEventStage("IDLE");
         setTool("MOVE");
+        setTimeout(() => {
+          setShapeId(payload?.id);
+        }, 1);
       }
       if (TOOLS_LINE_BASED?.includes(CURRENT_ITEM.tool)) {
         SET_CREATE(CURRENT_ITEM);
