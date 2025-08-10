@@ -14,7 +14,7 @@ export type SHAPES_NODES = {
   state: PrimitiveAtom<IShape> & WithInitialValue<IShape>;
 };
 
-const ALL_SHAPES_ATOM = atom([] as SHAPES_NODES[]);
+export const ALL_SHAPES_ATOM = atom([] as SHAPES_NODES[]);
 
 export const ROOT_SHAPES_ATOM = atom((get) =>
   get(ALL_SHAPES_ATOM)?.filter(
