@@ -1,17 +1,25 @@
-import { Valid } from "@/components/valid";
 import { Button } from "@/editor/components/button";
 import { InputCheckbox } from "@/editor/components/input-checkbox";
 import InputColor from "@/editor/components/input-color";
 import { InputNumber } from "@/editor/components/input-number";
 import { InputSelect } from "@/editor/components/input-select";
 import { InputSlider } from "@/editor/components/input-slider";
+import { InputTextArea } from "@/editor/components/input-textarea";
 import { IShape } from "@/editor/shapes/type.shape";
 import { SHAPE_SELECTED_ATOM, SHAPE_UPDATE_ATOM } from "@/editor/states/shape";
 import { DELETE_SHAPE_ATOM } from "@/editor/states/shapes";
 import { css } from "@stylespixelkit/css";
 import { useAtomValue, useSetAtom } from "jotai";
-import { LineCap, LineJoin } from "konva/lib/Shape";
-import { Eye, EyeOff, Minus, Plus, Scan } from "lucide-react";
+import {
+  Brush,
+  Eye,
+  EyeOff,
+  Minus,
+  PenTool,
+  Plus,
+  Ruler,
+  Scan,
+} from "lucide-react";
 import { ChangeEvent, useRef } from "react";
 
 const calculateScale = (
@@ -104,6 +112,16 @@ export const LayoutShapeConfig = () => {
           fontSize: "sm",
         })}
       >
+        Shape
+      </p>
+      <p
+        className={css({
+          color: "text",
+          fontWeight: "600",
+          fontSize: "x-small",
+          height: "15px",
+        })}
+      >
         Position
       </p>
       <div
@@ -115,7 +133,6 @@ export const LayoutShapeConfig = () => {
       >
         <InputNumber
           iconType="x"
-          labelText="Position"
           value={shape.x}
           onChange={(v) => {
             shapeUpdate({
@@ -145,6 +162,16 @@ export const LayoutShapeConfig = () => {
       >
         Layout
       </p>
+      <p
+        className={css({
+          color: "text",
+          fontWeight: "600",
+          fontSize: "x-small",
+          height: "15px",
+        })}
+      >
+        Dimensions
+      </p>
       <div
         className={css({
           display: "grid",
@@ -154,7 +181,6 @@ export const LayoutShapeConfig = () => {
       >
         <InputNumber
           iconType="width"
-          labelText="Dimensions"
           value={Number(shape.width) || 0}
           onChange={(v) => {
             shapeUpdate({
@@ -320,6 +346,139 @@ export const LayoutShapeConfig = () => {
         </div>
       )}
       <Separator />
+
+      <div
+        className={css({
+          display: "flex",
+          flexDirection: "row",
+          justifyContent: "space-between",
+          alignItems: "center",
+        })}
+      >
+        <p
+          className={css({
+            paddingBottom: "md",
+            paddingTop: "sm",
+            fontWeight: "bold",
+            fontSize: "sm",
+          })}
+        >
+          Typography
+        </p>
+      </div>
+
+      <div
+        className={css({
+          display: "grid",
+          gridTemplateColumns: "2",
+          gap: "lg",
+          gridTemplateRows: "auto auto auto",
+        })}
+      >
+        <div
+          className={css({
+            gridColumn: "2",
+          })}
+        >
+          <InputSelect
+            value={shape.fontFamily ?? "Roboto"}
+            onChange={(e) => {
+              shapeUpdate({
+                fontFamily: e as IShape["fontFamily"],
+              });
+            }}
+            options={[
+              {
+                id: `font-Roboto`,
+                label: "Roboto",
+                value: "Roboto",
+              },
+              {
+                id: `font-Arial`,
+                label: "Arial",
+                value: "Arial",
+              },
+            ]}
+          />
+        </div>
+        <InputSelect
+          labelText=""
+          value={shape.fontWeight ?? "normal"}
+          onChange={(e) => {
+            shapeUpdate({
+              fontWeight: e as IShape["fontWeight"],
+            });
+            // onChange("fontWeight", e)
+          }}
+          options={[
+            {
+              id: `font-weight-lighter`,
+              label: "Lighter",
+              value: "lighter",
+            },
+            {
+              id: `font-weight-normal`,
+              label: "Normal",
+              value: "normal",
+            },
+            {
+              id: `font-weight-medium`,
+              label: "Medium",
+              value: "500",
+            },
+            {
+              id: `font-weight-semi-bold`,
+              label: "Semi Bold",
+              value: "600",
+            },
+            {
+              id: `font-weight-bold`,
+              label: "Bold",
+              value: "bold",
+            },
+            {
+              id: `font-weight-bolder`,
+              label: "Bolder",
+              value: "bolder",
+            },
+          ]}
+        />
+        <InputNumber
+          iconType="font"
+          labelText=""
+          min={12}
+          max={72}
+          step={4}
+          onChange={(e) => {
+            shapeUpdate({
+              fontSize: e,
+            });
+
+            // onChange("fontSize", e)
+          }}
+          value={shape.fontSize || 0}
+        />
+        <div
+          className={css({
+            gridColumn: 2,
+            gridRow: 3,
+          })}
+        >
+          <InputTextArea
+            labelText=""
+            onChange={(e) => {
+              shapeUpdate({
+                text: e,
+              });
+
+              // onChange("fontSize", e)
+            }}
+            value={shape.text || ""}
+          />
+        </div>
+      </div>
+      <Separator />
+
       <div
         className={css({
           display: "flex",
@@ -361,15 +520,6 @@ export const LayoutShapeConfig = () => {
         >
           <Plus size={14} />
         </button>
-        {/* <InputCheckbox
-          text=""
-          value={shape.fillEnabled ?? true}
-          onCheck={(e) => {
-            shapeUpdate({
-              fillEnabled: e,
-            });
-          }}
-        /> */}
       </div>
       {shape.fills?.length &&
         shape.fills.map((fill, index) => (
@@ -550,15 +700,117 @@ export const LayoutShapeConfig = () => {
               </button>
             </div>
           ))}
+
+          <div
+            className={css({
+              display: "grid",
+              gridTemplateColumns: "2",
+              gap: "lg",
+            })}
+          >
+            <InputNumber
+              iconType="width"
+              min={0}
+              max={9999}
+              step={1}
+              labelText="Weight"
+              value={shape.strokeWidth || 0}
+              onChange={(v) => {
+                shapeUpdate({
+                  strokeWidth: v,
+                });
+              }}
+            />
+            <div
+              className={css({
+                alignItems: "flex-end",
+                display: "grid",
+                gridTemplateColumns: "3",
+              })}
+            >
+              <button
+                onClick={() => {
+                  shapeUpdate({
+                    lineJoin: "round",
+                    lineCap: "round",
+                  });
+                }}
+                className={css({
+                  background:
+                    shape.lineJoin === "round" && shape.lineCap === "round"
+                      ? "bg.muted"
+                      : "transparent",
+                  borderRadius: "6px",
+                  padding: "sm",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  height: "33.5px",
+                })}
+              >
+                <Brush size={16} />
+              </button>
+
+              <button
+                onClick={() => {
+                  shapeUpdate({
+                    lineJoin: "miter",
+                    lineCap: "round",
+                  });
+                }}
+                className={css({
+                  background:
+                    shape.lineJoin === "miter" && shape.lineCap === "round"
+                      ? "bg.muted"
+                      : "transparent",
+                  borderRadius: "6px",
+                  padding: "6px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  height: "33.5px",
+                })}
+              >
+                <Ruler size={16} />
+              </button>
+
+              <button
+                onClick={() => {
+                  shapeUpdate({
+                    lineJoin: "bevel",
+                    lineCap: "square",
+                  });
+                }}
+                className={css({
+                  background:
+                    shape.lineJoin === "bevel" && shape.lineCap === "square"
+                      ? "bg.muted"
+                      : "transparent",
+                  borderRadius: "6px",
+                  padding: "6px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  height: "33.5px",
+                })}
+              >
+                <PenTool size={16} />
+              </button>
+            </div>
+          </div>
           <InputNumber
-            iconType="width"
-            labelText="Weight"
-            value={shape.strokeWidth || 0}
-            onChange={(v) => {
+            iconType="dashed"
+            labelText={`Dash`}
+            min={0}
+            max={100}
+            onChange={(e) => {
               shapeUpdate({
-                strokeWidth: v,
+                dash: e,
               });
+
+              // onChange("dash", e)
             }}
+            value={shape.dash || 0}
           />
         </>
       ) : null}
@@ -590,162 +842,6 @@ export const LayoutShapeConfig = () => {
           display: "none",
         })}
       />
-      {/* </Valid> */}
-      {/* <Valid isValid={shape.tool === "DRAW"}> */}
-      <InputCheckbox
-        text="Bucket Fill"
-        value={closed ?? false}
-        onCheck={(e) => {
-          shapeUpdate({
-            closed: e,
-          });
-        }}
-      />
-      {/* </Valid> */}
-      {/* <Valid isValid={tool !== "IMAGE"}> */}
-
-      {/* </Valid> */}
-
-      {/* <Valid isValid={shape.tool === "LINE" || shape.tool === "DRAW"}> */}
-      <InputSelect
-        labelText="Line Join"
-        value={shape.lineJoin ?? "round"}
-        onChange={(e) => {
-          shapeUpdate({
-            lineJoin: e as LineJoin,
-          });
-          // onChange("lineJoin", e)
-        }}
-        options={[
-          {
-            id: `line-join-1-round`,
-            label: "Round",
-            value: "round",
-          },
-          {
-            id: `line-join-2-bevel`,
-            label: "Bevel",
-            value: "bevel",
-          },
-          {
-            id: `line-join-3-miter`,
-            label: "Miter",
-            value: "miter",
-          },
-        ]}
-      />
-
-      <InputSelect
-        labelText="Line Cap"
-        value={shape.lineCap ?? "round"}
-        onChange={(e) => {
-          shapeUpdate({
-            lineCap: e as LineCap,
-          });
-          // onChange("lineCap", e)
-        }}
-        options={[
-          {
-            id: `line-cap-1-round`,
-            label: "Round",
-            value: "round",
-          },
-          {
-            id: `line-cap-2-butt`,
-            label: "Butt",
-            value: "butt",
-          },
-          {
-            id: `line-cap-3-square`,
-            label: "Square",
-            value: "square",
-          },
-        ]}
-      />
-      {/* </Valid> */}
-      {/* <Valid isValid={shape.tool === "TEXT"}> */}
-      <InputSelect
-        labelText="Font Weight"
-        value={shape.fontWeight ?? "normal"}
-        onChange={(e) => {
-          shapeUpdate({
-            fontWeight: e as IShape["fontWeight"],
-          });
-          // onChange("fontWeight", e)
-        }}
-        options={[
-          {
-            id: `font-weight-lighter`,
-            label: "Lighter",
-            value: "lighter",
-          },
-          {
-            id: `font-weight-normal`,
-            label: "Normal",
-            value: "normal",
-          },
-          {
-            id: `font-weight-medium`,
-            label: "Medium",
-            value: "500",
-          },
-          {
-            id: `font-weight-semi-bold`,
-            label: "Semi Bold",
-            value: "600",
-          },
-          {
-            id: `font-weight-bold`,
-            label: "Bold",
-            value: "bold",
-          },
-          {
-            id: `font-weight-bolder`,
-            label: "Bolder",
-            value: "bolder",
-          },
-        ]}
-      />
-      <InputSlider
-        labelText="Font size"
-        min={12}
-        max={72}
-        step={4}
-        onChange={(e) => {
-          shapeUpdate({
-            fontSize: e,
-          });
-
-          // onChange("fontSize", e)
-        }}
-        value={shape.fontSize || 0}
-      />
-      {/* </Valid> */}
-
-      <InputCheckbox
-        text="Dash"
-        value={shape.dashEnabled ?? true}
-        onCheck={(e) => {
-          shapeUpdate({
-            dashEnabled: e,
-          });
-
-          // onChange("dashEnabled", e)
-        }}
-      />
-      <Valid isValid={shape.dashEnabled ?? false}>
-        <InputSlider
-          labelText={`Array (${shape.dash})`}
-          onChange={(e) => {
-            shapeUpdate({
-              dash: e,
-            });
-
-            // onChange("dash", e)
-          }}
-          value={shape.dash || 0}
-        />
-      </Valid>
 
       <InputCheckbox
         text="Shadow"

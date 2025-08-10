@@ -1,5 +1,12 @@
 import { css } from "@stylespixelkit/css";
-import { Blend, LineSquiggle, Scan, X } from "lucide-react";
+import {
+  Blend,
+  LineSquiggle,
+  Scaling,
+  Scan,
+  SquareDashed,
+  X,
+} from "lucide-react";
 import { HTMLInputTypeAttribute } from "react";
 
 const typeIcon = {
@@ -10,6 +17,8 @@ const typeIcon = {
   height: "H",
   opacity: <Blend size={14} />,
   br: <Scan size={14} />,
+  font: <Scaling size={14} />,
+  dashed: <SquareDashed size={14} />,
 };
 type Props = {
   value: number | string;
@@ -17,7 +26,7 @@ type Props = {
   min?: number;
   max?: number;
   step?: number;
-  labelText: string;
+  labelText?: string;
   iconType: keyof typeof typeIcon;
   type?: HTMLInputTypeAttribute;
 };
@@ -47,21 +56,22 @@ export const InputNumber = ({
         gap: "md",
       })}
     >
-      <p
-        className={css({
-          color: "text",
-          fontWeight: "600",
-          fontSize: "x-small",
-          height: "15px",
-        })}
-      >
-        {labelText}
-      </p>
+      {labelText?.length ? (
+        <p
+          className={css({
+            color: "text",
+            fontWeight: "600",
+            fontSize: "x-small",
+            height: "15px",
+          })}
+        >
+          {labelText}
+        </p>
+      ) : null}
 
       <div
         className={css({
           width: "100%",
-          flex: 1,
           color: "text",
           fontSize: "sm",
           backgroundColor: "bg.muted", // Fondo más claro para el selector
@@ -74,6 +84,7 @@ export const InputNumber = ({
           display: "grid",
           gridTemplateColumns: "17px 1fr",
           alignItems: "center",
+          height: "33.5px",
         })}
       >
         <div
@@ -118,7 +129,6 @@ export const InputNumber = ({
               whiteSpace: "nowrap",
               textOverflow: "ellipsis", // Añade los puntos suspensivos
               width: "100%",
-              maxWidth: "60px", // Limita el ancho del input
               padding: "0 4px",
             })}
           />

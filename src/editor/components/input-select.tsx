@@ -20,12 +20,13 @@ export const InputSelect = ({ options, value, onChange, labelText }: Props) => {
         gap: "md",
       })}
     >
-      {labelText ? (
+      {labelText?.length ? (
         <p
           className={css({
             color: "text",
             fontWeight: "600",
             fontSize: "x-small",
+            height: "15px",
           })}
         >
           {labelText}
@@ -34,7 +35,6 @@ export const InputSelect = ({ options, value, onChange, labelText }: Props) => {
       <div
         className={css({
           width: "100%",
-          flex: 1,
           color: "text",
           fontSize: "sm",
           backgroundColor: "bg.muted", // Fondo más claro para el selector
@@ -46,6 +46,7 @@ export const InputSelect = ({ options, value, onChange, labelText }: Props) => {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
+          height: "33.5px",
         })}
       >
         <select

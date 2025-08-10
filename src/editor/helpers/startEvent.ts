@@ -49,7 +49,7 @@ export const shapeStart = (props: Partial<IShape>): IShape => {
     shadowOpacity: thickness,
     isAllBorderRadius: false,
     borderRadius: 0,
-    dash: thickness,
+    dash: 0,
     dashEnabled: false,
     closed: closed ?? false,
     colorText: "black",

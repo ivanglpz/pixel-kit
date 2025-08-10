@@ -66,9 +66,9 @@ export const ShapeCircle = memo(({ item }: IShapeWithEvents) => {
         shadowOffsetX={shadowOffsetX}
         shadowOffsetY={shadowOffsetY}
         shadowBlur={shadowBlur}
-        strokeEnabled={true}
+        strokeEnabled={box.strokeWidth > 0}
+        dashEnabled={box?.dash > 0}
         shadowEnabled={shadowEnabled ?? true}
-        dashEnabled={dashEnabled ?? true}
         dash={[dash, dash, dash, dash]}
         cornerRadius={
           box?.isAllBorderRadius ? box.bordersRadius : box.borderRadius
