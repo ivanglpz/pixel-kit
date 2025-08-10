@@ -50,7 +50,8 @@ export const ShapeCircle = memo(({ item }: IShapeWithEvents) => {
         // 3. Rotación
         rotationDeg={rotate}
         // 4. Relleno y color
-        fillEnabled={box?.fills?.filter((e) => e?.visible)?.length > 0}
+        // fillEnabled={box?.fills?.filter((e) => e?.visible)?.length > 0}
+        fillEnabled
         fill={box?.fills?.filter((e) => e?.visible)?.at(0)?.color}
         // 5. Bordes y trazos
         stroke={box?.strokes?.filter((e) => e?.visible)?.at(0)?.color}
