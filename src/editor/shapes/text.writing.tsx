@@ -1,26 +1,28 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { Dispatch, SetStateAction, useEffect, useRef } from "react";
-import { IShape } from "./type.shape";
-import { Html } from "react-konva-utils";
+import { PrimitiveAtom, useAtom } from "jotai";
+import { useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
-import { useTool } from "../hooks";
+import { Html } from "react-konva-utils";
 import { tokens } from "../constants";
+import { useTool } from "../hooks";
+import { SHAPES_NODES } from "../states/shapes";
+import { IShape, WithInitialValue } from "./type.shape";
 
 type Props = {
-  setShape: Dispatch<SetStateAction<IShape>>;
-  isSelected: boolean;
-  shape: IShape;
+  item: SHAPES_NODES;
 };
 
-export const PortalTextWriting = ({ shape, isSelected, setShape }: Props) => {
+export const PortalTextWriting = ({ item }: Props) => {
   const { setTool } = useTool();
-
+  const [box, setBox] = useAtom(
+    item.state as PrimitiveAtom<IShape> & WithInitialValue<IShape>
+  );
   const adjustTextareaHeight = () => {
     if (textareaRef.current) {
       const textarea = textareaRef.current;
       textarea.style.height = "auto";
       const newHeight = textarea.scrollHeight;
-      setShape((prev) => ({
+      setBox((prev) => ({
         ...prev,
         height: newHeight,
       }));
@@ -30,13 +32,13 @@ export const PortalTextWriting = ({ shape, isSelected, setShape }: Props) => {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   useEffect(() => {
     adjustTextareaHeight();
-  }, [shape?.text, textareaRef]);
+  }, [box?.text, textareaRef]);
 
-  if (!shape?.isWritingNow || !isSelected) return null;
+  if (!box?.isWritingNow) return null;
 
   const areaPosition = {
-    x: shape.x,
-    y: shape.y,
+    x: box.x,
+    y: box.y,
   };
   const sidebarElement = document.getElementById("pixel-kit-stage");
 
@@ -50,7 +52,7 @@ export const PortalTextWriting = ({ shape, isSelected, setShape }: Props) => {
         },
       }}
     >
-      {sidebarElement && sidebarElement instanceof Element && isSelected
+      {sidebarElement && sidebarElement instanceof Element
         ? createPortal(
             <>
               <textarea
@@ -61,36 +63,55 @@ export const PortalTextWriting = ({ shape, isSelected, setShape }: Props) => {
                 }}
                 style={{
                   position: "absolute",
-                  top: areaPosition?.y + "px",
-                  left: areaPosition?.x + "px",
-                  width:
-                    Number(shape.width) > 100 ? shape.width + "px" : "220px",
+                  top: areaPosition?.y - 1 + "px",
+                  left: areaPosition?.x - 1 + "px",
+                  fontFamily: box?.fontFamily,
+                  width: Number(box.width) > 100 ? box.width + "px" : "220px",
                   height:
-                    Number(shape.height) > 100 ? shape.height + "px" : "100px",
+                    Number(box.height) > 100 ? box.height + "px" : "100px",
                   resize: "none",
                   background: "transparent",
-                  fontWeight: shape?.fontWeight ?? "normal",
-                  fontSize: shape.fontSize + "px",
+                  fontWeight: box?.fontWeight ?? "normal",
+                  fontSize: box.fontSize + "px",
                   border: `1px solid ${tokens.colors.blue}`,
                   padding: "0px",
                   margin: "0px",
                   overflow: "hidden",
                   outline: "none",
                   textAlign: "left",
-                  color: shape.backgroundColor ?? "white",
+                  color:
+                    box?.fills?.filter((e) => e?.visible)?.at(0)?.color ??
+                    "white",
                   lineHeight: 1.45,
-                  textShadow: shape.shadowEnabled
-                    ? `${shape.shadowOffsetX}px ${shape.shadowOffsetY}px  #000`
-                    : "none",
+                  textShadow:
+                    Number(
+                      box?.effects?.filter(
+                        (e) => e?.visible && e?.type === "shadow"
+                      )?.length
+                    ) > 0
+                      ? `${
+                          box?.effects
+                            ?.filter((e) => e?.visible && e?.type === "shadow")
+                            .at(0)?.x
+                        }px ${
+                          box?.effects
+                            ?.filter((e) => e?.visible && e?.type === "shadow")
+                            .at(0)?.y
+                        }px  ${
+                          box?.effects
+                            ?.filter((e) => e?.visible && e?.type === "shadow")
+                            .at(0)?.color
+                        }`
+                      : "none",
                 }}
-                value={shape.text ?? ""}
+                value={box.text ?? ""}
                 onChange={(e) => {
                   adjustTextareaHeight();
-                  setShape((prev) => ({
+                  setBox((prev) => ({
                     ...prev,
                     text: e.target.value,
-                    width: Number(shape.width) > 100 ? shape.width : 220,
-                    height: Number(shape.height) > 100 ? shape.height : 100,
+                    width: Number(box.width) > 100 ? box.width : 220,
+                    height: Number(box.height) > 100 ? box.height : 100,
                   }));
                 }}
                 onClick={() => {
