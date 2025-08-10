@@ -69,7 +69,7 @@ export const shapeStart = (props: Partial<IShape>): IShape => {
     fontFamily: "Roboto",
     fontSize: 24,
     resolution: "landscape",
-    src: "",
+    src: "./placeholder.svg",
     text: "",
     bezier: false,
     ...props,
