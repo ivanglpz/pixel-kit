@@ -134,11 +134,12 @@ export const ShapeText = memo(({ item }: IShapeWithEvents) => {
           )
         }
         onDragEnd={(e) => setBox(shapeEventDragStop(e))}
-        onTransform={(e) =>
+        onTransform={(e) => {
           setBox(
             shapeEventDragMove(e, stageDimensions.width, stageDimensions.height)
-          )
-        }
+          );
+          setBox(shapeTransformEnd(e));
+        }}
         onTransformEnd={(e) => setBox(shapeTransformEnd(e))}
         onDblTap={() => {
           setBox((prev) => ({
