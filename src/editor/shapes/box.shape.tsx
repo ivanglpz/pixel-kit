@@ -19,27 +19,7 @@ const ShapeBox = memo(({ item }: IShapeWithEvents) => {
     item.state as PrimitiveAtom<IShape> & WithInitialValue<IShape>
   );
 
-  const {
-    width,
-    height,
-    shadowColor,
-    shadowOpacity,
-    rotate,
-    x,
-    y,
-    shadowOffsetY,
-    shadowOffsetX,
-    shadowBlur,
-    stroke,
-    strokeWidth,
-    backgroundColor,
-    borderRadius,
-    fillEnabled,
-    shadowEnabled,
-    strokeEnabled,
-    dash,
-    dashEnabled,
-  } = box;
+  const { width, height, rotate, x, y, strokeWidth, dash } = box;
 
   const shapeRef = useRef<Konva.Rect>();
   const trRef = useRef<Konva.Transformer>();
