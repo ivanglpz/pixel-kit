@@ -4,6 +4,7 @@ import {
   LineSquiggle,
   Scaling,
   Scan,
+  Square,
   SquareDashed,
   X,
 } from "lucide-react";
@@ -19,6 +20,7 @@ const typeIcon = {
   br: <Scan size={14} />,
   font: <Scaling size={14} />,
   dashed: <SquareDashed size={14} />,
+  square: <Square size={14} />,
 };
 type Props = {
   value: number | string;
