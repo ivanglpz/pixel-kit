@@ -265,6 +265,17 @@ export const LayoutShapeConfig = () => {
     shapeUpdate({ effects: newEffects });
   };
 
+  // Manejadores específicos para propiedades de effects
+  const handleEffectPropertyChange = (
+    index: number,
+    property: "x" | "y" | "blur" | "opacity",
+    value: number
+  ) => {
+    const newEffects = [...(shape.effects ?? [])];
+    newEffects[index][property] = value;
+    shapeUpdate({ effects: newEffects });
+  };
+
   // Manejador para border radius individual
   const handleBorderRadiusChange = (index: number, value: number) => {
     const currentRadii = shape.bordersRadius || [0, 0, 0, 0];
@@ -717,7 +728,7 @@ export const LayoutShapeConfig = () => {
               min={0}
               labelText="x"
               max={100}
-              onChange={(e) => shapeUpdate({ dash: e })} // FIXME: debería actualizar effect.x
+              onChange={(e) => handleEffectPropertyChange(index, "x", e)} // FIXME: debería actualizar effect.x
               value={effect.x}
             />
             <InputNumber
@@ -725,7 +736,7 @@ export const LayoutShapeConfig = () => {
               labelText="y"
               min={0}
               max={100}
-              onChange={(e) => shapeUpdate({ dash: e })} // FIXME: debería actualizar effect.y
+              onChange={(e) => handleEffectPropertyChange(index, "y", e)} // FIXME: debería actualizar effect.y
               value={effect.y}
             />
             <InputNumber
@@ -733,7 +744,7 @@ export const LayoutShapeConfig = () => {
               labelText="blur"
               min={0}
               max={100}
-              onChange={(e) => shapeUpdate({ dash: e })} // FIXME: debería actualizar effect.blur
+              onChange={(e) => handleEffectPropertyChange(index, "blur", e)} // FIXME: debería actualizar effect.blur
               value={effect.blur}
             />
             <InputNumber
@@ -742,7 +753,7 @@ export const LayoutShapeConfig = () => {
               min={0}
               max={1}
               step={0.1}
-              onChange={(e) => shapeUpdate({ dash: e })} // FIXME: debería actualizar effect.opacity
+              onChange={(e) => handleEffectPropertyChange(index, "opacity", e)} // FIXME: debería actualizar effect.opacity
               value={effect.opacity}
             />
           </div>
