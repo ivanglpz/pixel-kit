@@ -17,6 +17,10 @@ export const shapeBoxProgress = (
   return Object.assign({}, element, {
     width: isHeight,
     height: isWidth,
+    borderRadius:
+      element?.tool === "CIRCLE"
+        ? isNotNegative(Number(element?.width) / 2)
+        : 0,
   });
 };
 export const shapeCircleProgress = (
@@ -27,6 +31,7 @@ export const shapeCircleProgress = (
   return Object.assign({}, element, {
     width: isNotNegative(x - Number(element?.x)),
     height: isNotNegative(x - Number(element?.x)),
+    borderRadius: isNotNegative(Number(element?.width) / 2),
   });
 };
 export const shapeDrawProgress = (

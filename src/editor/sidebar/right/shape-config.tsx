@@ -12,7 +12,7 @@ import { css } from "@stylespixelkit/css";
 import { useAtomValue, useSetAtom } from "jotai";
 import { LineCap, LineJoin } from "konva/lib/Shape";
 import { Eye, EyeOff, Minus, Plus, Scan } from "lucide-react";
-import { ChangeEvent, useRef, useState } from "react";
+import { ChangeEvent, useRef } from "react";
 
 const calculateScale = (
   originalWidth: number,
@@ -33,13 +33,10 @@ const Separator = () => {
     <div
       className={css({
         marginTop: "md",
-        height: 2,
+        height: 3.5,
         width: "100%",
-        backgroundColor: "gray.200",
-        opacity: 0.5,
-        _dark: {
-          backgroundColor: "gray.700",
-        },
+        backgroundColor: "gray.700",
+        // opacity: 0,
       })}
     ></div>
   );
@@ -52,7 +49,6 @@ export const LayoutShapeConfig = () => {
   const inputRef = useRef<HTMLInputElement>(null);
   const DELETE_SHAPE = useSetAtom(DELETE_SHAPE_ATOM);
   const shapeUpdate = useSetAtom(SHAPE_UPDATE_ATOM);
-  const [showBorders, setShowBorders] = useState(false);
   if (shape === null) return null;
 
   const handleFiles = (event: ChangeEvent<HTMLInputElement>) => {
@@ -566,6 +562,8 @@ export const LayoutShapeConfig = () => {
           />
         </>
       ) : null}
+
+      <Separator />
 
       {/* <Valid isValid={shape.tool === "IMAGE"}> */}
       <p

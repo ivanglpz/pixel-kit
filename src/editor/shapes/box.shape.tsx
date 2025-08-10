@@ -81,7 +81,7 @@ const ShapeBox = memo(({ item }: IShapeWithEvents) => {
         opacity={box?.opacity ?? 1}
         fill={box?.fills?.filter((e) => e?.visible)?.at(0)?.color}
         ref={shapeRef as MutableRefObject<Konva.Rect>}
-        draggable={true}
+        draggable={shapeId === box?.id}
         stroke={box?.strokes?.filter((e) => e?.visible)?.at(0)?.color}
         strokeWidth={strokeWidth}
         onTap={(e) => {
