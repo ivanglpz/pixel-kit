@@ -88,6 +88,12 @@ const useEventStage = () => {
           stroke: state.color,
           points: [x, y, x, y],
           bezier: false,
+          strokes: [
+            {
+              visible: true,
+              color: state.color,
+            },
+          ],
         });
         SET_CREATE_CITEM(createStartElement);
       }

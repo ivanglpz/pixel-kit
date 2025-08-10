@@ -240,8 +240,8 @@ export const LayoutShapeConfig = () => {
           blur: 0,
           color: "#000",
           opacity: 1,
-          x: 0,
-          y: 0,
+          x: 5,
+          y: 5,
         },
       ],
     });
@@ -483,36 +483,37 @@ export const LayoutShapeConfig = () => {
       <SectionHeader title="Fill" onAdd={handleAddFill} />
 
       {/* Lista de fills */}
-      {shape.fills?.length &&
-        shape.fills.map((fill, index) => (
-          <div
-            key={`pixel-kit-shape-fill-${shape.id}-${shape.tool}-${index}`}
-            className={commonStyles.threeColumnGrid}
-          >
-            <InputColor
-              keyInput={`pixel-kit-shape-fill-${shape.id}-${shape.tool}-${index}`}
-              labelText=""
-              color={fill.color}
-              onChangeColor={(e) => handleFillColorChange(index, e)}
-            />
-
-            {/* Botón visibility toggle */}
-            <button
-              onClick={() => handleFillVisibilityToggle(index)}
-              className={commonStyles.iconButton}
+      {shape.fills?.length
+        ? shape.fills.map((fill, index) => (
+            <div
+              key={`pixel-kit-shape-fill-${shape.id}-${shape.tool}-${index}`}
+              className={commonStyles.threeColumnGrid}
             >
-              {fill.visible ? <Eye size={18} /> : <EyeOff size={18} />}
-            </button>
+              <InputColor
+                keyInput={`pixel-kit-shape-fill-${shape.id}-${shape.tool}-${index}`}
+                labelText=""
+                color={fill.color}
+                onChangeColor={(e) => handleFillColorChange(index, e)}
+              />
 
-            {/* Botón remove */}
-            <button
-              onClick={() => handleFillRemove(index)}
-              className={commonStyles.iconButton}
-            >
-              <Minus size={18} />
-            </button>
-          </div>
-        ))}
+              {/* Botón visibility toggle */}
+              <button
+                onClick={() => handleFillVisibilityToggle(index)}
+                className={commonStyles.iconButton}
+              >
+                {fill.visible ? <Eye size={18} /> : <EyeOff size={18} />}
+              </button>
+
+              {/* Botón remove */}
+              <button
+                onClick={() => handleFillRemove(index)}
+                className={commonStyles.iconButton}
+              >
+                <Minus size={18} />
+              </button>
+            </div>
+          ))
+        : null}
 
       <Separator />
 
