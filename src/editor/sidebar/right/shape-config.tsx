@@ -1,4 +1,5 @@
-import { Button } from "@/editor/components/button";
+/* eslint-disable @next/next/no-img-element */
+/* eslint-disable jsx-a11y/alt-text */
 import InputColor from "@/editor/components/input-color";
 import { InputNumber } from "@/editor/components/input-number";
 import { InputSelect } from "@/editor/components/input-select";
@@ -12,6 +13,7 @@ import {
   Brush,
   Eye,
   EyeOff,
+  ImageIcon,
   Minus,
   PenTool,
   Plus,
@@ -19,6 +21,7 @@ import {
   Scan,
 } from "lucide-react";
 import { ChangeEvent, useRef } from "react";
+import { v4 as uuidv4 } from "uuid";
 
 // Función utilitaria para calcular la escala de imagen
 const calculateScale = (
@@ -103,17 +106,31 @@ const Separator = () => (
 export const SectionHeader = ({
   title,
   onAdd,
+  onImage,
 }: {
   title: string;
   onAdd?: () => void;
+  onImage?: VoidFunction;
 }) => (
   <div className={commonStyles.sectionHeader}>
     <p className={commonStyles.sectionTitle}>{title}</p>
-    {onAdd && (
-      <button className={commonStyles.addButton} onClick={onAdd}>
-        <Plus size={14} />
-      </button>
-    )}
+    <div
+      className={css({
+        display: "flex",
+        flexDir: "row",
+      })}
+    >
+      {onImage && (
+        <button className={commonStyles.addButton} onClick={onImage}>
+          <ImageIcon size={14} />
+        </button>
+      )}
+      {onAdd && (
+        <button className={commonStyles.addButton} onClick={onAdd}>
+          <Plus size={14} />
+        </button>
+      )}
+    </div>
   </div>
 );
 
@@ -126,7 +143,6 @@ export const LayoutShapeConfig = () => {
 
   // Si no hay shape seleccionado, no renderizar nada
   if (shape === null) return null;
-  console.log(shape, "shape");
 
   // Opciones para selects
   const fontFamilyOptions = [
@@ -160,11 +176,25 @@ export const LayoutShapeConfig = () => {
         );
         const newWidth: number = image.width * scale;
         const newHeight: number = image.height * scale;
-
         shapeUpdate({
-          src: reader?.result as string,
           width: newWidth,
           height: newHeight,
+          fills: [
+            ...(shape.fills || []),
+            {
+              id: uuidv4(),
+              color: "#ffffff",
+              opacity: 1,
+              visible: true,
+              type: "image",
+              image: {
+                src: reader?.result as string,
+                width: image.width,
+                height: image.height,
+                name: file.name,
+              },
+            },
+          ],
         });
       };
       image.src = reader?.result as string;
@@ -172,17 +202,24 @@ export const LayoutShapeConfig = () => {
     reader.readAsDataURL(file);
   };
 
-  const handleDelete = () => {
-    // Implementación pendiente
-    // DELETE_SHAPE({ id });
-  };
-
   // Manejadores para fills
   const handleAddFill = () => {
     shapeUpdate({
       fills: [
         ...(shape.fills || []),
-        { color: "#ffffff", opacity: 1, visible: true },
+        {
+          id: uuidv4(),
+          color: "#ffffff",
+          opacity: 1,
+          visible: true,
+          type: "fill",
+          image: {
+            src: "",
+            width: 100,
+            height: 100,
+            name: "fill",
+          },
+        },
       ],
     });
   };
@@ -208,7 +245,14 @@ export const LayoutShapeConfig = () => {
   // Manejadores para strokes
   const handleAddStroke = () => {
     shapeUpdate({
-      strokes: [...(shape.strokes || []), { color: "#000000", visible: true }],
+      strokes: [
+        ...(shape.strokes || []),
+        {
+          id: uuidv4(),
+          color: "#000000",
+          visible: true,
+        },
+      ],
     });
   };
 
@@ -236,6 +280,7 @@ export const LayoutShapeConfig = () => {
       effects: [
         ...(shape.effects || []),
         {
+          id: uuidv4(),
           type: "shadow",
           visible: true,
           blur: 0,
@@ -481,7 +526,13 @@ export const LayoutShapeConfig = () => {
       <Separator />
 
       {/* SECCIÓN: FILL - Rellenos */}
-      <SectionHeader title="Fill" onAdd={handleAddFill} />
+      <SectionHeader
+        title="Fill"
+        onAdd={handleAddFill}
+        onImage={() => {
+          inputRef.current?.click();
+        }}
+      />
 
       {/* Lista de fills */}
       {shape.fills?.length
@@ -490,12 +541,60 @@ export const LayoutShapeConfig = () => {
               key={`pixel-kit-shape-fill-${shape.id}-${shape.tool}-${index}`}
               className={commonStyles.threeColumnGrid}
             >
-              <InputColor
-                keyInput={`pixel-kit-shape-fill-${shape.id}-${shape.tool}-${index}`}
-                labelText=""
-                color={fill.color}
-                onChangeColor={(e) => handleFillColorChange(index, e)}
-              />
+              {fill.type === "fill" ? (
+                <InputColor
+                  keyInput={`pixel-kit-shape-fill-${shape.id}-${shape.tool}-${index}`}
+                  labelText=""
+                  color={fill.color}
+                  onChangeColor={(e) => handleFillColorChange(index, e)}
+                />
+              ) : (
+                <div
+                  className={css({
+                    width: "100%",
+                    flex: 1,
+                    color: "text",
+                    fontSize: "sm",
+                    backgroundColor: "bg.muted", // Fondo más claro para el selector
+                    borderRadius: "md",
+                    padding: "md",
+                    borderWidth: "1px",
+                    borderStyle: "solid",
+                    borderColor: "border.muted", // ← usa el semantic token
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "start",
+                    gap: "md",
+                  })}
+                >
+                  <img
+                    src={fill.image?.src}
+                    alt={`preview-${fill.id}`}
+                    className={css({
+                      height: "20px",
+                      width: "20px",
+                      borderRadius: "md",
+                      border: "container",
+                      display: "flex",
+                      cursor: "pointer",
+                      borderWidth: "1px",
+                      borderStyle: "solid",
+                      borderColor: "border.muted", // ← usa el semantic token
+                      alignItems: "center",
+                      justifyContent: "center",
+                      objectFit: "cover",
+                    })}
+                  />
+                  <p
+                    className={css({
+                      wordBreak: "break-all",
+                      lineClamp: 1,
+                    })}
+                  >
+                    {fill.image.name}
+                  </p>
+                </div>
+              )}
 
               {/* Botón visibility toggle */}
               <button
@@ -646,7 +745,7 @@ export const LayoutShapeConfig = () => {
       <Separator />
 
       {/* SECCIÓN: IMAGE - Imagen */}
-      <p
+      {/* <p
         className={css({
           color: "text",
           fontWeight: "600",
@@ -654,9 +753,9 @@ export const LayoutShapeConfig = () => {
         })}
       >
         Image
-      </p>
+      </p> */}
 
-      <Button text="Browser Files" onClick={() => inputRef.current?.click()} />
+      {/* <Button text="Browser Files" onClick={() => inputRef.current?.click()} /> */}
 
       {/* Input oculto para archivos */}
       <input
@@ -674,7 +773,7 @@ export const LayoutShapeConfig = () => {
         })}
       />
 
-      <Separator />
+      {/* <Separator /> */}
 
       {/* SECCIÓN: EFFECTS - Efectos */}
       <SectionHeader title="Effects" onAdd={handleAddEffect} />

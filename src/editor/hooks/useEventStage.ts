@@ -89,7 +89,7 @@ const useEventStage = () => {
           // strokeWidth: state.thickness,
           // stroke: state.color,
           points: [x, y, x, y],
-          bezier: false,
+          // bezier: false,
           id: uuidv4(),
           // strokes: [
           //   {
@@ -176,7 +176,7 @@ const useEventStage = () => {
       if (TOOLS_DRAW_BASED?.includes(CURRENT_ITEM.tool)) {
         SET_CREATE({
           ...CURRENT_ITEM,
-          bezier: true,
+          // bezier: true,
         });
         SET_CLEAR_CITEM();
         setEventStage("CREATE");
@@ -244,9 +244,23 @@ const useEventStage = () => {
               tool: "IMAGE",
               x: 0,
               y: 0,
-              src: data?.target?.result,
-              width: image.width,
-              height: image.height,
+              width: image.width / 3,
+              height: image.height / 3,
+              fills: [
+                {
+                  color: "#fff",
+                  id: uuidv4(),
+                  image: {
+                    src: data?.target?.result,
+                    width: image.width,
+                    height: image.height,
+                    name: file.name,
+                  },
+                  opacity: 1,
+                  type: "image",
+                  visible: true,
+                },
+              ],
             });
 
             SET_CREATE(createStartElement);
@@ -289,9 +303,21 @@ const useEventStage = () => {
             tool: "IMAGE",
             x: 0,
             y: 0,
-            src: canvas?.toDataURL(),
-            width: img.width,
-            height: img.height,
+            fills: [
+              {
+                color: "#fff",
+                id: uuidv4(),
+                image: {
+                  src: canvas?.toDataURL(),
+                  width: img.width,
+                  height: img.height,
+                  name: `svg ${uuidv4().slice(0, 2)}`,
+                },
+                opacity: 1,
+                type: "image",
+                visible: true,
+              },
+            ],
           });
 
           SET_CREATE(createStartElement);

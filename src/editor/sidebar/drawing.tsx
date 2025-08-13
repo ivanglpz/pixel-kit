@@ -3,6 +3,7 @@ import { useTool } from "@/editor/hooks";
 import { css } from "@stylespixelkit/css";
 import { useAtom } from "jotai";
 import { Brush, Eye, EyeOff, Minus, PenTool, Ruler } from "lucide-react";
+import { v4 as uuidv4 } from "uuid";
 import { InputNumber } from "../components/input-number";
 import { IShape } from "../shapes/type.shape";
 import { DrawingBeforeStartAtom } from "../states/drawing";
@@ -19,7 +20,10 @@ export const Drawing = () => {
     setShape({
       ...shape,
 
-      strokes: [...(shape.strokes || []), { color: "#000000", visible: true }],
+      strokes: [
+        ...(shape.strokes || []),
+        { color: "#000000", visible: true, id: uuidv4() },
+      ],
     });
   };
 
@@ -68,6 +72,7 @@ export const Drawing = () => {
           opacity: 1,
           x: 5,
           y: 5,
+          id: uuidv4(),
         },
       ],
     });

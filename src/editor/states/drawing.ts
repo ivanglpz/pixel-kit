@@ -23,10 +23,19 @@ export const DrawingBeforeStartAtom = atom({
       visible: true,
       color: "#ffffff",
       opacity: 1,
+      type: "fill",
+      id: "559c1735-4e62-4c43-aa4c-246ec594ca06",
+      image: {
+        src: "",
+        height: 100,
+        name: "",
+        width: 100,
+      },
     },
   ],
   strokes: [
     {
+      id: "559c1735-4e62-4c43-aa4c-246ec594ca06",
       visible: true,
       color: "#28a0f0",
     },

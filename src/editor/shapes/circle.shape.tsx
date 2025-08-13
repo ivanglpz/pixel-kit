@@ -52,7 +52,10 @@ export const ShapeCircle = memo(({ item }: IShapeWithEvents) => {
         // 4. Relleno y color
         // fillEnabled={box?.fills?.filter((e) => e?.visible)?.length > 0}
         fillEnabled
-        fill={box?.fills?.filter((e) => e?.visible)?.at(0)?.color}
+        fill={
+          box?.fills?.filter((e) => e?.type === "fill" && e?.visible)?.at(0)
+            ?.color
+        }
         // 5. Bordes y trazos
         stroke={box?.strokes?.filter((e) => e?.visible)?.at(0)?.color}
         strokeWidth={strokeWidth}

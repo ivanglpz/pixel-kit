@@ -102,7 +102,6 @@ export const LayerClip = () => {
             state: atom<IShape>({
               ...dimension,
               id: "main-image-render-stage",
-              src: img?.base64,
               isBlocked: true,
               tool: "IMAGE",
               visible: true,
@@ -112,7 +111,21 @@ export const LayerClip = () => {
               strokeEnabled: false,
               shadowEnabled: false,
               dashEnabled: false,
-              bezier: false,
+              fills: [
+                {
+                  color: "#fff",
+                  id: "1c024656-106b-4d70-bc5c-845637d3344a",
+                  image: {
+                    src: img?.base64,
+                    height: img.height,
+                    width: img.width,
+                    name: "preview-edit-image",
+                  },
+                  opacity: 1,
+                  type: "image",
+                  visible: true,
+                },
+              ],
             } as IShape),
             tool: "IMAGE",
           }}

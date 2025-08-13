@@ -1,7 +1,7 @@
 import { css } from "@stylespixelkit/css";
 import axios from "axios";
 import { atom, useAtomValue, useSetAtom } from "jotai";
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useState } from "react";
 import { useTool } from "../hooks";
 import { IShape } from "../shapes/type.shape";
 import { STAGE_DIMENSION_ATOM } from "../states/dimension";
@@ -914,19 +914,19 @@ ${input}
     }
   };
 
-  useEffect(() => {
-    setShapes(
-      autoshapes?.map((e: IShape) => {
-        return {
-          id: e.id,
-          pageId,
-          parentId: e?.parentId,
-          state: atom(e as IShape),
-          tool: e?.tool as IKeyMethods,
-        };
-      })
-    );
-  }, []);
+  // useEffect(() => {
+  //   setShapes(
+  //     autoshapes?.map((e: IShape) => {
+  //       return {
+  //         id: e.id,
+  //         pageId,
+  //         parentId: e?.parentId,
+  //         state: atom(e as IShape),
+  //         tool: e?.tool as IKeyMethods,
+  //       };
+  //     })
+  //   );
+  // }, []);
 
   return (
     <div

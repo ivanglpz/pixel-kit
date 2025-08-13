@@ -7,18 +7,29 @@ export type WithInitialValue<Value> = {
   init: Value;
 };
 
+type FillImage = {
+  src: string;
+  width: number;
+  height: number;
+  name: string;
+};
 export type Fill = {
+  id: string;
   color: string;
   opacity: number;
   visible: boolean;
+  type: "fill" | "image";
+  image: FillImage;
 };
 
 export type Stroke = {
+  id: string;
   color: string;
   visible: boolean;
 };
 
 export type Effect = {
+  id: string;
   type: "shadow" | "blur" | "glow";
   visible: boolean;
   x: number;
@@ -50,8 +61,7 @@ export type IShape = {
   resolution?: "portrait" | "landscape";
   isBlocked: boolean;
   points?: number[];
-  src?: string;
-  closed?: boolean;
+  // closed?: boolean;
   rotate?: number;
   lineCap?: LineCap;
   lineJoin?: LineJoin;
@@ -69,17 +79,9 @@ export type IShape = {
   fontFamily?: string;
   textDecoration?: string;
   fontWeight?: "bold" | "normal" | "lighter" | "bolder" | "100" | "900";
-  shadowBlur?: number;
-  shadowColor?: string;
-  shadowOffsetX?: number;
-  shadowOffsetY?: number;
-  shadowOpacity?: number;
   borderRadius?: number;
   isAllBorderRadius?: boolean;
   zIndex?: number;
-  colorText?: string;
-  stroke?: string;
-  bezier: boolean;
 };
 
 export type IShapeWithEvents = {
