@@ -180,7 +180,6 @@ export const LayoutShapeConfig = () => {
           width: newWidth,
           height: newHeight,
           fills: [
-            ...(shape.fills || []),
             {
               id: uuidv4(),
               color: "#ffffff",
@@ -194,6 +193,7 @@ export const LayoutShapeConfig = () => {
                 name: file.name,
               },
             },
+            ...(shape.fills || []),
           ],
         });
       };
