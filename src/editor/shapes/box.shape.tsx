@@ -52,7 +52,10 @@ const ShapeBox = memo(({ item }: IShapeWithEvents) => {
         // 4. Relleno y color
         // fillEnabled={box?.fills?.filter((e) => e?.visible)?.length > 0}
         fillEnabled
-        fill={box?.fills?.filter((e) => e?.visible)?.at(0)?.color}
+        fill={
+          box?.fills?.filter((e) => e?.type === "fill" && e?.visible)?.at(0)
+            ?.color
+        }
         // 5. Bordes y trazos
         stroke={box?.strokes?.filter((e) => e?.visible)?.at(0)?.color}
         strokeWidth={strokeWidth}
@@ -103,11 +106,12 @@ const ShapeBox = memo(({ item }: IShapeWithEvents) => {
           )
         }
         onDragEnd={(e) => setBox(shapeEventDragStop(e))}
-        onTransform={(e) =>
+        onTransform={(e) => {
           setBox(
             shapeEventDragMove(e, stageDimensions.width, stageDimensions.height)
-          )
-        }
+          );
+          setBox(shapeTransformEnd(e));
+        }}
         onTransformEnd={(e) => setBox(shapeTransformEnd(e))}
       />
       <Transform isSelected={isSelected} ref={trRef} />

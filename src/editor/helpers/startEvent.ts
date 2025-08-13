@@ -36,6 +36,7 @@ export const shapeStart = (props: Partial<IShape>): IShape => {
         visible: true,
         color: "#ffffff",
         opacity: 1,
+        type: "fill",
       },
     ],
     strokes: [],
@@ -73,5 +74,5 @@ export const shapeStart = (props: Partial<IShape>): IShape => {
     text: "",
     bezier: false,
     ...props,
-  });
+  } as IShape);
 };

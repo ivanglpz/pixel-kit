@@ -2,14 +2,7 @@
 /* eslint-disable jsx-a11y/alt-text */
 import { PrimitiveAtom, useAtom, useAtomValue } from "jotai";
 import Konva from "konva";
-import {
-  memo,
-  MutableRefObject,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { memo, MutableRefObject, useEffect, useMemo, useRef } from "react";
 import { Image as KonvaImage } from "react-konva";
 import { STAGE_DIMENSION_ATOM } from "../states/dimension";
 import { SHAPE_ID_ATOM } from "../states/shape";
@@ -21,24 +14,6 @@ import {
 } from "./events.shape";
 import { Transform } from "./transformer";
 import { IShape, IShapeWithEvents, WithInitialValue } from "./type.shape";
-
-function urlToBase64(
-  url: string,
-  callback: (b64: string | ArrayBuffer) => void
-) {
-  fetch(url)
-    .then((response) => response.blob())
-    .then((blob) => {
-      let reader = new FileReader();
-      reader.onloadend = function () {
-        callback(reader.result ?? "");
-      };
-      reader.readAsDataURL(blob);
-    })
-    .catch((error) => {
-      console.error("Error al convertir URL a base64:", error);
-    });
-}
 
 // Función para calcular crop con object-fit: cover
 function calculateCoverCrop(
@@ -75,58 +50,38 @@ function calculateCoverCrop(
   };
 }
 
-export const ShapeImage = memo(({ item }: IShapeWithEvents) => {
+export const ShapeImage = memo((props: IShapeWithEvents) => {
   const [box, setBox] = useAtom(
-    item.state as PrimitiveAtom<IShape> & WithInitialValue<IShape>
+    props?.item.state as PrimitiveAtom<IShape> & WithInitialValue<IShape>
   );
-  const { width, height, rotate, x, y, strokeWidth, dash } = box;
-  const [imageDimensions, setImageDimensions] = useState({
-    width: 0,
-    height: 0,
-  });
+  const fill = box.fills
+    ?.filter((e) => e?.visible && e?.type === "image")
+    .at(0);
 
-  const imageInstance = useMemo(() => {
-    const image = new Image();
+  const { rotate, x, y, strokeWidth, dash } = box;
 
-    const handleImageLoad = () => {
-      setImageDimensions({
-        width: image.naturalWidth,
-        height: image.naturalHeight,
-      });
-    };
+  // const [imageFill, setImageFill] = useAtom(fill.image);
 
-    if (box?.src?.includes("data:image")) {
-      image.src = box.src ?? "";
-      image.onload = handleImageLoad;
-      return image;
+  const Imagee = useMemo(() => {
+    const img = new Image();
+    if (!fill) {
+      return img;
     }
-
-    urlToBase64(box.src ?? "", (b64) => {
-      image.src = b64 as string;
-      image.onload = handleImageLoad;
-    });
-
-    return image;
-  }, [box.src]);
+    img.src = fill?.image?.src;
+    img.width = fill?.image?.width;
+    img.height = fill?.image?.height;
+    return img;
+  }, [fill]);
 
   // Calcular crop para object-fit: cover
   const cropConfig = useMemo(() => {
-    if (imageDimensions.width === 0 || imageDimensions.height === 0) {
-      return {
-        x: 0,
-        y: 0,
-        width: imageDimensions.width,
-        height: imageDimensions.height,
-      };
-    }
-
     return calculateCoverCrop(
-      imageDimensions.width,
-      imageDimensions.height,
-      Number(width),
-      Number(height)
+      fill?.image?.width || 0,
+      fill?.image?.height || 0,
+      Number(box.width),
+      Number(box.height)
     );
-  }, [imageDimensions.width, imageDimensions.height, width, height]);
+  }, [fill, box]);
 
   const shapeRef = useRef<Konva.Image>();
   const trRef = useRef<Konva.Transformer>();
@@ -142,6 +97,7 @@ export const ShapeImage = memo(({ item }: IShapeWithEvents) => {
       }
     }
   }, [isSelected, trRef, shapeRef]);
+  // if (!fill) return null;
 
   return (
     <>
@@ -152,17 +108,20 @@ export const ShapeImage = memo(({ item }: IShapeWithEvents) => {
         // 2. Posición y tamaño
         x={x}
         y={y}
-        width={width}
-        height={height}
+        width={box?.width}
+        height={box?.height}
         points={box.points ?? []}
         globalCompositeOperation="source-over"
-        image={imageInstance}
+        image={Imagee}
         // 3. Rotación
         rotationDeg={rotate}
         // 4. Relleno y color
         // fillEnabled={box?.fills?.filter((e) => e?.visible)?.length > 0}
         fillEnabled
-        fill={box?.fills?.filter((e) => e?.visible)?.at(0)?.color}
+        fill={
+          box?.fills?.filter((e) => e?.type === "fill" && e?.visible)?.at(0)
+            ?.color
+        }
         // 5. Bordes y trazos
         stroke={box?.strokes?.filter((e) => e?.visible)?.at(0)?.color}
         strokeWidth={strokeWidth}
@@ -215,12 +174,7 @@ export const ShapeImage = memo(({ item }: IShapeWithEvents) => {
           )
         }
         onDragEnd={(e) => setBox(shapeEventDragStop(e))}
-        onTransform={(e) => {
-          setBox(
-            shapeEventDragMove(e, stageDimensions.width, stageDimensions.height)
-          );
-          setBox(shapeTransformEnd(e));
-        }}
+        onTransform={(e) => setBox(shapeTransformEnd(e))}
         onTransformEnd={(e) => setBox(shapeTransformEnd(e))}
       />
       <Transform isSelected={isSelected} ref={trRef} />
