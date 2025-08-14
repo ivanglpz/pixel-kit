@@ -50,7 +50,7 @@ const useEventStage = () => {
           tool: tool as IShape["tool"],
           x,
           y,
-          isWritingNow: false,
+          // isWritingNow: false,
         });
         SET_CREATE_CITEM(createStartElement);
       }
@@ -64,7 +64,7 @@ const useEventStage = () => {
           x: 0,
           y: 0,
           points: [x, y],
-          isWritingNow: false,
+          // isWritingNow: false,
           id: uuidv4(),
         });
         SET_CREATE_CITEM(createStartElement);
@@ -137,10 +137,10 @@ const useEventStage = () => {
       if (TOOLS_BOX_BASED?.includes(CURRENT_ITEM.tool)) {
         const payload: IShape = {
           ...CURRENT_ITEM,
-          isWritingNow: true,
-          dashEnabled: false,
-          shadowEnabled: false,
-          strokeEnabled: false,
+          // isWritingNow: true,
+          // dashEnabled: false,
+          // shadowEnabled: false,
+          // strokeEnabled: false,
         };
 
         SET_CREATE(payload);

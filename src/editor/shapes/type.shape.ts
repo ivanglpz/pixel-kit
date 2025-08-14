@@ -57,18 +57,11 @@ export type IShape = {
   height?: number;
   text?: string;
   visible: boolean;
-  isWritingNow: boolean;
-  resolution?: "portrait" | "landscape";
   isBlocked: boolean;
   points?: number[];
-  // closed?: boolean;
   rotate?: number;
   lineCap?: LineCap;
   lineJoin?: LineJoin;
-  fillEnabled?: boolean;
-  dashEnabled?: boolean;
-  strokeEnabled?: boolean;
-  shadowEnabled?: boolean;
   dash: number;
   opacity: number;
   backgroundColor?: string;
