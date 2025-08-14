@@ -1,8 +1,8 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { IShape } from "@/editor/shapes/type.shape";
 import { showClipAtom } from "@/editor/states/clipImage";
-import TOOL_ATOM, { IKeyTool } from "@/editor/states/tool";
-import { useAtom, useSetAtom } from "jotai";
+import TOOL_ATOM, { IKeyTool, PAUSE_MODE_ATOM } from "@/editor/states/tool";
+import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { KonvaEventObject } from "konva/lib/Node";
 import { useEffect } from "react";
 import { v4 as uuidv4 } from "uuid";
@@ -26,6 +26,7 @@ const TOOLS_LINE_BASED = ["LINE"];
 
 const useEventStage = () => {
   const [tool, setTool] = useAtom(TOOL_ATOM);
+  const PAUSE = useAtomValue(PAUSE_MODE_ATOM);
   const SET_CREATE = useSetAtom(CREATE_SHAPE_ATOM);
   const DELETE_SHAPE = useSetAtom(DELETE_SHAPE_ATOM);
   const { state } = useStartDrawing();
@@ -62,14 +63,6 @@ const useEventStage = () => {
           tool: tool as IShape["tool"],
           x: 0,
           y: 0,
-          // strokeWidth: state.thickness,
-          // stroke: state.color,
-          // strokes: [
-          //   {
-          //     visible: true,
-          //     color: state.color,
-          //   },
-          // ],
           points: [x, y],
           isWritingNow: false,
           id: uuidv4(),
@@ -86,17 +79,8 @@ const useEventStage = () => {
           tool: tool as IShape["tool"],
           x: 0,
           y: 0,
-          // strokeWidth: state.thickness,
-          // stroke: state.color,
           points: [x, y, x, y],
-          // bezier: false,
           id: uuidv4(),
-          // strokes: [
-          //   {
-          //     visible: true,
-          //     color: state.color,
-          //   },
-          // ],
         });
         SET_CREATE_CITEM(createStartElement);
       }
@@ -194,37 +178,34 @@ const useEventStage = () => {
     const handleKeyDown = (event: KeyboardEvent) => {
       const KEY = event.key?.toUpperCase();
 
-      if (tool !== "WRITING") {
-        if (["X", "DELETE", "BACKSPACE"].includes(KEY)) {
-          if (shapeId) {
-            DELETE_SHAPE({ id: shapeId });
-            setShapeId(null);
-          }
-        }
-        if (KEY === "ALT") {
-          setEventStage("COPY");
-        }
+      if (PAUSE) return;
 
-        const keysActions = Object.fromEntries(
-          config.tools.map((item) => [
-            item.keyBoard,
-            {
-              keyMethod: item.keyMethod,
-              eventStage: item.eventStage,
-              showClip: Boolean(item?.showClip),
-            },
-          ])
-        );
-
-        if (keysActions[KEY]) {
-          setshowClip(Boolean(keysActions[KEY].showClip));
-          toolKeydown(keysActions[KEY].keyMethod);
-          setEventStage(keysActions[KEY].eventStage);
+      if (["X", "DELETE", "BACKSPACE"].includes(KEY)) {
+        if (shapeId) {
+          DELETE_SHAPE({ id: shapeId });
+          setShapeId(null);
         }
       }
-    };
-    const handleKeyUp = () => {
-      // setEventStage("IDLE");
+      if (KEY === "ALT") {
+        setEventStage("COPY");
+      }
+
+      const keysActions = Object.fromEntries(
+        config.tools.map((item) => [
+          item.keyBoard,
+          {
+            keyMethod: item.keyMethod,
+            eventStage: item.eventStage,
+            showClip: Boolean(item?.showClip),
+          },
+        ])
+      );
+
+      if (keysActions[KEY]) {
+        setshowClip(Boolean(keysActions[KEY].showClip));
+        toolKeydown(keysActions[KEY].keyMethod);
+        setEventStage(keysActions[KEY].eventStage);
+      }
     };
 
     const handlePaste = (event: globalThis.ClipboardEvent) => {
@@ -331,14 +312,12 @@ const useEventStage = () => {
     };
     document.addEventListener("keydown", handleKeyDown);
     document.addEventListener("paste", handlePaste);
-    document.addEventListener("keyup", handleKeyUp);
 
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
       document.removeEventListener("paste", handlePaste);
-      document.removeEventListener("keyup", handleKeyUp);
     };
-  }, [tool, shapeId, config.tools]);
+  }, [tool, shapeId, config.tools, PAUSE]);
 
   useEffect(() => {
     const handleVisibilityChange = () => {

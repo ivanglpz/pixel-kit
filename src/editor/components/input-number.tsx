@@ -1,4 +1,5 @@
 import { css } from "@stylespixelkit/css";
+import { useSetAtom } from "jotai";
 import {
   Blend,
   LineSquiggle,
@@ -9,6 +10,7 @@ import {
   X,
 } from "lucide-react";
 import { HTMLInputTypeAttribute } from "react";
+import { PAUSE_MODE_ATOM } from "../states/tool";
 
 const typeIcon = {
   "draw-weight": <LineSquiggle size={14} />,
@@ -43,8 +45,11 @@ export const InputNumber = ({
   iconType = "draw-weight",
   type = "number",
 }: Props) => {
+  const setPause = useSetAtom(PAUSE_MODE_ATOM);
+
   const handleNumberChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = Number(event.target.value);
+    setPause(true);
     if (!isNaN(newValue)) {
       onChange(newValue);
     }
@@ -121,6 +126,9 @@ export const InputNumber = ({
             step={step}
             value={value}
             onChange={handleNumberChange}
+            onClick={() => setPause(true)}
+            onBlur={() => setPause(false)}
+            onMouseLeave={() => setPause(false)}
             className={css({
               color: "text",
               fontSize: "sm",

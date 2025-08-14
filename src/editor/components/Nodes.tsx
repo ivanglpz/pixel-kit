@@ -9,6 +9,7 @@ import {
 } from "../states/nodes";
 import { SHAPE_ID_ATOM } from "../states/shape";
 import { SHAPES_NODES } from "../states/shapes";
+import { PAUSE_MODE_ATOM } from "../states/tool";
 
 export const Nodes = ({
   item,
@@ -22,6 +23,7 @@ export const Nodes = ({
   const SET_PARENT_CHANGE = useSetAtom(CHANGE_PARENTID_NODE_ATOM);
   const setShapeId = useSetAtom(SHAPE_ID_ATOM);
   const [show, setShow] = useState(false);
+  const setPause = useSetAtom(PAUSE_MODE_ATOM);
 
   const [isExpanded, setIsExpanded] = useState(true);
 
@@ -67,7 +69,7 @@ export const Nodes = ({
           gridTemplateColumns: "15px 15px 150px",
           flexDirection: "row",
           alignItems: "center",
-          gap: "lg",
+          gap: "8px",
           _hover: {
             backgroundColor: "gray.100",
             _dark: {
@@ -95,6 +97,7 @@ export const Nodes = ({
               _hover: {
                 backgroundColor: "primary",
               },
+              backgroundColor: "primary",
             })}
           >
             {isExpanded ? (
@@ -108,13 +111,19 @@ export const Nodes = ({
         )}
         {iconsWithTools[value.tool]}
         <div
-          onClick={() => {}}
           onDoubleClick={() => {
             setShow(true);
+            setPause(true);
           }}
-          onBlur={() => setShow(false)}
+          onBlur={() => {
+            setShow(false);
+            setPause(false);
+          }}
           // quiero que si el cursor se salga entonces lo ponga en show false
-          onMouseLeave={() => setShow(false)}
+          onMouseLeave={() => {
+            setShow(false);
+            setPause(false);
+          }}
           //  onClick={onClick}
         >
           {show ? (
@@ -144,7 +153,7 @@ export const Nodes = ({
       {childrens?.length > 0 && isExpanded && (
         <ul
           className={css({
-            marginLeft: "25px",
+            marginLeft: "10px",
             display: "flex",
             flexDirection: "column",
             gap: "lg",

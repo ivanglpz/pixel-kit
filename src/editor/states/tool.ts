@@ -21,5 +21,5 @@ export type IKeyMethods = Exclude<
 >;
 
 const TOOL_ATOM = atom("MOVE" as IKeyTool);
-
+export const PAUSE_MODE_ATOM = atom<boolean>(false);
 export default TOOL_ATOM;
