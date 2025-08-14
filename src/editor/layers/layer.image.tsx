@@ -30,12 +30,12 @@ export const LayerImage = () => {
             isBlocked: true,
             tool: "IMAGE",
             visible: true,
-            fillEnabled: true,
+            // fillEnabled: true,
             dash: 0,
-            isWritingNow: false,
-            strokeEnabled: false,
-            shadowEnabled: false,
-            dashEnabled: false,
+            // isWritingNow: false,
+            // strokeEnabled: false,
+            // shadowEnabled: false,
+            // dashEnabled: false,
             fills: [
               {
                 color: "#fff",
