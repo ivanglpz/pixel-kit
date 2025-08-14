@@ -1,5 +1,7 @@
 import { Valid } from "@/components/valid";
 import { css } from "@stylespixelkit/css";
+import { useSetAtom } from "jotai";
+import { PAUSE_MODE_ATOM } from "../states/tool";
 
 type Props = {
   value: string;
@@ -14,6 +16,8 @@ export const InputTextArea = ({
   labelText,
   disable = false,
 }: Props) => {
+  const setPause = useSetAtom(PAUSE_MODE_ATOM);
+
   return (
     <div
       className={css({
@@ -38,6 +42,9 @@ export const InputTextArea = ({
         value={value}
         onChange={(event) => onChange(event.target.value)}
         disabled={disable}
+        onClick={() => setPause(true)}
+        onBlur={() => setPause(false)}
+        onMouseLeave={() => setPause(false)}
         className={css({
           width: "100%",
           minHeight: "80px",

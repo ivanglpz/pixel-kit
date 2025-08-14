@@ -5,6 +5,7 @@ import {
   PAGE_ID_ATOM,
   PAGES_BY_TYPE_ATOM,
 } from "@/editor/states/pages";
+import { PAUSE_MODE_ATOM } from "@/editor/states/tool";
 import { css } from "@stylespixelkit/css";
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { Plus } from "lucide-react";
@@ -21,6 +22,8 @@ const TogglePage = ({
 }) => {
   const [show, setShow] = useState(false);
   const [name, setName] = useAtom(page.name);
+  const setPause = useSetAtom(PAUSE_MODE_ATOM);
+
   return (
     <li
       key={`page-${page.id}`}
@@ -38,13 +41,18 @@ const TogglePage = ({
       })}
       onClick={onClick}
       onDoubleClick={() => {
+        setPause(true);
         setShow(true);
         onClick();
       }}
-      onBlur={() => setShow(false)}
-      // quiero que si el cursor se salga entonces lo ponga en show false
-      onMouseLeave={() => setShow(false)}
-      //  onClick={onClick}
+      onBlur={() => {
+        setPause(true);
+        setShow(false);
+      }}
+      onMouseLeave={() => {
+        setPause(false);
+        setShow(false);
+      }}
     >
       {show ? (
         <InputAtomText atom={page.name} />

@@ -11,20 +11,17 @@ import { useEffect } from "react";
 import { STAGE_DIMENSION_ATOM } from "../states/dimension";
 import { SHAPE_ID_ATOM } from "../states/shape";
 
-import { Valid } from "@/components/valid";
 import {
   shapeEventDragMove,
   ShapeEventDragStart,
   shapeEventDragStop,
   shapeTransformEnd,
 } from "./events.shape";
-import { PortalTextWriting } from "./text.writing";
 import { Transform } from "./transformer";
 export const ShapeText = memo(({ item }: IShapeWithEvents) => {
   const [box, setBox] = useAtom(
     item.state as PrimitiveAtom<IShape> & WithInitialValue<IShape>
   );
-
   const { width, height, rotate, x, y, strokeWidth, dash } = box;
 
   const shapeRef = useRef<Konva.Text>();
@@ -43,29 +40,11 @@ export const ShapeText = memo(({ item }: IShapeWithEvents) => {
     }
   }, [isSelected, trRef, shapeRef]);
 
-  useEffect(() => {
-    if (!isSelected && box.isWritingNow) {
-      setBox((prev) => ({ ...prev, isWritingNow: false }));
-    }
-  }, [isSelected, box.isWritingNow]);
-
   return (
     <>
-      <Valid isValid={box.isWritingNow}>
-        <PortalTextWriting item={item} />
-      </Valid>
-      {/*
-      <Valid isValid={isSelected}>
-        <PortalConfigShape
-          isSelected={isSelected}
-          setShape={setBox}
-          shape={box}
-        />
-      </Valid> */}
       <Text
         // 1. Identificación y referencia
         id={box?.id}
-        visible={!box?.isWritingNow}
         ref={shapeRef as MutableRefObject<Konva.Text>}
         // 2. Posición y tamaño
         x={x}
@@ -145,18 +124,6 @@ export const ShapeText = memo(({ item }: IShapeWithEvents) => {
           setBox(shapeTransformEnd(e));
         }}
         onTransformEnd={(e) => setBox(shapeTransformEnd(e))}
-        onDblTap={() => {
-          setBox((prev) => ({
-            ...prev,
-            isWritingNow: true,
-          }));
-        }}
-        onDblClick={(e) => {
-          setBox((prev) => ({
-            ...prev,
-            isWritingNow: true,
-          }));
-        }}
       />
       <Transform isSelected={isSelected} ref={trRef} />
     </>

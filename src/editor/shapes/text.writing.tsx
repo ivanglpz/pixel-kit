@@ -1,40 +1,22 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { PrimitiveAtom, useAtom } from "jotai";
-import { useEffect, useRef } from "react";
+import { PrimitiveAtom, useAtom, useSetAtom } from "jotai";
 import { createPortal } from "react-dom";
 import { Html } from "react-konva-utils";
 import { tokens } from "../constants";
-import { useTool } from "../hooks";
 import { SHAPES_NODES } from "../states/shapes";
+import { PAUSE_MODE_ATOM } from "../states/tool";
 import { IShape, WithInitialValue } from "./type.shape";
 
 type Props = {
   item: SHAPES_NODES;
+  onLeave: VoidFunction;
 };
 
-export const PortalTextWriting = ({ item }: Props) => {
-  const { setTool } = useTool();
+export const PortalTextWriting = ({ item, onLeave }: Props) => {
   const [box, setBox] = useAtom(
     item.state as PrimitiveAtom<IShape> & WithInitialValue<IShape>
   );
-  const adjustTextareaHeight = () => {
-    if (textareaRef.current) {
-      const textarea = textareaRef.current;
-      textarea.style.height = "auto";
-      const newHeight = textarea.scrollHeight;
-      setBox((prev) => ({
-        ...prev,
-        height: newHeight,
-      }));
-      textarea.style.height = `${newHeight}px`;
-    }
-  };
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
-  useEffect(() => {
-    adjustTextareaHeight();
-  }, [box?.text, textareaRef]);
-
-  if (!box?.isWritingNow) return null;
+  const setPause = useSetAtom(PAUSE_MODE_ATOM);
 
   const areaPosition = {
     x: box.x,
@@ -56,11 +38,13 @@ export const PortalTextWriting = ({ item }: Props) => {
         ? createPortal(
             <>
               <textarea
-                ref={textareaRef}
                 autoFocus
                 onFocus={() => {
-                  setTool("WRITING");
+                  setPause(true);
                 }}
+                onClick={() => setPause(true)}
+                onBlur={onLeave}
+                onMouseLeave={onLeave}
                 style={{
                   position: "absolute",
                   top: areaPosition?.y - 1 + "px",
@@ -70,7 +54,7 @@ export const PortalTextWriting = ({ item }: Props) => {
                   height:
                     Number(box.height) > 100 ? box.height + "px" : "100px",
                   resize: "none",
-                  background: "transparent",
+                  background: "red",
                   fontWeight: box?.fontWeight ?? "normal",
                   fontSize: box.fontSize + "px",
                   border: `1px solid ${tokens.colors.blue}`,
@@ -106,16 +90,10 @@ export const PortalTextWriting = ({ item }: Props) => {
                 }}
                 value={box.text ?? ""}
                 onChange={(e) => {
-                  adjustTextareaHeight();
                   setBox((prev) => ({
                     ...prev,
                     text: e.target.value,
-                    width: Number(box.width) > 100 ? box.width : 220,
-                    height: Number(box.height) > 100 ? box.height : 100,
                   }));
-                }}
-                onClick={() => {
-                  setTool("WRITING");
                 }}
               />
             </>,
