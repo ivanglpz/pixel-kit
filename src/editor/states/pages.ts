@@ -1,5 +1,6 @@
 import { atom, PrimitiveAtom } from "jotai";
 import { MODE, MODE_ATOM } from "../hooks/useConfiguration";
+import { canvasTheme } from "./canvas";
 import { PROJECT_ATOM } from "./projects";
 import { WithInitialValue } from "./shapes";
 
@@ -50,7 +51,7 @@ export const NEW_PAGE = atom(null, (get, set) => {
   const newPage: IPage = {
     id: crypto.randomUUID(),
     name: atom(`Page ${pagesByType.length + 1}`),
-    color: atom("#f0f0f0"),
+    color: atom(canvasTheme.dark),
     isVisible: atom(true),
     type: mode,
   };

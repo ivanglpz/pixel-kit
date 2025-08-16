@@ -24,7 +24,6 @@ export type IPROJECT = {
     ID: PrimitiveAtom<string | null> & WithInitialValue<string | null>;
   };
   EVENT: PrimitiveAtom<IStageEvents> & WithInitialValue<IStageEvents>;
-  CANVAS_BG: PrimitiveAtom<string> & WithInitialValue<string>;
   CLIP: {
     SHOW: PrimitiveAtom<boolean> & WithInitialValue<boolean>;
     DIMENSION: PrimitiveAtom<ICLIP_DIMENSION> &
@@ -51,21 +50,21 @@ export const PROJECTS_ATOM = atom([
         {
           id: "f860ad7b-27ac-491a-ba77-1a81f004dac1",
           name: atom("Page 1"),
-          color: atom("#f0f0f0"),
+          color: atom(canvasTheme.dark),
           isVisible: atom(true),
           type: "EDIT_IMAGE",
         },
         {
           id: "bc0631c9-e167-4cef-887c-4d6f9b4d8dc6",
           name: atom("Page 1"),
-          color: atom("#f0f0f0"),
+          color: atom(canvasTheme.dark),
           isVisible: atom(true),
           type: "FREE_DRAW",
         },
         {
           id: "8eb9cfc3-023f-4204-a745-3d5347d1f057",
           name: atom("Page 1"),
-          color: atom("#f0f0f0"),
+          color: atom(canvasTheme.dark),
           isVisible: atom(true),
           type: "DESIGN_MODE",
         },
@@ -77,7 +76,6 @@ export const PROJECTS_ATOM = atom([
       LIST: atom<ALL_SHAPES[]>([]),
     },
     EVENT: atom<IStageEvents>("IDLE"),
-    CANVAS_BG: atom<string>(canvasTheme.dark),
     CLIP: {
       SHOW: atom(false),
       DIMENSION: atom({
@@ -120,21 +118,21 @@ export const NEW_PROJECT = atom(null, (get, set) => {
           {
             id: uuidv4(),
             name: atom("Page 1"),
-            color: atom("#f0f0f0"),
+            color: atom(canvasTheme.dark),
             isVisible: atom(true),
             type: "EDIT_IMAGE",
           },
           {
             id: uuidv4(),
             name: atom("Page 1"),
-            color: atom("#f0f0f0"),
+            color: atom(canvasTheme.dark),
             isVisible: atom(true),
             type: "FREE_DRAW",
           },
           {
             id: PAGEUUID,
             name: atom("Page 1"),
-            color: atom("#f0f0f0"),
+            color: atom(canvasTheme.dark),
             isVisible: atom(true),
             type: "DESIGN_MODE",
           },
@@ -146,7 +144,6 @@ export const NEW_PROJECT = atom(null, (get, set) => {
         LIST: atom<ALL_SHAPES[]>([]),
       },
       EVENT: atom<IStageEvents>("IDLE"),
-      CANVAS_BG: atom<string>(canvasTheme.dark),
       CLIP: {
         SHOW: atom(false),
         DIMENSION: atom({
