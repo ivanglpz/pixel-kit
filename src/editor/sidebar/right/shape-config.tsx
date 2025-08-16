@@ -37,9 +37,12 @@ const calculateScale = (
 
 // Estilos reutilizables
 export const commonStyles = {
+  container: css({
+    display: "flex",
+    flexDirection: "column",
+    gap: "md",
+  }),
   sectionTitle: css({
-    paddingBottom: "md",
-    paddingTop: "sm",
     fontWeight: "bold",
     fontSize: "sm",
   }),
@@ -94,7 +97,6 @@ export const commonStyles = {
 const Separator = () => (
   <div
     className={css({
-      marginTop: "md",
       height: 1,
       width: "100%",
       backgroundColor: "gray.700",
@@ -340,407 +342,421 @@ export const LayoutShapeConfig = () => {
 
   return (
     <div
-      className={`${css({ display: "flex", flexDirection: "column", gap: "md" })} scrollbar_container`}
+      className={`${css({ display: "flex", flexDirection: "column", gap: "lg" })} scrollbar_container`}
     >
       {/* SECCIÓN: SHAPE - Información general */}
-      <p className={commonStyles.sectionTitle}>Shape</p>
+      <section className={commonStyles.container}>
+        <p className={commonStyles.sectionTitle}>Shape</p>
 
-      {/* Posición */}
-      <p className={commonStyles.labelText}>Position</p>
-      <div className={commonStyles.twoColumnGrid}>
-        <InputNumber
-          iconType="x"
-          value={shape.x}
-          onChange={(v) => shapeUpdate({ x: v })}
-        />
-        <InputNumber
-          iconType="y"
-          labelText=""
-          value={shape.y}
-          onChange={(v) => shapeUpdate({ y: v })}
-        />
-      </div>
+        {/* Posición */}
+        <p className={commonStyles.labelText}>Position</p>
+        <div className={commonStyles.twoColumnGrid}>
+          <InputNumber
+            iconType="x"
+            value={shape.x}
+            onChange={(v) => shapeUpdate({ x: v })}
+          />
+          <InputNumber
+            iconType="y"
+            labelText=""
+            value={shape.y}
+            onChange={(v) => shapeUpdate({ y: v })}
+          />
+        </div>
+      </section>
 
       <Separator />
 
       {/* SECCIÓN: LAYOUT - Dimensiones */}
-      <p className={commonStyles.sectionTitle}>Layout</p>
+      <section className={commonStyles.container}>
+        <p className={commonStyles.sectionTitle}>Layout</p>
 
-      <p className={commonStyles.labelText}>Dimensions</p>
-      <div className={commonStyles.twoColumnGrid}>
-        <InputNumber
-          iconType="width"
-          value={Number(shape.width) || 0}
-          onChange={(v) => shapeUpdate({ width: v })}
-        />
-        <InputNumber
-          iconType="height"
-          labelText=""
-          value={Number(shape.height) || 0}
-          onChange={(v) => shapeUpdate({ height: v })}
-        />
-      </div>
+        <p className={commonStyles.labelText}>Dimensions</p>
+        <div className={commonStyles.twoColumnGrid}>
+          <InputNumber
+            iconType="width"
+            value={Number(shape.width) || 0}
+            onChange={(v) => shapeUpdate({ width: v })}
+          />
+          <InputNumber
+            iconType="height"
+            labelText=""
+            value={Number(shape.height) || 0}
+            onChange={(v) => shapeUpdate({ height: v })}
+          />
+        </div>
+      </section>
 
       <Separator />
 
       {/* SECCIÓN: APPEARANCE - Apariencia */}
-      <p className={commonStyles.sectionTitle}>Appearance</p>
+      <section className={commonStyles.container}>
+        <p className={commonStyles.sectionTitle}>Appearance</p>
 
-      {/* Opacidad y Border Radius */}
-      <div
-        className={css({
-          display: "grid",
-          gridTemplateColumns: "1fr 33.5px",
-          alignItems: "end",
-          gap: "md",
-        })}
-      >
-        <div className={commonStyles.twoColumnGrid}>
-          <InputNumber
-            iconType="opacity"
-            labelText="Opacity"
-            min={0}
-            max={1}
-            step={0.1}
-            value={shape.opacity}
-            onChange={(e) => shapeUpdate({ opacity: e })}
-          />
-          <InputNumber
-            iconType="br"
-            labelText="Corner Radius"
-            min={0}
-            max={9999}
-            step={1}
-            type={shape.isAllBorderRadius ? "text" : "number"}
-            value={shape.isAllBorderRadius ? "Mixed" : shape.borderRadius || 0}
-            onChange={(e) => shapeUpdate({ borderRadius: e })}
-          />
-        </div>
-
-        {/* Botón toggle para border radius individual */}
-        <button
+        {/* Opacidad y Border Radius */}
+        <div
           className={css({
-            backgroundColor: shape.isAllBorderRadius
-              ? "gray.800"
-              : "transparent",
-            border: "none",
-            cursor: "pointer",
-            height: 33.5,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
+            display: "grid",
+            gridTemplateColumns: "1fr 33.5px",
+            alignItems: "end",
+            gap: "md",
           })}
-          onClick={() =>
-            shapeUpdate({ isAllBorderRadius: !shape.isAllBorderRadius })
-          }
         >
-          <Scan size={14} />
-        </button>
-      </div>
+          <div className={commonStyles.twoColumnGrid}>
+            <InputNumber
+              iconType="opacity"
+              labelText="Opacity"
+              min={0}
+              max={1}
+              step={0.1}
+              value={shape.opacity}
+              onChange={(e) => shapeUpdate({ opacity: e })}
+            />
+            <InputNumber
+              iconType="br"
+              labelText="Corner Radius"
+              min={0}
+              max={9999}
+              step={1}
+              type={shape.isAllBorderRadius ? "text" : "number"}
+              value={
+                shape.isAllBorderRadius ? "Mixed" : shape.borderRadius || 0
+              }
+              onChange={(e) => shapeUpdate({ borderRadius: e })}
+            />
+          </div>
 
-      {/* Border Radius Individual */}
-      {shape.isAllBorderRadius && (
-        <div className={commonStyles.twoColumnGrid}>
-          <InputNumber
-            iconType="br"
-            labelText="T.Left"
-            value={shape.bordersRadius?.[0] || 0}
-            onChange={(e) => handleBorderRadiusChange(0, e)}
-          />
-          <InputNumber
-            iconType="br"
-            labelText="T.Right"
-            value={shape.bordersRadius?.[1] || 0}
-            onChange={(e) => handleBorderRadiusChange(1, e)}
-          />
-          <InputNumber
-            iconType="br"
-            labelText="B.Left"
-            value={shape.bordersRadius?.[3] || 0}
-            onChange={(e) => handleBorderRadiusChange(3, e)}
-          />
-          <InputNumber
-            iconType="br"
-            labelText="B.Right"
-            value={shape.bordersRadius?.[2] || 0}
-            onChange={(e) => handleBorderRadiusChange(2, e)}
-          />
+          {/* Botón toggle para border radius individual */}
+          <button
+            className={css({
+              backgroundColor: shape.isAllBorderRadius
+                ? "gray.800"
+                : "transparent",
+              border: "none",
+              cursor: "pointer",
+              height: 33.5,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            })}
+            onClick={() =>
+              shapeUpdate({ isAllBorderRadius: !shape.isAllBorderRadius })
+            }
+          >
+            <Scan size={14} />
+          </button>
         </div>
-      )}
+
+        {/* Border Radius Individual */}
+        {shape.isAllBorderRadius && (
+          <div className={commonStyles.twoColumnGrid}>
+            <InputNumber
+              iconType="br"
+              labelText="T.Left"
+              value={shape.bordersRadius?.[0] || 0}
+              onChange={(e) => handleBorderRadiusChange(0, e)}
+            />
+            <InputNumber
+              iconType="br"
+              labelText="T.Right"
+              value={shape.bordersRadius?.[1] || 0}
+              onChange={(e) => handleBorderRadiusChange(1, e)}
+            />
+            <InputNumber
+              iconType="br"
+              labelText="B.Left"
+              value={shape.bordersRadius?.[3] || 0}
+              onChange={(e) => handleBorderRadiusChange(3, e)}
+            />
+            <InputNumber
+              iconType="br"
+              labelText="B.Right"
+              value={shape.bordersRadius?.[2] || 0}
+              onChange={(e) => handleBorderRadiusChange(2, e)}
+            />
+          </div>
+        )}
+      </section>
 
       <Separator />
 
       {/* SECCIÓN: TYPOGRAPHY - Tipografía */}
-      <SectionHeader title="Typography" />
+      <section className={commonStyles.container}>
+        <SectionHeader title="Typography" />
 
-      <div
-        className={css({
-          display: "grid",
-          gridTemplateColumns: "2",
-          gap: "lg",
-          gridTemplateRows: "auto auto auto",
-        })}
-      >
-        {/* Font Family */}
-        <div className={css({ gridColumn: "2" })}>
+        <div
+          className={css({
+            display: "grid",
+            gridTemplateColumns: "2",
+            gap: "lg",
+            gridTemplateRows: "auto auto auto",
+          })}
+        >
+          {/* Font Family */}
+          <div className={css({ gridColumn: "2" })}>
+            <InputSelect
+              value={shape.fontFamily ?? "Roboto"}
+              onChange={(e) =>
+                shapeUpdate({ fontFamily: e as IShape["fontFamily"] })
+              }
+              options={fontFamilyOptions}
+            />
+          </div>
+
+          {/* Font Weight */}
           <InputSelect
-            value={shape.fontFamily ?? "Roboto"}
-            onChange={(e) =>
-              shapeUpdate({ fontFamily: e as IShape["fontFamily"] })
-            }
-            options={fontFamilyOptions}
-          />
-        </div>
-
-        {/* Font Weight */}
-        <InputSelect
-          labelText=""
-          value={shape.fontWeight ?? "normal"}
-          onChange={(e) =>
-            shapeUpdate({ fontWeight: e as IShape["fontWeight"] })
-          }
-          options={fontWeightOptions}
-        />
-
-        {/* Font Size */}
-        <InputNumber
-          iconType="font"
-          labelText=""
-          min={12}
-          max={72}
-          step={4}
-          onChange={(e) => shapeUpdate({ fontSize: e })}
-          value={shape.fontSize || 0}
-        />
-
-        {/* Text Content */}
-        <div className={css({ gridColumn: 2, gridRow: 3 })}>
-          <InputTextArea
             labelText=""
-            onChange={(e) => shapeUpdate({ text: e })}
-            value={shape.text || ""}
+            value={shape.fontWeight ?? "normal"}
+            onChange={(e) =>
+              shapeUpdate({ fontWeight: e as IShape["fontWeight"] })
+            }
+            options={fontWeightOptions}
           />
+
+          {/* Font Size */}
+          <InputNumber
+            iconType="font"
+            labelText=""
+            min={12}
+            max={72}
+            step={4}
+            onChange={(e) => shapeUpdate({ fontSize: e })}
+            value={shape.fontSize || 0}
+          />
+
+          {/* Text Content */}
+          <div className={css({ gridColumn: 2, gridRow: 3 })}>
+            <InputTextArea
+              labelText=""
+              onChange={(e) => shapeUpdate({ text: e })}
+              value={shape.text || ""}
+            />
+          </div>
         </div>
-      </div>
+      </section>
 
       <Separator />
 
       {/* SECCIÓN: FILL - Rellenos */}
-      <SectionHeader
-        title="Fill"
-        onAdd={handleAddFill}
-        onImage={() => {
-          inputRef.current?.click();
-        }}
-      />
+      <section className={commonStyles.container}>
+        <SectionHeader
+          title="Fill"
+          onAdd={handleAddFill}
+          onImage={() => {
+            inputRef.current?.click();
+          }}
+        />
 
-      {/* Lista de fills */}
-      {shape.fills?.length
-        ? shape.fills.map((fill, index) => (
-            <div
-              key={`pixel-kit-shape-fill-${shape.id}-${shape.tool}-${index}`}
-              className={commonStyles.threeColumnGrid}
-            >
-              {fill.type === "fill" ? (
-                <InputColor
-                  keyInput={`pixel-kit-shape-fill-${shape.id}-${shape.tool}-${index}`}
-                  labelText=""
-                  color={fill.color}
-                  onChangeColor={(e) => handleFillColorChange(index, e)}
-                />
-              ) : (
-                <div
-                  className={css({
-                    width: "100%",
-                    flex: 1,
-                    color: "text",
-                    fontSize: "sm",
-                    backgroundColor: "bg.muted", // Fondo más claro para el selector
-                    borderRadius: "md",
-                    padding: "md",
-                    borderWidth: "1px",
-                    borderStyle: "solid",
-                    borderColor: "border.muted", // ← usa el semantic token
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "start",
-                    gap: "md",
-                  })}
-                >
-                  <img
-                    src={fill.image?.src}
-                    alt={`preview-${fill.id}`}
+        {/* Lista de fills */}
+        {shape.fills?.length
+          ? shape.fills.map((fill, index) => (
+              <div
+                key={`pixel-kit-shape-fill-${shape.id}-${shape.tool}-${index}`}
+                className={commonStyles.threeColumnGrid}
+              >
+                {fill.type === "fill" ? (
+                  <InputColor
+                    keyInput={`pixel-kit-shape-fill-${shape.id}-${shape.tool}-${index}`}
+                    labelText=""
+                    color={fill.color}
+                    onChangeColor={(e) => handleFillColorChange(index, e)}
+                  />
+                ) : (
+                  <div
                     className={css({
-                      height: "20px",
-                      width: "20px",
+                      width: "100%",
+                      flex: 1,
+                      color: "text",
+                      fontSize: "sm",
+                      backgroundColor: "bg.muted", // Fondo más claro para el selector
                       borderRadius: "md",
-                      border: "container",
-                      display: "flex",
-                      cursor: "pointer",
+                      padding: "md",
                       borderWidth: "1px",
                       borderStyle: "solid",
                       borderColor: "border.muted", // ← usa el semantic token
+                      display: "flex",
                       alignItems: "center",
-                      justifyContent: "center",
-                      objectFit: "cover",
-                    })}
-                  />
-                  <p
-                    className={css({
-                      wordBreak: "break-all",
-                      lineClamp: 1,
+                      justifyContent: "start",
+                      gap: "md",
                     })}
                   >
-                    {fill.image.name}
-                  </p>
-                </div>
-              )}
+                    <img
+                      src={fill.image?.src}
+                      alt={`preview-${fill.id}`}
+                      className={css({
+                        height: "20px",
+                        width: "20px",
+                        borderRadius: "md",
+                        border: "container",
+                        display: "flex",
+                        cursor: "pointer",
+                        borderWidth: "1px",
+                        borderStyle: "solid",
+                        borderColor: "border.muted", // ← usa el semantic token
+                        alignItems: "center",
+                        justifyContent: "center",
+                        objectFit: "cover",
+                      })}
+                    />
+                    <p
+                      className={css({
+                        wordBreak: "break-all",
+                        lineClamp: 1,
+                      })}
+                    >
+                      {fill.image.name}
+                    </p>
+                  </div>
+                )}
 
-              {/* Botón visibility toggle */}
-              <button
-                onClick={() => handleFillVisibilityToggle(index)}
-                className={commonStyles.iconButton}
-              >
-                {fill.visible ? <Eye size={18} /> : <EyeOff size={18} />}
-              </button>
+                {/* Botón visibility toggle */}
+                <button
+                  onClick={() => handleFillVisibilityToggle(index)}
+                  className={commonStyles.iconButton}
+                >
+                  {fill.visible ? <Eye size={18} /> : <EyeOff size={18} />}
+                </button>
 
-              {/* Botón remove */}
-              <button
-                onClick={() => handleFillRemove(index)}
-                className={commonStyles.iconButton}
-              >
-                <Minus size={18} />
-              </button>
-            </div>
-          ))
-        : null}
+                {/* Botón remove */}
+                <button
+                  onClick={() => handleFillRemove(index)}
+                  className={commonStyles.iconButton}
+                >
+                  <Minus size={18} />
+                </button>
+              </div>
+            ))
+          : null}
+      </section>
 
       <Separator />
 
       {/* SECCIÓN: STROKE - Bordes */}
-      <SectionHeader title="Stroke" onAdd={handleAddStroke} />
+      <section className={commonStyles.container}>
+        <SectionHeader title="Stroke" onAdd={handleAddStroke} />
 
-      {shape.strokes?.length ? (
-        <>
-          {/* Lista de strokes */}
-          {shape.strokes.map((stroke, index) => (
-            <div
-              key={`pixel-kit-shape-stroke-${shape.id}-${shape.tool}-${index}`}
-              className={commonStyles.threeColumnGrid}
-            >
-              <InputColor
-                keyInput={`pixel-kit-shape-stroke-${shape.id}-${shape.tool}-${index}`}
-                labelText=""
-                color={stroke.color}
-                onChangeColor={(e) => handleStrokeColorChange(index, e)}
+        {shape.strokes?.length ? (
+          <>
+            {/* Lista de strokes */}
+            {shape.strokes.map((stroke, index) => (
+              <div
+                key={`pixel-kit-shape-stroke-${shape.id}-${shape.tool}-${index}`}
+                className={commonStyles.threeColumnGrid}
+              >
+                <InputColor
+                  keyInput={`pixel-kit-shape-stroke-${shape.id}-${shape.tool}-${index}`}
+                  labelText=""
+                  color={stroke.color}
+                  onChangeColor={(e) => handleStrokeColorChange(index, e)}
+                />
+
+                {/* Botón visibility toggle */}
+                <button
+                  onClick={() => handleStrokeVisibilityToggle(index)}
+                  className={commonStyles.iconButton}
+                >
+                  {stroke.visible ? <Eye size={18} /> : <EyeOff size={18} />}
+                </button>
+
+                {/* Botón remove */}
+                <button
+                  onClick={() => handleStrokeRemove(index)}
+                  className={commonStyles.iconButton}
+                >
+                  <Minus size={18} />
+                </button>
+              </div>
+            ))}
+
+            {/* Configuraciones de stroke */}
+            <div className={commonStyles.twoColumnGrid}>
+              {/* Stroke Weight */}
+              <InputNumber
+                iconType="width"
+                min={0}
+                max={9999}
+                step={1}
+                labelText="Weight"
+                value={shape.strokeWidth || 0}
+                onChange={(v) => shapeUpdate({ strokeWidth: v })}
               />
 
-              {/* Botón visibility toggle */}
-              <button
-                onClick={() => handleStrokeVisibilityToggle(index)}
-                className={commonStyles.iconButton}
+              {/* Line Style Buttons */}
+              <div
+                className={css({
+                  alignItems: "flex-end",
+                  display: "grid",
+                  gridTemplateColumns: "3",
+                })}
               >
-                {stroke.visible ? <Eye size={18} /> : <EyeOff size={18} />}
-              </button>
+                <button
+                  onClick={() => handleLineStyleChange("round", "round")}
+                  className={css({
+                    background:
+                      shape.lineJoin === "round" && shape.lineCap === "round"
+                        ? "bg.muted"
+                        : "transparent",
+                    borderRadius: "6px",
+                    padding: "sm",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    height: "33.5px",
+                  })}
+                >
+                  <Brush size={16} />
+                </button>
 
-              {/* Botón remove */}
-              <button
-                onClick={() => handleStrokeRemove(index)}
-                className={commonStyles.iconButton}
-              >
-                <Minus size={18} />
-              </button>
+                <button
+                  onClick={() => handleLineStyleChange("miter", "round")}
+                  className={css({
+                    background:
+                      shape.lineJoin === "miter" && shape.lineCap === "round"
+                        ? "bg.muted"
+                        : "transparent",
+                    borderRadius: "6px",
+                    padding: "6px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    height: "33.5px",
+                  })}
+                >
+                  <Ruler size={16} />
+                </button>
+
+                <button
+                  onClick={() => handleLineStyleChange("bevel", "square")}
+                  className={css({
+                    background:
+                      shape.lineJoin === "bevel" && shape.lineCap === "square"
+                        ? "bg.muted"
+                        : "transparent",
+                    borderRadius: "6px",
+                    padding: "6px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    height: "33.5px",
+                  })}
+                >
+                  <PenTool size={16} />
+                </button>
+              </div>
             </div>
-          ))}
 
-          {/* Configuraciones de stroke */}
-          <div className={commonStyles.twoColumnGrid}>
-            {/* Stroke Weight */}
+            {/* Dash */}
             <InputNumber
-              iconType="width"
+              iconType="dashed"
+              labelText="Dash"
               min={0}
-              max={9999}
-              step={1}
-              labelText="Weight"
-              value={shape.strokeWidth || 0}
-              onChange={(v) => shapeUpdate({ strokeWidth: v })}
+              max={100}
+              onChange={(e) => shapeUpdate({ dash: e })}
+              value={shape.dash || 0}
             />
-
-            {/* Line Style Buttons */}
-            <div
-              className={css({
-                alignItems: "flex-end",
-                display: "grid",
-                gridTemplateColumns: "3",
-              })}
-            >
-              <button
-                onClick={() => handleLineStyleChange("round", "round")}
-                className={css({
-                  background:
-                    shape.lineJoin === "round" && shape.lineCap === "round"
-                      ? "bg.muted"
-                      : "transparent",
-                  borderRadius: "6px",
-                  padding: "sm",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  height: "33.5px",
-                })}
-              >
-                <Brush size={16} />
-              </button>
-
-              <button
-                onClick={() => handleLineStyleChange("miter", "round")}
-                className={css({
-                  background:
-                    shape.lineJoin === "miter" && shape.lineCap === "round"
-                      ? "bg.muted"
-                      : "transparent",
-                  borderRadius: "6px",
-                  padding: "6px",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  height: "33.5px",
-                })}
-              >
-                <Ruler size={16} />
-              </button>
-
-              <button
-                onClick={() => handleLineStyleChange("bevel", "square")}
-                className={css({
-                  background:
-                    shape.lineJoin === "bevel" && shape.lineCap === "square"
-                      ? "bg.muted"
-                      : "transparent",
-                  borderRadius: "6px",
-                  padding: "6px",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  height: "33.5px",
-                })}
-              >
-                <PenTool size={16} />
-              </button>
-            </div>
-          </div>
-
-          {/* Dash */}
-          <InputNumber
-            iconType="dashed"
-            labelText="Dash"
-            min={0}
-            max={100}
-            onChange={(e) => shapeUpdate({ dash: e })}
-            value={shape.dash || 0}
-          />
-        </>
-      ) : null}
+          </>
+        ) : null}
+      </section>
 
       <Separator />
 
@@ -770,96 +786,101 @@ export const LayoutShapeConfig = () => {
           height: 0,
           opacity: 0,
           display: "none",
+          position: "absolute",
         })}
       />
 
       {/* <Separator /> */}
 
       {/* SECCIÓN: EFFECTS - Efectos */}
-      <SectionHeader title="Effects" onAdd={handleAddEffect} />
+      <section className={commonStyles.container}>
+        <SectionHeader title="Effects" onAdd={handleAddEffect} />
 
-      {/* Lista de efectos */}
-      {shape.effects?.map?.((effect, index) => (
-        <section
-          key={`pixel-kit-shape-effect-${shape.id}-${shape.tool}-${index}`}
-          className={css({
-            display: "flex",
-            flexDirection: "column",
-            gap: "lg",
-          })}
-        >
-          {/* Controles principales del efecto */}
-          <div className={commonStyles.threeColumnGrid}>
-            <InputColor
-              keyInput={`pixel-kit-shape-effect-${shape.id}-${shape.tool}-${index}`}
-              labelText=""
-              color={effect.color}
-              onChangeColor={(e) => handleEffectColorChange(index, e)}
-            />
-
-            {/* Botón visibility toggle */}
-            <button
-              onClick={() => handleEffectVisibilityToggle(index)}
-              className={commonStyles.iconButton}
-            >
-              {effect.visible ? <Eye size={18} /> : <EyeOff size={18} />}
-            </button>
-
-            {/* Botón remove */}
-            <button
-              onClick={() => handleEffectRemove(index)}
-              className={commonStyles.iconButton}
-            >
-              <Minus size={18} />
-            </button>
-          </div>
-
-          {/* Controles detallados del efecto */}
-          <div
+        {/* Lista de efectos */}
+        {shape.effects?.map?.((effect, index) => (
+          <section
+            key={`pixel-kit-shape-effect-${shape.id}-${shape.tool}-${index}`}
             className={css({
-              display: "grid",
-              gridTemplateColumns: 2,
-              gridTemplateRows: 2,
+              display: "flex",
+              flexDirection: "column",
               gap: "lg",
             })}
           >
-            {/* TODO: Corregir los manejadores - actualmente todos actualizan 'dash' */}
-            <InputNumber
-              iconType="x"
-              min={0}
-              labelText="x"
-              max={100}
-              onChange={(e) => handleEffectPropertyChange(index, "x", e)} // FIXME: debería actualizar effect.x
-              value={effect.x}
-            />
-            <InputNumber
-              iconType="y"
-              labelText="y"
-              min={0}
-              max={100}
-              onChange={(e) => handleEffectPropertyChange(index, "y", e)} // FIXME: debería actualizar effect.y
-              value={effect.y}
-            />
-            <InputNumber
-              iconType="square"
-              labelText="blur"
-              min={0}
-              max={100}
-              onChange={(e) => handleEffectPropertyChange(index, "blur", e)} // FIXME: debería actualizar effect.blur
-              value={effect.blur}
-            />
-            <InputNumber
-              iconType="opacity"
-              labelText="opacity"
-              min={0}
-              max={1}
-              step={0.1}
-              onChange={(e) => handleEffectPropertyChange(index, "opacity", e)} // FIXME: debería actualizar effect.opacity
-              value={effect.opacity}
-            />
-          </div>
-        </section>
-      ))}
+            {/* Controles principales del efecto */}
+            <div className={commonStyles.threeColumnGrid}>
+              <InputColor
+                keyInput={`pixel-kit-shape-effect-${shape.id}-${shape.tool}-${index}`}
+                labelText=""
+                color={effect.color}
+                onChangeColor={(e) => handleEffectColorChange(index, e)}
+              />
+
+              {/* Botón visibility toggle */}
+              <button
+                onClick={() => handleEffectVisibilityToggle(index)}
+                className={commonStyles.iconButton}
+              >
+                {effect.visible ? <Eye size={18} /> : <EyeOff size={18} />}
+              </button>
+
+              {/* Botón remove */}
+              <button
+                onClick={() => handleEffectRemove(index)}
+                className={commonStyles.iconButton}
+              >
+                <Minus size={18} />
+              </button>
+            </div>
+
+            {/* Controles detallados del efecto */}
+            <div
+              className={css({
+                display: "grid",
+                gridTemplateColumns: 2,
+                gridTemplateRows: 2,
+                gap: "lg",
+              })}
+            >
+              {/* TODO: Corregir los manejadores - actualmente todos actualizan 'dash' */}
+              <InputNumber
+                iconType="x"
+                min={0}
+                labelText="x"
+                max={100}
+                onChange={(e) => handleEffectPropertyChange(index, "x", e)} // FIXME: debería actualizar effect.x
+                value={effect.x}
+              />
+              <InputNumber
+                iconType="y"
+                labelText="y"
+                min={0}
+                max={100}
+                onChange={(e) => handleEffectPropertyChange(index, "y", e)} // FIXME: debería actualizar effect.y
+                value={effect.y}
+              />
+              <InputNumber
+                iconType="square"
+                labelText="blur"
+                min={0}
+                max={100}
+                onChange={(e) => handleEffectPropertyChange(index, "blur", e)} // FIXME: debería actualizar effect.blur
+                value={effect.blur}
+              />
+              <InputNumber
+                iconType="opacity"
+                labelText="opacity"
+                min={0}
+                max={1}
+                step={0.1}
+                onChange={(e) =>
+                  handleEffectPropertyChange(index, "opacity", e)
+                } // FIXME: debería actualizar effect.opacity
+                value={effect.opacity}
+              />
+            </div>
+          </section>
+        ))}
+      </section>
     </div>
   );
 };

@@ -16,704 +16,641 @@ interface Message {
 
 const autoshapes = [
   {
-    id: "0d1d49a2-0a47-4c78-a1b9-e2b3b6076153",
-    tool: "BOX",
-    x: 0,
-    y: 0,
-    parentId: null,
-    rotation: 0,
-    isLocked: false,
-    label: "Main Background",
-    fills: [
-      {
-        color: "#ffffff",
-        opacity: 1,
-        visible: true,
-      },
-    ],
-    strokes: [],
-    strokeWidth: 0,
-    effects: [],
-    bordersRadius: [],
-    width: 1280,
-    height: 832,
-    visible: true,
-    isWritingNow: false,
-    isBlocked: false,
-    dash: 0,
-    opacity: 1,
-    align: "left",
-    verticalAlign: "top",
-    bezier: false,
-  },
-  {
-    id: "b8b9a8d6-4d1a-4b6f-b6f6-5188c649f41e",
-    tool: "GROUP",
+    id: "header",
+    tool: "rectangle",
     x: 0,
     y: 0,
     parentId: null,
     rotation: 0,
     isLocked: false,
     label: "Header",
-    fills: [],
+    fills: [
+      {
+        id: "header-bg",
+        color: "#1f2937",
+        opacity: 1,
+        visible: true,
+        type: "fill",
+        image: null,
+      },
+    ],
     strokes: [],
     strokeWidth: 0,
     effects: [],
-    bordersRadius: [],
+    bordersRadius: [0],
     width: 1280,
-    height: 100,
+    height: 80,
+    text: "",
     visible: true,
-    isWritingNow: false,
     isBlocked: false,
-    dash: 0,
-    opacity: 1,
-    align: "left",
-    verticalAlign: "top",
-    bezier: false,
-  },
-  {
-    id: "f9291c99-4349-4e71-8a60-5626b4f5828f",
-    tool: "TEXT",
-    x: 20,
-    y: 30,
-    parentId: "b8b9a8d6-4d1a-4b6f-b6f6-5188c649f41e",
-    rotation: 0,
-    isLocked: false,
-    label: "Logo",
-    fills: [
-      {
-        color: "#000000",
-        opacity: 1,
-        visible: true,
-      },
-    ],
-    strokes: [],
-    strokeWidth: 0,
-    effects: [],
-    bordersRadius: [],
-    width: 100,
-    height: 40,
-    text: "Logo",
-    visible: true,
-    isWritingNow: false,
-    isBlocked: false,
-    dash: 0,
-    opacity: 1,
-    align: "left",
-    verticalAlign: "middle",
-    fontSize: 24,
-    fontWeight: "bold",
-    bezier: false,
-  },
-  {
-    id: "2afadce2-8f78-44d3-bdcc-23ec58c14c7c",
-    tool: "TEXT",
-    x: 120,
-    y: 30,
-    parentId: "b8b9a8d6-4d1a-4b6f-b6f6-5188c649f41e",
-    rotation: 0,
-    isLocked: false,
-    label: "Nav Menu",
-    fills: [
-      {
-        color: "#000000",
-        opacity: 1,
-        visible: true,
-      },
-    ],
-    strokes: [],
-    strokeWidth: 0,
-    effects: [],
-    bordersRadius: [],
-    text: "Home | Shop | About | Contact",
-    width: 600,
-    height: 40,
-    visible: true,
-    isWritingNow: false,
-    isBlocked: false,
-    dash: 0,
     opacity: 1,
     align: "center",
     verticalAlign: "middle",
-    fontSize: 18,
-    bezier: false,
   },
   {
-    id: "5b651493-a940-4935-aee9-8690c69d4acd",
-    tool: "IMAGE",
-    x: 0,
-    y: 100,
-    parentId: null,
-    rotation: 0,
-    isLocked: false,
-    label: "Banner Image",
-    fills: [],
-    strokes: [],
-    strokeWidth: 0,
-    effects: [],
-    bordersRadius: [],
-    width: 1280,
-    height: 400,
-    visible: true,
-    isWritingNow: false,
-    isBlocked: false,
-    src: "./placeholder.svg",
-    dash: 0,
-    opacity: 1,
-    align: "left",
-    verticalAlign: "top",
-    bezier: false,
-  },
-  {
-    id: "2f5739b7-49d8-400a-abf8-233fa2c65367",
-    tool: "GROUP",
-    x: 0,
-    y: 500,
-    parentId: null,
-    rotation: 0,
-    isLocked: false,
-    label: "Product Section",
-    fills: [],
-    strokes: [],
-    strokeWidth: 0,
-    effects: [],
-    bordersRadius: [],
-    width: 1280,
-    height: 250,
-    visible: true,
-    isWritingNow: false,
-    isBlocked: false,
-    dash: 0,
-    opacity: 1,
-    align: "left",
-    verticalAlign: "top",
-    bezier: false,
-  },
-  {
-    id: "c277efd6-bfb3-45e2-8e11-97118a4dde6c",
-    tool: "GROUP",
-    x: 20,
-    y: 0,
-    parentId: "2f5739b7-49d8-400a-abf8-233fa2c65367",
-    rotation: 0,
-    isLocked: false,
-    label: "Product Box 1",
-    fills: [],
-    strokes: [],
-    strokeWidth: 0,
-    effects: [],
-    bordersRadius: [],
-    width: 300,
-    height: 250,
-    visible: true,
-    isWritingNow: false,
-    isBlocked: false,
-    dash: 0,
-    opacity: 1,
-    align: "left",
-    verticalAlign: "top",
-    bezier: false,
-  },
-  {
-    id: "70717f16-c184-45b8-aba6-c9b6518be53b",
-    tool: "IMAGE",
-    x: 0,
-    y: 0,
-    parentId: "c277efd6-bfb3-45e2-8e11-97118a4dde6c",
-    rotation: 0,
-    isLocked: false,
-    label: "Product Image 1",
-    fills: [],
-    strokes: [],
-    strokeWidth: 0,
-    effects: [],
-    bordersRadius: [],
-    width: 300,
-    height: 150,
-    visible: true,
-    isWritingNow: false,
-    isBlocked: false,
-    src: "./placeholder.svg",
-    dash: 0,
-    opacity: 1,
-    align: "left",
-    verticalAlign: "top",
-    bezier: false,
-  },
-  {
-    id: "cc517388-441b-454d-84e2-b651d32200c5",
-    tool: "TEXT",
-    x: 0,
-    y: 160,
-    parentId: "c277efd6-bfb3-45e2-8e11-97118a4dde6c",
-    rotation: 0,
-    isLocked: false,
-    label: "Product Name 1",
-    fills: [
-      {
-        color: "#000000",
-        opacity: 1,
-        visible: true,
-      },
-    ],
-    strokes: [],
-    strokeWidth: 0,
-    effects: [],
-    bordersRadius: [],
-    width: 300,
-    height: 30,
-    text: "Product Name 1",
-    visible: true,
-    isWritingNow: false,
-    isBlocked: false,
-    dash: 0,
-    opacity: 1,
-    align: "left",
-    verticalAlign: "middle",
-    fontSize: 18,
-    bezier: false,
-  },
-  {
-    id: "c7e70976-5ac5-49ee-97a3-0efb5aabed3e",
-    tool: "TEXT",
-    x: 0,
-    y: 200,
-    parentId: "c277efd6-bfb3-45e2-8e11-97118a4dde6c",
-    rotation: 0,
-    isLocked: false,
-    label: "Product Price 1",
-    fills: [
-      {
-        color: "#000000",
-        opacity: 1,
-        visible: true,
-      },
-    ],
-    strokes: [],
-    strokeWidth: 0,
-    effects: [],
-    bordersRadius: [],
-    width: 300,
-    height: 30,
-    text: "$99.99",
-    visible: true,
-    isWritingNow: false,
-    isBlocked: false,
-    dash: 0,
-    opacity: 1,
-    align: "left",
-    verticalAlign: "middle",
-    fontSize: 18,
-    bezier: false,
-  },
-  {
-    id: "d3e28dcf-8a1f-4916-bf52-b0c495d37804",
-    tool: "GROUP",
-    x: 340,
-    y: 0,
-    parentId: "2f5739b7-49d8-400a-abf8-233fa2c65367",
-    rotation: 0,
-    isLocked: false,
-    label: "Product Box 2",
-    fills: [],
-    strokes: [],
-    strokeWidth: 0,
-    effects: [],
-    bordersRadius: [],
-    width: 300,
-    height: 250,
-    visible: true,
-    isWritingNow: false,
-    isBlocked: false,
-    dash: 0,
-    opacity: 1,
-    align: "left",
-    verticalAlign: "top",
-    bezier: false,
-  },
-  {
-    id: "e4d55415-a833-45c9-bd1d-fcfb282a35e9",
-    tool: "IMAGE",
-    x: 0,
-    y: 0,
-    parentId: "d3e28dcf-8a1f-4916-bf52-b0c495d37804",
-    rotation: 0,
-    isLocked: false,
-    label: "Product Image 2",
-    fills: [],
-    strokes: [],
-    strokeWidth: 0,
-    effects: [],
-    bordersRadius: [],
-    width: 300,
-    height: 150,
-    visible: true,
-    isWritingNow: false,
-    isBlocked: false,
-    src: "./placeholder.svg",
-    dash: 0,
-    opacity: 1,
-    align: "left",
-    verticalAlign: "top",
-    bezier: false,
-  },
-  {
-    id: "edabe6aa-caef-46b6-8440-206297f00225",
-    tool: "TEXT",
-    x: 0,
-    y: 160,
-    parentId: "d3e28dcf-8a1f-4916-bf52-b0c495d37804",
-    rotation: 0,
-    isLocked: false,
-    label: "Product Name 2",
-    fills: [
-      {
-        color: "#000000",
-        opacity: 1,
-        visible: true,
-      },
-    ],
-    strokes: [],
-    strokeWidth: 0,
-    effects: [],
-    bordersRadius: [],
-    width: 300,
-    height: 30,
-    text: "Product Name 2",
-    visible: true,
-    isWritingNow: false,
-    isBlocked: false,
-    dash: 0,
-    opacity: 1,
-    align: "left",
-    verticalAlign: "middle",
-    fontSize: 18,
-    bezier: false,
-  },
-  {
-    id: "0c79c9f5-c9ec-4b6d-8425-affbc8bb1e3b",
-    tool: "TEXT",
-    x: 0,
-    y: 200,
-    parentId: "d3e28dcf-8a1f-4916-bf52-b0c495d37804",
-    rotation: 0,
-    isLocked: false,
-    label: "Product Price 2",
-    fills: [
-      {
-        color: "#000000",
-        opacity: 1,
-        visible: true,
-      },
-    ],
-    strokes: [],
-    strokeWidth: 0,
-    effects: [],
-    bordersRadius: [],
-    width: 300,
-    height: 30,
-    text: "$149.99",
-    visible: true,
-    isWritingNow: false,
-    isBlocked: false,
-    dash: 0,
-    opacity: 1,
-    align: "left",
-    verticalAlign: "middle",
-    fontSize: 18,
-    bezier: false,
-  },
-  {
-    id: "f107cdb2-6282-42c8-a93d-3adf95a217c2",
-    tool: "GROUP",
-    x: 660,
-    y: 0,
-    parentId: "2f5739b7-49d8-400a-abf8-233fa2c65367",
-    rotation: 0,
-    isLocked: false,
-    label: "Product Box 3",
-    fills: [],
-    strokes: [],
-    strokeWidth: 0,
-    effects: [],
-    bordersRadius: [],
-    width: 300,
-    height: 250,
-    visible: true,
-    isWritingNow: false,
-    isBlocked: false,
-    dash: 0,
-    opacity: 1,
-    align: "left",
-    verticalAlign: "top",
-    bezier: false,
-  },
-  {
-    id: "1a1467e7-4c6e-4b05-9a07-95112d9043bf",
-    tool: "IMAGE",
-    x: 0,
-    y: 0,
-    parentId: "f107cdb2-6282-42c8-a93d-3adf95a217c2",
-    rotation: 0,
-    isLocked: false,
-    label: "Product Image 3",
-    fills: [],
-    strokes: [],
-    strokeWidth: 0,
-    effects: [],
-    bordersRadius: [],
-    width: 300,
-    height: 150,
-    visible: true,
-    isWritingNow: false,
-    isBlocked: false,
-    src: "./placeholder.svg",
-    dash: 0,
-    opacity: 1,
-    align: "left",
-    verticalAlign: "top",
-    bezier: false,
-  },
-  {
-    id: "85f41596-6055-4ae9-80e4-8ff7b5faa3de",
-    tool: "TEXT",
-    x: 0,
-    y: 160,
-    parentId: "f107cdb2-6282-42c8-a93d-3adf95a217c2",
-    rotation: 0,
-    isLocked: false,
-    label: "Product Name 3",
-    fills: [
-      {
-        color: "#000000",
-        opacity: 1,
-        visible: true,
-      },
-    ],
-    strokes: [],
-    strokeWidth: 0,
-    effects: [],
-    bordersRadius: [],
-    width: 300,
-    height: 30,
-    text: "Product Name 3",
-    visible: true,
-    isWritingNow: false,
-    isBlocked: false,
-    dash: 0,
-    opacity: 1,
-    align: "left",
-    verticalAlign: "middle",
-    fontSize: 18,
-    bezier: false,
-  },
-  {
-    id: "af39e889-6b85-4d2f-9ea9-c506c7d3779e",
-    tool: "TEXT",
-    x: 0,
-    y: 200,
-    parentId: "f107cdb2-6282-42c8-a93d-3adf95a217c2",
-    rotation: 0,
-    isLocked: false,
-    label: "Product Price 3",
-    fills: [
-      {
-        color: "#000000",
-        opacity: 1,
-        visible: true,
-      },
-    ],
-    strokes: [],
-    strokeWidth: 0,
-    effects: [],
-    bordersRadius: [],
-    width: 300,
-    height: 30,
-    text: "$199.99",
-    visible: true,
-    isWritingNow: false,
-    isBlocked: false,
-    dash: 0,
-    opacity: 1,
-    align: "left",
-    verticalAlign: "middle",
-    fontSize: 18,
-    bezier: false,
-  },
-  {
-    id: "fba0f7d6-e6d8-4e5b-92aa-e1bcac56ebd7",
-    tool: "GROUP",
-    x: 980,
-    y: 0,
-    parentId: "2f5739b7-49d8-400a-abf8-233fa2c65367",
-    rotation: 0,
-    isLocked: false,
-    label: "Product Box 4",
-    fills: [],
-    strokes: [],
-    strokeWidth: 0,
-    effects: [],
-    bordersRadius: [],
-    width: 300,
-    height: 250,
-    visible: true,
-    isWritingNow: false,
-    isBlocked: false,
-    dash: 0,
-    opacity: 1,
-    align: "left",
-    verticalAlign: "top",
-    bezier: false,
-  },
-  {
-    id: "346556ee-58f7-40b8-93d7-c76a57d163a5",
-    tool: "IMAGE",
-    x: 0,
-    y: 0,
-    parentId: "fba0f7d6-e6d8-4e5b-92aa-e1bcac56ebd7",
-    rotation: 0,
-    isLocked: false,
-    label: "Product Image 4",
-    fills: [],
-    strokes: [],
-    strokeWidth: 0,
-    effects: [],
-    bordersRadius: [],
-    width: 300,
-    height: 150,
-    visible: true,
-    isWritingNow: false,
-    isBlocked: false,
-    src: "./placeholder.svg",
-    dash: 0,
-    opacity: 1,
-    align: "left",
-    verticalAlign: "top",
-    bezier: false,
-  },
-  {
-    id: "13cb5e6f-6f74-44e5-8c31-a0c628bb1da9",
-    tool: "TEXT",
-    x: 0,
-    y: 160,
-    parentId: "fba0f7d6-e6d8-4e5b-92aa-e1bcac56ebd7",
-    rotation: 0,
-    isLocked: false,
-    label: "Product Name 4",
-    fills: [
-      {
-        color: "#000000",
-        opacity: 1,
-        visible: true,
-      },
-    ],
-    strokes: [],
-    strokeWidth: 0,
-    effects: [],
-    bordersRadius: [],
-    width: 300,
-    height: 30,
-    text: "Product Name 4",
-    visible: true,
-    isWritingNow: false,
-    isBlocked: false,
-    dash: 0,
-    opacity: 1,
-    align: "left",
-    verticalAlign: "middle",
-    fontSize: 18,
-    bezier: false,
-  },
-  {
-    id: "d0949445-96f8-4404-8d6f-54ff72298398",
-    tool: "TEXT",
-    x: 0,
-    y: 200,
-    parentId: "fba0f7d6-e6d8-4e5b-92aa-e1bcac56ebd7",
-    rotation: 0,
-    isLocked: false,
-    label: "Product Price 4",
-    fills: [
-      {
-        color: "#000000",
-        opacity: 1,
-        visible: true,
-      },
-    ],
-    strokes: [],
-    strokeWidth: 0,
-    effects: [],
-    bordersRadius: [],
-    width: 300,
-    height: 30,
-    text: "$249.99",
-    visible: true,
-    isWritingNow: false,
-    isBlocked: false,
-    dash: 0,
-    opacity: 1,
-    align: "left",
-    verticalAlign: "middle",
-    fontSize: 18,
-    bezier: false,
-  },
-  {
-    id: "d711b7ec-4390-468f-8dee-b72d099f18f2",
-    tool: "GROUP",
-    x: 0,
-    y: 750,
-    parentId: null,
-    rotation: 0,
-    isLocked: false,
-    label: "Footer",
-    fills: [],
-    strokes: [],
-    strokeWidth: 0,
-    effects: [],
-    bordersRadius: [],
-    width: 1280,
-    height: 82,
-    visible: true,
-    isWritingNow: false,
-    isBlocked: false,
-    dash: 0,
-    opacity: 1,
-    align: "left",
-    verticalAlign: "top",
-    bezier: false,
-  },
-  {
-    id: "6f865683-aff1-4e1a-8a03-f2e415dd94da",
-    tool: "TEXT",
+    id: "header-logo",
+    tool: "text",
     x: 20,
     y: 20,
-    parentId: "d711b7ec-4390-468f-8dee-b72d099f18f2",
+    parentId: "header",
     rotation: 0,
     isLocked: false,
-    label: "Footer Text",
+    label: "ShopAdmin",
     fills: [
       {
-        color: "#000000",
+        id: "header-logo-color",
+        color: "#ffffff",
         opacity: 1,
         visible: true,
+        type: "fill",
+        image: null,
       },
     ],
     strokes: [],
     strokeWidth: 0,
     effects: [],
-    bordersRadius: [],
-    width: 1240,
-    height: 42,
-    text: "© 2023 E-commerce Site. All Rights Reserved.",
+    bordersRadius: [0],
+    text: "ShopAdmin",
     visible: true,
-    isWritingNow: false,
     isBlocked: false,
-    dash: 0,
+    fontSize: 24,
+    fontFamily: "Arial",
+    fontWeight: "bold",
+    opacity: 1,
+    align: "left",
+    verticalAlign: "middle",
+  },
+  {
+    id: "header-search",
+    tool: "rectangle",
+    x: 400,
+    y: 20,
+    parentId: "header",
+    rotation: 0,
+    isLocked: false,
+    label: "Search Bar",
+    fills: [
+      {
+        id: "search-bg",
+        color: "#ffffff",
+        opacity: 1,
+        visible: true,
+        type: "fill",
+        image: null,
+      },
+    ],
+    strokes: [],
+    strokeWidth: 0,
+    effects: [],
+    bordersRadius: [4],
+    width: 480,
+    height: 40,
+    visible: true,
+    isBlocked: false,
     opacity: 1,
     align: "center",
     verticalAlign: "middle",
-    fontSize: 16,
-    bezier: false,
+  },
+  {
+    id: "header-avatar",
+    tool: "ellipse",
+    x: 1120,
+    y: 20,
+    parentId: "header",
+    rotation: 0,
+    isLocked: false,
+    label: "User Avatar",
+    fills: [
+      {
+        id: "avatar-bg",
+        color: "#f5f5f5",
+        opacity: 1,
+        visible: true,
+        type: "fill",
+        image: null,
+      },
+    ],
+    strokes: [],
+    strokeWidth: 0,
+    effects: [],
+    bordersRadius: [20],
+    width: 40,
+    height: 40,
+    visible: true,
+    isBlocked: false,
+    opacity: 1,
+    align: "center",
+    verticalAlign: "middle",
+  },
+  {
+    id: "sidebar",
+    tool: "rectangle",
+    x: 0,
+    y: 80,
+    parentId: null,
+    rotation: 0,
+    isLocked: false,
+    label: "Sidebar",
+    fills: [
+      {
+        id: "sidebar-bg",
+        color: "#f8fafc",
+        opacity: 1,
+        visible: true,
+        type: "fill",
+        image: null,
+      },
+    ],
+    strokes: [],
+    strokeWidth: 0,
+    effects: [],
+    bordersRadius: [0],
+    width: 280,
+    height: 752,
+    visible: true,
+    isBlocked: false,
+    opacity: 1,
+    align: "center",
+    verticalAlign: "middle",
+  },
+  {
+    id: "sidebar-nav",
+    tool: "rectangle",
+    x: 0,
+    y: 80,
+    parentId: "sidebar",
+    rotation: 0,
+    isLocked: false,
+    label: "Navigation",
+    fills: [],
+    strokes: [],
+    strokeWidth: 0,
+    effects: [],
+    bordersRadius: [0],
+    width: 280,
+    height: 752,
+    visible: true,
+    isBlocked: false,
+    opacity: 1,
+    align: "center",
+    verticalAlign: "middle",
+  },
+  {
+    id: "nav-dashboard",
+    tool: "rectangle",
+    x: 0,
+    y: 80,
+    parentId: "sidebar-nav",
+    rotation: 0,
+    isLocked: false,
+    label: "Dashboard",
+    fills: [
+      {
+        id: "nav-dashboard-bg",
+        color: "#3b82f6",
+        opacity: 1,
+        visible: true,
+        type: "fill",
+        image: null,
+      },
+    ],
+    strokes: [],
+    strokeWidth: 0,
+    effects: [],
+    bordersRadius: [4],
+    width: 280,
+    height: 40,
+    visible: true,
+    isBlocked: false,
+    opacity: 1,
+    align: "center",
+    verticalAlign: "middle",
+  },
+  {
+    id: "nav-products",
+    tool: "rectangle",
+    x: 0,
+    y: 120,
+    parentId: "sidebar-nav",
+    rotation: 0,
+    isLocked: false,
+    label: "Products",
+    fills: [],
+    strokes: [],
+    strokeWidth: 0,
+    effects: [],
+    bordersRadius: [4],
+    width: 280,
+    height: 40,
+    visible: true,
+    isBlocked: false,
+    opacity: 1,
+    align: "center",
+    verticalAlign: "middle",
+  },
+  {
+    id: "nav-orders",
+    tool: "rectangle",
+    x: 0,
+    y: 160,
+    parentId: "sidebar-nav",
+    rotation: 0,
+    isLocked: false,
+    label: "Orders",
+    fills: [],
+    strokes: [],
+    strokeWidth: 0,
+    effects: [],
+    bordersRadius: [4],
+    width: 280,
+    height: 40,
+    visible: true,
+    isBlocked: false,
+    opacity: 1,
+    align: "center",
+    verticalAlign: "middle",
+  },
+  {
+    id: "nav-customers",
+    tool: "rectangle",
+    x: 0,
+    y: 200,
+    parentId: "sidebar-nav",
+    rotation: 0,
+    isLocked: false,
+    label: "Customers",
+    fills: [],
+    strokes: [],
+    strokeWidth: 0,
+    effects: [],
+    bordersRadius: [4],
+    width: 280,
+    height: 40,
+    visible: true,
+    isBlocked: false,
+    opacity: 1,
+    align: "center",
+    verticalAlign: "middle",
+  },
+  {
+    id: "nav-analytics",
+    tool: "rectangle",
+    x: 0,
+    y: 240,
+    parentId: "sidebar-nav",
+    rotation: 0,
+    isLocked: false,
+    label: "Analytics",
+    fills: [],
+    strokes: [],
+    strokeWidth: 0,
+    effects: [],
+    bordersRadius: [4],
+    width: 280,
+    height: 40,
+    visible: true,
+    isBlocked: false,
+    opacity: 1,
+    align: "center",
+    verticalAlign: "middle",
+  },
+  {
+    id: "nav-settings",
+    tool: "rectangle",
+    x: 0,
+    y: 280,
+    parentId: "sidebar-nav",
+    rotation: 0,
+    isLocked: false,
+    label: "Settings",
+    fills: [],
+    strokes: [],
+    strokeWidth: 0,
+    effects: [],
+    bordersRadius: [4],
+    width: 280,
+    height: 40,
+    visible: true,
+    isBlocked: false,
+    opacity: 1,
+    align: "center",
+    verticalAlign: "middle",
+  },
+  {
+    id: "content-area",
+    tool: "rectangle",
+    x: 280,
+    y: 80,
+    parentId: null,
+    rotation: 0,
+    isLocked: false,
+    label: "Main Content Area",
+    fills: [
+      {
+        id: "content-bg",
+        color: "#ffffff",
+        opacity: 1,
+        visible: true,
+        type: "fill",
+        image: null,
+      },
+    ],
+    strokes: [],
+    strokeWidth: 0,
+    effects: [],
+    bordersRadius: [0],
+    width: 1000,
+    height: 752,
+    visible: true,
+    isBlocked: false,
+    opacity: 1,
+    align: "center",
+    verticalAlign: "middle",
+  },
+  {
+    id: "content-title",
+    tool: "text",
+    x: 300,
+    y: 100,
+    parentId: "content-area",
+    rotation: 0,
+    isLocked: false,
+    label: "Dashboard Overview",
+    fills: [
+      {
+        id: "title-color",
+        color: "#000000",
+        opacity: 1,
+        visible: true,
+        type: "fill",
+        image: null,
+      },
+    ],
+    strokes: [],
+    strokeWidth: 0,
+    effects: [],
+    bordersRadius: [0],
+    text: "Dashboard Overview",
+    visible: true,
+    isBlocked: false,
+    fontSize: 32,
+    fontFamily: "Arial",
+    fontWeight: "bold",
+    opacity: 1,
+    align: "left",
+    verticalAlign: "middle",
+  },
+  {
+    id: "metric-grid",
+    tool: "rectangle",
+    x: 300,
+    y: 160,
+    parentId: "content-area",
+    rotation: 0,
+    isLocked: false,
+    label: "Metrics Grid",
+    fills: [],
+    strokes: [],
+    strokeWidth: 0,
+    effects: [],
+    bordersRadius: [0],
+    width: 700,
+    height: 200,
+    visible: true,
+    isBlocked: false,
+    opacity: 1,
+    align: "center",
+    verticalAlign: "middle",
+  },
+  {
+    id: "card-sales",
+    tool: "rectangle",
+    x: 0,
+    y: 0,
+    parentId: "metric-grid",
+    rotation: 0,
+    isLocked: false,
+    label: "Total Sales",
+    fills: [
+      {
+        id: "card-bg",
+        color: "#ffffff",
+        opacity: 1,
+        visible: true,
+        type: "fill",
+        image: null,
+      },
+    ],
+    strokes: [],
+    strokeWidth: 0,
+    effects: [
+      {
+        id: "card-shadow",
+        type: "shadow",
+        visible: true,
+        x: 0,
+        y: 4,
+        color: "#000000",
+        opacity: 0.2,
+        blur: 8,
+      },
+    ],
+    bordersRadius: [8],
+    width: 170,
+    height: 100,
+    visible: true,
+    isBlocked: false,
+    opacity: 1,
+    align: "center",
+    verticalAlign: "middle",
+  },
+  {
+    id: "card-orders",
+    tool: "rectangle",
+    x: 180,
+    y: 0,
+    parentId: "metric-grid",
+    rotation: 0,
+    isLocked: false,
+    label: "Orders",
+    fills: [
+      {
+        id: "card-bg-orders",
+        color: "#ffffff",
+        opacity: 1,
+        visible: true,
+        type: "fill",
+        image: null,
+      },
+    ],
+    strokes: [],
+    strokeWidth: 0,
+    effects: [
+      {
+        id: "card-shadow-orders",
+        type: "shadow",
+        visible: true,
+        x: 0,
+        y: 4,
+        color: "#000000",
+        opacity: 0.2,
+        blur: 8,
+      },
+    ],
+    bordersRadius: [8],
+    width: 170,
+    height: 100,
+    visible: true,
+    isBlocked: false,
+    opacity: 1,
+    align: "center",
+    verticalAlign: "middle",
+  },
+  {
+    id: "card-customers",
+    tool: "rectangle",
+    x: 360,
+    y: 0,
+    parentId: "metric-grid",
+    rotation: 0,
+    isLocked: false,
+    label: "Customers",
+    fills: [
+      {
+        id: "card-bg-customers",
+        color: "#ffffff",
+        opacity: 1,
+        visible: true,
+        type: "fill",
+        image: null,
+      },
+    ],
+    strokes: [],
+    strokeWidth: 0,
+    effects: [
+      {
+        id: "card-shadow-customers",
+        type: "shadow",
+        visible: true,
+        x: 0,
+        y: 4,
+        color: "#000000",
+        opacity: 0.2,
+        blur: 8,
+      },
+    ],
+    bordersRadius: [8],
+    width: 170,
+    height: 100,
+    visible: true,
+    isBlocked: false,
+    opacity: 1,
+    align: "center",
+    verticalAlign: "middle",
+  },
+  {
+    id: "card-products",
+    tool: "rectangle",
+    x: 540,
+    y: 0,
+    parentId: "metric-grid",
+    rotation: 0,
+    isLocked: false,
+    label: "Products",
+    fills: [
+      {
+        id: "card-bg-products",
+        color: "#ffffff",
+        opacity: 1,
+        visible: true,
+        type: "fill",
+        image: null,
+      },
+    ],
+    strokes: [],
+    strokeWidth: 0,
+    effects: [
+      {
+        id: "card-shadow-products",
+        type: "shadow",
+        visible: true,
+        x: 0,
+        y: 4,
+        color: "#000000",
+        opacity: 0.2,
+        blur: 8,
+      },
+    ],
+    bordersRadius: [8],
+    width: 170,
+    height: 100,
+    visible: true,
+    isBlocked: false,
+    opacity: 1,
+    align: "center",
+    verticalAlign: "middle",
+  },
+  {
+    id: "recent-orders-table",
+    tool: "rectangle",
+    x: 300,
+    y: 380,
+    parentId: "content-area",
+    rotation: 0,
+    isLocked: false,
+    label: "Recent Orders Table",
+    fills: [
+      {
+        id: "table-bg",
+        color: "#ffffff",
+        opacity: 1,
+        visible: true,
+        type: "fill",
+        image: null,
+      },
+    ],
+    strokes: [],
+    strokeWidth: 0,
+    effects: [],
+    bordersRadius: [0],
+    width: 350,
+    height: 320,
+    visible: true,
+    isBlocked: false,
+    opacity: 1,
+    align: "center",
+    verticalAlign: "middle",
+  },
+  {
+    id: "monthly-sales-graph",
+    tool: "rectangle",
+    x: 680,
+    y: 380,
+    parentId: "content-area",
+    rotation: 0,
+    isLocked: false,
+    label: "Monthly Sales Graph",
+    fills: [
+      {
+        id: "graph-bg",
+        color: "#ffffff",
+        opacity: 1,
+        visible: true,
+        type: "fill",
+        image: null,
+      },
+    ],
+    strokes: [],
+    strokeWidth: 0,
+    effects: [],
+    bordersRadius: [0],
+    width: 300,
+    height: 320,
+    visible: true,
+    isBlocked: false,
+    opacity: 1,
+    align: "center",
+    verticalAlign: "middle",
   },
 ];
 export const Chat = () => {
@@ -739,75 +676,96 @@ export const Chat = () => {
 
     try {
       const prompt = `
-You are a senior UI programmer creating user interface designs for PC or Mobile based on the USER REQUEST.
+Advanced UI Design Generator Prompt
+You are an Expert UI/UX Designer and Senior Frontend Developer with deep expertise in modern interface design principles, accessibility standards, and user experience best practices.
+Core Design Philosophy
+Apply these fundamental UI/UX principles in every design:
 
-The designs can represent various scenarios such as:
+Visual Hierarchy: Use size, color, contrast, and spacing to guide user attention
+Consistency: Maintain uniform spacing, typography, and component patterns
+Accessibility: Ensure WCAG 2.1 AA compliance with proper contrast ratios and readable fonts
+User-Centered Design: Prioritize usability and intuitive navigation patterns
+Modern Design Language: Follow contemporary design trends (Material Design, Apple HIG, or Fluent Design principles)
 
-An e-commerce website page
+1. Device Specifications & Responsive Considerations
 
-A personal portfolio
+Desktop: 1280px × 832px (Primary target)
+Mobile: 440px × 956px (Touch-optimized)
+Apply platform-specific interaction patterns and sizing guidelines
 
-A mobile user settings screen
+2. Design System & Visual Standards
+Color Theory Application
 
-A mobile chat screen
+Use purposeful color palettes that enhance usability
+Ensure minimum 4.5:1 contrast ratio for text
+Apply 60-30-10 color rule (dominant, secondary, accent)
+Consider color psychology and brand alignment
 
-Device dimensions:
+Typography Hierarchy
 
-PC: 1280px x 832px
+Establish clear typographic scale (H1: 32-48px, H2: 24-32px, Body: 16-18px, Caption: 12-14px)
+Use maximum 2-3 font families
+Maintain consistent line heights (1.4-1.6 for body text)
 
-Mobile: 440px x 956px
+Spacing & Layout
 
-Resources:
-For images, use: ./placeholder.svg (set this URL in the src property of IShape when the element is an image).
+Follow 8px grid system for consistent spacing
+Apply proper information density (not too cluttered, not too sparse)
+Use whitespace strategically to create visual breathing room
+Implement consistent margins and paddings
 
-For icons (SVG), do not include them for now.
+3. Enhanced Fill & Visual Treatment Rules
 
-Background and Text Rules:
-If you use a GROUP or BOX as the base background of the design, set its fills[0].color to #ffffff (pure white).
+Primary fills must use solid colors following modern UI color systems
+Background elements require fills[0].color for proper rendering
+Text contrast rules:
 
-Any text element placed directly on a white background must have its fills[0].color set to a dark color (e.g., black #000000) for good contrast.
-
-If text is placed on a non-white background (e.g., inside a group or box with colored fills), choose the text’s fills[0].color to ensure high contrast with that background color.
-
-Consider that a text element can be inside another text’s area or inside a group with any background color, so the fills[0].color of the text must always ensure readability.
-
-Nesting and Positioning Rules:
-When adding elements inside a GROUP or BOX, the element’s x and y coordinates must be relative to the parent container’s top-left corner.
-
-Do not position nested elements as if they were on the main canvas; their coordinates must be adjusted to the container’s coordinate space.
-
-Avoid using arbitrary fixed positions like x: 10, y: 10 unless they are correct relative to the parent container’s dimensions and position.
-
-Nesting Constraint:
-Do not nest elements inside a BOX. Nesting of elements is only allowed inside GROUP elements.
-
-If you want to nest elements, always use GROUP elements as containers, which also have styles.
-
-Schema:
-You must generate objects following this schema exactly. All properties must be present.
-If a property is not needed, set it to:
-
-"" for text
-
-[] for arrays
-
-false for booleans
-
-0 for numbers
+Dark backgrounds (#000000 - #444444): Use light text (#ffffff, #f5f5f5)
+Light backgrounds (#ffffff - #cccccc): Use dark text (#000000, #333333)
+Medium backgrounds: Calculate optimal contrast automatically
 
 
+Support for subtle shadows and modern visual effects
+
+4. Component Architecture & Hierarchy
+
+Use GROUP elements as semantic containers (cards, sections, navigation areas)
+Implement logical nesting: Navigation → Content → Actions
+Child elements use relative positioning within parent containers
+BOX elements serve as atomic design elements (buttons, inputs, etc.)
+Maintain z-index layering for proper visual stacking
+
+5. Interaction Design Considerations
+
+Design touch targets minimum 44px × 44px for mobile
+Provide visual feedback states (hover, active, disabled)
+Consider user flow and task completion paths
+Implement progressive disclosure for complex interfaces
+
+6. Enhanced Schema with Modern UI Patterns
+typescript
+## 4. Schema
+type FillImage = {
+  src: string;
+  width: number;
+  height: number;
+  name: string;
+};
 export type Fill = {
+  id: string;
   color: string;
   opacity: number;
   visible: boolean;
+  type: "fill" | "image";
+  image: FillImage;
 };
-
 export type Stroke = {
+  id: string;
   color: string;
   visible: boolean;
 };
-
 export type Effect = {
+  id: string;
   type: "shadow" | "blur" | "glow";
   visible: boolean;
   x: number;
@@ -816,10 +774,19 @@ export type Effect = {
   opacity: number;
   blur: number;
 };
+ type IKeyMethods =
+  | "BOX"
+  | "CIRCLE"
+  | "LINE"
+  | "IMAGE"
+  | "TEXT"
+  | "EXPORT"
+  | "DRAW"
+  | "GROUP"
 
 export type IShape = {
   id: string;
-  tool: "BOX" | "TEXT" | "CIRCLE" | "LINE" | "IMAGE" | "DRAW" | "GROUP";
+  tool: IKeyMethods;
   x: number;
   y: number;
   parentId: string | null;
@@ -835,17 +802,14 @@ export type IShape = {
   height?: number;
   text?: string;
   visible: boolean;
-  isWritingNow: boolean;
-  resolution?: "portrait" | "landscape";
   isBlocked: boolean;
   points?: number[];
-  src?: string;
-  closed?: boolean;
   rotate?: number;
-  lineCap?: string;
-  lineJoin?: string;
+  lineCap?: LineCap;
+  lineJoin?: LineJoin;
   dash: number;
   opacity: number;
+  backgroundColor?: string;
   align: "left" | "center" | "right" | "justify";
   verticalAlign: "top" | "middle" | "bottom";
   fontSize?: number;
@@ -856,28 +820,68 @@ export type IShape = {
   borderRadius?: number;
   isAllBorderRadius?: boolean;
   zIndex?: number;
-  bezier: boolean;
 };
-UUIDs and Hierarchy Rules:
-You must generate unique id values as UUIDs for each element.
 
-To group elements, set their parentId to the id of a GROUP element.
+7. Content Strategy & Information Architecture
 
-Groups can contain other groups (nested grouping is allowed).
+Organize content using F-pattern or Z-pattern scanning behaviors
+Group related functionality logically
+Use progressive disclosure for complex features
+Implement clear navigation breadcrumbs when needed
 
-Output Rules:
-Return an array of IShape objects.
+8. Platform-Specific Guidelines
+Desktop UI Patterns
 
-Do not format as Markdown, code blocks, or template strings.
+Horizontal navigation bars
+Sidebar layouts for content organization
+Hover states and keyboard navigation support
+Multi-column layouts where appropriate
 
-No comments, greetings, or explanations.
+Mobile UI Patterns
 
-Must start with [ and end with ] so it can be directly parsed as JSON.
+Bottom navigation for primary actions
+Thumb-friendly interaction zones
+Swipe gestures consideration
+Collapsible content sections
 
-USER REQUEST
+9. Quality Assurance Requirements
 
+All schema properties must be complete (no undefined values)
+Generate cryptographically secure UUIDs for all elements
+Validate color contrast ratios meet accessibility standards
+Ensure responsive behavior within specified dimensions
+
+10. Output Specifications
+
+Return clean JSON array of IShape objects
+No markdown formatting, comments, or explanations
+Structure must be immediately parseable
+Begin with [ and end with ] for direct JSON parsing
+
+Pre-Processing Instructions
+Before generating the interface:
+
+Analyze the request for user intent and primary use case
+Identify key user personas and their needs
+Determine information priority and content hierarchy
+Select appropriate design patterns for the specific use case
+Consider accessibility requirements from the start
+Plan responsive behavior across device types
+
+Design Decision Framework
+For each design choice, consider:
+
+Does this enhance or hinder user task completion?
+Is this consistent with established UI patterns?
+Does this meet accessibility standards?
+Is this scalable and maintainable?
+Does this align with modern design best practices?
+
+
+USER REQUEST:
 ${input}
 
+CRITICAL: Your response must be ONLY a valid JSON array starting with [ and ending with ]. No explanations, no markdown, no additional text.
 `;
 
       console.log(prompt, "prompt");
@@ -913,20 +917,6 @@ ${input}
       setIsLoading(false);
     }
   };
-
-  // useEffect(() => {
-  //   setShapes(
-  //     autoshapes?.map((e: IShape) => {
-  //       return {
-  //         id: e.id,
-  //         pageId,
-  //         parentId: e?.parentId,
-  //         state: atom(e as IShape),
-  //         tool: e?.tool as IKeyMethods,
-  //       };
-  //     })
-  //   );
-  // }, []);
 
   return (
     <div
