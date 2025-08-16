@@ -19,11 +19,13 @@ export const Tab = ({
   onClick,
   onDelete,
   isEnable,
+  isSelected,
 }: {
   project: IPROJECT;
   onClick: VoidFunction;
   onDelete: VoidFunction;
   isEnable: boolean;
+  isSelected: boolean;
 }) => {
   const [text, setText] = useAtom(project.name);
   const [hover, sethover] = useState(false);
@@ -38,6 +40,9 @@ export const Tab = ({
         gridTemplateColumns: "20px 100px 20px",
         gap: "md",
         alignContent: "center",
+        backgroundColor: isSelected ? "primary" : "transparent",
+        height: "100%",
+        padding: "lg",
       })}
       onClick={onClick}
       onMouseEnter={() => sethover(true)}
@@ -85,6 +90,7 @@ export const Tab = ({
             textAlign: "left",
             lineClamp: 1,
             wordBreak: "break-all",
+            lineHeight: 1.14,
           })}
         >
           {text}
@@ -102,7 +108,6 @@ export const Tab = ({
               display: "flex",
               justifyContent: "center",
               alignItems: "center",
-              backgroundColor: "primary",
               flex: 1,
             })}
             onClick={(e) => {
@@ -121,7 +126,7 @@ export const TabsProjects = () => {
   const router = useRouter();
   const listProjects = useAtomValue(PROJECTS_ATOM);
   const setNew = useSetAtom(NEW_PROJECT);
-  const setSelected = useSetAtom(PROJECT_ID_ATOM);
+  const [selected, setSelected] = useAtom(PROJECT_ID_ATOM);
   const setDelete = useSetAtom(DELETE_PROJECT);
   return (
     <header
@@ -132,7 +137,7 @@ export const TabsProjects = () => {
         borderBottomWidth: "1px",
         borderBottomStyle: "solid",
         borderBottomColor: "border", // ← usa el semantic token
-        gridTemplateColumns: "20px 1fr 25px",
+        gridTemplateColumns: "25px 1fr 25px",
         gap: "lg",
         paddingLeft: "lg",
         paddingRight: "lg",
@@ -148,7 +153,7 @@ export const TabsProjects = () => {
           alignItems: "center",
         })}
       >
-        <Home size={22} />
+        <Home size={18} />
       </button>
       <div
         className={css({
@@ -165,6 +170,7 @@ export const TabsProjects = () => {
           return (
             <Tab
               key={e?.ID}
+              isSelected={e?.ID === selected}
               project={e}
               isEnable={listProjects?.length > 1}
               onClick={() => {
