@@ -174,7 +174,12 @@ export const ShapeImage = memo((props: IShapeWithEvents) => {
           )
         }
         onDragEnd={(e) => setBox(shapeEventDragStop(e))}
-        onTransform={(e) => setBox(shapeTransformEnd(e))}
+        onTransform={(e) => {
+          setBox(
+            shapeEventDragMove(e, stageDimensions.width, stageDimensions.height)
+          );
+          setBox(shapeTransformEnd(e));
+        }}
         onTransformEnd={(e) => setBox(shapeTransformEnd(e))}
       />
       <Transform isSelected={isSelected} ref={trRef} />
