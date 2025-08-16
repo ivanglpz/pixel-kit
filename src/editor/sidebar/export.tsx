@@ -2,24 +2,27 @@ import { Valid } from "@/components/valid";
 import { Button } from "@/editor/components/button";
 import { InputSelect } from "@/editor/components/input-select";
 import { InputText } from "@/editor/components/input-text";
-import { Section } from "@/editor/components/section";
+import { useConfiguration } from "@/editor/hooks/useConfiguration";
 import { useImageRender } from "@/editor/hooks/useImageRender";
 import { useReference } from "@/editor/hooks/useReference";
-import { useConfiguration } from "@/editor/hooks/useConfiguration";
 import { showClipAtom } from "@/editor/states/clipImage";
 import { calculateDimension } from "@/editor/utils/calculateDimension";
 import { css } from "@stylespixelkit/css";
-import { useAtom, useAtomValue, useSetAtom } from "jotai";
+import { useAtom, useAtomValue } from "jotai";
+import Konva from "konva";
 import { Group } from "konva/lib/Group";
 import { Stage } from "konva/lib/Stage";
 import Link from "next/link";
-import { RefObject, useState } from "react";
+import { RefObject, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
+import { Stage as StageContainer } from "react-konva";
 import { toast } from "sonner";
 import { v4 as uuidv4 } from "uuid";
-import { ImageConfiguration } from "./imageConfig";
+import { AllLayers } from "../layers/root.layers";
 import { STAGE_DIMENSION_ATOM } from "../states/dimension";
 import { typeExportAtom } from "../states/export";
+import ALL_SHAPES_ATOM from "../states/shapes";
+import { ImageConfiguration } from "./imageConfig";
 
 const formats = {
   LOW: 0.8,
@@ -37,6 +40,50 @@ function downloadBase64Image(base64String: string) {
   link.click();
   document.body.removeChild(link);
 }
+
+const getBoundingBox = (
+  ref: RefObject<Stage> | RefObject<Group> | undefined,
+  props: {
+    pixelRatio?: number;
+    mimeType?: string;
+    quality?: number;
+  }
+) => {
+  const childrens = ref?.current?.getStage?.()?.children;
+  if (!childrens) return;
+  const layerShapes = childrens?.find((e) => e?.attrs?.id === "layer-shapes");
+  if (!layerShapes) return;
+
+  layerShapes?.children
+    ?.filter?.((child) => child?.attrs?.id === "transformer-editable")
+    ?.forEach?.((child) => {
+      child?.destroy?.();
+    });
+  let minX = Infinity,
+    minY = Infinity,
+    maxX = -Infinity,
+    maxY = -Infinity;
+  layerShapes.scale({ x: 1, y: 1 });
+  layerShapes.position({ x: 0, y: 0 });
+
+  ref?.current.scale({ x: 1, y: 1 });
+  ref?.current.position({ x: 0, y: 0 });
+
+  layerShapes?.children.forEach((node) => {
+    const box = node.getClientRect({ relativeTo: layerShapes });
+    minX = Math.min(minX, box.x);
+    minY = Math.min(minY, box.y);
+    maxX = Math.max(maxX, box.x + box.width);
+    maxY = Math.max(maxY, box.y + box.height);
+  });
+  return layerShapes?.toDataURL({
+    ...props,
+    x: minX,
+    y: minY,
+    width: maxX - minX,
+    height: maxY - minY,
+  });
+};
 
 const destroyTransforms = (
   ref: RefObject<Stage> | RefObject<Group> | undefined
@@ -59,11 +106,10 @@ export const ExportStage = () => {
   const { img } = useImageRender();
   const [loading, setloading] = useState(false);
   const { height, width } = useAtomValue(STAGE_DIMENSION_ATOM);
-
+  const ALL_SHAPES = useAtomValue(ALL_SHAPES_ATOM);
   const [format, setformat] = useAtom(typeExportAtom);
   const [showExport, setShowExport] = useState(false);
-  const setshowClip = useSetAtom(showClipAtom);
-
+  const [showClip, setshowClip] = useAtom(showClipAtom);
   const handleExport = async () => {
     toast.success("Thank you very much for using pixel kit!", {
       description: (
@@ -86,7 +132,29 @@ export const ExportStage = () => {
     });
 
     setloading(true);
-    if (config?.exportMode === "FREE_DRAW") {
+    if (config?.export_mode === "DESIGN_MODE") {
+      destroyTransforms(ref);
+      const image = getBoundingBox(ref, {
+        quality: 1,
+        pixelRatio: formats[format as keyof typeof formats],
+      });
+
+      await new Promise(() => {
+        setTimeout(() => {
+          // const image = ref?.current?.toDataURL({
+          //   quality: 1,
+          //   pixelRatio: formats[format as keyof typeof formats],
+          //   width,
+          //   height,
+          //   ...dimension,
+          // });
+          if (!image) return;
+          downloadBase64Image(image);
+          setloading(false);
+        }, 100);
+      });
+    }
+    if (config?.export_mode === "FREE_DRAW") {
       destroyTransforms(ref);
       await new Promise(() => {
         setTimeout(() => {
@@ -100,7 +168,7 @@ export const ExportStage = () => {
         }, 100);
       });
     }
-    if (config?.exportMode === "EDIT_IMAGE") {
+    if (config?.export_mode === "EDIT_IMAGE") {
       setshowClip(false);
       destroyTransforms(ref);
       // destroyTransforms(ref, 2);
@@ -134,6 +202,38 @@ export const ExportStage = () => {
 
   const Container = document.getElementById("pixel-app");
 
+  const stageWidth = 210;
+  const stageHeight = 210;
+  const stageRef = useRef<Konva.Stage>(null);
+
+  useEffect(() => {
+    if (!stageRef.current) return;
+    const stage = stageRef.current;
+    const childrens = stage?.children;
+    if (!childrens) return;
+
+    // Usar las dimensiones estáticas del stage (o las de config)
+    const contentWidth = width;
+    const contentHeight = height;
+
+    // 1. Escalar proporcionalmente para que encaje en 210x210
+    const scale = Math.min(
+      stageWidth / contentWidth,
+      stageHeight / contentHeight
+    );
+
+    stage.width(stageWidth);
+    stage.height(stageHeight);
+    stage.scale({ x: scale, y: scale });
+
+    // 2. Centrarlo simplemente (sin minX/minY)
+    const offsetX = (stageWidth - contentWidth * scale) / 2;
+    const offsetY = (stageHeight - contentHeight * scale) / 2;
+
+    stage.position({ x: offsetX, y: offsetY });
+    stage.batchDraw();
+  }, [width, height, config.export_mode, showClip, ALL_SHAPES]);
+
   return (
     <>
       <Valid isValid={showExport}>
@@ -146,7 +246,7 @@ export const ExportStage = () => {
                   zIndex: 9999,
                   width: "100%",
                   height: "100%",
-                  backgroundColor: "rgba(0,0,0,0.5)",
+                  backgroundColor: "rgba(0,0,0,0.6)",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
@@ -158,7 +258,7 @@ export const ExportStage = () => {
                     padding: "lg",
                     display: "flex",
                     flexDirection: "column",
-                    backgroundColor: "primary",
+                    backgroundColor: "bg",
                     borderRadius: "lg",
                     border: "container",
                     justifyContent: "flex-end",
@@ -258,7 +358,7 @@ export const ExportStage = () => {
                       onChange={(e) => setformat(e)}
                       value={format}
                     />
-                    <Valid isValid={config?.exportMode === "EDIT_IMAGE"}>
+                    <Valid isValid={config?.export_mode === "EDIT_IMAGE"}>
                       <InputText
                         labelText="Resolution"
                         value={`${img.width}x${img?.height}`}
@@ -279,24 +379,70 @@ export const ExportStage = () => {
             )
           : null}
       </Valid>
-      <Section title="Export">
-        <div
+      <p
+        className={css({
+          paddingBottom: "md",
+          paddingTop: "sm",
+          fontWeight: "bold",
+          fontSize: "sm",
+        })}
+      >
+        Export
+      </p>
+      <StageContainer
+        id="preview-stage"
+        ref={stageRef}
+        width={stageWidth}
+        height={stageHeight}
+        listening={false} //
+        className={css({
+          backgroundColor: "gray.100",
+          borderColor: "border",
+          borderWidth: 1,
+          _dark: {
+            backgroundColor: "gray.800",
+          },
+        })}
+      >
+        <AllLayers />
+      </StageContainer>
+      <div
+        className={css({
+          display: "grid",
+          gridTemplateColumns: "2",
+          gap: "md",
+        })}
+      >
+        <Valid isValid={config?.show_files_browser}>
+          <ImageConfiguration />
+        </Valid>
+        <Valid isValid={!config?.show_files_browser}>
+          <div></div>
+        </Valid>
+        <button
           className={css({
-            display: "grid",
-            gridTemplateColumns: "2",
-            gap: "md",
+            padding: "md",
+            borderColor: "green.light.200",
+            borderWidth: 1,
+            borderRadius: "md",
+            backgroundColor: "green.dark.600",
+            py: "5",
+            px: "10",
+            height: "35px",
           })}
+          onClick={() => setShowExport(true)}
         >
-          <Valid isValid={config?.showFilesBrowser}>
-            <ImageConfiguration />
-          </Valid>
-          <Button
-            text="Export"
-            onClick={() => setShowExport(true)}
-            type="success"
-          ></Button>
-        </div>
-      </Section>
+          <p
+            className={css({
+              fontSize: "sm",
+              color: "black",
+              fontWeight: "600",
+            })}
+          >
+            Export
+          </p>
+        </button>
+      </div>
     </>
   );
 };

@@ -1,0 +1,60 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+import { calculateDimension } from "@/editor/utils/calculateDimension";
+import { atom, useAtomValue } from "jotai";
+import { Layer } from "react-konva";
+import { useImageRender } from "../hooks/useImageRender";
+import { ShapeImage } from "../shapes/image.shape";
+
+import { IShape } from "../shapes/type.shape";
+import { STAGE_DIMENSION_ATOM } from "../states/dimension";
+
+export const LayerImage = () => {
+  const { img } = useImageRender();
+  const { height, width } = useAtomValue(STAGE_DIMENSION_ATOM);
+
+  const dimension = calculateDimension(width, height, img?.width, img?.height);
+
+  if (!img?.base64) return null;
+
+  return (
+    <Layer id="layer-image-preview">
+      <ShapeImage
+        SHAPES={[]}
+        item={{
+          id: "1c024656-106b-4d70-bc5c-845637d3344a",
+          parentId: null,
+          pageId: "f860ad7b-27ac-491a-ba77-1a81f004dac1",
+          state: atom<IShape>({
+            ...dimension,
+            id: "main-image-render-stage",
+            isBlocked: true,
+            tool: "IMAGE",
+            visible: true,
+            // fillEnabled: true,
+            dash: 0,
+            // isWritingNow: false,
+            // strokeEnabled: false,
+            // shadowEnabled: false,
+            // dashEnabled: false,
+            fills: [
+              {
+                color: "#fff",
+                id: "1c024656-106b-4d70-bc5c-845637d3344a",
+                image: {
+                  src: img?.base64,
+                  height: img.height,
+                  width: img.width,
+                  name: "preview-edit-image",
+                },
+                opacity: 1,
+                type: "image",
+                visible: true,
+              },
+            ],
+          } as IShape),
+          tool: "IMAGE",
+        }}
+      />
+    </Layer>
+  );
+};

@@ -1,16 +1,16 @@
 import { useAtom } from "jotai";
 import { useMemo } from "react";
-import toolEditorAtom, { IKeyMethods } from "../states/tool";
+import TOOL_ATOM, { IKeyMethods } from "../states/tool";
 
 const keyMove: IKeyMethods[] = ["BOX", "CIRCLE", "LINE", "IMAGE", "TEXT"];
 
 const useTool = () => {
-  const [tool, setTool] = useAtom(toolEditorAtom);
+  const [tool, setTool] = useAtom(TOOL_ATOM);
 
   const isMoving = useMemo(() => tool === "MOVE", [tool]);
 
   const isGoingToCreateAShape = useMemo(
-    () => tool !== "MOVE" && tool !== "WRITING",
+    () => tool !== "MOVE" && tool !== "WRITING" && tool !== "LINE",
     [tool]
   );
 

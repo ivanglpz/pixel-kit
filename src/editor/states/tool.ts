@@ -11,10 +11,15 @@ export type IKeyTool =
   | "EXPORT"
   | "DRAW"
   | "WRITING"
-  | "CODE";
+  | "CODE"
+  | "GROUP"
+  | "CLIP";
 
-export type IKeyMethods = Exclude<IKeyTool, "MOVE" | "FRAME" | "WRITING">;
+export type IKeyMethods = Exclude<
+  IKeyTool,
+  "MOVE" | "FRAME" | "WRITING" | "CLIP"
+>;
 
-const toolEditorAtom = atom("MOVE" as IKeyTool);
-
-export default toolEditorAtom;
+const TOOL_ATOM = atom("MOVE" as IKeyTool);
+export const PAUSE_MODE_ATOM = atom<boolean>(false);
+export default TOOL_ATOM;

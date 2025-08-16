@@ -20,37 +20,53 @@ export const InputSelect = ({ options, value, onChange, labelText }: Props) => {
         gap: "md",
       })}
     >
-      {labelText ? (
+      {labelText?.length ? (
         <p
           className={css({
             color: "text",
             fontWeight: "600",
             fontSize: "x-small",
+            height: "15px",
           })}
         >
           {labelText}
         </p>
       ) : null}
-      <select
-        value={value}
+      <div
         className={css({
           width: "100%",
-          flex: 1,
-          border: "container",
-          backgroundColor: "primary",
           color: "text",
-          padding: "md",
-          borderRadius: "md",
           fontSize: "sm",
+          backgroundColor: "bg.muted", // Fondo más claro para el selector
+          borderRadius: "md",
+          padding: "md",
+          borderWidth: "1px",
+          borderStyle: "solid",
+          borderColor: "border.muted", // ← usa el semantic token
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          height: "33.5px",
         })}
-        onChange={(event) => onChange(event.target.value)}
       >
-        {options?.map((e) => (
-          <option key={e.id} value={e.value}>
-            {e.label}
-          </option>
-        ))}
-      </select>
+        <select
+          value={value}
+          className={css({
+            width: "100%",
+            flex: 1,
+            color: "text",
+            fontSize: "sm",
+            backgroundColor: "transparent",
+          })}
+          onChange={(event) => onChange(event.target.value)}
+        >
+          {options?.map((e) => (
+            <option key={e.id} value={e.value}>
+              {e.label}
+            </option>
+          ))}
+        </select>
+      </div>
     </div>
   );
 };

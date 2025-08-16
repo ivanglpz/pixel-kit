@@ -1,60 +1,31 @@
+import { PrimitiveAtom, useAtom, useAtomValue } from "jotai";
 import Konva from "konva";
-import { MutableRefObject, memo, useEffect, useRef, useState } from "react";
+import { memo, MutableRefObject, useEffect, useRef } from "react";
 import { Rect } from "react-konva";
-import { IShape, IShapeWithEvents, WithInitialValue } from "./type.shape";
-import { PortalConfigShape } from "./config.shape";
+import { STAGE_DIMENSION_ATOM } from "../states/dimension";
+import { SHAPE_ID_ATOM } from "../states/shape";
 import {
-  shapeEventClick,
   shapeEventDragMove,
   ShapeEventDragStart,
   shapeEventDragStop,
   shapeTransformEnd,
 } from "./events.shape";
 import { Transform } from "./transformer";
-import { Valid } from "@/components/valid";
-import { PrimitiveAtom, useAtom } from "jotai";
+import { IShape, IShapeWithEvents, WithInitialValue } from "./type.shape";
 
 // eslint-disable-next-line react/display-name
-const ShapeBox = memo((item: IShapeWithEvents) => {
-  const {
-    draggable,
-    isSelected,
-    onClick,
-    onDragMove,
-    onDragStart,
-    onDragStop,
-    screenHeight,
-    screenWidth,
-  } = item;
-
+const ShapeBox = memo(({ item }: IShapeWithEvents) => {
   const [box, setBox] = useAtom(
-    item.shape as PrimitiveAtom<IShape> & WithInitialValue<IShape>
+    item.state as PrimitiveAtom<IShape> & WithInitialValue<IShape>
   );
 
-  const {
-    width,
-    height,
-    shadowColor,
-    shadowOpacity,
-    rotate,
-    x,
-    y,
-    shadowOffsetY,
-    shadowOffsetX,
-    shadowBlur,
-    stroke,
-    strokeWidth,
-    backgroundColor,
-    borderRadius,
-    fillEnabled,
-    shadowEnabled,
-    strokeEnabled,
-    dash,
-    dashEnabled,
-  } = box;
+  const { width, height, rotate, x, y, strokeWidth, dash } = box;
 
   const shapeRef = useRef<Konva.Rect>();
   const trRef = useRef<Konva.Transformer>();
+  const stageDimensions = useAtomValue(STAGE_DIMENSION_ATOM);
+  const [shapeId, setShapeId] = useAtom(SHAPE_ID_ATOM);
+  const isSelected = shapeId === box?.id;
 
   useEffect(() => {
     if (isSelected) {
@@ -67,47 +38,81 @@ const ShapeBox = memo((item: IShapeWithEvents) => {
 
   return (
     <>
-      <Valid isValid={isSelected}>
-        <PortalConfigShape
-          isSelected={isSelected}
-          setShape={setBox}
-          shape={box}
-        />
-      </Valid>
       <Rect
+        // 1. Identificación y referencia
         id={box?.id}
+        ref={shapeRef as MutableRefObject<Konva.Rect>}
+        // 2. Posición y tamaño
         x={x}
         y={y}
         width={width}
-        fillEnabled={fillEnabled ?? true}
         height={height}
+        // 3. Rotación
         rotationDeg={rotate}
-        shadowColor={shadowColor}
-        shadowOpacity={shadowOpacity}
-        shadowOffsetX={shadowOffsetX}
-        shadowOffsetY={shadowOffsetY}
-        shadowBlur={shadowBlur}
-        strokeEnabled={strokeEnabled ?? true}
-        shadowEnabled={shadowEnabled ?? true}
-        dashEnabled={dashEnabled ?? true}
-        dash={[dash, dash, dash, dash]}
-        cornerRadius={borderRadius}
-        fill={backgroundColor}
-        ref={shapeRef as MutableRefObject<Konva.Rect>}
-        draggable={draggable}
-        stroke={stroke}
-        strokeWidth={strokeWidth}
-        onTap={(e) => setBox(shapeEventClick(e, onClick))}
-        onClick={(e) => setBox(shapeEventClick(e, onClick))}
-        onDragStart={(e) => setBox(ShapeEventDragStart(e, onDragStart))}
-        onDragMove={(e) =>
-          setBox(shapeEventDragMove(e, onDragMove, screenWidth, screenHeight))
+        // 4. Relleno y color
+        // fillEnabled={box?.fills?.filter((e) => e?.visible)?.length > 0}
+        fillEnabled
+        fill={
+          box?.fills?.filter((e) => e?.type === "fill" && e?.visible)?.at(0)
+            ?.color
         }
-        onDragEnd={(e) => setBox(shapeEventDragStop(e, onDragStop))}
+        // 5. Bordes y trazos
+        stroke={box?.strokes?.filter((e) => e?.visible)?.at(0)?.color}
+        strokeWidth={strokeWidth}
+        strokeEnabled={box.strokeWidth > 0}
+        dash={[dash, dash, dash, dash]}
+        dashEnabled={box?.dash > 0}
+        cornerRadius={
+          box?.isAllBorderRadius ? box.bordersRadius : box.borderRadius
+        }
+        // 6. Sombras
+        shadowColor={
+          box?.effects?.filter((e) => e?.visible && e?.type === "shadow").at(0)
+            ?.color
+        }
+        shadowOpacity={
+          box?.effects?.filter((e) => e?.visible && e?.type === "shadow").at(0)
+            ?.opacity
+        }
+        shadowOffsetX={
+          box?.effects?.filter((e) => e?.visible && e?.type === "shadow").at(0)
+            ?.x
+        }
+        shadowOffsetY={
+          box?.effects?.filter((e) => e?.visible && e?.type === "shadow").at(0)
+            ?.y
+        }
+        shadowBlur={
+          box?.effects?.filter((e) => e?.visible && e?.type === "shadow").at(0)
+            ?.blur
+        }
+        shadowEnabled={
+          Number(
+            box?.effects?.filter((e) => e?.visible && e?.type === "shadow")
+              ?.length
+          ) > 0
+        }
+        // 7. Apariencia y opacidad
+        opacity={box?.opacity ?? 1}
+        // 8. Interactividad y arrastre
+        draggable={shapeId === box?.id}
+        // 9. Eventos
+        onTap={() => setShapeId(box?.id)}
+        onClick={() => setShapeId(box?.id)}
+        onDragStart={(e) => setBox(ShapeEventDragStart(e))}
+        onDragMove={(e) =>
+          setBox(
+            shapeEventDragMove(e, stageDimensions.width, stageDimensions.height)
+          )
+        }
+        onDragEnd={(e) => setBox(shapeEventDragStop(e))}
         onTransform={(e) => {
-          setBox(shapeEventDragMove(e, onDragMove, screenWidth, screenHeight));
+          setBox(
+            shapeEventDragMove(e, stageDimensions.width, stageDimensions.height)
+          );
+          setBox(shapeTransformEnd(e));
         }}
-        onTransformEnd={(e) => setBox(shapeTransformEnd(e, onDragStop))}
+        onTransformEnd={(e) => setBox(shapeTransformEnd(e))}
       />
       <Transform isSelected={isSelected} ref={trRef} />
     </>

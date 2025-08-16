@@ -7,6 +7,7 @@ import { ShapeDraw } from "./drawn.shape";
 import { ShapeText } from "./text.shape";
 import { ShapeLine } from "./line.shape";
 import { IKeyTool } from "../states/tool";
+import { ShapeGroup } from "./group.shape";
 
 export type IMapperElements = {
   [key in IKeyTool]?: MemoExoticComponent<
@@ -21,4 +22,5 @@ export const Shapes: IMapperElements = {
   LINE: ShapeLine,
   IMAGE: ShapeImage,
   DRAW: ShapeDraw,
+  GROUP: ShapeGroup,
 };

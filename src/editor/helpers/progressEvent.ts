@@ -1,10 +1,12 @@
 import { IShape } from "@/editor/shapes/type.shape";
-import { IShapeProgressEvent } from "../hooks/useEventStage";
+import { IKeyMethods } from "../states/tool";
 
 const isNotNegative = (value: number) => {
   return value < 1 ? 1 : value;
 };
-
+export type IShapeProgressEvent = {
+  [key in IKeyMethods]: (x: number, y: number, element: IShape) => IShape;
+};
 export const shapeBoxProgress = (
   x: number,
   y: number,
@@ -15,6 +17,10 @@ export const shapeBoxProgress = (
   return Object.assign({}, element, {
     width: isHeight,
     height: isWidth,
+    borderRadius:
+      element?.tool === "CIRCLE"
+        ? isNotNegative(Number(element?.width) / 2)
+        : 0,
   });
 };
 export const shapeCircleProgress = (
@@ -25,6 +31,7 @@ export const shapeCircleProgress = (
   return Object.assign({}, element, {
     width: isNotNegative(x - Number(element?.x)),
     height: isNotNegative(x - Number(element?.x)),
+    borderRadius: isNotNegative(Number(element?.width) / 2),
   });
 };
 export const shapeDrawProgress = (
@@ -48,4 +55,5 @@ export const shapeProgressEvent: IShapeProgressEvent = {
   TEXT: shapeBoxProgress,
   LINE: shapeBoxProgress,
   EXPORT: shapeBoxProgress,
+  GROUP: shapeBoxProgress,
 };

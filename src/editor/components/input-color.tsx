@@ -9,7 +9,7 @@ type Props = {
   primaryColors?: boolean;
 };
 
-const PixelKitInputColor: FC<Props> = ({
+const InputColor: FC<Props> = ({
   color,
   onChangeColor,
   keyInput,
@@ -33,30 +33,40 @@ const PixelKitInputColor: FC<Props> = ({
       >
         {labelText}
       </p>
-      <div
+
+      <label
+        htmlFor={keyInput}
         className={css({
+          width: "100%",
+          flex: 1,
+          color: "text",
+          fontSize: "sm",
+          backgroundColor: "bg.muted", // Fondo más claro para el selector
+          borderRadius: "md",
+          padding: "md",
+          borderWidth: "1px",
+          borderStyle: "solid",
+          borderColor: "border.muted", // ← usa el semantic token
           display: "flex",
-          flexDirection: "row",
-          gap: "lg",
-          height: "100%",
+          alignItems: "center",
+          justifyContent: "start",
+          gap: "md",
         })}
       >
-        <label
-          htmlFor={keyInput}
+        <div
           className={css({
-            height: "30px",
-            width: "30px",
+            height: "20px",
+            width: "20px",
             borderRadius: "md",
             border: "container",
             display: "flex",
             padding: "sm",
             cursor: "pointer",
-            _hover: {
-              opacity: 0.8,
-            },
-            _active: {
-              scale: 0.9,
-            },
+            borderWidth: "1px",
+            borderStyle: "solid",
+            borderColor: "border.muted", // ← usa el semantic token
+            alignItems: "center",
+            justifyContent: "center",
           })}
           style={{
             backgroundColor: color ?? "#ffffff",
@@ -77,70 +87,22 @@ const PixelKitInputColor: FC<Props> = ({
             value={color}
             onChange={(event) => onChangeColor(event.target.value)}
           />
-        </label>
-        <input
-          type="text"
-          value={`#${color?.replace(/#/, "") ?? "ffffff"}`}
-          disabled
+        </div>
+        <label
+          htmlFor={keyInput}
           className={css({
-            width: "10",
-            flex: 1,
-            border: "container",
             backgroundColor: "transparent",
             color: "text",
-            padding: "sm",
-            height: "30px",
-            borderRadius: "md",
+            height: "20px",
             fontSize: "sm",
-          })}
-        />
-      </div>
-      {primaryColors ? (
-        <div
-          className={css({
-            display: "flex",
-            flexDirection: "row",
-            flexWrap: "wrap",
-            gap: "sm",
+            border: "none",
           })}
         >
-          {[
-            "#FF0000",
-            "#FFFF00",
-            "#0000FF",
-            "#00FF00",
-            "#FF6600",
-            "#6600FF",
-            "#000000",
-            "#FFFFFF",
-          ].map((e) => (
-            <button
-              key={e}
-              className={css({
-                height: "30px",
-                width: "30px",
-                borderRadius: "md",
-                border: "container",
-                display: "flex",
-                padding: "sm",
-                cursor: "pointer",
-                _hover: {
-                  opacity: 0.8,
-                },
-                _active: {
-                  scale: 0.9,
-                },
-              })}
-              style={{
-                backgroundColor: e,
-              }}
-              onClick={() => onChangeColor(e)}
-            ></button>
-          ))}
-        </div>
-      ) : null}
+          #{color?.replace(/#/, "") ?? "ffffff"}
+        </label>
+      </label>
     </div>
   );
 };
 
-export default PixelKitInputColor;
+export default InputColor;
