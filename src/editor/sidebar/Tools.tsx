@@ -70,7 +70,7 @@ export const Tools = () => {
               setTool(item.keyMethod as IKeyTool);
               setEventStage(item.eventStage as IStageEvents);
               setShapeId(null);
-              setshowClip((s) => !s);
+              setshowClip(!showClip);
               setshowClip(false);
             }}
           >
