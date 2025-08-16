@@ -21,6 +21,7 @@ export const Tools = () => {
         display: "flex",
         flexDirection: "row",
         gap: "lg",
+        alignItems: "center",
       })}
     >
       {config.tools?.map((item, index) => {
@@ -30,9 +31,9 @@ export const Tools = () => {
             <div
               key={`separator-$${index}`}
               className={css({
-                height: "32px",
+                height: "25px",
                 width: 1,
-                backgroundColor: "gray.200",
+                backgroundColor: "gray.300",
               })}
             />
           );

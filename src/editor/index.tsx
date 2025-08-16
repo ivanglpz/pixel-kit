@@ -9,7 +9,6 @@ import useStopZoom from "./hooks/useStopZoom";
 import { AllLayers } from "./layers/root.layers";
 import { SidebarLeft } from "./sidebar/sidebar.left";
 import SidebarRight from "./sidebar/sidebar.right";
-import { Tools } from "./sidebar/Tools";
 import PxStage from "./stage";
 
 const PixelEditor = () => {
@@ -77,18 +76,7 @@ const PixelEditor = () => {
             </span>
           </p>
         </section>
-        <section
-          className={css({
-            display: "flex",
-            flexDirection: "row",
-            alignItems: "center",
-            justifyContent: "center",
-            width: "100%",
-            gap: "md",
-          })}
-        >
-          <Tools />
-        </section>
+        <div></div>
         <section
           className={css({
             width: "100%",
@@ -162,6 +150,7 @@ const PixelEditor = () => {
           backgroundColor: "black",
           width: "100%",
           overflow: "hidden",
+          position: "relative",
         })}
       >
         <SidebarLeft />
