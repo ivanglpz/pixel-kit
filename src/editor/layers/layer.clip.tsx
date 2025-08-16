@@ -9,7 +9,11 @@ import { useImageRender } from "../hooks/useImageRender";
 import { useReference } from "../hooks/useReference";
 import { ShapeImage } from "../shapes/image.shape";
 import { IShape } from "../shapes/type.shape";
-import { boxClipAtom, showClipAtom } from "../states/clipImage";
+import {
+  boxClipAtom,
+  ICLIP_DIMENSION,
+  showClipAtom,
+} from "../states/clipImage";
 import { STAGE_DIMENSION_ATOM } from "../states/dimension";
 
 export const LayerClip = () => {
@@ -46,7 +50,7 @@ export const LayerClip = () => {
     }
   }, [showClip, trRef.current, shapeRef.current]);
 
-  const position = (payload: Partial<IShape>) => {
+  const position = (payload: ICLIP_DIMENSION): ICLIP_DIMENSION => {
     if (Number(payload?.x) < Number(dimension?.x)) {
       payload.x = dimension.x;
     }
@@ -178,11 +182,7 @@ export const LayerClip = () => {
             x: Number(payload.x),
             y: Number(payload.y),
           });
-          setBox((prev) => ({
-            ...prev,
-            rotate: prev.rotate,
-            ...payload,
-          }));
+          setBox(payload);
         }}
         onTransformEnd={(e) => {
           const scaleX = e.target.scaleX();
@@ -210,11 +210,7 @@ export const LayerClip = () => {
             x: Number(payload.x),
             y: Number(payload.y),
           });
-          setBox((prev) => ({
-            ...prev,
-            rotate: prev.rotate,
-            ...payload,
-          }));
+          setBox(payload);
         }}
       />
       {showClip && (

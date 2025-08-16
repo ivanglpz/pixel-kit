@@ -14,7 +14,7 @@ export type IPROJECT = {
   PAUSE_MODE: PrimitiveAtom<boolean> & WithInitialValue<boolean>;
   PAGE: {
     LIST: PrimitiveAtom<IPage[]> & WithInitialValue<IPage[]>;
-    ID: PrimitiveAtom<string | null> & WithInitialValue<string | null>;
+    ID: PrimitiveAtom<string> & WithInitialValue<string>;
   };
   SHAPE: {
     LIST: PrimitiveAtom<ALL_SHAPES[]> & WithInitialValue<ALL_SHAPES[]>;
@@ -32,7 +32,9 @@ export type IPROJECT = {
     RENDER: PrimitiveAtom<IRENDER_IMAGE> & WithInitialValue<IRENDER_IMAGE>;
   };
 };
-export const PROJECT_ID_ATOM = atom<string | null>(null);
+export const PROJECT_ID_ATOM = atom<string>(
+  "415ee03c-ce26-4e8b-b373-8c1c0e0d9dd4"
+);
 
 export const PROJECTS_ATOM = atom([
   {
@@ -64,7 +66,7 @@ export const PROJECTS_ATOM = atom([
           type: "DESIGN_MODE",
         },
       ]),
-      ID: atom<string | null>(null),
+      ID: atom<string>("8eb9cfc3-023f-4204-a745-3d5347d1f057"),
     },
     SHAPE: {
       ID: atom<string | null>(null),

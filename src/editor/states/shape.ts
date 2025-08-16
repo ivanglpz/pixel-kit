@@ -1,8 +1,15 @@
 import { IShape } from "@/editor/shapes/type.shape";
 import { atom } from "jotai";
+import { PROJECT_ATOM } from "./projects";
 import ALL_SHAPES_ATOM from "./shapes";
 
-export const SHAPE_ID_ATOM = atom<string | null>(null);
+export const SHAPE_ID_ATOM = atom(
+  (get) => get(get(PROJECT_ATOM).SHAPE.ID),
+  (_get, _set, newTool: string | null) => {
+    const toolAtom = _get(PROJECT_ATOM).SHAPE.ID;
+    _set(toolAtom, newTool);
+  }
+);
 export const SHAPE_SELECTED_ATOM = atom((get) => {
   const shape = get(ALL_SHAPES_ATOM)?.find((e) => e?.id === get(SHAPE_ID_ATOM));
 

@@ -4,6 +4,7 @@ import { atom, useAtomValue, useSetAtom } from "jotai";
 import { useEffect } from "react";
 import { IStageEvents } from "../states/event";
 import { RESET_PAGE_ID_ATOM } from "../states/pages";
+import { PROJECT_ATOM } from "../states/projects";
 import { IKeyTool } from "../states/tool";
 
 export type MODE = "EDIT_IMAGE" | "FREE_DRAW" | "DESIGN_MODE";
@@ -266,7 +267,13 @@ export const optionsEnviroments = Object.keys(configs)?.map((e, index) => ({
   value: e,
 }));
 
-export const MODE_ATOM = atom<MODE>("DESIGN_MODE");
+export const MODE_ATOM = atom(
+  (get) => get(get(PROJECT_ATOM).MODE_ATOM),
+  (_get, _set, newTool: MODE) => {
+    const toolAtom = _get(PROJECT_ATOM).MODE_ATOM;
+    _set(toolAtom, newTool);
+  }
+);
 const configAtom = atom((get) => configs[get(MODE_ATOM)]);
 
 type Props = {
