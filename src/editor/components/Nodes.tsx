@@ -8,15 +8,15 @@ import {
   CHANGE_SHAPE_NODE_ATOM,
 } from "../states/nodes";
 import { SHAPE_ID_ATOM } from "../states/shape";
-import { SHAPES_NODES } from "../states/shapes";
+import { ALL_SHAPES } from "../states/shapes";
 import { PAUSE_MODE_ATOM } from "../states/tool";
 
 export const Nodes = ({
   item,
   SHAPES,
 }: {
-  item: SHAPES_NODES;
-  SHAPES: SHAPES_NODES[];
+  item: ALL_SHAPES;
+  SHAPES: ALL_SHAPES[];
 }) => {
   const [value, setShape] = useAtom(item.state);
   const SET_CHANGE = useSetAtom(CHANGE_SHAPE_NODE_ATOM);

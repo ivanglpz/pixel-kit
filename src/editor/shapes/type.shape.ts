@@ -1,6 +1,6 @@
 import { LineCap, LineJoin } from "konva/lib/Shape";
 import { FC } from "react";
-import { SHAPES_NODES } from "../states/shapes";
+import { ALL_SHAPES } from "../states/shapes";
 import { IKeyMethods } from "../states/tool";
 
 export type WithInitialValue<Value> = {
@@ -78,8 +78,8 @@ export type IShape = {
 };
 
 export type IShapeWithEvents = {
-  item: SHAPES_NODES;
-  SHAPES: SHAPES_NODES[];
+  item: ALL_SHAPES;
+  SHAPES: ALL_SHAPES[];
 };
 
 export type FCShapeWEvents = FC<IShapeWithEvents>;
