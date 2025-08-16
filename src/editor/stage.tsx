@@ -9,6 +9,7 @@ import { Stage } from "react-konva";
 import { useEventStage, useTool } from "./hooks";
 import { useConfiguration } from "./hooks/useConfiguration";
 import { useReference } from "./hooks/useReference";
+import { Tools } from "./sidebar/Tools";
 import { STAGE_DIMENSION_ATOM } from "./states/dimension";
 import { SHAPE_ID_ATOM } from "./states/shape";
 
@@ -213,14 +214,15 @@ const PxStage: FC<Props> = ({ children }) => {
   }, [stageHeight, stageWidth, stageRef, config.expand_stage]);
 
   return (
-    <main
+    <div
       ref={containerRef}
       className={`CursorDefault ${css({
         display: "flex",
         flexDirection: "column",
-        alignItems: "flex-start",
-        justifyContent: "flex-start",
+        alignItems: "center",
+        justifyContent: "center",
         maxWidth: "100%",
+        position: "relative",
       })}`}
       style={{
         overflow: config.expand_stage ? "scroll" : "hidden",
@@ -245,11 +247,31 @@ const PxStage: FC<Props> = ({ children }) => {
           onTouchEnd={handleMouseUp}
           onClick={handleClear}
           onTap={handleClear}
+          style={{
+            width: "100%",
+            height: "100%",
+          }}
         >
           {children}
         </Stage>
       </Valid>
-    </main>
+      <section
+        className={css({
+          display: "flex",
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "center",
+          position: "fixed",
+          gap: "md",
+          bottom: 15,
+          backgroundColor: "bg",
+          padding: "md",
+          borderRadius: "lg",
+        })}
+      >
+        <Tools />
+      </section>
+    </div>
   );
 };
 
