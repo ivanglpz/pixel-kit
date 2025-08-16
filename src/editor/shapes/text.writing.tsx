@@ -3,12 +3,12 @@ import { PrimitiveAtom, useAtom, useSetAtom } from "jotai";
 import { createPortal } from "react-dom";
 import { Html } from "react-konva-utils";
 import { tokens } from "../constants";
-import { SHAPES_NODES } from "../states/shapes";
+import { ALL_SHAPES } from "../states/shapes";
 import { PAUSE_MODE_ATOM } from "../states/tool";
 import { IShape, WithInitialValue } from "./type.shape";
 
 type Props = {
-  item: SHAPES_NODES;
+  item: ALL_SHAPES;
   onLeave: VoidFunction;
 };
 

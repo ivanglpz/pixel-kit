@@ -6,7 +6,7 @@ import { IKeyMethods } from "./tool";
 export type WithInitialValue<Value> = {
   init: Value;
 };
-export type SHAPES_NODES = {
+export type ALL_SHAPES = {
   id: string;
   tool: IKeyMethods;
   parentId: string | null;
@@ -14,7 +14,7 @@ export type SHAPES_NODES = {
   state: PrimitiveAtom<IShape> & WithInitialValue<IShape>;
 };
 
-export const ALL_SHAPES_ATOM = atom([] as SHAPES_NODES[]);
+export const ALL_SHAPES_ATOM = atom([] as ALL_SHAPES[]);
 
 export const ROOT_SHAPES_ATOM = atom((get) =>
   get(ALL_SHAPES_ATOM)?.filter(
@@ -36,7 +36,7 @@ export const DELETE_SHAPE_ATOM = atom(
     // ✅ 1. Función recursiva para obtener todos los hijos en cascada
     const getAllChildrenIds = (
       parentId: string,
-      shapes: SHAPES_NODES[]
+      shapes: ALL_SHAPES[]
     ): string[] => {
       const directChildren = shapes.filter((s) => s.parentId === parentId);
       if (directChildren.length === 0) return [];
