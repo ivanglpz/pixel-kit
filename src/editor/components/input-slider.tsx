@@ -27,26 +27,41 @@ export const InputSlider = ({ onChange, value, labelText }: Props) => {
       >
         {labelText}
       </p>
-      <select
-        value={value}
+      <div
         className={css({
           width: "100%",
           flex: 1,
-          border: "container",
-          backgroundColor: "primary",
           color: "text",
-          padding: "md",
-          borderRadius: "md",
           fontSize: "sm",
+          backgroundColor: "bg.muted", // Fondo más claro para el selector
+          borderRadius: "md",
+          padding: "md",
+          borderWidth: "1px",
+          borderStyle: "solid",
+          borderColor: "border.muted", // ← usa el semantic token
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
         })}
-        onChange={(event) => onChange(Number(event.target.value))}
       >
-        {[1, 2, 3, 4, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55]?.map((e) => (
-          <option key={`selector-slider-${e}`} value={e}>
-            {e}
-          </option>
-        ))}
-      </select>
+        <select
+          value={value}
+          className={css({
+            width: "100%",
+            flex: 1,
+            color: "text",
+            fontSize: "sm",
+            backgroundColor: "transparent",
+          })}
+          onChange={(event) => onChange(Number(event.target.value))}
+        >
+          {[1, 2, 3, 4, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55]?.map((e) => (
+            <option key={`selector-slider-${e}`} value={e}>
+              {e}
+            </option>
+          ))}
+        </select>
+      </div>
     </div>
   );
 };

@@ -2,16 +2,14 @@ import { KonvaEventObject } from "konva/lib/Node";
 import { IShape } from "./type.shape";
 
 type Drag = (shape: IShape) => void;
-type Click = Drag;
 
 export const ShapeEventDragStart =
-  (evt: KonvaEventObject<DragEvent>, onDragStart: Drag) => (prev: IShape) => {
+  (evt: KonvaEventObject<DragEvent>) => (prev: IShape) => {
     const payload = {
       ...prev,
       x: evt.target.x(),
       y: evt.target.y(),
     };
-    onDragStart(payload);
     return payload;
   };
 
@@ -20,71 +18,68 @@ const coordinatesShapeMove = (
   stageWidth: number,
   stageHeight: number,
   evt: KonvaEventObject<DragEvent> | KonvaEventObject<Event>
-) => {
-  const box = evt.target.getClientRect();
-  const absPos = evt.target.getAbsolutePosition();
-  const offsetX = box.x - absPos.x;
-  const offsetY = box.y - absPos.y;
+): IShape => {
+  const shape = evt.target;
 
-  const newAbsPos = { ...prev, ...absPos };
+  const stage = shape.getStage();
+  if (!stage) return prev;
+
+  const box = shape.getClientRect({ relativeTo: stage });
+  const x = shape.x(); // relativo al grupo
+  const y = shape.y();
+
+  const newPos: IShape = { ...prev, x, y };
 
   if (box.x < 0) {
-    newAbsPos.x = -offsetX;
+    newPos.x = x - box.x;
   }
   if (box.y < 0) {
-    newAbsPos.y = -offsetY;
+    newPos.y = y - box.y;
   }
-  if (box.x + (box?.width ?? 0) > stageWidth) {
-    newAbsPos.x = stageWidth - box.width - offsetX;
+  if (box.x + (box.width ?? 0) > stageWidth) {
+    newPos.x = x - (box.x + box.width - stageWidth);
   }
   if (box.y + (box.height ?? 0) > stageHeight) {
-    newAbsPos.y = stageHeight - box.height - offsetY;
+    newPos.y = y - (box.y + box.height - stageHeight);
   }
-  evt.target.setAbsolutePosition(newAbsPos);
-  return newAbsPos;
+
+  shape.setPosition({ x: newPos.x, y: newPos.y });
+  return newPos;
 };
 
 export const shapeEventDragMove =
   (
     evt: KonvaEventObject<DragEvent> | KonvaEventObject<Event>,
-    onDragMove: Drag,
     stageWidth: number,
     stageHeight: number
   ) =>
   (prev: IShape) => {
     const payload = coordinatesShapeMove(prev, stageWidth, stageHeight, evt);
-    onDragMove(payload);
 
     return payload;
   };
 export const shapeEventDragStop =
-  (evt: KonvaEventObject<DragEvent>, onDragStop: Drag) => (prev: IShape) => {
+  (evt: KonvaEventObject<DragEvent>) => (prev: IShape) => {
     const payload = {
       ...prev,
       x: evt.target.x(),
       y: evt.target.y(),
     };
-    onDragStop(payload);
     return payload;
   };
 export const shapeEventClick =
-  (
-    evt: KonvaEventObject<MouseEvent> | KonvaEventObject<Event>,
-    onClick: Click
-  ) =>
+  (evt: KonvaEventObject<MouseEvent> | KonvaEventObject<Event>) =>
   (prev: IShape) => {
-    onClick(prev);
     return prev;
   };
 
 export const shapeEventDoubleClick =
-  (evt: KonvaEventObject<MouseEvent>, onClick: Click) => (prev: IShape) => {
-    onClick(prev);
+  (evt: KonvaEventObject<MouseEvent>) => (prev: IShape) => {
     return prev;
   };
 
 export const shapeTransformEnd =
-  (evt: KonvaEventObject<Event>, onDragStop: Drag) => (prev: IShape) => {
+  (evt: KonvaEventObject<Event>) => (prev: IShape) => {
     const scaleX = evt.target.scaleX();
     const scaleY = evt.target.scaleY();
     evt.target.scaleX(1);
@@ -97,7 +92,6 @@ export const shapeTransformEnd =
       width: Math.max(5, evt.target.width() * scaleX),
       height: Math.max(evt.target.height() * scaleY),
     };
-    onDragStop(payload);
 
     return payload;
   };

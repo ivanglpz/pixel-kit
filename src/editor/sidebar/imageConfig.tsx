@@ -1,50 +1,14 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { Valid } from "@/components/valid";
 import { Button } from "@/editor/components/button";
 import { useImageRender } from "@/editor/hooks/useImageRender";
 import { css } from "@stylespixelkit/css";
-import { ChangeEvent, useEffect, useRef } from "react";
+import { ChangeEvent, useRef } from "react";
 import { createPortal } from "react-dom";
 
 export const ImageConfiguration = () => {
   const { img, handleSetImageRender } = useImageRender();
-
   const inputRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    const url =
-      "https://res.cloudinary.com/whil/image/upload/fl_preserve_transparency/v1747523035/app/pixel-kit/images/vki9p3syvur8bsjczld6.jpg?_s=public-apps";
-
-    const loadImageFromURL = async () => {
-      try {
-        const response = await fetch(url);
-        const blob = await response.blob();
-
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          const base64 = reader.result as string;
-
-          const image = new Image();
-          image.onload = () => {
-            handleSetImageRender({
-              base64,
-              name: "default-image.jpg",
-              height: image.height,
-              width: image.width,
-              x: 0,
-              y: 0,
-            });
-          };
-          image.src = base64;
-        };
-
-        reader.readAsDataURL(blob);
-      } catch (error) {
-        console.error("Failed to load default image:", error);
-      }
-    };
-
-    loadImageFromURL();
-  }, []);
 
   const handleFiles = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -100,7 +64,7 @@ export const ImageConfiguration = () => {
                     alignItems: "flex-start",
                     justifyContent: "space-between",
                     gap: "lg",
-                    backgroundColor: "primary",
+                    backgroundColor: "bg",
                     borderRadius: "lg",
                     border: "container",
                     width: 280,
@@ -158,7 +122,27 @@ export const ImageConfiguration = () => {
             )
           : null}
       </Valid>
-      <Button text="Change Image" onClick={() => inputRef.current?.click()} />
+      <button
+        className={css({
+          padding: "md",
+          borderColor: "border",
+          borderWidth: 1,
+          borderRadius: "md",
+          backgroundColor: "gray.800",
+          py: "5",
+          px: "10",
+          height: "35px",
+        })}
+        onClick={() => inputRef.current?.click()}
+      >
+        <p
+          className={css({
+            fontSize: "sm",
+          })}
+        >
+          Change
+        </p>
+      </button>
       <input
         ref={inputRef}
         type="file"
@@ -166,7 +150,6 @@ export const ImageConfiguration = () => {
         accept="image/*"
         onChange={handleFiles}
         className={css({
-          backgroundColor: "red",
           width: 0,
           height: 0,
           display: "none",

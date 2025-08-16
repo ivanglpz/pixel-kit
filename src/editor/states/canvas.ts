@@ -1,15 +1,9 @@
-import { atomWithStorage } from "jotai/utils";
+import { atom } from "jotai";
 
-export type IStageConfig = {
-  backgroundColor?: string;
-  graphicMapped?: boolean;
+export const canvasTheme: { [key in "dark" | "light"]: string } = {
+  dark: "#242424",
+  light: "#dcdce0",
 };
 
-const StageConfigAtom = atomWithStorage<IStageConfig>(
-  "pixel-kit-canvas-config",
-  {
-    backgroundColor: "#FFFFFF",
-    graphicMapped: true,
-  }
-);
-export default StageConfigAtom;
+const STAGE_CANVAS_BACKGROUND = atom<string>(canvasTheme.dark);
+export default STAGE_CANVAS_BACKGROUND;

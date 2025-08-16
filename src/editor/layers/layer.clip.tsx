@@ -1,69 +1,26 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { Group, Layer, Rect, Transformer } from "react-konva";
-import { ShapeImage } from "../shapes/image.shape";
-import { useImageRender } from "../hooks/useImageRender";
 import { calculateDimension } from "@/editor/utils/calculateDimension";
 import { atom, useAtom, useAtomValue } from "jotai";
-import { MutableRefObject, useEffect, useRef } from "react";
-import { Valid } from "@/components/valid";
-import { IShape } from "../shapes/type.shape";
 import Konva from "konva";
 import { Shape, ShapeConfig } from "konva/lib/Shape";
-import { boxClipAtom, showClipAtom } from "../states/clipImage";
+import { MutableRefObject, useEffect, useMemo, useRef } from "react";
+import { Group, Layer, Line, Rect, Transformer } from "react-konva";
+import { useImageRender } from "../hooks/useImageRender";
 import { useReference } from "../hooks/useReference";
+import { ShapeImage } from "../shapes/image.shape";
+import { IShape } from "../shapes/type.shape";
+import { boxClipAtom, showClipAtom } from "../states/clipImage";
 import { STAGE_DIMENSION_ATOM } from "../states/dimension";
 
-export const LayerImage = () => {
+export const LayerClip = () => {
   const { img } = useImageRender();
   const { height, width } = useAtomValue(STAGE_DIMENSION_ATOM);
-
-  const dimension = calculateDimension(width, height, img?.width, img?.height);
   const showClip = useAtomValue(showClipAtom);
-  if (!img?.base64) return null;
-
-  return (
-    <Layer id="layer-image-preview">
-      <ShapeImage
-        screenHeight={height}
-        screenWidth={width}
-        isSelected={false}
-        draggable={false}
-        onClick={() => {}}
-        onDragMove={() => {}}
-        onDragStart={() => {}}
-        onDragStop={() => {}}
-        onTransformStop={() => {}}
-        shape={atom({
-          ...dimension,
-          id: "main-image-render-stage",
-          src: img?.base64,
-          isBlocked: true,
-          tool: "IMAGE",
-          visible: true,
-          fillEnabled: true,
-          dash: 0,
-          isWritingNow: false,
-          strokeEnabled: false,
-          shadowEnabled: false,
-          dashEnabled: false,
-        })}
-      />
-      <Valid isValid={showClip}>
-        <ClipComponent isSelected />
-      </Valid>
-    </Layer>
+  const [box, setBox] = useAtom(boxClipAtom);
+  const dimension = useMemo(
+    () => calculateDimension(width, height, img?.width, img?.height),
+    [width, height, img?.width, img?.height]
   );
-};
-
-type ClipProps = {
-  isSelected: boolean;
-};
-
-const ClipComponent = ({ isSelected }: ClipProps) => {
-  const { img } = useImageRender();
-  const { height, width } = useAtomValue(STAGE_DIMENSION_ATOM);
-
-  const dimension = calculateDimension(width, height, img?.width, img?.height);
   const trRef = useRef<Konva.Transformer>(null);
   const shapeRef = useRef<Konva.Rect>(null);
   const gshRef = useRef<Konva.Group>(null);
@@ -72,8 +29,6 @@ const ClipComponent = ({ isSelected }: ClipProps) => {
     type: "CLIP",
     ref: gshRef,
   });
-
-  const [box, setBox] = useAtom(boxClipAtom);
 
   useEffect(() => {
     setBox({
@@ -85,11 +40,11 @@ const ClipComponent = ({ isSelected }: ClipProps) => {
   }, [dimension.x, dimension.x, dimension.width, dimension.height]);
 
   useEffect(() => {
-    if (isSelected && trRef.current && shapeRef.current) {
+    if (showClip && trRef.current && shapeRef.current) {
       trRef.current.nodes([shapeRef.current]);
       trRef.current.getLayer?.()?.batchDraw();
     }
-  }, [isSelected, trRef.current, shapeRef.current]);
+  }, [showClip, trRef.current, shapeRef.current]);
 
   const position = (payload: Partial<IShape>) => {
     if (Number(payload?.x) < Number(dimension?.x)) {
@@ -120,8 +75,10 @@ const ClipComponent = ({ isSelected }: ClipProps) => {
     return payload;
   };
 
+  if (!showClip) return null;
+
   return (
-    <>
+    <Layer id="layer-clip-image-preview">
       <Rect
         x={dimension?.x}
         y={dimension?.y}
@@ -137,29 +94,41 @@ const ClipComponent = ({ isSelected }: ClipProps) => {
         clipY={box.y}
       >
         <ShapeImage
-          screenHeight={height}
-          screenWidth={width}
-          isSelected={false}
-          draggable={false}
-          onClick={() => {}}
-          onDragMove={() => {}}
-          onDragStart={() => {}}
-          onDragStop={() => {}}
-          onTransformStop={() => {}}
-          shape={atom({
-            ...dimension,
-            id: "main-image-render-stage",
-            src: img?.base64,
-            isBlocked: true,
+          SHAPES={[]}
+          item={{
+            id: "1c024656-106b-4d70-bc5c-845637d3344a",
+            pageId: "main-image-render-stage",
+            parentId: null,
+            state: atom<IShape>({
+              ...dimension,
+              id: "main-image-render-stage",
+              isBlocked: true,
+              tool: "IMAGE",
+              visible: true,
+              // fillEnabled: true,
+              dash: 0,
+              // isWritingNow: false,
+              // strokeEnabled: false,
+              // shadowEnabled: false,
+              // dashEnabled: false,
+              fills: [
+                {
+                  color: "#fff",
+                  id: "1c024656-106b-4d70-bc5c-845637d3344a",
+                  image: {
+                    src: img?.base64,
+                    height: img.height,
+                    width: img.width,
+                    name: "preview-edit-image",
+                  },
+                  opacity: 1,
+                  type: "image",
+                  visible: true,
+                },
+              ],
+            } as IShape),
             tool: "IMAGE",
-            visible: true,
-            fillEnabled: true,
-            dash: 0,
-            isWritingNow: false,
-            strokeEnabled: false,
-            shadowEnabled: false,
-            dashEnabled: false,
-          })}
+          }}
         />
       </Group>
       <Rect
@@ -248,12 +217,62 @@ const ClipComponent = ({ isSelected }: ClipProps) => {
           }));
         }}
       />
+      {showClip && (
+        <>
+          {/* Líneas verticales */}
+          {[1, 2].map((i) => {
+            const x = Number(box?.x ?? 0);
+            const y = Number(box?.y ?? 0);
+            const width = Number(box?.width ?? 0);
+            const height = Number(box?.height ?? 0);
+
+            return (
+              <Line
+                key={`v-${i}`}
+                points={[
+                  x + (width / 3) * i,
+                  y,
+                  x + (width / 3) * i,
+                  y + height,
+                ]}
+                stroke="white"
+                opacity={0.6}
+                strokeWidth={1}
+              />
+            );
+          })}
+
+          {/* Líneas horizontales */}
+          {[1, 2].map((i) => {
+            const x = Number(box?.x ?? 0);
+            const y = Number(box?.y ?? 0);
+            const width = Number(box?.width ?? 0);
+            const height = Number(box?.height ?? 0);
+
+            return (
+              <Line
+                key={`h-${i}`}
+                points={[
+                  x,
+                  y + (height / 3) * i,
+                  x + width,
+                  y + (height / 3) * i,
+                ]}
+                stroke="white"
+                opacity={0.6}
+                strokeWidth={1}
+              />
+            );
+          })}
+        </>
+      )}
       <Transformer
         id="transformer-editable"
         ref={trRef}
         flipEnabled={false}
         keepRatio={false}
-        anchorStrokeWidth={3}
+        rotateEnabled={false}
+        anchorStrokeWidth={2}
         anchorStyleFunc={(configAnchor) => {
           const anchor = configAnchor as Shape<ShapeConfig> & {
             cornerRadius: (v: number) => void;
@@ -273,9 +292,11 @@ const ClipComponent = ({ isSelected }: ClipProps) => {
             anchor.offsetX(5);
           }
         }}
-        anchorSize={20}
-        borderStrokeWidth={4}
-        anchorCornerRadius={4}
+        anchorSize={15}
+        borderStroke="white"
+        borderStrokeWidth={2}
+        anchorCornerRadius={2}
+        anchorStroke="gray"
         boundBoxFunc={(oldBox, newBox) => {
           // limit resize
           if (Math.abs(newBox.width) < 5 || Math.abs(newBox.height) < 5) {
@@ -284,6 +305,6 @@ const ClipComponent = ({ isSelected }: ClipProps) => {
           return newBox;
         }}
       />
-    </>
+    </Layer>
   );
 };
