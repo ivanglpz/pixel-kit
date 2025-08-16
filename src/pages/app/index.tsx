@@ -1,8 +1,57 @@
+/* eslint-disable @next/next/no-img-element */
 import { TabsProjects } from "@/components/tabs";
-import { PROJECTS_ATOM } from "@/editor/states/projects";
+import { ICON_MODES_TABS } from "@/editor/icons/mode";
+import { IPROJECT, PROJECTS_ATOM } from "@/editor/states/projects";
 import { css } from "@stylespixelkit/css";
 import { useAtomValue } from "jotai";
 
+const CardProject = ({ project }: { project: IPROJECT }) => {
+  const text = useAtomValue(project.name);
+  const mode = useAtomValue(project.MODE_ATOM);
+  return (
+    <div
+      className={css({
+        display: "grid",
+        gridTemplateRows: "230px 1fr",
+        borderRadius: "lg",
+        borderWidth: 1,
+        borderColor: "bg.elevated",
+      })}
+    >
+      <img
+        src="./placeholder.svg"
+        alt=""
+        className={css({
+          height: "100%",
+          width: "100%",
+          objectFit: "cover",
+          borderRadius: "lg",
+        })}
+      />
+      <div
+        className={css({
+          padding: "lg",
+          display: "grid",
+          gridTemplateColumns: "30px 1fr",
+          alignItems: "center",
+        })}
+      >
+        {ICON_MODES_TABS[mode]}
+        <div>
+          <p>{text}</p>
+          <p
+            className={css({
+              fontSize: "sm",
+              opacity: 0.5,
+            })}
+          >
+            Edited 1h ago
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+};
 const App = () => {
   const listProjects = useAtomValue(PROJECTS_ATOM);
 
@@ -49,34 +98,7 @@ const App = () => {
             })}
           >
             {listProjects?.map((e) => {
-              return (
-                <div
-                  key={e?.ID}
-                  className={css({
-                    display: "grid",
-                    gridTemplateRows: "230px 1fr",
-                    borderRadius: "lg",
-                  })}
-                >
-                  <img
-                    src="./placeholder.svg"
-                    alt=""
-                    className={css({
-                      height: "100%",
-                      width: "100%",
-                      objectFit: "cover",
-                      borderRadius: "lg",
-                    })}
-                  />
-                  <div
-                    className={css({
-                      padding: "lg",
-                    })}
-                  >
-                    My landing page
-                  </div>
-                </div>
-              );
+              return <CardProject key={e?.ID} project={e} />;
             })}
           </div>
         </div>

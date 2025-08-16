@@ -106,10 +106,11 @@ export const PROJECT_ATOM = atom((get) => {
 
 export const NEW_PROJECT = atom(null, (get, set) => {
   const PAGEUUID = uuidv4();
+  const NEWPROJECTID = uuidv4();
   set(PROJECTS_ATOM, [
     ...get(PROJECTS_ATOM),
     {
-      ID: uuidv4(),
+      ID: NEWPROJECTID,
       name: atom("Project"),
       MODE_ATOM: atom<MODE>("DESIGN_MODE"),
       TOOL: atom<IKeyTool>("MOVE"),
@@ -161,6 +162,7 @@ export const NEW_PROJECT = atom(null, (get, set) => {
       },
     },
   ]);
+  set(PROJECT_ID_ATOM, NEWPROJECTID);
 });
 export const DELETE_PROJECT = atom(null, (get, set, id: string) => {
   const newList = get(PROJECTS_ATOM).filter((e) => e.ID !== id);
