@@ -21,7 +21,7 @@ const PixelEditor = () => {
         height: "100dvh",
         width: "100%",
         display: "grid",
-        gridTemplateRows: "45px 1fr",
+        gridTemplateRows: "40px 1fr",
         overflow: "hidden",
       })}
     >

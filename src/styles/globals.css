@@ -40,8 +40,8 @@ body {
 
 /* ✅ Scroll siempre con espacio, pero invisible por defecto */
 *::-webkit-scrollbar {
-  width: 4px;
-  height: 4px;
+  width: 2px;
+  height: 2px;
   background: transparent; /* invisible pero mantiene espacio */
 }
 

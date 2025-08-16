@@ -40,7 +40,7 @@ export const Tab = ({
         gridTemplateColumns: "20px 100px 20px",
         gap: "md",
         alignContent: "center",
-        backgroundColor: isSelected ? "primary" : "transparent",
+        backgroundColor: isSelected ? "bg.muted" : "transparent",
         height: "100%",
         padding: "lg",
       })}
@@ -115,7 +115,7 @@ export const Tab = ({
               onDelete();
             }}
           >
-            <X size={14} />
+            <X size={16} />
           </button>
         </Valid>
       </div>
@@ -153,7 +153,7 @@ export const TabsProjects = () => {
           alignItems: "center",
         })}
       >
-        <Home size={18} />
+        <Home size={16} />
       </button>
       <div
         className={css({
@@ -202,7 +202,7 @@ export const TabsProjects = () => {
             flex: 1,
           })}
         >
-          <Plus size={22} />
+          <Plus size={16} />
         </button>
       </div>
     </header>
