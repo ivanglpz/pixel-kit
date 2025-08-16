@@ -38,7 +38,13 @@ const CardProject = ({ project }: { project: IPROJECT }) => {
       >
         {ICON_MODES_TABS[mode]}
         <div>
-          <p>{text}</p>
+          <p
+            className={css({
+              fontSize: "sm",
+            })}
+          >
+            {text}
+          </p>
           <p
             className={css({
               fontSize: "sm",
@@ -70,7 +76,7 @@ const App = () => {
         className={css({
           overflow: "hidden",
           display: "grid",
-          gridTemplateRows: "45px 1fr",
+          gridTemplateRows: "40px 1fr",
           height: "100%",
         })}
       >
@@ -81,11 +87,22 @@ const App = () => {
             overflowY: "hidden",
             height: "100%",
             display: "grid",
-            gridTemplateColumns: "320px 1fr",
+            gridTemplateColumns: "300px 1fr",
           })}
         >
-          <div>test</div>
-          <div
+          <aside
+            className={css({
+              padding: "lg",
+              backgroundColor: "bg",
+              borderRightWidth: "1px",
+              borderRightStyle: "solid",
+              borderRightColor: "border", // ← usa el semantic token
+              overflow: "hidden",
+            })}
+          >
+            test
+          </aside>
+          <section
             className={css({
               backgroundColor: "black",
               overflowY: "scroll",
@@ -100,7 +117,7 @@ const App = () => {
             {listProjects?.map((e) => {
               return <CardProject key={e?.ID} project={e} />;
             })}
-          </div>
+          </section>
         </div>
       </div>
     </div>
