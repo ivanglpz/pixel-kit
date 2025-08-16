@@ -37,12 +37,13 @@ export const Tab = ({
     <button
       className={css({
         display: "grid",
-        gridTemplateColumns: "20px 100px 20px",
+        gridTemplateColumns: "20px 1fr 20px",
         gap: "md",
         alignContent: "center",
         backgroundColor: isSelected ? "bg.muted" : "transparent",
         height: "100%",
         padding: "lg",
+        width: "190px",
       })}
       onClick={onClick}
       onMouseEnter={() => sethover(true)}
@@ -159,7 +160,6 @@ export const TabsProjects = () => {
         className={css({
           display: "flex",
           flexDirection: "row",
-          gap: "md",
           overflow: "hidden",
           overflowX: "scroll",
           alignItems: "center",
