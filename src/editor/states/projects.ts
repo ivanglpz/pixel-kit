@@ -1,5 +1,7 @@
 import { atom, PrimitiveAtom } from "jotai";
+import { v4 as uuidv4 } from "uuid";
 import { MODE } from "../hooks/useConfiguration";
+import { canvasTheme } from "./canvas";
 import { ICLIP_DIMENSION } from "./clipImage";
 import { IStageEvents } from "./event";
 import { INITIAL_RENDER_IMAGE, IRENDER_IMAGE } from "./image";
@@ -9,6 +11,7 @@ import { IKeyTool } from "./tool";
 
 export type IPROJECT = {
   ID: string;
+  name: PrimitiveAtom<string> & WithInitialValue<string>;
   MODE_ATOM: PrimitiveAtom<MODE> & WithInitialValue<MODE>;
   TOOL: PrimitiveAtom<IKeyTool> & WithInitialValue<IKeyTool>;
   PAUSE_MODE: PrimitiveAtom<boolean> & WithInitialValue<boolean>;
@@ -39,6 +42,7 @@ export const PROJECT_ID_ATOM = atom<string>(
 export const PROJECTS_ATOM = atom([
   {
     ID: "415ee03c-ce26-4e8b-b373-8c1c0e0d9dd4",
+    name: atom("Project"),
     MODE_ATOM: atom<MODE>("DESIGN_MODE"),
     TOOL: atom<IKeyTool>("MOVE"),
     PAUSE_MODE: atom<boolean>(false),
@@ -73,7 +77,7 @@ export const PROJECTS_ATOM = atom([
       LIST: atom<ALL_SHAPES[]>([]),
     },
     EVENT: atom<IStageEvents>("IDLE"),
-    CANVAS_BG: atom<string>("red"),
+    CANVAS_BG: atom<string>(canvasTheme.dark),
     CLIP: {
       SHOW: atom(false),
       DIMENSION: atom({
@@ -98,4 +102,72 @@ export const PROJECT_ATOM = atom((get) => {
     throw new Error("PROJECT NOT FOUND");
   }
   return FIND_PROJECT;
+});
+
+export const NEW_PROJECT = atom(null, (get, set) => {
+  const PAGEUUID = uuidv4();
+  set(PROJECTS_ATOM, [
+    ...get(PROJECTS_ATOM),
+    {
+      ID: uuidv4(),
+      name: atom("Project"),
+      MODE_ATOM: atom<MODE>("DESIGN_MODE"),
+      TOOL: atom<IKeyTool>("MOVE"),
+      PAUSE_MODE: atom<boolean>(false),
+      PAGE: {
+        LIST: atom<IPage[]>([
+          {
+            id: uuidv4(),
+            name: atom("Page 1"),
+            color: atom("#f0f0f0"),
+            isVisible: atom(true),
+            type: "EDIT_IMAGE",
+          },
+          {
+            id: uuidv4(),
+            name: atom("Page 1"),
+            color: atom("#f0f0f0"),
+            isVisible: atom(true),
+            type: "FREE_DRAW",
+          },
+          {
+            id: PAGEUUID,
+            name: atom("Page 1"),
+            color: atom("#f0f0f0"),
+            isVisible: atom(true),
+            type: "DESIGN_MODE",
+          },
+        ]),
+        ID: atom<string>(PAGEUUID),
+      },
+      SHAPE: {
+        ID: atom<string | null>(null),
+        LIST: atom<ALL_SHAPES[]>([]),
+      },
+      EVENT: atom<IStageEvents>("IDLE"),
+      CANVAS_BG: atom<string>(canvasTheme.dark),
+      CLIP: {
+        SHOW: atom(false),
+        DIMENSION: atom({
+          x: 0,
+          y: 0,
+          width: 0,
+          height: 0,
+        }),
+      },
+      IMAGE: {
+        ORIGINAL: atom(INITIAL_RENDER_IMAGE),
+        RENDER: atom(INITIAL_RENDER_IMAGE),
+      },
+    },
+  ]);
+});
+export const DELETE_PROJECT = atom(null, (get, set, id: string) => {
+  const newList = get(PROJECTS_ATOM).filter((e) => e.ID !== id);
+  const PAGE_ID = newList?.at?.(-1)?.ID;
+
+  if (!PAGE_ID) return;
+
+  set(PROJECT_ID_ATOM, PAGE_ID);
+  set(PROJECTS_ATOM, newList);
 });
