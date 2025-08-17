@@ -1,39 +1,64 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { Valid } from "@/components/valid";
 import { Button } from "@/editor/components/button";
-import { useImageRender } from "@/editor/hooks/useImageRender";
 import { css } from "@stylespixelkit/css";
+import { useAtomValue, useSetAtom } from "jotai";
 import { ChangeEvent, useRef } from "react";
 import { createPortal } from "react-dom";
+import { IMAGE_RENDER_ATOM, SET_EDIT_IMAGE } from "../states/image";
 
 export const ImageConfiguration = () => {
-  const { img, handleSetImageRender } = useImageRender();
+  const setImage = useSetAtom(SET_EDIT_IMAGE);
+  const img = useAtomValue(IMAGE_RENDER_ATOM);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const handleFiles = (event: ChangeEvent<HTMLInputElement>) => {
+  const handleFiles = async (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
 
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      const image = new Image();
-      image.onload = () => {
-        handleSetImageRender({
-          base64: reader?.result as string,
-          name: file.name,
-          height: image.height,
-          width: image.width,
-          x: 0,
-          y: 0,
-        });
-      };
+    try {
+      // Convertir archivo a base64
+      const base64 = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          if (typeof reader.result === "string") {
+            resolve(reader.result);
+          } else {
+            reject(new Error("FileReader result is not a string"));
+          }
+        };
+        reader.onerror = () => reject(new Error("Error reading file"));
+        reader.readAsDataURL(file);
+      });
 
+      // Crear objeto Image para obtener dimensiones
+      const { width, height } = await new Promise<{
+        width: number;
+        height: number;
+      }>((resolve, reject) => {
+        const img = new Image();
+        img.onload = () => resolve({ width: img.width, height: img.height });
+        img.onerror = () => reject(new Error("Error loading image"));
+        img.src = base64;
+      });
+
+      // Setear en jotai
+      setImage({
+        base64,
+        name: file.name,
+        width,
+        height,
+        x: 0,
+        y: 0,
+      });
+    } catch (error) {
+      console.error("Error loading image:", error);
+    } finally {
+      // Resetear input
       if (inputRef.current) {
         inputRef.current.value = "";
       }
-      image.src = reader?.result as string;
-    };
-    reader.readAsDataURL(file);
+    }
   };
 
   const Container = document.getElementById("pixel-app");

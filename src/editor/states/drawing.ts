@@ -6,7 +6,6 @@ export const DrawingBeforeStartAtom = atom({
   x: 0,
   y: 0,
   tool: "DRAW",
-  isBlocked: false,
   isWritingNow: false,
   fillEnabled: true,
   align: "left",

@@ -32,11 +32,9 @@ export const ShapeText = memo(({ item }: IShapeWithEvents) => {
   const isSelected = shapeId === box?.id;
 
   useEffect(() => {
-    if (isSelected) {
-      if (trRef.current && shapeRef.current) {
-        trRef.current.nodes([shapeRef.current]);
-        trRef.current?.getLayer()?.batchDraw();
-      }
+    if (isSelected && trRef.current && shapeRef.current) {
+      trRef.current.nodes([shapeRef.current]);
+      trRef.current?.getLayer()?.batchDraw();
     }
   }, [isSelected, trRef, shapeRef]);
 
@@ -59,7 +57,7 @@ export const ShapeText = memo(({ item }: IShapeWithEvents) => {
         fontSize={box?.fontSize}
         lineHeight={1.45}
         // 3. Rotación
-        rotationDeg={rotate}
+        // rotationDeg={rotate}
         // 4. Relleno y color
         // fillEnabled={box?.fills?.filter((e) => e?.visible)?.length > 0}
         fillEnabled

@@ -1,5 +1,5 @@
 import { useTool } from "@/editor/hooks";
-import { showClipAtom } from "@/editor/states/clipImage";
+import { SHOW_CLIP_ATOM } from "@/editor/states/clipImage";
 import { IKeyTool } from "@/editor/states/tool";
 import { css } from "@stylespixelkit/css";
 import { useAtom, useSetAtom } from "jotai";
@@ -10,7 +10,7 @@ import { SHAPE_ID_ATOM } from "../states/shape";
 export const Tools = () => {
   const { tool, setTool } = useTool();
 
-  const [showClip, setshowClip] = useAtom(showClipAtom);
+  const [showClip, setshowClip] = useAtom(SHOW_CLIP_ATOM);
 
   const { config } = useConfiguration();
   const setShapeId = useSetAtom(SHAPE_ID_ATOM);

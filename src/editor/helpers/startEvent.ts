@@ -19,7 +19,6 @@ export const shapeStart = (props: Partial<IShape>): IShape => {
     x: 0,
     y: 0,
     tool: "BOX",
-    isBlocked: false,
     isWritingNow: false,
     fillEnabled: true,
     align: "left",

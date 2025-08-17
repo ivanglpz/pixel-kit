@@ -1,4 +1,4 @@
-import { PrimitiveAtom, useAtom } from "jotai";
+import { PrimitiveAtom, useAtomValue } from "jotai";
 import { memo } from "react";
 import { Group } from "react-konva";
 import ShapeBox from "./box.shape";
@@ -12,17 +12,11 @@ import {
 
 // eslint-disable-next-line react/display-name
 export const ShapeGroup = memo(({ item, SHAPES }: IShapeWithEvents) => {
-  const [box, setBox] = useAtom(
+  const box = useAtomValue(
     item.state as PrimitiveAtom<IShape> & WithInitialValue<IShape>
   );
 
-  const {
-    x,
-    y,
-
-    height,
-    width,
-  } = box;
+  const { x, y, height, width } = box;
 
   const childrens = SHAPES?.filter((e) => e?.parentId === box?.id);
   return (

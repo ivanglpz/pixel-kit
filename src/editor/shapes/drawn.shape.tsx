@@ -66,7 +66,7 @@ export const ShapeDraw = memo(({ item }: IShapeWithEvents) => {
         points={box.points ?? []}
         globalCompositeOperation="source-over"
         // 3. Rotación
-        rotationDeg={rotate}
+        // rotationDeg={rotate}
         // 4. Relleno y color
         // fillEnabled={box?.fills?.filter((e) => e?.visible)?.length > 0}
         fillEnabled

@@ -1,21 +1,37 @@
 /* eslint-disable react/display-name */
 /* eslint-disable jsx-a11y/alt-text */
-import { PrimitiveAtom, useAtom, useAtomValue } from "jotai";
-import Konva from "konva";
+
+// React
 import { memo, MutableRefObject, useEffect, useMemo, useRef } from "react";
-import { Image as KonvaImage } from "react-konva";
+
+// Estado global (jotai)
+import { PrimitiveAtom, useAtom, useAtomValue } from "jotai";
 import { STAGE_DIMENSION_ATOM } from "../states/dimension";
 import { SHAPE_ID_ATOM } from "../states/shape";
+
+// Konva
+import Konva from "konva";
+import { Image as KonvaImage } from "react-konva";
+
+// Tipos
+import { IShape, IShapeWithEvents, WithInitialValue } from "./type.shape";
+
+// Eventos de shape
 import {
   shapeEventDragMove,
   ShapeEventDragStart,
   shapeEventDragStop,
   shapeTransformEnd,
 } from "./events.shape";
-import { Transform } from "./transformer";
-import { IShape, IShapeWithEvents, WithInitialValue } from "./type.shape";
 
-// Función para calcular crop con object-fit: cover
+// Transformer
+import { Transform } from "./transformer";
+
+// =========================
+// Utilidades
+// =========================
+
+// Calcula un recorte de imagen estilo "object-fit: cover"
 function calculateCoverCrop(
   imageWidth: number,
   imageHeight: number,
@@ -31,74 +47,82 @@ function calculateCoverCrop(
   let cropHeight = imageHeight;
 
   if (imageRatio > containerRatio) {
-    // La imagen es más ancha que el contenedor
-    // Recortamos los lados
+    // Imagen más ancha → recortar lados
     cropWidth = imageHeight * containerRatio;
     cropX = (imageWidth - cropWidth) / 2;
   } else {
-    // La imagen es más alta que el contenedor
-    // Recortamos arriba y abajo
+    // Imagen más alta → recortar arriba y abajo
     cropHeight = imageWidth / containerRatio;
     cropY = (imageHeight - cropHeight) / 2;
   }
 
-  return {
-    x: cropX,
-    y: cropY,
-    width: cropWidth,
-    height: cropHeight,
-  };
+  return { x: cropX, y: cropY, width: cropWidth, height: cropHeight };
 }
 
+// =========================
+// Componente ShapeImage
+// =========================
+
 export const ShapeImage = memo((props: IShapeWithEvents) => {
+  // Estado local vinculado al átomo
   const [box, setBox] = useAtom(
     props?.item.state as PrimitiveAtom<IShape> & WithInitialValue<IShape>
   );
+
+  // Extraer relleno de tipo imagen
   const fill = box.fills
     ?.filter((e) => e?.visible && e?.type === "image")
     .at(0);
-
   const { rotate, x, y, strokeWidth, dash } = box;
 
-  // const [imageFill, setImageFill] = useAtom(fill.image);
-
+  // Memoización de la imagen base
   const Imagee = useMemo(() => {
     const img = new Image();
-    if (!fill) {
-      return img;
-    }
+    if (!fill) return img;
     img.src = fill?.image?.src;
     img.width = fill?.image?.width;
     img.height = fill?.image?.height;
     return img;
   }, [fill]);
 
-  // Calcular crop para object-fit: cover
-  const cropConfig = useMemo(() => {
-    return calculateCoverCrop(
-      fill?.image?.width || 0,
-      fill?.image?.height || 0,
-      Number(box.width),
-      Number(box.height)
-    );
-  }, [fill, box]);
+  // Configuración de crop para object-fit cover
+  const cropConfig = useMemo(
+    () =>
+      calculateCoverCrop(
+        fill?.image?.width || 0,
+        fill?.image?.height || 0,
+        Number(box.width),
+        Number(box.height)
+      ),
+    [fill, box]
+  );
 
+  // Refs para shape y transformer
   const shapeRef = useRef<Konva.Image>();
   const trRef = useRef<Konva.Transformer>();
+
+  // Estado global
   const stageDimensions = useAtomValue(STAGE_DIMENSION_ATOM);
   const [shapeId, setShapeId] = useAtom(SHAPE_ID_ATOM);
   const isSelected = shapeId === box?.id;
 
+  // Sombra
+  const shadow = box?.effects
+    ?.filter((e) => e?.visible && e?.type === "shadow")
+    .at(0);
+
+  // Vincular transformer cuando se selecciona
   useEffect(() => {
-    if (isSelected) {
-      if (trRef.current && shapeRef.current) {
-        trRef.current.nodes([shapeRef.current]);
-        trRef.current?.getLayer()?.batchDraw();
-      }
+    if (isSelected && trRef.current && shapeRef.current) {
+      trRef.current.nodes([shapeRef.current]);
+      trRef.current?.getLayer()?.batchDraw();
     }
   }, [isSelected, trRef, shapeRef]);
-  // if (!fill) return null;
+  console.log(box);
 
+  // =========================
+  // Renderizado
+  // =========================
   return (
     <>
       <KonvaImage
@@ -114,9 +138,9 @@ export const ShapeImage = memo((props: IShapeWithEvents) => {
         globalCompositeOperation="source-over"
         image={Imagee}
         // 3. Rotación
-        rotationDeg={rotate}
-        // 4. Relleno y color
-        // fillEnabled={box?.fills?.filter((e) => e?.visible)?.length > 0}
+        // rotationDeg={rotate}
+        listening={!box.isLocked}
+        // 4. Relleno
         fillEnabled
         fill={
           box?.fills?.filter((e) => e?.type === "fill" && e?.visible)?.at(0)
@@ -128,43 +152,28 @@ export const ShapeImage = memo((props: IShapeWithEvents) => {
         strokeEnabled={box.strokeWidth > 0}
         dash={[dash, dash, dash, dash]}
         dashEnabled={box?.dash > 0}
-        // CROP CONFIGURADO PARA OBJECT-FIT: COVER
+        // 6. Crop (object-fit: cover)
         crop={cropConfig}
         cornerRadius={
           box?.isAllBorderRadius ? box.bordersRadius : box.borderRadius
         }
-        // 6. Sombras
-        shadowColor={
-          box?.effects?.filter((e) => e?.visible && e?.type === "shadow").at(0)
-            ?.color
-        }
-        shadowOpacity={
-          box?.effects?.filter((e) => e?.visible && e?.type === "shadow").at(0)
-            ?.opacity
-        }
-        shadowOffsetX={
-          box?.effects?.filter((e) => e?.visible && e?.type === "shadow").at(0)
-            ?.x
-        }
-        shadowOffsetY={
-          box?.effects?.filter((e) => e?.visible && e?.type === "shadow").at(0)
-            ?.y
-        }
-        shadowBlur={
-          box?.effects?.filter((e) => e?.visible && e?.type === "shadow").at(0)
-            ?.blur
-        }
+        // 7. Sombras
+        shadowColor={shadow?.color}
+        shadowOpacity={shadow?.opacity}
+        shadowOffsetX={shadow?.x}
+        shadowOffsetY={shadow?.y}
+        shadowBlur={shadow?.blur}
         shadowEnabled={
           Number(
             box?.effects?.filter((e) => e?.visible && e?.type === "shadow")
               ?.length
           ) > 0
         }
-        // 7. Apariencia y opacidad
+        // 8. Apariencia
         opacity={box?.opacity ?? 1}
-        // 8. Interactividad y arrastre
+        // 9. Interactividad
         draggable={shapeId === box?.id}
-        // 9. Eventos
+        // 10. Eventos
         onTap={() => setShapeId(box?.id)}
         onClick={() => setShapeId(box?.id)}
         onDragStart={(e) => setBox(ShapeEventDragStart(e))}
