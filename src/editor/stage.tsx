@@ -267,6 +267,9 @@ const PxStage: FC<Props> = ({ children }) => {
           backgroundColor: "bg",
           padding: "md",
           borderRadius: "lg",
+          borderWidth: "1.5px",
+          borderStyle: "solid",
+          borderColor: "border", // ← usa el semantic token
         })}
       >
         <Tools />
