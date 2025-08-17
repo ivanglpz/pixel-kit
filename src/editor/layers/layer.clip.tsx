@@ -5,25 +5,26 @@ import Konva from "konva";
 import { Shape, ShapeConfig } from "konva/lib/Shape";
 import { MutableRefObject, useEffect, useMemo, useRef } from "react";
 import { Group, Layer, Line, Rect, Transformer } from "react-konva";
-import { useImageRender } from "../hooks/useImageRender";
 import { useReference } from "../hooks/useReference";
 import { ShapeImage } from "../shapes/image.shape";
 import { IShape } from "../shapes/type.shape";
 import {
-  boxClipAtom,
+  CLIP_DIMENSION_ATOM,
   ICLIP_DIMENSION,
-  showClipAtom,
+  SHOW_CLIP_ATOM,
 } from "../states/clipImage";
 import { STAGE_DIMENSION_ATOM } from "../states/dimension";
+import { IMAGE_RENDER_ATOM } from "../states/image";
 
 export const LayerClip = () => {
-  const { img } = useImageRender();
+  // const { img } = useImageRender();
+  const image = useAtomValue(IMAGE_RENDER_ATOM);
   const { height, width } = useAtomValue(STAGE_DIMENSION_ATOM);
-  const showClip = useAtomValue(showClipAtom);
-  const [box, setBox] = useAtom(boxClipAtom);
+  const showClip = useAtomValue(SHOW_CLIP_ATOM);
+  const [box, setBox] = useAtom(CLIP_DIMENSION_ATOM);
   const dimension = useMemo(
-    () => calculateDimension(width, height, img?.width, img?.height),
-    [width, height, img?.width, img?.height]
+    () => calculateDimension(width, height, image?.width, image?.height),
+    [width, height, image?.width, image?.height]
   );
   const trRef = useRef<Konva.Transformer>(null);
   const shapeRef = useRef<Konva.Rect>(null);
@@ -100,29 +101,24 @@ export const LayerClip = () => {
         <ShapeImage
           SHAPES={[]}
           item={{
-            id: "1c024656-106b-4d70-bc5c-845637d3344a",
+            id: "d5644580-df24-48ad-87fa-5cb4a51a5983",
             pageId: "main-image-render-stage",
             parentId: null,
-            state: atom<IShape>({
+            state: atom({
               ...dimension,
               id: "main-image-render-stage",
-              isBlocked: true,
               tool: "IMAGE",
               visible: true,
-              // fillEnabled: true,
               dash: 0,
-              // isWritingNow: false,
-              // strokeEnabled: false,
-              // shadowEnabled: false,
-              // dashEnabled: false,
+              isLocked: true,
               fills: [
                 {
                   color: "#fff",
-                  id: "1c024656-106b-4d70-bc5c-845637d3344a",
+                  id: "b45ef6ff-fd0b-4dcc-9be1-68a912723d14",
                   image: {
-                    src: img?.base64,
-                    height: img.height,
-                    width: img.width,
+                    src: image?.base64,
+                    height: image.height,
+                    width: image.width,
                     name: "preview-edit-image",
                   },
                   opacity: 1,

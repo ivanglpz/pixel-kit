@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { IShape } from "@/editor/shapes/type.shape";
-import { showClipAtom } from "@/editor/states/clipImage";
+import { SHOW_CLIP_ATOM } from "@/editor/states/clipImage";
 import TOOL_ATOM, { IKeyTool, PAUSE_MODE_ATOM } from "@/editor/states/tool";
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { KonvaEventObject } from "konva/lib/Node";
@@ -37,7 +37,7 @@ const useEventStage = () => {
 
   const { config } = useConfiguration();
 
-  const setshowClip = useSetAtom(showClipAtom);
+  const setshowClip = useSetAtom(SHOW_CLIP_ATOM);
 
   const [eventStage, setEventStage] = useAtom(EVENT_ATOM);
 

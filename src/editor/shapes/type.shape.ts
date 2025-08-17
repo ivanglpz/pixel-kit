@@ -57,7 +57,6 @@ export type IShape = {
   height?: number;
   text?: string;
   visible: boolean;
-  isBlocked: boolean;
   points?: number[];
   rotate?: number;
   lineCap?: LineCap;
