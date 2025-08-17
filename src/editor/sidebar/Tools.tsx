@@ -33,7 +33,7 @@ export const Tools = () => {
               className={css({
                 height: "25px",
                 width: 1,
-                backgroundColor: "gray.300",
+                backgroundColor: "gray.500",
               })}
             />
           );
