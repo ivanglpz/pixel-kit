@@ -161,9 +161,20 @@ export const NEW_PROJECT = atom(null, (get, set) => {
   ]);
   set(PROJECT_ID_ATOM, NEWPROJECTID);
 });
+
+/// el delete debe eliminar la pagina y ubicar en que posicion estaba ese id de la pagina y seleccionar la siguiente pagina o caso contrario que tome la ultima. si la pagina era la ultima
+
 export const DELETE_PROJECT = atom(null, (get, set, id: string) => {
-  const newList = get(PROJECTS_ATOM).filter((e) => e.ID !== id);
-  const PAGE_ID = newList?.at?.(-1)?.ID;
+  const PROJECTS = get(PROJECTS_ATOM);
+  const currentIndex = PROJECTS.findIndex((e) => e.ID === id);
+  const newList = PROJECTS.filter((e) => e.ID !== id);
+
+  if (currentIndex === -1) return;
+
+  const nextIndex =
+    currentIndex < newList.length ? currentIndex : newList.length - 1;
+
+  const PAGE_ID = newList?.at?.(nextIndex)?.ID;
 
   if (!PAGE_ID) return;
 

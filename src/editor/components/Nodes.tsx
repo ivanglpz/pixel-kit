@@ -9,7 +9,7 @@ import {
 } from "../states/nodes";
 import { SHAPE_ID_ATOM } from "../states/shape";
 import { ALL_SHAPES } from "../states/shapes";
-import { PAUSE_MODE_ATOM } from "../states/tool";
+import TOOL_ATOM, { PAUSE_MODE_ATOM } from "../states/tool";
 
 export const Nodes = ({
   item,
@@ -21,10 +21,10 @@ export const Nodes = ({
   const [value, setShape] = useAtom(item.state);
   const SET_CHANGE = useSetAtom(CHANGE_SHAPE_NODE_ATOM);
   const SET_PARENT_CHANGE = useSetAtom(CHANGE_PARENTID_NODE_ATOM);
-  const setShapeId = useSetAtom(SHAPE_ID_ATOM);
+  const [shapeId, setShapeId] = useAtom(SHAPE_ID_ATOM);
   const [show, setShow] = useState(false);
   const setPause = useSetAtom(PAUSE_MODE_ATOM);
-
+  const setTool = useSetAtom(TOOL_ATOM);
   const [isExpanded, setIsExpanded] = useState(true);
 
   const handleDragStart = (e: React.DragEvent) => {
@@ -62,14 +62,18 @@ export const Nodes = ({
         // onDrop={handleDrop}
         className={css({
           color: "text",
-          padding: "sm",
+          padding: "md",
+
           fontSize: "sm",
           listStyle: "none",
           display: "grid",
           gridTemplateColumns: "15px 15px 150px",
           flexDirection: "row",
           alignItems: "center",
-          gap: "8px",
+          gap: "md",
+          borderRadius: "md",
+          backgroundColor: shapeId === value.id ? "gray.800" : "transparent",
+
           _hover: {
             backgroundColor: "gray.100",
             _dark: {
@@ -77,10 +81,13 @@ export const Nodes = ({
             },
           },
           cursor: "pointer",
-          // width: "100%", // ← importante para que crezca según los hijos
           minWidth: 200,
         })}
-        onClick={() => setShapeId(value?.id)}
+        onClick={() => {
+          setTool("MOVE");
+
+          setShapeId(value?.id);
+        }}
       >
         {value.tool === "GROUP" && childrens.length > 0 ? (
           <button
@@ -98,6 +105,7 @@ export const Nodes = ({
                 backgroundColor: "primary",
               },
               backgroundColor: "primary",
+              borderRadius: "2px",
             })}
           >
             {isExpanded ? (
@@ -156,7 +164,7 @@ export const Nodes = ({
             marginLeft: "10px",
             display: "flex",
             flexDirection: "column",
-            gap: "lg",
+            gap: "sm",
             borderLeftColor: "primary",
             borderLeftWidth: 2,
           })}

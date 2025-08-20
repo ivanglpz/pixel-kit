@@ -55,6 +55,7 @@ export const NEW_PAGE = atom(null, (get, set) => {
     isVisible: atom(true),
     type: mode,
   };
+  set(PAGE_ID_ATOM, newPage.id);
   set(PAGES_ATOM, [...pages, newPage]);
 });
 

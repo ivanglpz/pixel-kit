@@ -8,8 +8,8 @@ import {
 import { PAUSE_MODE_ATOM } from "@/editor/states/tool";
 import { css } from "@stylespixelkit/css";
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
-import { Plus } from "lucide-react";
-import { useState } from "react";
+import { File, Plus } from "lucide-react";
+import { useRef, useState } from "react";
 
 const TogglePage = ({
   page,
@@ -21,7 +21,7 @@ const TogglePage = ({
   onClick: () => void;
 }) => {
   const [show, setShow] = useState(false);
-  const [name, setName] = useAtom(page.name);
+  const name = useAtomValue(page.name);
   const setPause = useSetAtom(PAUSE_MODE_ATOM);
 
   return (
@@ -31,7 +31,11 @@ const TogglePage = ({
         padding: "md",
         flex: 1,
         borderRadius: "md",
-        backgroundColor: isSelected ? "gray.900" : "transparent",
+        display: "grid",
+        gridTemplateColumns: "15px 1fr",
+        alignItems: "center",
+        gap: "md",
+        backgroundColor: isSelected ? "gray.800" : "transparent",
         _hover: {
           backgroundColor: "gray.100",
           _dark: {
@@ -54,12 +58,13 @@ const TogglePage = ({
         setShow(false);
       }}
     >
+      <File size={14} />
       {show ? (
         <InputAtomText atom={page.name} />
       ) : (
         <span
           className={css({
-            fontSize: "sm",
+            fontSize: "11px",
           })}
         >
           {name}
@@ -73,6 +78,7 @@ export const SidebarLeftPages = () => {
   const pages = useAtomValue(PAGES_BY_TYPE_ATOM);
   const newPage = useSetAtom(NEW_PAGE);
   const [selectedPage, setSelectedPage] = useAtom(PAGE_ID_ATOM);
+  const ListRef = useRef<HTMLDivElement>(null);
   return (
     <section
       className={css({
@@ -105,7 +111,10 @@ export const SidebarLeftPages = () => {
             gap: "sm",
             alignItems: "center",
           })}
-          onClick={() => newPage()}
+          onClick={() => {
+            newPage();
+            ListRef.current?.scrollIntoView({ behavior: "smooth" });
+          }}
         >
           <Plus size={14} />
         </button>
@@ -126,6 +135,7 @@ export const SidebarLeftPages = () => {
             />
           );
         })}
+        <div ref={ListRef} />
       </ul>
     </section>
   );
