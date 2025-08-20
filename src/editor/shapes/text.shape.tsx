@@ -18,7 +18,7 @@ import {
   shapeTransformEnd,
 } from "./events.shape";
 import { Transform } from "./transformer";
-export const ShapeText = memo(({ item }: IShapeWithEvents) => {
+export const ShapeText = memo(({ shape: item }: IShapeWithEvents) => {
   const [box, setBox] = useAtom(
     item.state as PrimitiveAtom<IShape> & WithInitialValue<IShape>
   );
@@ -32,12 +32,13 @@ export const ShapeText = memo(({ item }: IShapeWithEvents) => {
   const isSelected = shapeId === box?.id;
 
   useEffect(() => {
-    if (isSelected && trRef.current && shapeRef.current) {
+    if (isSelected && trRef.current && shapeRef.current && box.visible) {
       trRef.current.nodes([shapeRef.current]);
       trRef.current?.getLayer()?.batchDraw();
     }
-  }, [isSelected, trRef, shapeRef]);
+  }, [isSelected, trRef, shapeRef, box.visible]);
 
+  if (!box.visible) return null;
   return (
     <>
       <Text
@@ -54,6 +55,7 @@ export const ShapeText = memo(({ item }: IShapeWithEvents) => {
         fontFamily={box?.fontFamily}
         fontVariant={box?.fontWeight}
         text={box?.text}
+        listening={!box.isLocked}
         fontSize={box?.fontSize}
         lineHeight={1.45}
         // 3. Rotación

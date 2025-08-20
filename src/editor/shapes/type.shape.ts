@@ -77,8 +77,8 @@ export type IShape = {
 };
 
 export type IShapeWithEvents = {
-  item: ALL_SHAPES;
-  SHAPES: ALL_SHAPES[];
+  shape: ALL_SHAPES;
+  listShapes: ALL_SHAPES[];
 };
 
 export type FCShapeWEvents = FC<IShapeWithEvents>;

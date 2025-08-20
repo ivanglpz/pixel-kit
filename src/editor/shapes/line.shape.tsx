@@ -15,7 +15,7 @@ import {
   shapeTransformEnd,
 } from "./events.shape";
 
-export const ShapeLine = memo(({ item }: IShapeWithEvents) => {
+export const ShapeLine = memo(({ shape: item }: IShapeWithEvents) => {
   const [box, setBox] = useAtom(
     item.state as PrimitiveAtom<IShape> & WithInitialValue<IShape>
   );
@@ -29,11 +29,12 @@ export const ShapeLine = memo(({ item }: IShapeWithEvents) => {
   const isSelected = shapeId === box?.id;
 
   useEffect(() => {
-    if (isSelected && trRef.current && shapeRef.current) {
+    if (isSelected && trRef.current && shapeRef.current && box.visible) {
       trRef.current.nodes([shapeRef.current]);
       trRef.current?.getLayer()?.batchDraw();
     }
-  }, [isSelected, trRef, shapeRef]);
+  }, [isSelected, trRef, shapeRef, box.visible]);
+  if (!box.visible) return null;
 
   return (
     <>
@@ -47,6 +48,7 @@ export const ShapeLine = memo(({ item }: IShapeWithEvents) => {
         width={width}
         height={height}
         points={box.points ?? [5, 70, 140, 23]}
+        listening={!box.isLocked}
         globalCompositeOperation="source-over"
         // 3. Rotación
         // rotationDeg={rotate}
