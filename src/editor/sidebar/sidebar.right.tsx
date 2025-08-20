@@ -10,7 +10,7 @@ import { StageCanvasColor } from "./canvas";
 import { Clip } from "./clip";
 import { Drawing } from "./drawing";
 import { ExportStage } from "./export";
-import { LayoutShapeConfig } from "./right/shape-config";
+import { LayoutShapeConfig } from "./sidebar-right-shape";
 
 const SidebarRight: FC = () => {
   const { config } = useConfiguration();

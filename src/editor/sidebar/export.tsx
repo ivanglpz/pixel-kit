@@ -22,7 +22,7 @@ import { STAGE_DIMENSION_ATOM } from "../states/dimension";
 import { typeExportAtom } from "../states/export";
 import { IMAGE_RENDER_ATOM } from "../states/image";
 import ALL_SHAPES_ATOM from "../states/shapes";
-import { ImageConfiguration } from "./imageConfig";
+import { ImageConfiguration } from "./image-config";
 
 const formats = {
   LOW: 0.8,
