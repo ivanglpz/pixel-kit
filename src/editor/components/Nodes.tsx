@@ -116,9 +116,10 @@ export const Nodes = ({
           fontSize: "sm",
           listStyle: "none",
           display: "grid",
-          gridTemplateColumns: "15px 15px 100px 40px",
+          gridTemplateColumns: "15px 15px 120px 50px",
           flexDirection: "row",
           alignItems: "center",
+          justifyContent: "center",
           gap: "md",
           borderRadius: "md",
           backgroundColor: shapeId === shape.id ? "gray.800" : "transparent",
@@ -129,7 +130,7 @@ export const Nodes = ({
             },
           },
           cursor: "pointer",
-          width: 250,
+          width: 230,
         })}
         onClick={() => {
           setTool("MOVE");
@@ -200,9 +201,22 @@ export const Nodes = ({
           )}
         </div>
 
-        <div className={css({ display: "grid", gridTemplateColumns: "2" })}>
+        <div
+          className={css({
+            display: "grid",
+            gridTemplateColumns: "2",
+            justifyContent: "center",
+            alignItems: "center",
+          })}
+        >
           {/* Lock/Unlock Section */}
-          <div>
+          <div
+            className={css({
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            })}
+          >
             {isLockedByParent ? (
               // Si está bloqueado por el padre, mostrar dot
               <DotIcon
@@ -231,7 +245,13 @@ export const Nodes = ({
           </div>
 
           {/* Visibility Section */}
-          <div>
+          <div
+            className={css({
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            })}
+          >
             {isHiddenByParent ? (
               // Si está oculto por el padre, mostrar dot
               <DotIcon
@@ -267,7 +287,7 @@ export const Nodes = ({
       {childrens?.length > 0 && isExpanded && (
         <ul
           className={css({
-            marginLeft: "10px",
+            marginLeft: "12px",
             display: "flex",
             flexDirection: "column",
             gap: "sm",
