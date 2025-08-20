@@ -1,5 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 /* eslint-disable jsx-a11y/alt-text */
+import { Valid } from "@/components/valid";
 import InputColor from "@/editor/components/input-color";
 import { InputNumber } from "@/editor/components/input-number";
 import { InputSelect } from "@/editor/components/input-select";
@@ -479,72 +480,77 @@ export const LayoutShapeConfig = () => {
       </section>
 
       <Separator />
+      <Valid isValid={shape.tool === "TEXT"}>
+        {/* SECCIÓN: TYPOGRAPHY - Tipografía */}
+        <section className={commonStyles.container}>
+          <SectionHeader title="Typography" />
 
-      {/* SECCIÓN: TYPOGRAPHY - Tipografía */}
-      <section className={commonStyles.container}>
-        <SectionHeader title="Typography" />
+          <div
+            className={css({
+              display: "grid",
+              gridTemplateColumns: "2",
+              gap: "lg",
+              gridTemplateRows: "auto auto auto",
+            })}
+          >
+            {/* Font Family */}
+            <div className={css({ gridColumn: "2" })}>
+              <InputSelect
+                value={shape.fontFamily ?? "Roboto"}
+                onChange={(e) =>
+                  shapeUpdate({ fontFamily: e as IShape["fontFamily"] })
+                }
+                options={fontFamilyOptions}
+              />
+            </div>
 
-        <div
-          className={css({
-            display: "grid",
-            gridTemplateColumns: "2",
-            gap: "lg",
-            gridTemplateRows: "auto auto auto",
-          })}
-        >
-          {/* Font Family */}
-          <div className={css({ gridColumn: "2" })}>
+            {/* Font Weight */}
             <InputSelect
-              value={shape.fontFamily ?? "Roboto"}
-              onChange={(e) =>
-                shapeUpdate({ fontFamily: e as IShape["fontFamily"] })
-              }
-              options={fontFamilyOptions}
-            />
-          </div>
-
-          {/* Font Weight */}
-          <InputSelect
-            labelText=""
-            value={shape.fontWeight ?? "normal"}
-            onChange={(e) =>
-              shapeUpdate({ fontWeight: e as IShape["fontWeight"] })
-            }
-            options={fontWeightOptions}
-          />
-
-          {/* Font Size */}
-          <InputNumber
-            iconType="font"
-            labelText=""
-            min={12}
-            max={72}
-            step={4}
-            onChange={(e) => shapeUpdate({ fontSize: e })}
-            value={shape.fontSize || 0}
-          />
-
-          {/* Text Content */}
-          <div className={css({ gridColumn: 2, gridRow: 3 })}>
-            <InputTextArea
               labelText=""
-              onChange={(e) => shapeUpdate({ text: e })}
-              value={shape.text || ""}
+              value={shape.fontWeight ?? "normal"}
+              onChange={(e) =>
+                shapeUpdate({ fontWeight: e as IShape["fontWeight"] })
+              }
+              options={fontWeightOptions}
             />
-          </div>
-        </div>
-      </section>
 
-      <Separator />
+            {/* Font Size */}
+            <InputNumber
+              iconType="font"
+              labelText=""
+              min={12}
+              max={72}
+              step={4}
+              onChange={(e) => shapeUpdate({ fontSize: e })}
+              value={shape.fontSize || 0}
+            />
+
+            {/* Text Content */}
+            <div className={css({ gridColumn: 2, gridRow: 3 })}>
+              <InputTextArea
+                labelText=""
+                onChange={(e) => shapeUpdate({ text: e })}
+                value={shape.text || ""}
+              />
+            </div>
+          </div>
+        </section>
+
+        <Separator />
+      </Valid>
 
       {/* SECCIÓN: FILL - Rellenos */}
       <section className={commonStyles.container}>
         <SectionHeader
           title="Fill"
           onAdd={handleAddFill}
-          onImage={() => {
-            inputRef.current?.click();
-          }}
+          onImage={
+            shape.tool === "IMAGE"
+              ? () => {
+                  inputRef.current?.click();
+                }
+              : undefined
+          }
         />
 
         {/* Lista de fills */}

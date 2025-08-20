@@ -14,8 +14,8 @@ export const LayerPipe = () => {
     <>
       <Layer id="layer-pipe-shapes">
         <Component
-          SHAPES={[]}
-          item={{
+          listShapes={[]}
+          shape={{
             id: "1",
             state: atom(CURRENT_ITEM),
             pageId: "main-image-render-stage",

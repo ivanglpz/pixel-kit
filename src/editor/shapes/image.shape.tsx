@@ -66,7 +66,7 @@ function calculateCoverCrop(
 export const ShapeImage = memo((props: IShapeWithEvents) => {
   // Estado local vinculado al átomo
   const [box, setBox] = useAtom(
-    props?.item.state as PrimitiveAtom<IShape> & WithInitialValue<IShape>
+    props?.shape.state as PrimitiveAtom<IShape> & WithInitialValue<IShape>
   );
 
   // Extraer relleno de tipo imagen
@@ -113,12 +113,13 @@ export const ShapeImage = memo((props: IShapeWithEvents) => {
 
   // Vincular transformer cuando se selecciona
   useEffect(() => {
-    if (isSelected && trRef.current && shapeRef.current) {
+    if (isSelected && trRef.current && shapeRef.current && box.visible) {
       trRef.current.nodes([shapeRef.current]);
       trRef.current?.getLayer()?.batchDraw();
     }
-  }, [isSelected, trRef, shapeRef]);
-  console.log(box);
+  }, [isSelected, trRef, shapeRef, box.visible]);
+
+  if (!box.visible) return null;
 
   // =========================
   // Renderizado

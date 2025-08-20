@@ -99,8 +99,8 @@ export const LayerClip = () => {
         clipY={box.y}
       >
         <ShapeImage
-          SHAPES={[]}
-          item={{
+          listShapes={[]}
+          shape={{
             id: "d5644580-df24-48ad-87fa-5cb4a51a5983",
             pageId: "main-image-render-stage",
             parentId: null,

@@ -1,8 +1,17 @@
 import { iconsWithTools } from "@/assets";
 import { css } from "@stylespixelkit/css";
 import { useAtom, useSetAtom } from "jotai";
-import { ChevronDown, ChevronRight } from "lucide-react";
+import {
+  ChevronDown,
+  ChevronRight,
+  DotIcon,
+  Eye,
+  EyeClosed,
+  Lock,
+  Unlock,
+} from "lucide-react";
 import { useState } from "react";
+import { constants } from "../constants/color";
 import {
   CHANGE_PARENTID_NODE_ATOM,
   CHANGE_SHAPE_NODE_ATOM,
@@ -11,14 +20,21 @@ import { SHAPE_ID_ATOM } from "../states/shape";
 import { ALL_SHAPES } from "../states/shapes";
 import TOOL_ATOM, { PAUSE_MODE_ATOM } from "../states/tool";
 
+type NodeProps = {
+  shape: ALL_SHAPES;
+  listShapes: ALL_SHAPES[];
+  options?: {
+    isLockedByParent?: boolean;
+    isHiddenByParent?: boolean;
+  };
+};
+
 export const Nodes = ({
-  item,
-  SHAPES,
-}: {
-  item: ALL_SHAPES;
-  SHAPES: ALL_SHAPES[];
-}) => {
-  const [value, setShape] = useAtom(item.state);
+  shape: item,
+  listShapes: SHAPES,
+  options = {},
+}: NodeProps) => {
+  const [shape, setShape] = useAtom(item.state);
   const SET_CHANGE = useSetAtom(CHANGE_SHAPE_NODE_ATOM);
   const SET_PARENT_CHANGE = useSetAtom(CHANGE_PARENTID_NODE_ATOM);
   const [shapeId, setShapeId] = useAtom(SHAPE_ID_ATOM);
@@ -26,54 +42,86 @@ export const Nodes = ({
   const setPause = useSetAtom(PAUSE_MODE_ATOM);
   const setTool = useSetAtom(TOOL_ATOM);
   const [isExpanded, setIsExpanded] = useState(true);
+  const [isHovered, setIsHovered] = useState(false);
+
+  // Determinar si este elemento está bloqueado por herencia
+  const isLockedByParent = options.isLockedByParent || false;
+  const isHiddenByParent = options.isHiddenByParent || false;
+
+  // Para los hijos, determinar qué propiedades heredar
+  const childOptions = {
+    isLockedByParent: isLockedByParent || shape.isLocked,
+    isHiddenByParent: isHiddenByParent || !shape.visible,
+  };
 
   const handleDragStart = (e: React.DragEvent) => {
     setShapeId(item?.id);
   };
+
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
   };
 
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
-    e.stopPropagation(); // ✅ Detiene la propagación hacia el ul contenedor
-
+    e.stopPropagation();
     SET_CHANGE({ endId: item.id });
   };
+
   const handleDropOutside = (e: React.DragEvent) => {
     e.preventDefault();
-    e.stopPropagation(); // ✅ Detiene la propagación hacia el ul contenedor
+    e.stopPropagation();
     SET_PARENT_CHANGE({ endId: item?.id });
-    // CLEAR_PARENT({ endId: null }); // <- Esto quitará el parentId
   };
 
   const childrens =
     item?.tool === "GROUP"
       ? SHAPES?.filter((e) => e?.parentId === item?.id)
       : [];
+
+  // Función para manejar el toggle de isLocked
+  const handleLockToggle = () => {
+    if (!isLockedByParent) {
+      setShape({
+        ...shape,
+        isLocked: !shape.isLocked,
+      });
+    }
+  };
+
+  // Función para manejar el toggle de visible
+  const handleVisibilityToggle = () => {
+    if (!isHiddenByParent) {
+      setShape({
+        ...shape,
+        visible: !shape.visible,
+      });
+    }
+  };
+
   return (
     <>
       <li
-        id={value.id + ` ${value.tool}`}
+        id={shape.id + ` ${shape.tool}`}
         draggable
         onDragStart={handleDragStart}
         onDragOver={handleDragOver}
         onDrop={handleDrop}
-        // onDrop={handleDrop}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
         className={css({
           color: "text",
           padding: "md",
-
+          height: 30,
           fontSize: "sm",
           listStyle: "none",
           display: "grid",
-          gridTemplateColumns: "15px 15px 150px",
+          gridTemplateColumns: "15px 15px 100px 40px",
           flexDirection: "row",
           alignItems: "center",
           gap: "md",
           borderRadius: "md",
-          backgroundColor: shapeId === value.id ? "gray.800" : "transparent",
-
+          backgroundColor: shapeId === shape.id ? "gray.800" : "transparent",
           _hover: {
             backgroundColor: "gray.100",
             _dark: {
@@ -81,15 +129,14 @@ export const Nodes = ({
             },
           },
           cursor: "pointer",
-          minWidth: 200,
+          width: 250,
         })}
         onClick={() => {
           setTool("MOVE");
-
-          setShapeId(value?.id);
+          setShapeId(shape?.id);
         }}
       >
-        {value.tool === "GROUP" && childrens.length > 0 ? (
+        {shape.tool === "GROUP" && childrens.length > 0 ? (
           <button
             onClick={(e) => {
               e.stopPropagation();
@@ -101,10 +148,6 @@ export const Nodes = ({
               color: "white",
               cursor: "pointer",
               fontSize: "sm",
-              _hover: {
-                backgroundColor: "primary",
-              },
-              backgroundColor: "primary",
               borderRadius: "2px",
             })}
           >
@@ -115,9 +158,11 @@ export const Nodes = ({
             )}
           </button>
         ) : (
-          <div></div>
+          <span></span>
         )}
-        {iconsWithTools[value.tool]}
+
+        {iconsWithTools[shape.tool]}
+
         <div
           onDoubleClick={() => {
             setShow(true);
@@ -127,18 +172,16 @@ export const Nodes = ({
             setShow(false);
             setPause(false);
           }}
-          // quiero que si el cursor se salga entonces lo ponga en show false
           onMouseLeave={() => {
             setShow(false);
             setPause(false);
           }}
-          //  onClick={onClick}
         >
           {show ? (
             <input
               type="text"
-              value={value?.label}
-              onChange={(e) => setShape({ ...value, label: e.target.value })}
+              value={shape?.label}
+              onChange={(e) => setShape({ ...shape, label: e.target.value })}
               className={css({
                 backgroundColor: "transparent",
                 fontSize: "11px",
@@ -152,9 +195,72 @@ export const Nodes = ({
                 fontSize: "11px",
               })}
             >
-              {value.label}
+              {shape.label}
             </p>
           )}
+        </div>
+
+        <div className={css({ display: "grid", gridTemplateColumns: "2" })}>
+          {/* Lock/Unlock Section */}
+          <div>
+            {isLockedByParent ? (
+              // Si está bloqueado por el padre, mostrar dot
+              <DotIcon
+                strokeWidth={8}
+                size={14}
+                color={constants.theme.colors.primary}
+              />
+            ) : (
+              // Si no está bloqueado por el padre, mostrar controles normales
+              <>
+                {!isHovered && shape.isLocked ? (
+                  <Lock size={14} color={constants.theme.colors.primary} />
+                ) : null}
+
+                {isHovered ? (
+                  <button onClick={handleLockToggle}>
+                    {shape.isLocked ? (
+                      <Lock size={14} color={constants.theme.colors.primary} />
+                    ) : (
+                      <Unlock size={14} />
+                    )}
+                  </button>
+                ) : null}
+              </>
+            )}
+          </div>
+
+          {/* Visibility Section */}
+          <div>
+            {isHiddenByParent ? (
+              // Si está oculto por el padre, mostrar dot
+              <DotIcon
+                strokeWidth={8}
+                size={14}
+                color={constants.theme.colors.primary}
+              />
+            ) : (
+              // Si no está oculto por el padre, mostrar controles normales
+              <>
+                {!isHovered && !shape.visible ? (
+                  <EyeClosed size={14} color={constants.theme.colors.primary} />
+                ) : null}
+
+                {isHovered ? (
+                  <button onClick={handleVisibilityToggle}>
+                    {shape.visible ? (
+                      <Eye size={14} />
+                    ) : (
+                      <EyeClosed
+                        size={14}
+                        color={constants.theme.colors.primary}
+                      />
+                    )}
+                  </button>
+                ) : null}
+              </>
+            )}
+          </div>
         </div>
       </li>
 
@@ -172,7 +278,12 @@ export const Nodes = ({
           onDrop={handleDropOutside}
         >
           {childrens.map((child) => (
-            <Nodes key={`child-${child.id}`} SHAPES={SHAPES} item={child} />
+            <Nodes
+              key={`child-${child.id}`}
+              listShapes={SHAPES}
+              shape={child}
+              options={childOptions}
+            />
           ))}
         </ul>
       )}

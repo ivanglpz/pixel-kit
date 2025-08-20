@@ -29,8 +29,8 @@ export const SidebarLeftShapes = () => {
         return (
           <Nodes
             key={`main-nodes-${e?.id}-${e?.tool}`}
-            SHAPES={ALL_SHAPES}
-            item={e}
+            listShapes={ALL_SHAPES}
+            shape={e}
           />
         );
       })}

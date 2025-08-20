@@ -2,7 +2,8 @@
 import { PrimitiveAtom, useAtom, useSetAtom } from "jotai";
 import { createPortal } from "react-dom";
 import { Html } from "react-konva-utils";
-import { tokens } from "../constants";
+
+import { constants } from "../constants/color";
 import { ALL_SHAPES } from "../states/shapes";
 import { PAUSE_MODE_ATOM } from "../states/tool";
 import { IShape, WithInitialValue } from "./type.shape";
@@ -57,7 +58,7 @@ export const PortalTextWriting = ({ item, onLeave }: Props) => {
                   background: "red",
                   fontWeight: box?.fontWeight ?? "normal",
                   fontSize: box.fontSize + "px",
-                  border: `1px solid ${tokens.colors.blue}`,
+                  border: `1px solid ${constants.theme.colors.primary}`,
                   padding: "0px",
                   margin: "0px",
                   overflow: "hidden",

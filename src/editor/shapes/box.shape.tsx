@@ -14,7 +14,7 @@ import { Transform } from "./transformer";
 import { IShape, IShapeWithEvents, WithInitialValue } from "./type.shape";
 
 // eslint-disable-next-line react/display-name
-const ShapeBox = memo(({ item }: IShapeWithEvents) => {
+const ShapeBox = memo(({ shape: item }: IShapeWithEvents) => {
   const [box, setBox] = useAtom(
     item.state as PrimitiveAtom<IShape> & WithInitialValue<IShape>
   );
@@ -28,13 +28,13 @@ const ShapeBox = memo(({ item }: IShapeWithEvents) => {
   const isSelected = shapeId === box?.id;
 
   useEffect(() => {
-    if (isSelected) {
-      if (trRef.current && shapeRef.current) {
-        trRef.current.nodes([shapeRef.current]);
-        trRef.current?.getLayer()?.batchDraw();
-      }
+    if (isSelected && trRef.current && shapeRef.current && box.visible) {
+      trRef.current.nodes([shapeRef.current]);
+      trRef.current?.getLayer()?.batchDraw();
     }
-  }, [isSelected, trRef, shapeRef]);
+  }, [isSelected, trRef, shapeRef, box.visible]);
+
+  if (!box.visible) return null;
 
   return (
     <>
@@ -47,6 +47,7 @@ const ShapeBox = memo(({ item }: IShapeWithEvents) => {
         y={y}
         width={width}
         height={height}
+        listening={!box.isLocked}
         // 3. Rotación
         // rotationDeg={rotate}
         // 4. Relleno y color
