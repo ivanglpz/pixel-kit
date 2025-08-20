@@ -7,7 +7,7 @@ import { v4 as uuidv4 } from "uuid";
 import { InputNumber } from "../components/input-number";
 import { IShape } from "../shapes/type.shape";
 import { DrawingBeforeStartAtom } from "../states/drawing";
-import { commonStyles, SectionHeader } from "./right/shape-config";
+import { commonStyles, SectionHeader } from "./sidebar-right-shape";
 
 export const Drawing = () => {
   const { isDrawing, tool } = useTool();
