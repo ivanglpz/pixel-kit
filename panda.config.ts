@@ -606,7 +606,7 @@ export default defineConfig({
         // Primary & Secondary Variants
         primary: {
           DEFAULT: {
-            value: { base: "#4B5EFC", _dark: "#4B5EFC" },
+            value: { base: "#4bacfcff", _dark: "#4bacfcff" },
           },
           hover: {
             value: { base: "rgb(0, 130, 220)", _dark: "rgb(0, 180, 220)" },

@@ -95,7 +95,7 @@ const PxStage: FC<Props> = ({ children }) => {
   const stageWidth = config.expand_stage ? Number(rstage?.width) : width; // 4K horizontal
   const stageHeight = config.expand_stage ? Number(rstage?.height) : height; // 4K vertical
 
-  const MAX_SCALE = 5; // Máximo zoom permitido
+  const MAX_SCALE = 8; // Máximo zoom permitido
   const MIN_SCALE = 1; // Mínimo zoom permitido
 
   const handleWheel = (e: Konva.KonvaEventObject<WheelEvent>) => {

@@ -20,7 +20,7 @@ export const InputAtomText: FC<{ atom: PrimitiveAtom<string> }> = ({
       className={css({
         width: "100%",
         backgroundColor: "transparent",
-        fontSize: "13px",
+        fontSize: "11px",
       })}
     />
   );

@@ -20,31 +20,24 @@ export const SidebarLeft: FC = () => {
       <div
         className={css({
           display: "grid",
-          gridTemplateRows: "240px 1px 1fr",
+          gridTemplateRows: "180px 1px 1fr",
           overflow: "hidden",
           height: "100%",
           gap: "lg",
         })}
       >
         <SidebarLeftPages />
+
         <div
           className={css({
-            backgroundColor: "gray.500",
+            backgroundColor: "gray.600",
             width: "100%",
             height: 1,
-            // paddingBottom: "lg",
           })}
         ></div>
+
         <SidebarLeftShapes />
       </div>
-      {/* </Segmentation.Item> */}
-      {/* <Segmentation.Item id="2" title="Assets">
-          <p>Contenido 2</p>
-        </Segmentation.Item> */}
-      {/* <Segmentation.Item id="2" title="Chat">
-          <Chat />
-        </Segmentation.Item>
-      </Segmentation> */}
     </aside>
   );
 };
