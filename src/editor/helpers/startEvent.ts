@@ -45,7 +45,6 @@ export const shapeStart = (props: Partial<IShape>): IShape => {
     ],
     strokes: [],
     visible: true,
-    rotate: 0,
     height: 100,
     width: 100,
     points: [],

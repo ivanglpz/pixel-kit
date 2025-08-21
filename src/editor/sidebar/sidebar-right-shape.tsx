@@ -349,6 +349,17 @@ export const LayoutShapeConfig = () => {
             onChange={(v) => shapeUpdate({ y: v })}
           />
         </div>
+        <p className={commonStyles.labelText}>Rotation</p>
+        <div className={commonStyles.twoColumnGrid}>
+          <InputNumber
+            iconType="rotate"
+            min={0}
+            max={360}
+            step={1}
+            value={shape.rotation}
+            onChange={(v) => shapeUpdate({ rotation: v })}
+          />
+        </div>
       </section>
 
       <Separator />

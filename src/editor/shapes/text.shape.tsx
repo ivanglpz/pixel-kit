@@ -22,7 +22,7 @@ export const ShapeText = memo(({ shape: item }: IShapeWithEvents) => {
   const [box, setBox] = useAtom(
     item.state as PrimitiveAtom<IShape> & WithInitialValue<IShape>
   );
-  const { width, height, rotate, x, y, strokeWidth, dash } = box;
+  const { width, height, x, y, strokeWidth, dash } = box;
 
   const shapeRef = useRef<Konva.Text>();
   const trRef = useRef<Konva.Transformer>();

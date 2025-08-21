@@ -7,6 +7,7 @@ import {
   Scan,
   Square,
   SquareDashed,
+  TriangleRight,
   X,
 } from "lucide-react";
 import { HTMLInputTypeAttribute } from "react";
@@ -23,6 +24,7 @@ const typeIcon = {
   font: <Scaling size={14} />,
   dashed: <SquareDashed size={14} />,
   square: <Square size={14} />,
+  rotate: <TriangleRight size={14} />,
 };
 type Props = {
   value: number | string;
