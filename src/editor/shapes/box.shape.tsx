@@ -4,6 +4,7 @@ import { memo, MutableRefObject, useEffect, useRef } from "react";
 import { Rect } from "react-konva";
 import { STAGE_DIMENSION_ATOM } from "../states/dimension";
 import { SHAPE_ID_ATOM } from "../states/shape";
+import { calculateRotatedPosition } from "../utils/calculateRotatedPosition";
 import {
   shapeEventDragMove,
   ShapeEventDragStart,
@@ -12,45 +13,6 @@ import {
 } from "./events.shape";
 import { Transform } from "./transformer";
 import { IShape, IShapeWithEvents, WithInitialValue } from "./type.shape";
-
-// Función para calcular la posición rotada
-const calculateRotatedPosition = (
-  x: number,
-  y: number,
-  width: number,
-  height: number,
-  rotation: number
-) => {
-  if (rotation === 0) {
-    return { x, y };
-  }
-
-  // Centro visual del elemento (donde queremos que rote)
-  const centerX = x + width / 2;
-  const centerY = y + height / 2;
-
-  // Convertir rotación a radianes
-  const radians = (rotation * Math.PI) / 180;
-
-  // Calcular la nueva posición de la esquina superior izquierda
-  // para que el centro visual permanezca en la misma posición
-  const cos = Math.cos(radians);
-  const sin = Math.sin(radians);
-
-  // Offset desde el centro al punto superior izquierdo en el sistema rotado
-  const offsetX = -width / 2;
-  const offsetY = -height / 2;
-
-  // Aplicar la rotación al offset
-  const rotatedOffsetX = offsetX * cos - offsetY * sin;
-  const rotatedOffsetY = offsetX * sin + offsetY * cos;
-
-  // Nueva posición de la esquina superior izquierda
-  return {
-    x: centerX + rotatedOffsetX,
-    y: centerY + rotatedOffsetY,
-  };
-};
 
 // eslint-disable-next-line react/display-name
 const ShapeBox = memo(({ shape: item }: IShapeWithEvents) => {
@@ -87,6 +49,9 @@ const ShapeBox = memo(({ shape: item }: IShapeWithEvents) => {
     }
   }, [isSelected, trRef, shapeRef, box.visible]);
 
+  const offsetX = box.isCreating ? 0 : width / 2;
+  const offsetY = box.isCreating ? 0 : height / 2;
+
   if (!box.visible) return null;
 
   return (
@@ -96,11 +61,16 @@ const ShapeBox = memo(({ shape: item }: IShapeWithEvents) => {
         id={box?.id}
         ref={shapeRef as MutableRefObject<Konva.Rect>}
         // 2. Posición y tamaño - calculada manualmente para rotación
-        x={rotatedPosition.x}
-        y={rotatedPosition.y}
+        x={x}
+        y={y}
         width={width}
         height={height}
         rotation={rotation}
+        offsetX={offsetX}
+        offsetY={offsetY}
+        // Sin offset - calculamos todo manualmente
+        // offsetX={width / 2}
+        // offsetY={height / 2}
         // Sin offset - calculamos todo manualmente
         listening={!box.isLocked}
         // 3. Relleno y color

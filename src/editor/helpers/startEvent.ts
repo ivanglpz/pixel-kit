@@ -24,6 +24,7 @@ export const shapeStart = (props: Partial<IShape>): IShape => {
     bordersRadius: [0, 0, 0, 0],
     effects: [],
     isLocked: false,
+    isCreating: true,
     label: props?.tool ?? "DEFAULT",
     parentId: null,
     rotation: 0,

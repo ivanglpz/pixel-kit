@@ -133,17 +133,21 @@ const useEventStage = () => {
   const handleMouseUp = () => {
     if (!CURRENT_ITEM?.id) return;
 
+    const payload: IShape = {
+      ...CURRENT_ITEM,
+      isCreating: false,
+      // isWritingNow: true,
+      // dashEnabled: false,
+      // shadowEnabled: false,
+      // strokeEnabled: false,
+    };
     if (eventStage === "CREATING") {
       if (TOOLS_BOX_BASED?.includes(CURRENT_ITEM.tool)) {
-        const payload: IShape = {
-          ...CURRENT_ITEM,
-          // isWritingNow: true,
-          // dashEnabled: false,
-          // shadowEnabled: false,
-          // strokeEnabled: false,
-        };
-
-        SET_CREATE(payload);
+        SET_CREATE({
+          ...payload,
+          x: payload.x + payload.width / 2,
+          y: payload.y + payload.height / 2,
+        });
         SET_CLEAR_CITEM();
         setEventStage("IDLE");
         setTool("MOVE");
@@ -152,16 +156,13 @@ const useEventStage = () => {
         }, 1);
       }
       if (TOOLS_LINE_BASED?.includes(CURRENT_ITEM.tool)) {
-        SET_CREATE(CURRENT_ITEM);
+        SET_CREATE(payload);
         SET_CLEAR_CITEM();
         setEventStage("CREATE");
         setTool("LINE");
       }
       if (TOOLS_DRAW_BASED?.includes(CURRENT_ITEM.tool)) {
-        SET_CREATE({
-          ...CURRENT_ITEM,
-          // bezier: true,
-        });
+        SET_CREATE(payload);
         SET_CLEAR_CITEM();
         setEventStage("CREATE");
         setTool("DRAW");

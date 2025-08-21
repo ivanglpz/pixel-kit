@@ -41,6 +41,7 @@ export type IShape = {
   x: number;
   y: number;
   parentId: string | null;
+  isCreating: boolean;
   rotation: number;
   isLocked: boolean;
   label: string;

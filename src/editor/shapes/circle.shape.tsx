@@ -19,7 +19,7 @@ export const ShapeCircle = memo(({ shape: item }: IShapeWithEvents) => {
     item.state as PrimitiveAtom<IShape> & WithInitialValue<IShape>
   );
 
-  const { width, height, rotate, x, y, strokeWidth, dash } = box;
+  const { width, height, x, y, strokeWidth, dash, rotation } = box;
 
   const shapeRef = useRef<Konva.Rect>();
   const trRef = useRef<Konva.Transformer>();
@@ -36,6 +36,11 @@ export const ShapeCircle = memo(({ shape: item }: IShapeWithEvents) => {
   const shadow = box?.effects
     ?.filter((e) => e?.visible && e?.type === "shadow")
     .at(0);
+
+  // Calcular la posición ajustada para la rotación
+
+  const offsetX = box.isCreating ? 0 : width / 2;
+  const offsetY = box.isCreating ? 0 : height / 2;
   if (!box.visible) return null;
 
   return (
@@ -49,6 +54,9 @@ export const ShapeCircle = memo(({ shape: item }: IShapeWithEvents) => {
         y={y}
         width={width}
         height={height}
+        rotation={rotation}
+        offsetX={offsetX}
+        offsetY={offsetY}
         listening={!box.isLocked}
         // 3. Rotación
         // rotationDeg={rotate}
