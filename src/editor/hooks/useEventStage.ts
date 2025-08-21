@@ -39,12 +39,13 @@ const useEventStage = () => {
 
   const setshowClip = useSetAtom(SHOW_CLIP_ATOM);
 
-  const [eventStage, setEventStage] = useAtom(EVENT_ATOM);
+  const [EVENT_STAGE, SET_EVENT_STAGE] = useAtom(EVENT_ATOM);
+  console.log(EVENT_STAGE, "EVENT_STAGE");
 
   const handleMouseDown = (event: KonvaEventObject<MouseEvent>) => {
-    if (eventStage === "CREATE") {
+    if (EVENT_STAGE === "CREATE") {
       if (TOOLS_BOX_BASED?.includes(tool)) {
-        setEventStage("CREATING");
+        SET_EVENT_STAGE("CREATING");
         const { x, y } = stageAbsolutePosition(event);
         const createStartElement = shapeStart({
           tool: tool as IShape["tool"],
@@ -55,7 +56,7 @@ const useEventStage = () => {
         SET_CREATE_CITEM(createStartElement);
       }
       if (TOOLS_LINE_BASED?.includes(tool)) {
-        setEventStage("CREATING");
+        SET_EVENT_STAGE("CREATING");
 
         const { x, y } = stageAbsolutePosition(event);
         const createStartElement = shapeStart({
@@ -70,7 +71,7 @@ const useEventStage = () => {
         SET_CREATE_CITEM(createStartElement);
       }
       if (TOOLS_DRAW_BASED?.includes(tool)) {
-        setEventStage("CREATING");
+        SET_EVENT_STAGE("CREATING");
         const { x: XStage, y: YStage } = stageAbsolutePosition(event);
         const x = XStage ?? 0;
         const y = YStage ?? 0;
@@ -85,14 +86,14 @@ const useEventStage = () => {
         SET_CREATE_CITEM(createStartElement);
       }
     }
-    if (eventStage === "COPY") {
+    if (EVENT_STAGE === "COPY") {
     }
   };
 
   const handleMouseMove = (event: KonvaEventObject<MouseEvent>) => {
     if (!CURRENT_ITEM?.tool) return;
 
-    if (eventStage === "CREATING") {
+    if (EVENT_STAGE === "CREATING") {
       if (TOOLS_BOX_BASED?.includes(CURRENT_ITEM.tool)) {
         const { x, y } = stageAbsolutePosition(event);
         const updateProgressElement = shapeProgressEvent[CURRENT_ITEM.tool];
@@ -141,7 +142,7 @@ const useEventStage = () => {
       // shadowEnabled: false,
       // strokeEnabled: false,
     };
-    if (eventStage === "CREATING") {
+    if (EVENT_STAGE === "CREATING") {
       if (TOOLS_BOX_BASED?.includes(CURRENT_ITEM.tool)) {
         SET_CREATE({
           ...payload,
@@ -149,7 +150,7 @@ const useEventStage = () => {
           y: payload.y + payload.height / 2,
         });
         SET_CLEAR_CITEM();
-        setEventStage("IDLE");
+        SET_EVENT_STAGE("IDLE");
         setTool("MOVE");
         setTimeout(() => {
           setShapeId(payload?.id);
@@ -158,13 +159,13 @@ const useEventStage = () => {
       if (TOOLS_LINE_BASED?.includes(CURRENT_ITEM.tool)) {
         SET_CREATE(payload);
         SET_CLEAR_CITEM();
-        setEventStage("CREATE");
+        SET_EVENT_STAGE("CREATE");
         setTool("LINE");
       }
       if (TOOLS_DRAW_BASED?.includes(CURRENT_ITEM.tool)) {
         SET_CREATE(payload);
         SET_CLEAR_CITEM();
-        setEventStage("CREATE");
+        SET_EVENT_STAGE("CREATE");
         setTool("DRAW");
       }
     }
@@ -188,7 +189,7 @@ const useEventStage = () => {
         }
       }
       if (KEY === "ALT") {
-        setEventStage("COPY");
+        SET_EVENT_STAGE("COPY");
       }
 
       const keysActions = Object.fromEntries(
@@ -205,7 +206,7 @@ const useEventStage = () => {
       if (keysActions[KEY]) {
         setshowClip(Boolean(keysActions[KEY].showClip));
         toolKeydown(keysActions[KEY].keyMethod);
-        setEventStage(keysActions[KEY].eventStage);
+        SET_EVENT_STAGE(keysActions[KEY].eventStage);
       }
     };
 
@@ -323,7 +324,7 @@ const useEventStage = () => {
   useEffect(() => {
     const handleVisibilityChange = () => {
       setTool("MOVE");
-      setEventStage("IDLE");
+      SET_EVENT_STAGE("IDLE");
     };
 
     document.addEventListener("visibilitychange", handleVisibilityChange);
