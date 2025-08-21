@@ -22,7 +22,7 @@ export const ShapeText = memo(({ shape: item }: IShapeWithEvents) => {
   const [box, setBox] = useAtom(
     item.state as PrimitiveAtom<IShape> & WithInitialValue<IShape>
   );
-  const { width, height, x, y, strokeWidth, dash } = box;
+  const { width, height, x, y, strokeWidth, dash, rotation } = box;
 
   const shapeRef = useRef<Konva.Text>();
   const trRef = useRef<Konva.Transformer>();
@@ -40,6 +40,9 @@ export const ShapeText = memo(({ shape: item }: IShapeWithEvents) => {
   const shadow = box?.effects
     ?.filter((e) => e?.visible && e?.type === "shadow")
     .at(0);
+
+  const offsetX = box.isCreating ? 0 : width / 2;
+  const offsetY = box.isCreating ? 0 : height / 2;
 
   if (!box.visible) return null;
   return (
@@ -61,6 +64,9 @@ export const ShapeText = memo(({ shape: item }: IShapeWithEvents) => {
         listening={!box.isLocked}
         fontSize={box?.fontSize}
         lineHeight={1.45}
+        rotation={rotation}
+        offsetX={offsetX}
+        offsetY={offsetY}
         // 3. Rotación
         // rotationDeg={rotate}
         // 4. Relleno y color

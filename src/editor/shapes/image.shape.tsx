@@ -73,7 +73,7 @@ export const ShapeImage = memo((props: IShapeWithEvents) => {
   const fill = box.fills
     ?.filter((e) => e?.visible && e?.type === "image")
     .at(0);
-  const { x, y, strokeWidth, dash } = box;
+  const { width, height, x, y, strokeWidth, dash, rotation } = box;
 
   // Memoización de la imagen base
   const Imagee = useMemo(() => {
@@ -119,6 +119,9 @@ export const ShapeImage = memo((props: IShapeWithEvents) => {
     }
   }, [isSelected, trRef, shapeRef, box.visible]);
 
+  const offsetX = box.isCreating ? 0 : width / 2;
+  const offsetY = box.isCreating ? 0 : height / 2;
+
   if (!box.visible) return null;
 
   // =========================
@@ -139,6 +142,9 @@ export const ShapeImage = memo((props: IShapeWithEvents) => {
         globalCompositeOperation="source-over"
         image={Imagee}
         // 3. Rotación
+        rotation={rotation}
+        offsetX={offsetX}
+        offsetY={offsetY}
         // rotationDeg={rotate}
         listening={!box.isLocked}
         // 4. Relleno

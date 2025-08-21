@@ -17,10 +17,13 @@ export const ShapeGroup = memo(
       item.state as PrimitiveAtom<IShape> & WithInitialValue<IShape>
     );
 
-    const { x, y, height, width } = box;
+    const { x, y, height, width, rotation } = box;
 
     const childrens = SHAPES?.filter((e) => e?.parentId === box?.id);
     if (!box.visible) return null;
+
+    const offsetX = box.isCreating ? 0 : width / 2;
+    const offsetY = box.isCreating ? 0 : height / 2;
     return (
       <>
         <ShapeBox shape={item} listShapes={[]} />
@@ -31,6 +34,9 @@ export const ShapeGroup = memo(
           width={width}
           height={height}
           listening={!box.isLocked}
+          rotation={rotation}
+          offsetX={offsetX}
+          offsetY={offsetY}
         >
           {childrens?.map((item) => {
             const Component = Shapes?.[item?.tool] as FCShapeWEvents;

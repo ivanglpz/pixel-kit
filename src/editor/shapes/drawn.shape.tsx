@@ -18,23 +18,46 @@ import {
   shapeEventDragStop,
   shapeTransformEnd,
 } from "./events.shape";
-export const ShapeDraw = memo(({ shape: item }: IShapeWithEvents) => {
-  // const {
-  //   draggable,
-  //   isSelected,
-  //   onClick,
-  //   onDragMove,
-  //   onDragStart,
-  //   onDragStop,
-  //   screenHeight,
-  //   screenWidth,
-  // } = item;
 
+type LineDimensions = {
+  width: number;
+  height: number;
+};
+
+const calculateLineDimensions = (
+  points: number[] | undefined
+): LineDimensions => {
+  if (!points || points.length < 2) {
+    return { width: 0, height: 0 };
+  }
+
+  let minX: number = points[0];
+  let minY: number = points[1];
+  let maxX: number = points[0];
+  let maxY: number = points[1];
+
+  for (let i = 0; i < points.length; i += 2) {
+    const x: number = points[i];
+    const y: number = points[i + 1];
+
+    if (x < minX) minX = x;
+    if (x > maxX) maxX = x;
+    if (y < minY) minY = y;
+    if (y > maxY) maxY = y;
+  }
+
+  return {
+    width: Math.max(maxX - minX, 1),
+    height: Math.max(maxY - minY, 1),
+  };
+};
+
+export const ShapeDraw = memo(({ shape: item }: IShapeWithEvents) => {
   const [box, setBox] = useAtom(
     item.state as PrimitiveAtom<IShape> & WithInitialValue<IShape>
   );
 
-  const { width, height, rotate, x, y, strokeWidth, dash } = box;
+  const { x, y, strokeWidth, dash, rotation } = box;
 
   const shapeRef = useRef<Konva.Line>();
   const trRef = useRef<Konva.Transformer>();
@@ -65,8 +88,7 @@ export const ShapeDraw = memo(({ shape: item }: IShapeWithEvents) => {
         // 2. Posición y tamaño
         x={x}
         y={y}
-        width={width}
-        height={height}
+        rotation={rotation}
         listening={!box.isLocked}
         points={box.points ?? []}
         globalCompositeOperation="source-over"
