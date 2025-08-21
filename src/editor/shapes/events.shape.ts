@@ -88,7 +88,7 @@ export const shapeTransformEnd =
       ...prev,
       x: evt.target.x(),
       y: evt.target.y(),
-      rotate: prev.rotate,
+      rotate: prev.rotation,
       width: Math.max(5, evt.target.width() * scaleX),
       height: Math.max(evt.target.height() * scaleY),
     };

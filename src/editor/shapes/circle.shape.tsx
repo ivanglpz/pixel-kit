@@ -97,11 +97,18 @@ export const ShapeCircle = memo(({ shape: item }: IShapeWithEvents) => {
           )
         }
         onDragEnd={(e) => setBox(shapeEventDragStop(e))}
-        onTransform={(e) =>
-          setBox(
-            shapeEventDragMove(e, stageDimensions.width, stageDimensions.height)
-          )
-        }
+        onTransform={(e) => {
+          setBox({
+            ...box,
+            rotation: e.target.rotation(),
+            ...shapeEventDragMove(
+              e,
+              stageDimensions.width,
+              stageDimensions.height
+            ),
+          });
+          setBox(shapeTransformEnd(e));
+        }}
         onTransformEnd={(e) => setBox(shapeTransformEnd(e))}
       />
       <Transform isSelected={isSelected} ref={trRef} />
