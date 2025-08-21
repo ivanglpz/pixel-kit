@@ -8,6 +8,7 @@ export type IStageEvents =
   | "CREATING"
   | "CLIPING"
   | "COPYING"
+  | "COPY"
   | "MULTI_SELECT";
 
 export const EVENT_ATOM = atom(

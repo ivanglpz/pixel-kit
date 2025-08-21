@@ -5,25 +5,29 @@ import { FCShapeWEvents } from "../shapes/type.shape";
 import CURRENT_ITEM_ATOM from "../states/currentItem";
 
 export const LayerPipe = () => {
-  const CURRENT_ITEM = useAtomValue(CURRENT_ITEM_ATOM);
+  const CURRENT_ITEMS = useAtomValue(CURRENT_ITEM_ATOM);
 
-  if (!CURRENT_ITEM?.id) return null;
-  const Component = Shapes?.[CURRENT_ITEM?.tool] as FCShapeWEvents;
+  if (CURRENT_ITEMS?.length === 0) return null;
 
   return (
     <>
       <Layer id="layer-pipe-shapes">
-        <Component
-          listShapes={[]}
-          shape={{
-            id: "1",
-            state: atom(CURRENT_ITEM),
-            pageId: "main-image-render-stage",
-            tool: CURRENT_ITEM.tool,
-            parentId: null,
-          }}
-          key={`pixel-kit-temporal-shape-${CURRENT_ITEM.id}`}
-        />
+        {CURRENT_ITEMS?.map((item) => {
+          const Component = Shapes?.[item?.tool] as FCShapeWEvents;
+          return (
+            <Component
+              listShapes={[]}
+              shape={{
+                id: "1",
+                state: atom(item),
+                pageId: "main-image-render-stage",
+                tool: item.tool,
+                parentId: null,
+              }}
+              key={`pixel-kit-temporal-shape-${item.id}`}
+            />
+          );
+        })}
       </Layer>
     </>
   );
