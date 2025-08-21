@@ -8,14 +8,20 @@ import { useEffect } from "react";
 import { v4 as uuidv4 } from "uuid";
 import stageAbsolutePosition from "../helpers/position";
 import { shapeProgressEvent } from "../helpers/progressEvent";
-import { shapeStart } from "../helpers/startEvent";
+import { cloneDeep, shapeStart } from "../helpers/startEvent";
 import CURRENT_ITEM_ATOM, {
   CLEAR_CURRENT_ITEM_ATOM,
   CREATE_CURRENT_ITEM_ATOM,
 } from "../states/currentItem";
 import { DRAW_START_CONFIG_ATOM } from "../states/drawing";
 import { EVENT_ATOM } from "../states/event";
-import { ADD_SHAPE_ID_ATOM, REMOVE_SHAPE_ID_ATOM } from "../states/shape";
+import {
+  ADD_SHAPE_ID_ATOM,
+  GET_SELECTED_SHAPES_ATOM,
+  REMOVE_SHAPE_ID_ATOM,
+  RESET_SHAPES_IDS_ATOM,
+  UPDATE_SHAPES_IDS_ATOM,
+} from "../states/shape";
 import { CREATE_SHAPE_ATOM, DELETE_SHAPE_ATOM } from "../states/shapes";
 import { useConfiguration } from "./useConfiguration";
 
@@ -31,10 +37,13 @@ const useEventStage = () => {
   const DELETE_SHAPE = useSetAtom(DELETE_SHAPE_ATOM);
   const [shapeId, setShapeId] = useAtom(ADD_SHAPE_ID_ATOM);
   const removeShapeId = useSetAtom(REMOVE_SHAPE_ID_ATOM);
+  const SET_UPDATE_SHAPES_IDS = useSetAtom(UPDATE_SHAPES_IDS_ATOM);
   const SET_CREATE_CITEM = useSetAtom(CREATE_CURRENT_ITEM_ATOM);
   const SET_CLEAR_CITEM = useSetAtom(CLEAR_CURRENT_ITEM_ATOM);
   const [CURRENT_ITEM, SET_UPDATE_CITEM] = useAtom(CURRENT_ITEM_ATOM);
   const drawConfig = useAtomValue(DRAW_START_CONFIG_ATOM);
+  const resetShapesIds = useSetAtom(RESET_SHAPES_IDS_ATOM);
+  const selectedShapes = useAtomValue(GET_SELECTED_SHAPES_ATOM);
 
   const { config } = useConfiguration();
 
@@ -51,9 +60,8 @@ const useEventStage = () => {
           tool: tool as IShape["tool"],
           x,
           y,
-          // isWritingNow: false,
         });
-        SET_CREATE_CITEM(createStartElement);
+        SET_CREATE_CITEM([createStartElement]);
       }
       if (TOOLS_LINE_BASED?.includes(tool)) {
         SET_EVENT_STAGE("CREATING");
@@ -68,7 +76,7 @@ const useEventStage = () => {
           // isWritingNow: false,
           id: uuidv4(),
         });
-        SET_CREATE_CITEM(createStartElement);
+        SET_CREATE_CITEM([createStartElement]);
       }
       if (TOOLS_DRAW_BASED?.includes(tool)) {
         SET_EVENT_STAGE("CREATING");
@@ -83,102 +91,124 @@ const useEventStage = () => {
           points: [x, y, x, y],
           id: uuidv4(),
         });
-        SET_CREATE_CITEM(createStartElement);
+        SET_CREATE_CITEM([createStartElement]);
       }
     }
-    if (EVENT_STAGE === "COPYING") {
-      if (!shapeId) return;
-      const { x, y } = stageAbsolutePosition(event);
-      console.log(x, y);
-
-      console.log(shapeId, "shapeid");
+    if (EVENT_STAGE === "COPY") {
+      const selected = selectedShapes();
+      const { x: startX, y: startY } = stageAbsolutePosition(event);
+      const newShapes = selected?.map((e) => {
+        return cloneDeep({
+          ...e,
+          id: uuidv4(),
+          // x: startX - e.x,
+          // y: startY - e.y,
+        });
+      });
+      resetShapesIds();
+      SET_CREATE_CITEM(newShapes);
+      SET_EVENT_STAGE("COPYING");
     }
   };
 
   const handleMouseMove = (event: KonvaEventObject<MouseEvent>) => {
-    if (!CURRENT_ITEM?.tool) return;
-
     if (EVENT_STAGE === "CREATING") {
-      if (TOOLS_BOX_BASED?.includes(CURRENT_ITEM.tool)) {
+      const newShape = CURRENT_ITEM.at(0);
+      if (!newShape) return;
+      if (TOOLS_BOX_BASED?.includes(newShape.tool)) {
         const { x, y } = stageAbsolutePosition(event);
-        const updateProgressElement = shapeProgressEvent[CURRENT_ITEM.tool];
+        const updateProgressElement = shapeProgressEvent[newShape.tool];
 
-        const updateShape = updateProgressElement(x, y, CURRENT_ITEM);
-        SET_UPDATE_CITEM(updateShape);
+        const updateShape = updateProgressElement(x, y, newShape);
+        SET_UPDATE_CITEM([updateShape]);
       }
-      if (TOOLS_LINE_BASED?.includes(CURRENT_ITEM.tool)) {
+      if (TOOLS_LINE_BASED?.includes(newShape.tool)) {
         const { x, y } = stageAbsolutePosition(event);
-        const updateProgressElement = shapeProgressEvent[CURRENT_ITEM.tool];
+        const updateProgressElement = shapeProgressEvent[newShape.tool];
 
         const updateShape = updateProgressElement(x, y, {
-          ...CURRENT_ITEM,
+          ...newShape,
           points: [
-            CURRENT_ITEM?.points?.[0] ?? 0,
-            CURRENT_ITEM?.points?.[1] ?? 0,
+            newShape?.points?.[0] ?? 0,
+            newShape?.points?.[1] ?? 0,
             x,
             y,
           ],
         });
 
-        SET_UPDATE_CITEM(updateShape);
+        SET_UPDATE_CITEM([updateShape]);
       }
-      if (TOOLS_DRAW_BASED?.includes(CURRENT_ITEM.tool)) {
-        const updateProgressElement = shapeProgressEvent[CURRENT_ITEM.tool];
+      if (TOOLS_DRAW_BASED?.includes(newShape.tool)) {
+        const updateProgressElement = shapeProgressEvent[newShape.tool];
         const { x: XStage, y: YStage } = stageAbsolutePosition(event);
         const x = XStage ?? 0;
         const y = YStage ?? 0;
         const updateShape = updateProgressElement(x, y, {
-          ...CURRENT_ITEM,
-          points: CURRENT_ITEM.points?.concat([x, y]),
+          ...newShape,
+          points: newShape.points?.concat([x, y]),
         });
-        SET_UPDATE_CITEM(updateShape);
+        SET_UPDATE_CITEM([updateShape]);
       }
+    }
+    if (EVENT_STAGE === "COPYING") {
+      const currentShapes = CURRENT_ITEM;
+      const { x: startX, y: startY } = stageAbsolutePosition(event);
+
+      const newShapes = currentShapes?.map((e) => ({
+        ...e,
+        x: startX - e.x,
+        y: startY - e.y,
+      }));
+      SET_UPDATE_CITEM(newShapes);
     }
   };
 
   const handleMouseUp = () => {
-    if (!CURRENT_ITEM?.id) return;
+    const payloads = CURRENT_ITEM?.map((e) => ({ ...e, isCreating: false }));
 
-    const payload: IShape = {
-      ...CURRENT_ITEM,
-      isCreating: false,
-      // isWritingNow: true,
-      // dashEnabled: false,
-      // shadowEnabled: false,
-      // strokeEnabled: false,
-    };
     if (EVENT_STAGE === "CREATING") {
-      if (TOOLS_BOX_BASED?.includes(CURRENT_ITEM.tool)) {
+      const newShape = payloads.at(0);
+      if (!newShape) return;
+      if (TOOLS_BOX_BASED?.includes(newShape.tool)) {
         SET_CREATE({
-          ...payload,
-          x: payload.x + payload.width / 2,
-          y: payload.y + payload.height / 2,
+          ...newShape,
+          x: newShape.x + newShape.width / 2,
+          y: newShape.y + newShape.height / 2,
         });
         SET_CLEAR_CITEM();
         SET_EVENT_STAGE("IDLE");
         setTool("MOVE");
         setTimeout(() => {
-          setShapeId(payload?.id);
+          setShapeId(newShape?.id);
         }, 1);
       }
-      if (TOOLS_LINE_BASED?.includes(CURRENT_ITEM.tool)) {
-        SET_CREATE(payload);
+      if (TOOLS_LINE_BASED?.includes(newShape.tool)) {
+        SET_CREATE(newShape);
         SET_CLEAR_CITEM();
         SET_EVENT_STAGE("CREATE");
         setTool("LINE");
       }
-      if (TOOLS_DRAW_BASED?.includes(CURRENT_ITEM.tool)) {
-        SET_CREATE(payload);
+      if (TOOLS_DRAW_BASED?.includes(newShape.tool)) {
+        SET_CREATE(newShape);
         SET_CLEAR_CITEM();
         SET_EVENT_STAGE("CREATE");
         setTool("DRAW");
       }
     }
+    if (EVENT_STAGE === "COPYING") {
+      for (const element of CURRENT_ITEM) {
+        SET_CREATE(element);
+      }
+      SET_UPDATE_SHAPES_IDS(CURRENT_ITEM?.map((e) => e?.id));
+      SET_CLEAR_CITEM();
+      SET_EVENT_STAGE("IDLE");
+      setTool("MOVE");
+    }
   };
   const toolKeydown = (kl: IKeyTool) => {
     setTool(kl);
     SET_CLEAR_CITEM();
-    // removeShapeId(kl);
+    resetShapesIds();
   };
 
   useEffect(() => {
@@ -329,7 +359,7 @@ const useEventStage = () => {
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent): void => {
       if (event.key === "Alt") {
-        SET_EVENT_STAGE("COPYING");
+        SET_EVENT_STAGE("COPY");
       }
       if (event.key === "Shift") {
         SET_EVENT_STAGE("MULTI_SELECT");
@@ -337,7 +367,7 @@ const useEventStage = () => {
     };
 
     const handleKeyUp = (event: KeyboardEvent): void => {
-      if (event.key === "Alt" || event.key === "Shift") {
+      if (event.key === "Shift") {
         SET_EVENT_STAGE("IDLE");
       }
     };

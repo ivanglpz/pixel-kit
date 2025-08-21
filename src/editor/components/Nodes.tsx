@@ -43,7 +43,6 @@ export const Nodes = ({
   const setTool = useSetAtom(TOOL_ATOM);
   const [isExpanded, setIsExpanded] = useState(true);
   const [isHovered, setIsHovered] = useState(false);
-  console.log(shapeId, "shapeId");
 
   // Determinar si este elemento está bloqueado por herencia
   const isLockedByParent = options.isLockedByParent || false;

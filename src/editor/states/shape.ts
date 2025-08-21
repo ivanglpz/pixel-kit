@@ -2,14 +2,14 @@ import { IShape } from "@/editor/shapes/type.shape";
 import { atom } from "jotai";
 import { EVENT_ATOM } from "./event";
 import { PROJECT_ATOM } from "./projects";
-import ALL_SHAPES_ATOM from "./shapes";
+import ALL_SHAPES_ATOM, { ROOT_SHAPES_ATOM } from "./shapes";
 
 export const ADD_SHAPE_ID_ATOM = atom(
   (get) => get(get(PROJECT_ATOM).SHAPE.ID),
-  (_get, _set, id: string) => {
-    const ids = _get(PROJECT_ATOM).SHAPE.ID;
-    const event = _get(EVENT_ATOM);
-    const listIds = _get(ids);
+  (get, _set, id: string) => {
+    const ids = get(PROJECT_ATOM).SHAPE.ID;
+    const event = get(EVENT_ATOM);
+    const listIds = get(ids);
 
     if (event === "MULTI_SELECT") {
       _set(ids, [...listIds, id]);
@@ -19,6 +19,11 @@ export const ADD_SHAPE_ID_ATOM = atom(
     _set(ids, [id]);
   }
 );
+export const UPDATE_SHAPES_IDS_ATOM = atom(null, (get, set, args: string[]) => {
+  const ids = get(PROJECT_ATOM).SHAPE.ID;
+
+  set(ids, args);
+});
 
 export const REMOVE_SHAPE_ID_ATOM = atom(null, (get, set, args: string) => {
   const ids = get(PROJECT_ATOM).SHAPE.ID;
@@ -40,6 +45,13 @@ export const SHAPE_SELECTED_ATOM = atom((get) => {
   if (!shape || !shape.state) return null;
 
   return get(shape?.state);
+});
+
+export const GET_SELECTED_SHAPES_ATOM = atom((get) => {
+  return () =>
+    get(ROOT_SHAPES_ATOM)
+      ?.filter((e) => get(ADD_SHAPE_ID_ATOM).includes(e?.id))
+      ?.map((e) => get(e?.state));
 });
 
 export const SHAPE_UPDATE_ATOM = atom(
