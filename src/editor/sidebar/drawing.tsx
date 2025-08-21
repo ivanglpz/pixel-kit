@@ -1,3 +1,4 @@
+import { Valid } from "@/components/valid";
 import InputColor from "@/editor/components/input-color";
 import { css } from "@stylespixelkit/css";
 import { useAtom, useAtomValue } from "jotai";
@@ -68,11 +69,7 @@ export const Drawing = () => {
         {
           type: "shadow",
           visible: true,
-          blur: 0,
           color: "#000",
-          opacity: 1,
-          x: 5,
-          y: 5,
           id: uuidv4(),
         },
       ],
@@ -102,21 +99,6 @@ export const Drawing = () => {
   const handleEffectRemove = (index: number) => {
     const newEffects = [...(shape.effects ?? [])];
     newEffects.splice(index, 1);
-    setShape({
-      ...shape,
-
-      effects: newEffects,
-    });
-  };
-
-  // Manejadores específicos para propiedades de effects
-  const handleEffectPropertyChange = (
-    index: number,
-    property: "x" | "y" | "blur" | "opacity",
-    value: number
-  ) => {
-    const newEffects = [...(shape.effects ?? [])];
-    newEffects[index][property] = value;
     setShape({
       ...shape,
 
@@ -317,53 +299,48 @@ export const Drawing = () => {
               <Minus size={18} />
             </button>
           </div>
-
-          {/* Controles detallados del efecto */}
-          <div
-            className={css({
-              display: "grid",
-              gridTemplateColumns: 2,
-              gridTemplateRows: 2,
-              gap: "lg",
-            })}
-          >
-            {/* TODO: Corregir los manejadores - actualmente todos actualizan 'dash' */}
-            <InputNumber
-              iconType="x"
-              min={0}
-              labelText="x"
-              max={100}
-              onChange={(e) => handleEffectPropertyChange(index, "x", e)} // FIXME: debería actualizar effect.x
-              value={effect.x}
-            />
-            <InputNumber
-              iconType="y"
-              labelText="y"
-              min={0}
-              max={100}
-              onChange={(e) => handleEffectPropertyChange(index, "y", e)} // FIXME: debería actualizar effect.y
-              value={effect.y}
-            />
-            <InputNumber
-              iconType="square"
-              labelText="blur"
-              min={0}
-              max={100}
-              onChange={(e) => handleEffectPropertyChange(index, "blur", e)} // FIXME: debería actualizar effect.blur
-              value={effect.blur}
-            />
-            <InputNumber
-              iconType="opacity"
-              labelText="opacity"
-              min={0}
-              max={1}
-              step={0.1}
-              onChange={(e) => handleEffectPropertyChange(index, "opacity", e)} // FIXME: debería actualizar effect.opacity
-              value={effect.opacity}
-            />
-          </div>
         </section>
       ))}
+      {/* Controles detallados del efecto */}
+      <Valid isValid={shape.effects.length > 0}>
+        <p className={commonStyles.labelText}>Position</p>
+        <div className={commonStyles.twoColumnGrid}>
+          {/* TODO: Corregir los manejadores - actualmente todos actualizan 'dash' */}
+          <InputNumber
+            iconType="x"
+            min={0}
+            max={100}
+            onChange={(e) => setShape({ ...shape, shadowOffsetX: e })} // FIXME: debería actualizar effect.x
+            value={shape.shadowOffsetX}
+          />
+          <InputNumber
+            iconType="y"
+            min={0}
+            max={100}
+            onChange={(e) => setShape({ ...shape, shadowOffsetY: e })} // FIXME: debería actualizar effect.y
+            value={shape.shadowOffsetY}
+          />
+        </div>
+        <div className={commonStyles.twoColumnGrid}>
+          <InputNumber
+            iconType="square"
+            labelText="blur"
+            min={0}
+            max={100}
+            onChange={(e) => setShape({ ...shape, shadowBlur: e })} // FIXME: debería actualizar effect.blur
+            value={shape.shadowBlur}
+          />
+          <InputNumber
+            iconType="opacity"
+            labelText="opacity"
+            min={0}
+            max={1}
+            step={0.1}
+            onChange={(e) => setShape({ ...shape, shadowOpacity: e })} // FIXME: debería actualizar effect.opacity
+            value={shape.shadowOpacity}
+          />
+        </div>
+      </Valid>
     </div>
   );
 };
