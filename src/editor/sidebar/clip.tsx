@@ -1,14 +1,14 @@
-import { useTool } from "@/editor/hooks";
 import { useReference } from "@/editor/hooks/useReference";
 import { CLIP_DIMENSION_ATOM, SHOW_CLIP_ATOM } from "@/editor/states/clipImage";
 import { css } from "@stylespixelkit/css";
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { InputNumber } from "../components/input-number";
 import { IMAGE_RENDER_ATOM, RESTORE_ORIGINAL_RENDER } from "../states/image";
+import TOOL_ATOM from "../states/tool";
 
 export const Clip = () => {
-  const { setTool } = useTool();
   const { ref } = useReference({ type: "CLIP" });
+  const setTool = useSetAtom(TOOL_ATOM);
   const [showClip, setshowClip] = useAtom(SHOW_CLIP_ATOM);
   const reset = useSetAtom(RESTORE_ORIGINAL_RENDER);
   const setClipImage = useSetAtom(IMAGE_RENDER_ATOM);

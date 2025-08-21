@@ -1,19 +1,20 @@
 import InputColor from "@/editor/components/input-color";
-import { useTool } from "@/editor/hooks";
 import { css } from "@stylespixelkit/css";
-import { useAtom } from "jotai";
+import { useAtom, useAtomValue } from "jotai";
 import { Brush, Eye, EyeOff, Minus, PenTool, Ruler } from "lucide-react";
 import { v4 as uuidv4 } from "uuid";
 import { InputNumber } from "../components/input-number";
 import { IShape } from "../shapes/type.shape";
-import { DrawingBeforeStartAtom } from "../states/drawing";
+import { DRAW_START_CONFIG_ATOM } from "../states/drawing";
+import TOOL_ATOM from "../states/tool";
 import { commonStyles, SectionHeader } from "./sidebar-right-shape";
 
 export const Drawing = () => {
-  const { isDrawing, tool } = useTool();
-  const [shape, setShape] = useAtom(DrawingBeforeStartAtom);
+  const tool = useAtomValue(TOOL_ATOM);
 
-  if (!isDrawing && tool !== "LINE") return null;
+  const [shape, setShape] = useAtom(DRAW_START_CONFIG_ATOM);
+
+  if (!["DRAW", "LINE"].includes(tool)) return null;
 
   // Manejadores para strokes
   const handleAddStroke = () => {
