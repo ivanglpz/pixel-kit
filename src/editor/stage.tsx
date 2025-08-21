@@ -11,7 +11,7 @@ import useEventStage from "./hooks/useEventStage";
 import { useReference } from "./hooks/useReference";
 import { Tools } from "./sidebar/Tools";
 import { STAGE_DIMENSION_ATOM } from "./states/dimension";
-import { SHAPE_ID_ATOM } from "./states/shape";
+import { RESET_SHAPES_IDS_ATOM } from "./states/shape";
 import TOOL_ATOM from "./states/tool";
 
 type Props = {
@@ -27,7 +27,7 @@ const PxStage: FC<Props> = ({ children }) => {
 
   const { config } = useConfiguration(); // ✅ Ahora usamos config.expand2K
 
-  const setShapeId = useSetAtom(SHAPE_ID_ATOM);
+  const resetShapesIds = useSetAtom(RESET_SHAPES_IDS_ATOM);
   const { handleMouseDown, handleMouseUp, handleMouseMove } = useEventStage();
 
   const { handleSetRef } = useReference({
@@ -44,7 +44,7 @@ const PxStage: FC<Props> = ({ children }) => {
         targetId
       )
     ) {
-      setShapeId(null);
+      resetShapesIds();
       setTool("MOVE");
     }
   };

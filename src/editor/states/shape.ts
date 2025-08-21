@@ -1,17 +1,41 @@
 import { IShape } from "@/editor/shapes/type.shape";
 import { atom } from "jotai";
+import { EVENT_ATOM } from "./event";
 import { PROJECT_ATOM } from "./projects";
 import ALL_SHAPES_ATOM from "./shapes";
 
-export const SHAPE_ID_ATOM = atom(
+export const ADD_SHAPE_ID_ATOM = atom(
   (get) => get(get(PROJECT_ATOM).SHAPE.ID),
-  (_get, _set, newTool: string | null) => {
-    const toolAtom = _get(PROJECT_ATOM).SHAPE.ID;
-    _set(toolAtom, newTool);
+  (_get, _set, id: string) => {
+    const ids = _get(PROJECT_ATOM).SHAPE.ID;
+    const event = _get(EVENT_ATOM);
+    const listIds = _get(ids);
+
+    if (event === "MULTI_SELECT") {
+      _set(ids, [...listIds, id]);
+      return;
+    }
+
+    _set(ids, [id]);
   }
 );
+
+export const REMOVE_SHAPE_ID_ATOM = atom(null, (get, set, args: string) => {
+  const ids = get(PROJECT_ATOM).SHAPE.ID;
+  const listIds = get(get(PROJECT_ATOM).SHAPE.ID);
+
+  set(
+    ids,
+    listIds?.filter((e) => e !== args)
+  );
+});
+export const RESET_SHAPES_IDS_ATOM = atom(null, (get, set) => {
+  set(get(PROJECT_ATOM).SHAPE.ID, []);
+});
 export const SHAPE_SELECTED_ATOM = atom((get) => {
-  const shape = get(ALL_SHAPES_ATOM)?.find((e) => e?.id === get(SHAPE_ID_ATOM));
+  const shape = get(ALL_SHAPES_ATOM)?.find(
+    (e) => e?.id === get(ADD_SHAPE_ID_ATOM).at(0)
+  );
 
   if (!shape || !shape.state) return null;
 
@@ -22,7 +46,7 @@ export const SHAPE_UPDATE_ATOM = atom(
   null,
   (get, set, args: Partial<IShape>) => {
     const findShape = get(ALL_SHAPES_ATOM)?.find(
-      (e) => e?.id === get(SHAPE_ID_ATOM)
+      (e) => e?.id === get(ADD_SHAPE_ID_ATOM).at(0)
     );
     if (!findShape || !findShape.state) return null;
     set(findShape?.state, { ...get(findShape.state), ...args });

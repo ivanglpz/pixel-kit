@@ -3,8 +3,7 @@ import Konva from "konva";
 import { memo, MutableRefObject, useEffect, useRef } from "react";
 import { Rect } from "react-konva";
 import { STAGE_DIMENSION_ATOM } from "../states/dimension";
-import { SHAPE_ID_ATOM } from "../states/shape";
-import { calculateRotatedPosition } from "../utils/calculateRotatedPosition";
+import { ADD_SHAPE_ID_ATOM } from "../states/shape";
 import {
   shapeEventDragMove,
   ShapeEventDragStart,
@@ -26,17 +25,10 @@ const ShapeBox = memo(({ shape: item }: IShapeWithEvents) => {
   const shapeRef = useRef<Konva.Rect>();
   const trRef = useRef<Konva.Transformer>();
   const stageDimensions = useAtomValue(STAGE_DIMENSION_ATOM);
-  const [shapeId, setShapeId] = useAtom(SHAPE_ID_ATOM);
-  const isSelected = shapeId === box?.id;
+  const [shapeId, setShapeId] = useAtom(ADD_SHAPE_ID_ATOM);
+  const isSelected = shapeId.includes(box.id);
 
   // Calcular la posición ajustada para la rotación
-  const rotatedPosition = calculateRotatedPosition(
-    x,
-    y,
-    width,
-    height,
-    rotation
-  );
 
   const shadow = box?.effects
     ?.filter((e) => e?.visible && e?.type === "shadow")
@@ -98,7 +90,7 @@ const ShapeBox = memo(({ shape: item }: IShapeWithEvents) => {
         // 6. Apariencia y opacidad
         opacity={box?.opacity ?? 1}
         // 7. Interactividad y arrastre
-        draggable={shapeId === box?.id}
+        draggable={isSelected}
         // 8. Eventos
         onTap={() => setShapeId(box?.id)}
         onClick={() => setShapeId(box?.id)}
