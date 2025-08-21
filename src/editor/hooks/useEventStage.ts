@@ -13,11 +13,11 @@ import CURRENT_ITEM_ATOM, {
   CLEAR_CURRENT_ITEM_ATOM,
   CREATE_CURRENT_ITEM_ATOM,
 } from "../states/currentItem";
+import { DRAW_START_CONFIG_ATOM } from "../states/drawing";
 import { EVENT_ATOM } from "../states/event";
 import { SHAPE_ID_ATOM } from "../states/shape";
 import { CREATE_SHAPE_ATOM, DELETE_SHAPE_ATOM } from "../states/shapes";
 import { useConfiguration } from "./useConfiguration";
-import { useStartDrawing } from "./useStartDrawing";
 
 const TOOLS_BOX_BASED = ["BOX", "CIRCLE", "IMAGE", "TEXT", "GROUP"];
 
@@ -29,11 +29,11 @@ const useEventStage = () => {
   const PAUSE = useAtomValue(PAUSE_MODE_ATOM);
   const SET_CREATE = useSetAtom(CREATE_SHAPE_ATOM);
   const DELETE_SHAPE = useSetAtom(DELETE_SHAPE_ATOM);
-  const { state } = useStartDrawing();
   const [shapeId, setShapeId] = useAtom(SHAPE_ID_ATOM);
   const SET_CREATE_CITEM = useSetAtom(CREATE_CURRENT_ITEM_ATOM);
   const SET_CLEAR_CITEM = useSetAtom(CLEAR_CURRENT_ITEM_ATOM);
   const [CURRENT_ITEM, SET_UPDATE_CITEM] = useAtom(CURRENT_ITEM_ATOM);
+  const drawConfig = useAtomValue(DRAW_START_CONFIG_ATOM);
 
   const { config } = useConfiguration();
 
@@ -59,7 +59,7 @@ const useEventStage = () => {
 
         const { x, y } = stageAbsolutePosition(event);
         const createStartElement = shapeStart({
-          ...state,
+          ...drawConfig,
           tool: tool as IShape["tool"],
           x: 0,
           y: 0,
@@ -75,7 +75,7 @@ const useEventStage = () => {
         const x = XStage ?? 0;
         const y = YStage ?? 0;
         const createStartElement = shapeStart({
-          ...state,
+          ...drawConfig,
           tool: tool as IShape["tool"],
           x: 0,
           y: 0,

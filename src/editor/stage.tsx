@@ -6,12 +6,13 @@ import Konva from "konva";
 import { KonvaEventObject } from "konva/lib/Node";
 import { FC, ReactNode, useEffect, useRef, useState } from "react";
 import { Stage } from "react-konva";
-import { useEventStage, useTool } from "./hooks";
+import { useEventStage } from "./hooks";
 import { useConfiguration } from "./hooks/useConfiguration";
 import { useReference } from "./hooks/useReference";
 import { Tools } from "./sidebar/Tools";
 import { STAGE_DIMENSION_ATOM } from "./states/dimension";
 import { SHAPE_ID_ATOM } from "./states/shape";
+import TOOL_ATOM from "./states/tool";
 
 type Props = {
   children: ReactNode;
@@ -22,12 +23,12 @@ const PxStage: FC<Props> = ({ children }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const stageRef = useRef<Konva.Stage>(null);
   const [show, setShow] = useState(true);
+  const [tool, setTool] = useAtom(TOOL_ATOM);
 
   const { config } = useConfiguration(); // ✅ Ahora usamos config.expand2K
 
   const setShapeId = useSetAtom(SHAPE_ID_ATOM);
   const { handleMouseDown, handleMouseUp, handleMouseMove } = useEventStage();
-  const { tool, setTool } = useTool();
 
   const { handleSetRef } = useReference({
     type: "STAGE",

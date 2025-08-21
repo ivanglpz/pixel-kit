@@ -1,7 +1,7 @@
 import { atom } from "jotai";
 import { IShape } from "../shapes/type.shape";
 
-export const DrawingBeforeStartAtom = atom({
+export const DRAW_START_CONFIG_ATOM = atom({
   id: "559c1735-4e62-4c43-aa4c-246ec594ca06",
   x: 0,
   y: 0,
