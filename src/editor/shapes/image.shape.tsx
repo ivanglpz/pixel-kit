@@ -7,7 +7,7 @@ import { memo, MutableRefObject, useEffect, useMemo, useRef } from "react";
 // Estado global (jotai)
 import { PrimitiveAtom, useAtom, useAtomValue } from "jotai";
 import { STAGE_DIMENSION_ATOM } from "../states/dimension";
-import { SHAPE_ID_ATOM } from "../states/shape";
+import { ADD_SHAPE_ID_ATOM } from "../states/shape";
 
 // Konva
 import Konva from "konva";
@@ -103,8 +103,8 @@ export const ShapeImage = memo((props: IShapeWithEvents) => {
 
   // Estado global
   const stageDimensions = useAtomValue(STAGE_DIMENSION_ATOM);
-  const [shapeId, setShapeId] = useAtom(SHAPE_ID_ATOM);
-  const isSelected = shapeId === box?.id;
+  const [shapeId, setShapeId] = useAtom(ADD_SHAPE_ID_ATOM);
+  const isSelected = shapeId.includes(box.id);
 
   // Sombra
   const shadow = box?.effects
@@ -174,7 +174,7 @@ export const ShapeImage = memo((props: IShapeWithEvents) => {
         // 8. Apariencia
         opacity={box?.opacity ?? 1}
         // 9. Interactividad
-        draggable={shapeId === box?.id}
+        draggable={isSelected}
         // 10. Eventos
         onTap={() => setShapeId(box?.id)}
         onClick={() => setShapeId(box?.id)}

@@ -15,7 +15,7 @@ import CURRENT_ITEM_ATOM, {
 } from "../states/currentItem";
 import { DRAW_START_CONFIG_ATOM } from "../states/drawing";
 import { EVENT_ATOM } from "../states/event";
-import { SHAPE_ID_ATOM } from "../states/shape";
+import { ADD_SHAPE_ID_ATOM, REMOVE_SHAPE_ID_ATOM } from "../states/shape";
 import { CREATE_SHAPE_ATOM, DELETE_SHAPE_ATOM } from "../states/shapes";
 import { useConfiguration } from "./useConfiguration";
 
@@ -29,7 +29,8 @@ const useEventStage = () => {
   const PAUSE = useAtomValue(PAUSE_MODE_ATOM);
   const SET_CREATE = useSetAtom(CREATE_SHAPE_ATOM);
   const DELETE_SHAPE = useSetAtom(DELETE_SHAPE_ATOM);
-  const [shapeId, setShapeId] = useAtom(SHAPE_ID_ATOM);
+  const [shapeId, setShapeId] = useAtom(ADD_SHAPE_ID_ATOM);
+  const removeShapeId = useSetAtom(REMOVE_SHAPE_ID_ATOM);
   const SET_CREATE_CITEM = useSetAtom(CREATE_CURRENT_ITEM_ATOM);
   const SET_CLEAR_CITEM = useSetAtom(CLEAR_CURRENT_ITEM_ATOM);
   const [CURRENT_ITEM, SET_UPDATE_CITEM] = useAtom(CURRENT_ITEM_ATOM);
@@ -40,7 +41,6 @@ const useEventStage = () => {
   const setshowClip = useSetAtom(SHOW_CLIP_ATOM);
 
   const [EVENT_STAGE, SET_EVENT_STAGE] = useAtom(EVENT_ATOM);
-  console.log(EVENT_STAGE, "EVENT_STAGE");
 
   const handleMouseDown = (event: KonvaEventObject<MouseEvent>) => {
     if (EVENT_STAGE === "CREATE") {
@@ -86,7 +86,12 @@ const useEventStage = () => {
         SET_CREATE_CITEM(createStartElement);
       }
     }
-    if (EVENT_STAGE === "COPY") {
+    if (EVENT_STAGE === "COPYING") {
+      if (!shapeId) return;
+      const { x, y } = stageAbsolutePosition(event);
+      console.log(x, y);
+
+      console.log(shapeId, "shapeid");
     }
   };
 
@@ -173,7 +178,7 @@ const useEventStage = () => {
   const toolKeydown = (kl: IKeyTool) => {
     setTool(kl);
     SET_CLEAR_CITEM();
-    setShapeId(null);
+    // removeShapeId(kl);
   };
 
   useEffect(() => {
@@ -183,9 +188,9 @@ const useEventStage = () => {
       if (PAUSE) return;
 
       if (["X", "DELETE", "BACKSPACE"].includes(KEY)) {
-        if (shapeId) {
-          DELETE_SHAPE({ id: shapeId });
-          setShapeId(null);
+        for (const element of shapeId) {
+          DELETE_SHAPE({ id: element });
+          removeShapeId(element);
         }
       }
       if (KEY === "ALT") {
@@ -320,6 +325,31 @@ const useEventStage = () => {
       document.removeEventListener("paste", handlePaste);
     };
   }, [tool, shapeId, config.tools, PAUSE]);
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent): void => {
+      if (event.key === "Alt") {
+        SET_EVENT_STAGE("COPYING");
+      }
+      if (event.key === "Shift") {
+        SET_EVENT_STAGE("MULTI_SELECT");
+      }
+    };
+
+    const handleKeyUp = (event: KeyboardEvent): void => {
+      if (event.key === "Alt" || event.key === "Shift") {
+        SET_EVENT_STAGE("IDLE");
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    window.addEventListener("keyup", handleKeyUp);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+      window.removeEventListener("keyup", handleKeyUp);
+    };
+  }, []);
 
   useEffect(() => {
     const handleVisibilityChange = () => {

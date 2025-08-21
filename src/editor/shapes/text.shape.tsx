@@ -9,7 +9,7 @@ import { IShape, IShapeWithEvents, WithInitialValue } from "./type.shape";
 import { useAtomValue } from "jotai";
 import { useEffect } from "react";
 import { STAGE_DIMENSION_ATOM } from "../states/dimension";
-import { SHAPE_ID_ATOM } from "../states/shape";
+import { ADD_SHAPE_ID_ATOM } from "../states/shape";
 
 import {
   shapeEventDragMove,
@@ -28,8 +28,8 @@ export const ShapeText = memo(({ shape: item }: IShapeWithEvents) => {
   const trRef = useRef<Konva.Transformer>();
 
   const stageDimensions = useAtomValue(STAGE_DIMENSION_ATOM);
-  const [shapeId, setShapeId] = useAtom(SHAPE_ID_ATOM);
-  const isSelected = shapeId === box?.id;
+  const [shapeId, setShapeId] = useAtom(ADD_SHAPE_ID_ATOM);
+  const isSelected = shapeId.includes(box.id);
 
   useEffect(() => {
     if (isSelected && trRef.current && shapeRef.current && box.visible) {
@@ -95,7 +95,7 @@ export const ShapeText = memo(({ shape: item }: IShapeWithEvents) => {
         // 7. Apariencia y opacidad
         opacity={box?.opacity ?? 1}
         // 8. Interactividad y arrastre
-        draggable={shapeId === box?.id}
+        draggable={isSelected}
         // 9. Eventos
         onTap={() => setShapeId(box?.id)}
         onClick={() => setShapeId(box?.id)}

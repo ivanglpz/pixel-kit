@@ -21,7 +21,7 @@ export type IPROJECT = {
   };
   SHAPE: {
     LIST: PrimitiveAtom<ALL_SHAPES[]> & WithInitialValue<ALL_SHAPES[]>;
-    ID: PrimitiveAtom<string | null> & WithInitialValue<string | null>;
+    ID: PrimitiveAtom<string[]> & WithInitialValue<string[]>;
   };
   EVENT: PrimitiveAtom<IStageEvents> & WithInitialValue<IStageEvents>;
   CLIP: {
@@ -72,7 +72,7 @@ export const PROJECTS_ATOM = atom([
       ID: atom<string>("8eb9cfc3-023f-4204-a745-3d5347d1f057"),
     },
     SHAPE: {
-      ID: atom<string | null>(null),
+      ID: atom<string[]>([]),
       LIST: atom<ALL_SHAPES[]>([]),
     },
     EVENT: atom<IStageEvents>("IDLE"),
@@ -140,7 +140,7 @@ export const NEW_PROJECT = atom(null, (get, set) => {
         ID: atom<string>(PAGEUUID),
       },
       SHAPE: {
-        ID: atom<string | null>(null),
+        ID: atom<string[]>([]),
         LIST: atom<ALL_SHAPES[]>([]),
       },
       EVENT: atom<IStageEvents>("IDLE"),

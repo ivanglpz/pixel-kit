@@ -16,7 +16,7 @@ import {
   CHANGE_PARENTID_NODE_ATOM,
   CHANGE_SHAPE_NODE_ATOM,
 } from "../states/nodes";
-import { SHAPE_ID_ATOM } from "../states/shape";
+import { ADD_SHAPE_ID_ATOM } from "../states/shape";
 import { ALL_SHAPES } from "../states/shapes";
 import TOOL_ATOM, { PAUSE_MODE_ATOM } from "../states/tool";
 
@@ -37,12 +37,13 @@ export const Nodes = ({
   const [shape, setShape] = useAtom(item.state);
   const SET_CHANGE = useSetAtom(CHANGE_SHAPE_NODE_ATOM);
   const SET_PARENT_CHANGE = useSetAtom(CHANGE_PARENTID_NODE_ATOM);
-  const [shapeId, setShapeId] = useAtom(SHAPE_ID_ATOM);
+  const [shapeId, setShapeId] = useAtom(ADD_SHAPE_ID_ATOM);
   const [show, setShow] = useState(false);
   const setPause = useSetAtom(PAUSE_MODE_ATOM);
   const setTool = useSetAtom(TOOL_ATOM);
   const [isExpanded, setIsExpanded] = useState(true);
   const [isHovered, setIsHovered] = useState(false);
+  console.log(shapeId, "shapeId");
 
   // Determinar si este elemento está bloqueado por herencia
   const isLockedByParent = options.isLockedByParent || false;
@@ -122,7 +123,9 @@ export const Nodes = ({
           justifyContent: "center",
           gap: "md",
           borderRadius: "md",
-          backgroundColor: shapeId === shape.id ? "gray.800" : "transparent",
+          backgroundColor: shapeId.includes(shape.id)
+            ? "gray.800"
+            : "transparent",
           _hover: {
             backgroundColor: "gray.100",
             _dark: {

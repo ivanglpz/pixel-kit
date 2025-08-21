@@ -1,7 +1,14 @@
 import { atom } from "jotai";
 import { PROJECT_ATOM } from "./projects";
 
-export type IStageEvents = "CREATE" | "COPY" | "IDLE" | "CREATING" | "CLIPING";
+export type IStageEvents =
+  | "CREATE"
+  | "COPY"
+  | "IDLE"
+  | "CREATING"
+  | "CLIPING"
+  | "COPYING"
+  | "MULTI_SELECT";
 
 export const EVENT_ATOM = atom(
   (get) => get(get(PROJECT_ATOM).EVENT),
