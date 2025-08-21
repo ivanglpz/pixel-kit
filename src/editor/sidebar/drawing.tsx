@@ -251,6 +251,7 @@ export const Drawing = () => {
             labelText="Dash"
             min={0}
             max={100}
+            step={5}
             onChange={(e) =>
               setShape({
                 ...shape,

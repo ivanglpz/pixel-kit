@@ -742,6 +742,7 @@ export const LayoutShapeConfig = () => {
               labelText="Dash"
               min={0}
               max={100}
+              step={5}
               onChange={(e) => shapeUpdate({ dash: e })}
               value={shape.dash || 0}
             />
