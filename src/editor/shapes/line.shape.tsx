@@ -20,7 +20,7 @@ export const ShapeLine = memo(({ shape: item }: IShapeWithEvents) => {
     item.state as PrimitiveAtom<IShape> & WithInitialValue<IShape>
   );
 
-  const { width, height, rotate, x, y, strokeWidth, dash } = box;
+  const { width, height, x, y, strokeWidth, dash } = box;
 
   const shapeRef = useRef<Konva.Line>();
   const trRef = useRef<Konva.Transformer>();
