@@ -49,12 +49,11 @@ export type IShape = {
   strokeWidth: number;
   effects: Effect[];
   bordersRadius: number[];
-  width?: number;
-  height?: number;
+  width: number;
+  height: number;
   text?: string;
   visible: boolean;
   points?: number[];
-  rotate?: number;
   lineCap?: LineCap;
   lineJoin?: LineJoin;
   dash: number;
