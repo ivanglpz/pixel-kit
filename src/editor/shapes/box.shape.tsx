@@ -27,6 +27,9 @@ const ShapeBox = memo(({ shape: item }: IShapeWithEvents) => {
   const [shapeId, setShapeId] = useAtom(SHAPE_ID_ATOM);
   const isSelected = shapeId === box?.id;
 
+  const shadow = box?.effects
+    ?.filter((e) => e?.visible && e?.type === "shadow")
+    .at(0);
   useEffect(() => {
     if (isSelected && trRef.current && shapeRef.current && box.visible) {
       trRef.current.nodes([shapeRef.current]);
@@ -67,32 +70,12 @@ const ShapeBox = memo(({ shape: item }: IShapeWithEvents) => {
           box?.isAllBorderRadius ? box.bordersRadius : box.borderRadius
         }
         // 6. Sombras
-        shadowColor={
-          box?.effects?.filter((e) => e?.visible && e?.type === "shadow").at(0)
-            ?.color
-        }
-        shadowOpacity={
-          box?.effects?.filter((e) => e?.visible && e?.type === "shadow").at(0)
-            ?.opacity
-        }
-        shadowOffsetX={
-          box?.effects?.filter((e) => e?.visible && e?.type === "shadow").at(0)
-            ?.x
-        }
-        shadowOffsetY={
-          box?.effects?.filter((e) => e?.visible && e?.type === "shadow").at(0)
-            ?.y
-        }
-        shadowBlur={
-          box?.effects?.filter((e) => e?.visible && e?.type === "shadow").at(0)
-            ?.blur
-        }
-        shadowEnabled={
-          Number(
-            box?.effects?.filter((e) => e?.visible && e?.type === "shadow")
-              ?.length
-          ) > 0
-        }
+        shadowColor={shadow?.color}
+        shadowOpacity={box.shadowOpacity}
+        shadowOffsetX={box?.shadowOffsetX}
+        shadowOffsetY={box?.shadowOffsetY}
+        shadowBlur={box?.shadowBlur}
+        shadowEnabled={Boolean(shadow)}
         // 7. Apariencia y opacidad
         opacity={box?.opacity ?? 1}
         // 8. Interactividad y arrastre

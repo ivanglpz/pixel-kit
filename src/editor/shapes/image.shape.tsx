@@ -73,7 +73,7 @@ export const ShapeImage = memo((props: IShapeWithEvents) => {
   const fill = box.fills
     ?.filter((e) => e?.visible && e?.type === "image")
     .at(0);
-  const { rotate, x, y, strokeWidth, dash } = box;
+  const { x, y, strokeWidth, dash } = box;
 
   // Memoización de la imagen base
   const Imagee = useMemo(() => {
@@ -160,16 +160,11 @@ export const ShapeImage = memo((props: IShapeWithEvents) => {
         }
         // 7. Sombras
         shadowColor={shadow?.color}
-        shadowOpacity={shadow?.opacity}
-        shadowOffsetX={shadow?.x}
-        shadowOffsetY={shadow?.y}
-        shadowBlur={shadow?.blur}
-        shadowEnabled={
-          Number(
-            box?.effects?.filter((e) => e?.visible && e?.type === "shadow")
-              ?.length
-          ) > 0
-        }
+        shadowOpacity={box.shadowOpacity}
+        shadowOffsetX={box?.shadowOffsetX}
+        shadowOffsetY={box?.shadowOffsetY}
+        shadowBlur={box?.shadowBlur}
+        shadowEnabled={Boolean(shadow)}
         // 8. Apariencia
         opacity={box?.opacity ?? 1}
         // 9. Interactividad

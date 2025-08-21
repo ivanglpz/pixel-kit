@@ -32,11 +32,7 @@ export type Effect = {
   id: string;
   type: "shadow" | "blur" | "glow";
   visible: boolean;
-  x: number;
-  y: number;
   color: string;
-  opacity: number;
-  blur: number;
 };
 
 export type IShape = {
@@ -74,6 +70,10 @@ export type IShape = {
   borderRadius?: number;
   isAllBorderRadius?: boolean;
   zIndex?: number;
+  shadowOffsetX: number;
+  shadowOffsetY: number;
+  shadowOpacity: number;
+  shadowBlur: number;
 };
 
 export type IShapeWithEvents = {
