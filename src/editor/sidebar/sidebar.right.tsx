@@ -46,7 +46,11 @@ const SidebarRight: FC = () => {
       </Valid>
       <Drawing />
       <LayoutShapeConfig />
-      <ExportStage />
+      <Valid isValid={tool === "MOVE"}>
+        <Valid isValid={!shapeId}>
+          <ExportStage />
+        </Valid>
+      </Valid>
     </aside>
   );
 };
