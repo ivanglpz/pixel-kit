@@ -3,10 +3,10 @@ import { IShape } from "@/editor/shapes/type.shape";
 import { SHOW_CLIP_ATOM } from "@/editor/states/clipImage";
 import TOOL_ATOM, { IKeyTool, PAUSE_MODE_ATOM } from "@/editor/states/tool";
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
+import Konva from "konva";
 import { KonvaEventObject } from "konva/lib/Node";
 import { useEffect } from "react";
 import { v4 as uuidv4 } from "uuid";
-
 import stageAbsolutePosition from "../helpers/position";
 import { shapeProgressEvent } from "../helpers/progressEvent";
 import { cloneDeep, shapeStart } from "../helpers/startEvent";
@@ -16,6 +16,7 @@ import CURRENT_ITEM_ATOM, {
 } from "../states/currentItem";
 import { DRAW_START_CONFIG_ATOM } from "../states/drawing";
 import { EVENT_ATOM } from "../states/event";
+import { RECTANGLE_SELECTION_ATOM } from "../states/rectangle-selection";
 import {
   ADD_SHAPE_ID_ATOM,
   GET_SELECTED_SHAPES_ATOM,
@@ -25,6 +26,7 @@ import {
 } from "../states/shape";
 import { CREATE_SHAPE_ATOM, DELETE_SHAPE_ATOM } from "../states/shapes";
 import { useConfiguration } from "./useConfiguration";
+import { useReference } from "./useReference";
 
 // ===== CONSTANTS =====
 const TOOLS_BOX_BASED = ["BOX", "CIRCLE", "IMAGE", "TEXT", "GROUP"];
@@ -54,10 +56,23 @@ const useEventStage = () => {
   const SET_CLEAR_CITEM = useSetAtom(CLEAR_CURRENT_ITEM_ATOM);
   const resetShapesIds = useSetAtom(RESET_SHAPES_IDS_ATOM);
   const setshowClip = useSetAtom(SHOW_CLIP_ATOM);
+  const [selection, setSelection] = useAtom(RECTANGLE_SELECTION_ATOM);
+
+  const { ref: StageRef } = useReference({ type: "STAGE" });
+  const { ref: TrRef } = useReference({ type: "RECTANGLE_SELECTION" });
 
   // ===== MOUSE EVENT HANDLERS =====
   const handleMouseDown = (event: KonvaEventObject<MouseEvent>) => {
     const { x, y } = stageAbsolutePosition(event);
+    if (EVENT_STAGE === "IDLE" && !event.target?.attrs?.id && tool === "MOVE") {
+      setSelection({
+        x,
+        y,
+        width: 0,
+        height: 0,
+        visible: true,
+      });
+    }
 
     if (EVENT_STAGE === "CREATE") {
       handleCreateMode(x, y);
@@ -69,6 +84,16 @@ const useEventStage = () => {
   const handleMouseMove = (event: KonvaEventObject<MouseEvent>) => {
     const { x, y } = stageAbsolutePosition(event);
 
+    if (selection.visible && EVENT_STAGE === "IDLE" && tool === "MOVE") {
+      setSelection({
+        x: Math.min(selection.x, x),
+        y: Math.min(selection.y, y),
+        width: Math.abs(x - selection.x),
+        height: Math.abs(y - selection.y),
+        visible: true,
+      });
+    }
+
     if (EVENT_STAGE === "CREATING") {
       handleCreatingMode(x, y);
     } else if (EVENT_STAGE === "COPYING") {
@@ -76,10 +101,38 @@ const useEventStage = () => {
     }
   };
 
-  const handleMouseUp = () => {
-    const payloads = CURRENT_ITEM?.map((e) => ({ ...e, isCreating: false }));
+  const handleMouseUp = async () => {
+    if (selection.visible && EVENT_STAGE === "IDLE" && tool === "MOVE") {
+      setSelection({
+        x: 0,
+        y: 0,
+        width: 0,
+        height: 0,
+        visible: false,
+      });
+      const childrens = StageRef?.current?.getStage?.()?.children;
+
+      if (!childrens) return;
+      const layer = childrens?.find((e) => e?.attrs?.id === "layer-shapes");
+      const nodes = layer?.children?.filter?.(
+        (child) => child?.attrs?.id !== "transformer-editable"
+      );
+      if (!nodes) return;
+      const selected = nodes.filter((shape) =>
+        Konva.Util.haveIntersection(selection, shape.getClientRect())
+      );
+
+      setTimeout(() => {
+        SET_UPDATE_SHAPES_IDS(
+          selected
+            ?.map((e) => e?.attrs?.id)
+            ?.filter((e) => typeof e === "string")
+        );
+      }, 1);
+    }
 
     if (EVENT_STAGE === "CREATING") {
+      const payloads = CURRENT_ITEM?.map((e) => ({ ...e, isCreating: false }));
       handleCreatingComplete(payloads);
     } else if (EVENT_STAGE === "COPYING") {
       handleCopyingComplete();
@@ -122,12 +175,27 @@ const useEventStage = () => {
 
   const handleCopyMode = (x: number, y: number) => {
     const selected = selectedShapes();
-    const newShapes = selected?.map((e) => {
-      return cloneDeep({
-        ...e,
-        id: uuidv4(),
-      });
+
+    const shapesCloneDeep = selected?.map((e) => cloneDeep(e) as IShape);
+
+    const groups = shapesCloneDeep?.filter((e) => e?.tool === "GROUP");
+    const mapGroups = new Map<string, string>();
+
+    for (const element of groups) {
+      mapGroups.set(element.id, uuidv4());
+    }
+    const newShapes: IShape[] = shapesCloneDeep.map((e) => {
+      const newParentId =
+        e.parentId && mapGroups.has(e.parentId)
+          ? mapGroups.get(e.parentId)!
+          : e.parentId;
+      return {
+        ...cloneDeep(e),
+        id: mapGroups.has(e.id) ? mapGroups.get(e.id) : uuidv4(),
+        parentId: newParentId,
+      };
     });
+    console.log(newShapes, "newShapes");
 
     resetShapesIds();
     SET_CREATE_CITEM(newShapes);
@@ -160,11 +228,14 @@ const useEventStage = () => {
   };
 
   const handleCopyingMode = (x: number, y: number) => {
-    const newShapes = CURRENT_ITEM?.map((e) => ({
-      ...e,
-      x,
-      y,
-    }));
+    const newShapes = CURRENT_ITEM?.map((e) => {
+      if (e?.parentId) return e;
+      return {
+        ...e,
+        x: x,
+        y: y,
+      };
+    });
     SET_UPDATE_CITEM(newShapes);
   };
 

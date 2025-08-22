@@ -77,7 +77,7 @@ export const CREATE_SHAPE_ATOM = atom(null, (get, set, args: IShape) => {
       id: args?.id,
       tool: args?.tool,
       state: atom(args),
-      parentId: null,
+      parentId: args?.parentId,
       pageId: get(PAGE_ID_ATOM),
     },
   ]);
