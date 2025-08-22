@@ -10,6 +10,7 @@ import {
   shapeEventDragStop,
   shapeTransformEnd,
 } from "./events.shape";
+import { Transform } from "./transformer";
 import { IShape, IShapeWithEvents, WithInitialValue } from "./type.shape";
 
 // eslint-disable-next-line react/display-name
@@ -114,7 +115,7 @@ const ShapeBox = memo(({ shape: item }: IShapeWithEvents) => {
         }}
         onTransformEnd={(e) => setBox(shapeTransformEnd(e))}
       />
-      {/* <Transform isSelected={isSelected} ref={trRef} /> */}
+      <Transform isSelected={isSelected} ref={trRef} />
     </>
   );
 });
