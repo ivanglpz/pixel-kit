@@ -59,7 +59,6 @@ const useEventStage = () => {
   const [selection, setSelection] = useAtom(RECTANGLE_SELECTION_ATOM);
 
   const { ref: StageRef } = useReference({ type: "STAGE" });
-  const { ref: TrRef } = useReference({ type: "RECTANGLE_SELECTION" });
 
   // ===== MOUSE EVENT HANDLERS =====
   const handleMouseDown = (event: KonvaEventObject<MouseEvent>) => {
@@ -96,8 +95,6 @@ const useEventStage = () => {
 
     if (EVENT_STAGE === "CREATING") {
       handleCreatingMode(x, y);
-    } else if (EVENT_STAGE === "COPYING") {
-      handleCopyingMode(x, y);
     }
   };
 
@@ -134,8 +131,6 @@ const useEventStage = () => {
     if (EVENT_STAGE === "CREATING") {
       const payloads = CURRENT_ITEM?.map((e) => ({ ...e, isCreating: false }));
       handleCreatingComplete(payloads);
-    } else if (EVENT_STAGE === "COPYING") {
-      handleCopyingComplete();
     }
   };
 
@@ -195,11 +190,17 @@ const useEventStage = () => {
         parentId: newParentId,
       };
     });
-    console.log(newShapes, "newShapes");
 
-    resetShapesIds();
-    SET_CREATE_CITEM(newShapes);
-    SET_EVENT_STAGE("COPYING");
+    // resetShapesIds();
+
+    for (const element of newShapes) {
+      SET_CREATE(element);
+    }
+    // SET_UPDATE_SHAPES_IDS(newShapes?.map((e) => e?.id));
+    SET_EVENT_STAGE("IDLE");
+    setTool("MOVE");
+    // SET_CREATE_CITEM(newShapes);
+    // SET_EVENT_STAGE("COPYING");
   };
 
   // ===== CREATING MODE HANDLERS =====
@@ -225,18 +226,6 @@ const useEventStage = () => {
       });
       SET_UPDATE_CITEM([updateShape]);
     }
-  };
-
-  const handleCopyingMode = (x: number, y: number) => {
-    const newShapes = CURRENT_ITEM?.map((e) => {
-      if (e?.parentId) return e;
-      return {
-        ...e,
-        x: x,
-        y: y,
-      };
-    });
-    SET_UPDATE_CITEM(newShapes);
   };
 
   // ===== COMPLETION HANDLERS =====
@@ -265,16 +254,6 @@ const useEventStage = () => {
       SET_EVENT_STAGE("CREATE");
       setTool("DRAW");
     }
-  };
-
-  const handleCopyingComplete = () => {
-    for (const element of CURRENT_ITEM) {
-      SET_CREATE(element);
-    }
-    SET_UPDATE_SHAPES_IDS(CURRENT_ITEM?.map((e) => e?.id));
-    SET_CLEAR_CITEM();
-    SET_EVENT_STAGE("IDLE");
-    setTool("MOVE");
   };
 
   // ===== UTILITY FUNCTIONS =====
