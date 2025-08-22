@@ -63,7 +63,15 @@ const useEventStage = () => {
   // ===== MOUSE EVENT HANDLERS =====
   const handleMouseDown = (event: KonvaEventObject<MouseEvent>) => {
     const { x, y } = stageAbsolutePosition(event);
-    if (EVENT_STAGE === "IDLE" && !event.target?.attrs?.id && tool === "MOVE") {
+    console.log(event.target?.attrs?.id, "KEKIERE");
+
+    if (
+      EVENT_STAGE === "IDLE" &&
+      [null, undefined, "main-image-render-stage", "pixel-kit-stage"].includes(
+        event.target?.attrs?.id
+      ) &&
+      tool === "MOVE"
+    ) {
       setSelection({
         x,
         y,
