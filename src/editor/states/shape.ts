@@ -12,6 +12,16 @@ export const ADD_SHAPE_ID_ATOM = atom(
     const listIds = get(ids);
 
     if (event === "MULTI_SELECT") {
+      const findId = listIds?.some((e) => e === id);
+
+      if (findId) {
+        _set(
+          ids,
+          listIds?.filter((e) => e !== id)
+        );
+
+        return;
+      }
       _set(ids, [...listIds, id]);
       return;
     }
