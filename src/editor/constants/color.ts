@@ -5,6 +5,7 @@ export const constants = {
   theme: {
     colors: {
       primary: "#4bacfcff",
+      background: "rgba(75, 172, 252, 0.1)",
     },
   },
 };

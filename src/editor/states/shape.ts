@@ -2,7 +2,7 @@ import { IShape } from "@/editor/shapes/type.shape";
 import { atom } from "jotai";
 import { EVENT_ATOM } from "./event";
 import { PROJECT_ATOM } from "./projects";
-import ALL_SHAPES_ATOM, { ROOT_SHAPES_ATOM } from "./shapes";
+import ALL_SHAPES_ATOM from "./shapes";
 
 export const ADD_SHAPE_ID_ATOM = atom(
   (get) => get(get(PROJECT_ATOM).SHAPE.ID),
@@ -48,10 +48,51 @@ export const SHAPE_SELECTED_ATOM = atom((get) => {
 });
 
 export const GET_SELECTED_SHAPES_ATOM = atom((get) => {
-  return () =>
-    get(ROOT_SHAPES_ATOM)
-      ?.filter((e) => get(ADD_SHAPE_ID_ATOM).includes(e?.id))
-      ?.map((e) => get(e?.state));
+  return () => {
+    const rootShapes = get(ALL_SHAPES_ATOM);
+    const selectedIds = get(ADD_SHAPE_ID_ATOM);
+
+    if (!rootShapes) return [];
+
+    // Función para obtener todos los hijos de un grupo recursivamente
+    const getGroupChildren = (groupId: string): string[] => {
+      const children = rootShapes
+        .filter((shape) => get(shape?.state)?.parentId === groupId)
+        .map((shape) => shape.id);
+
+      // Recursivamente obtener hijos de grupos anidados
+      const nestedChildren = children.flatMap((childId) => {
+        const childShape = rootShapes.find((s) => s.id === childId);
+        if (childShape && get(childShape.state)?.tool === "GROUP") {
+          return getGroupChildren(childId);
+        }
+        return [];
+      });
+
+      return [...children, ...nestedChildren];
+    };
+
+    // Obtener todas las formas seleccionadas y sus dependencias
+    const allSelectedIds = new Set<string>();
+
+    selectedIds.forEach((id) => {
+      const shape = rootShapes.find((s) => s.id === id);
+      if (shape) {
+        allSelectedIds.add(id);
+
+        // Si es un grupo, agregar todos sus hijos
+        if (get(shape.state)?.tool === "GROUP") {
+          const children = getGroupChildren(id);
+          children.forEach((childId) => allSelectedIds.add(childId));
+        }
+      }
+    });
+
+    // Filtrar y mapear las formas
+    return rootShapes
+      .filter((shape) => allSelectedIds.has(shape.id))
+      .map((shape) => get(shape.state));
+  };
 });
 
 export const SHAPE_UPDATE_ATOM = atom(
