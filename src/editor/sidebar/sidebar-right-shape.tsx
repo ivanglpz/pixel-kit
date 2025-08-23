@@ -7,7 +7,6 @@ import { InputSelect } from "@/editor/components/input-select";
 import { InputTextArea } from "@/editor/components/input-textarea";
 import { IShape } from "@/editor/shapes/type.shape";
 import { SHAPE_SELECTED_ATOM, SHAPE_UPDATE_ATOM } from "@/editor/states/shape";
-import { DELETE_SHAPE_ATOM } from "@/editor/states/shapes";
 import { css } from "@stylespixelkit/css";
 import { useAtomValue, useSetAtom } from "jotai";
 import {
@@ -20,10 +19,17 @@ import {
   Plus,
   Ruler,
   Scan,
+  Smile,
 } from "lucide-react";
-import { ChangeEvent, useRef } from "react";
+import * as AllIcons from "lucide-static";
+import { ChangeEvent, useRef, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
+import { Dialog } from "../components/dialog";
+import { ListIcons } from "../components/list-icons";
 
+const iconObjects: { [key: string]: string }[] = Object.entries(AllIcons).map(
+  ([name, svg]) => ({ name, svg })
+);
 // Función utilitaria para calcular la escala de imagen
 const calculateScale = (
   originalWidth: number,
@@ -110,10 +116,12 @@ export const SectionHeader = ({
   title,
   onAdd,
   onImage,
+  onIcon,
 }: {
   title: string;
   onAdd?: () => void;
   onImage?: VoidFunction;
+  onIcon?: VoidFunction;
 }) => (
   <div className={commonStyles.sectionHeader}>
     <p className={commonStyles.sectionTitle}>{title}</p>
@@ -121,8 +129,14 @@ export const SectionHeader = ({
       className={css({
         display: "flex",
         flexDir: "row",
+        gap: "md",
       })}
     >
+      {onIcon && (
+        <button className={commonStyles.addButton} onClick={onIcon}>
+          <Smile size={14} />
+        </button>
+      )}
       {onImage && (
         <button className={commonStyles.addButton} onClick={onImage}>
           <ImageIcon size={14} />
@@ -139,9 +153,9 @@ export const SectionHeader = ({
 
 export const LayoutShapeConfig = () => {
   // Hooks de estado
+  const [showIcons, setshowIcons] = useState(false);
   const shape = useAtomValue(SHAPE_SELECTED_ATOM);
   const inputRef = useRef<HTMLInputElement>(null);
-  const DELETE_SHAPE = useSetAtom(DELETE_SHAPE_ATOM);
   const shapeUpdate = useSetAtom(SHAPE_UPDATE_ATOM);
 
   // Si no hay shape seleccionado, no renderizar nada
@@ -162,6 +176,42 @@ export const LayoutShapeConfig = () => {
     { id: "font-weight-bolder", label: "Bolder", value: "bolder" },
   ];
 
+  const createImageFromSVG = (svgString: string, svgName: string) => {
+    const img = new Image();
+    img.onload = function () {
+      const canvas = document.createElement("canvas");
+      const ctx = canvas?.getContext?.("2d");
+
+      canvas.width = img.width;
+      canvas.height = img.height;
+      ctx?.drawImage(img, 0, 0);
+
+      shapeUpdate({
+        fills: [
+          {
+            color: "#fff",
+            id: uuidv4(),
+            image: {
+              src:
+                "data:image/svg+xml;charset=utf-8," +
+                encodeURIComponent(svgString),
+              width: img.width,
+              height: img.height,
+              name: svgName,
+            },
+            opacity: 1,
+            type: "image",
+            visible: true,
+          },
+          ...(shape.fills || []),
+        ],
+      });
+    };
+
+    const dataImage =
+      "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svgString);
+    img.src = dataImage;
+  };
   // Manejadores de eventos
   const handleFiles = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -330,6 +380,17 @@ export const LayoutShapeConfig = () => {
     <div
       className={`${css({ display: "flex", flexDirection: "column", gap: "lg" })} scrollbar_container`}
     >
+      {showIcons ? (
+        <Dialog onClose={() => setshowIcons(false)}>
+          <ListIcons
+            onClose={() => setshowIcons(false)}
+            onCreate={(svg, name) => {
+              createImageFromSVG(svg, name);
+              setshowIcons(false);
+            }}
+          />
+        </Dialog>
+      ) : null}
       {/* SECCIÓN: SHAPE - Información general */}
       <section className={commonStyles.container}>
         <p className={commonStyles.sectionTitle}>Shape</p>
@@ -540,6 +601,7 @@ export const LayoutShapeConfig = () => {
         <SectionHeader
           title="Fill"
           onAdd={handleAddFill}
+          onIcon={shape.tool === "IMAGE" ? () => setshowIcons(true) : undefined}
           onImage={
             shape.tool === "IMAGE"
               ? () => {
