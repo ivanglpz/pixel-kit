@@ -24,6 +24,7 @@ export const ShapeGroup = memo(
 
     const offsetX = box.isCreating ? 0 : width / 2;
     const offsetY = box.isCreating ? 0 : height / 2;
+
     return (
       <>
         <ShapeBox shape={item} listShapes={[]} />

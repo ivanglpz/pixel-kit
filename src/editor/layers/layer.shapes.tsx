@@ -9,6 +9,16 @@ import { RECTANGLE_SELECTION_ATOM } from "../states/rectangle-selection";
 import { ADD_SHAPE_ID_ATOM } from "../states/shape";
 import ALL_SHAPES_ATOM, { ROOT_SHAPES_ATOM } from "../states/shapes";
 
+const getAllShapes = (node: Konva.Layer | Konva.Group): Konva.Shape[] => {
+  const children = Array.from(node.getChildren());
+  return children.flatMap((child) => {
+    if (child.getClassName() === "Group") {
+      return getAllShapes(child as Konva.Group);
+    }
+    return [child as Konva.Shape];
+  });
+};
+
 export const LayerShapes = () => {
   const ROOT_SHAPES = useAtomValue(ROOT_SHAPES_ATOM);
   const ALL_SHAPES = useAtomValue(ALL_SHAPES_ATOM);
@@ -18,12 +28,14 @@ export const LayerShapes = () => {
   const selection = useAtomValue(RECTANGLE_SELECTION_ATOM);
 
   useEffect(() => {
-    const nodes = lyRef.current?.children?.filter?.(
+    const allShapes = lyRef.current ? getAllShapes(lyRef.current) : [];
+    const nodes = allShapes?.filter?.(
       (child) => child?.attrs?.id !== "transformer-editable"
     );
+
     const selected = nodes?.filter((e) => selectedIds?.includes(e.attrs?.id));
-    trRef.current?.setNodes(selected);
-    lyRef.current?.batchDraw();
+    trRef.current?.nodes(selected);
+    trRef.current?.getLayer()?.batchDraw();
   }, [selectedIds]);
 
   return (

@@ -1,14 +1,11 @@
 /* eslint-disable react/display-name */
 import { PrimitiveAtom, useAtom } from "jotai";
-import Konva from "konva";
-import { memo, MutableRefObject, useRef } from "react";
+import { memo } from "react";
 import { Line } from "react-konva";
-import { Transform } from "./transformer";
 import { IShape, IShapeWithEvents, WithInitialValue } from "./type.shape";
 
 /* eslint-disable react/display-name */
 import { useAtomValue } from "jotai";
-import { useEffect } from "react";
 import { STAGE_DIMENSION_ATOM } from "../states/dimension";
 import { ADD_SHAPE_ID_ATOM } from "../states/shape";
 import { ShapeEventDragStart } from "./events.shape";
@@ -19,39 +16,6 @@ import {
   shapeTransformEnd,
 } from "./events.shape";
 
-type LineDimensions = {
-  width: number;
-  height: number;
-};
-
-const calculateLineDimensions = (
-  points: number[] | undefined
-): LineDimensions => {
-  if (!points || points.length < 2) {
-    return { width: 0, height: 0 };
-  }
-
-  let minX: number = points[0];
-  let minY: number = points[1];
-  let maxX: number = points[0];
-  let maxY: number = points[1];
-
-  for (let i = 0; i < points.length; i += 2) {
-    const x: number = points[i];
-    const y: number = points[i + 1];
-
-    if (x < minX) minX = x;
-    if (x > maxX) maxX = x;
-    if (y < minY) minY = y;
-    if (y > maxY) maxY = y;
-  }
-
-  return {
-    width: Math.max(maxX - minX, 1),
-    height: Math.max(maxY - minY, 1),
-  };
-};
-
 export const ShapeDraw = memo(({ shape: item }: IShapeWithEvents) => {
   const [box, setBox] = useAtom(
     item.state as PrimitiveAtom<IShape> & WithInitialValue<IShape>
@@ -59,19 +23,9 @@ export const ShapeDraw = memo(({ shape: item }: IShapeWithEvents) => {
 
   const { x, y, strokeWidth, dash, rotation } = box;
 
-  const shapeRef = useRef<Konva.Line>();
-  const trRef = useRef<Konva.Transformer>();
-
   const stageDimensions = useAtomValue(STAGE_DIMENSION_ATOM);
   const [shapeId, setShapeId] = useAtom(ADD_SHAPE_ID_ATOM);
   const isSelected = shapeId.includes(box.id);
-
-  useEffect(() => {
-    if (isSelected && trRef.current && shapeRef.current && box.visible) {
-      trRef.current.nodes([shapeRef.current]);
-      trRef.current?.getLayer()?.batchDraw();
-    }
-  }, [isSelected, trRef, shapeRef, box.visible]);
 
   const shadow = box?.effects
     ?.filter((e) => e?.visible && e?.type === "shadow")
@@ -84,7 +38,6 @@ export const ShapeDraw = memo(({ shape: item }: IShapeWithEvents) => {
       <Line
         // 1. Identificación y referencia
         id={box?.id}
-        ref={shapeRef as MutableRefObject<Konva.Line>}
         // 2. Posición y tamaño
         x={x}
         y={y}
@@ -138,7 +91,6 @@ export const ShapeDraw = memo(({ shape: item }: IShapeWithEvents) => {
         }
         onTransformEnd={(e) => setBox(shapeTransformEnd(e))}
       />
-      <Transform isSelected={isSelected} ref={trRef} />
     </>
   );
 });

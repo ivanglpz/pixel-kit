@@ -31,10 +31,18 @@ export const LayerClip = () => {
   const shapeRef = useRef<Konva.Rect>(null);
   const gshRef = useRef<Konva.Group>(null);
 
-  useReference({
+  const { handleSetRef } = useReference({
     type: "CLIP",
     ref: gshRef,
   });
+  useEffect(() => {
+    if (gshRef?.current) {
+      handleSetRef({
+        type: "CLIP",
+        ref: gshRef,
+      });
+    }
+  }, [gshRef]);
 
   useEffect(() => {
     setBox({

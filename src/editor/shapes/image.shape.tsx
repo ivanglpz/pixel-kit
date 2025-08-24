@@ -2,7 +2,7 @@
 /* eslint-disable jsx-a11y/alt-text */
 
 // React
-import { memo, MutableRefObject, useEffect, useMemo, useRef } from "react";
+import { memo, MutableRefObject, useMemo, useRef } from "react";
 
 // Estado global (jotai)
 import { PrimitiveAtom, useAtom, useAtomValue } from "jotai";
@@ -25,7 +25,6 @@ import {
 } from "./events.shape";
 
 // Transformer
-import { Transform } from "./transformer";
 
 // =========================
 // Utilidades
@@ -99,7 +98,6 @@ export const ShapeImage = memo((props: IShapeWithEvents) => {
 
   // Refs para shape y transformer
   const shapeRef = useRef<Konva.Image>();
-  const trRef = useRef<Konva.Transformer>();
 
   // Estado global
   const stageDimensions = useAtomValue(STAGE_DIMENSION_ATOM);
@@ -110,14 +108,6 @@ export const ShapeImage = memo((props: IShapeWithEvents) => {
   const shadow = box?.effects
     ?.filter((e) => e?.visible && e?.type === "shadow")
     .at(0);
-
-  // Vincular transformer cuando se selecciona
-  useEffect(() => {
-    if (isSelected && trRef.current && shapeRef.current && box.visible) {
-      trRef.current.nodes([shapeRef.current]);
-      trRef.current?.getLayer()?.batchDraw();
-    }
-  }, [isSelected, trRef, shapeRef, box.visible]);
 
   const offsetX = box.isCreating ? 0 : width / 2;
   const offsetY = box.isCreating ? 0 : height / 2;
@@ -199,7 +189,6 @@ export const ShapeImage = memo((props: IShapeWithEvents) => {
         }}
         onTransformEnd={(e) => setBox(shapeTransformEnd(e))}
       />
-      <Transform isSelected={isSelected} ref={trRef} />
     </>
   );
 });
