@@ -55,6 +55,12 @@ export const LayerShapes = () => {
         <Transformer
           id="transformer-editable"
           ref={trRef}
+          anchorSize={10}
+          borderStroke={constants.theme.colors.primary}
+          borderStrokeWidth={2}
+          anchorCornerRadius={2}
+          keepRatio={false}
+          anchorStroke={constants.theme.colors.primary}
           boundBoxFunc={(oldBox, newBox) => {
             // Limitar el tamaño mínimo
             if (newBox.width < 5 || newBox.height < 5) {
