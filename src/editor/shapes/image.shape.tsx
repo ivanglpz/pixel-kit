@@ -2,7 +2,7 @@
 /* eslint-disable jsx-a11y/alt-text */
 
 // React
-import { memo, MutableRefObject, useMemo, useRef } from "react";
+import { memo, useMemo } from "react";
 
 // Estado global (jotai)
 import { PrimitiveAtom, useAtom, useAtomValue } from "jotai";
@@ -10,7 +10,6 @@ import { STAGE_DIMENSION_ATOM } from "../states/dimension";
 import { ADD_SHAPE_ID_ATOM } from "../states/shape";
 
 // Konva
-import Konva from "konva";
 import { Image as KonvaImage } from "react-konva";
 
 // Tipos
@@ -97,7 +96,6 @@ export const ShapeImage = memo((props: IShapeWithEvents) => {
   );
 
   // Refs para shape y transformer
-  const shapeRef = useRef<Konva.Image>();
 
   // Estado global
   const stageDimensions = useAtomValue(STAGE_DIMENSION_ATOM);
@@ -122,7 +120,6 @@ export const ShapeImage = memo((props: IShapeWithEvents) => {
       <KonvaImage
         // 1. Identificación y referencia
         id={box?.id}
-        ref={shapeRef as MutableRefObject<Konva.Image>}
         // 2. Posición y tamaño
         x={x}
         y={y}
