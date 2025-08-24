@@ -1,11 +1,9 @@
 /* eslint-disable react/display-name */
 import { PrimitiveAtom, useAtom, useAtomValue } from "jotai";
-import Konva from "konva";
-import { memo, MutableRefObject, useEffect, useRef } from "react";
+import { memo } from "react";
 import { STAGE_DIMENSION_ATOM } from "../states/dimension";
 import { ADD_SHAPE_ID_ATOM } from "../states/shape";
 import { ShapeEventDragStart } from "./events.shape";
-import { Transform } from "./transformer";
 import { IShape, IShapeWithEvents, WithInitialValue } from "./type.shape";
 
 import { Rect } from "react-konva";
@@ -21,18 +19,10 @@ export const ShapeCircle = memo(({ shape: item }: IShapeWithEvents) => {
 
   const { width, height, x, y, strokeWidth, dash, rotation } = box;
 
-  const shapeRef = useRef<Konva.Rect>();
-  const trRef = useRef<Konva.Transformer>();
   const stageDimensions = useAtomValue(STAGE_DIMENSION_ATOM);
   const [shapeId, setShapeId] = useAtom(ADD_SHAPE_ID_ATOM);
   const isSelected = shapeId.includes(box.id);
 
-  useEffect(() => {
-    if (isSelected && trRef.current && shapeRef.current && box.visible) {
-      trRef.current.nodes([shapeRef.current]);
-      trRef.current?.getLayer()?.batchDraw();
-    }
-  }, [isSelected, trRef, shapeRef, box.visible]);
   const shadow = box?.effects
     ?.filter((e) => e?.visible && e?.type === "shadow")
     .at(0);
@@ -48,7 +38,6 @@ export const ShapeCircle = memo(({ shape: item }: IShapeWithEvents) => {
       <Rect
         // 1. Identificación y referencia
         id={box?.id}
-        ref={shapeRef as MutableRefObject<Konva.Rect>}
         // 2. Posición y tamaño
         x={x}
         y={y}
@@ -111,7 +100,6 @@ export const ShapeCircle = memo(({ shape: item }: IShapeWithEvents) => {
         }}
         onTransformEnd={(e) => setBox(shapeTransformEnd(e))}
       />
-      <Transform isSelected={isSelected} ref={trRef} />
     </>
   );
 });

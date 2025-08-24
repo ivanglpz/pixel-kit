@@ -1,6 +1,5 @@
 import { PrimitiveAtom, useAtom, useAtomValue } from "jotai";
-import Konva from "konva";
-import { memo, MutableRefObject, useEffect, useRef } from "react";
+import { memo } from "react";
 import { Rect } from "react-konva";
 import { STAGE_DIMENSION_ATOM } from "../states/dimension";
 import { ADD_SHAPE_ID_ATOM } from "../states/shape";
@@ -10,7 +9,6 @@ import {
   shapeEventDragStop,
   shapeTransformEnd,
 } from "./events.shape";
-import { Transform } from "./transformer";
 import { IShape, IShapeWithEvents, WithInitialValue } from "./type.shape";
 
 // eslint-disable-next-line react/display-name
@@ -22,8 +20,6 @@ const ShapeBox = memo(({ shape: item }: IShapeWithEvents) => {
   const { width, height, x, y, strokeWidth, dash } = box;
   const rotation = Number(box.rotation) || 0;
 
-  const shapeRef = useRef<Konva.Rect>();
-  const trRef = useRef<Konva.Transformer>();
   const stageDimensions = useAtomValue(STAGE_DIMENSION_ATOM);
   const [shapeId, setShapeId] = useAtom(ADD_SHAPE_ID_ATOM);
   const isSelected = shapeId.includes(box.id);
@@ -33,13 +29,6 @@ const ShapeBox = memo(({ shape: item }: IShapeWithEvents) => {
   const shadow = box?.effects
     ?.filter((e) => e?.visible && e?.type === "shadow")
     .at(0);
-
-  useEffect(() => {
-    if (isSelected && trRef.current && shapeRef.current && box.visible) {
-      trRef.current.nodes([shapeRef.current]);
-      trRef.current?.getLayer()?.batchDraw();
-    }
-  }, [isSelected, trRef, shapeRef, box.visible]);
 
   const offsetX = box.isCreating ? 0 : width / 2;
   const offsetY = box.isCreating ? 0 : height / 2;
@@ -51,7 +40,6 @@ const ShapeBox = memo(({ shape: item }: IShapeWithEvents) => {
       <Rect
         // 1. Identificación y referencia
         id={box?.id}
-        ref={shapeRef as MutableRefObject<Konva.Rect>}
         // 2. Posición y tamaño - calculada manualmente para rotación
         x={x}
         y={y}
@@ -115,7 +103,6 @@ const ShapeBox = memo(({ shape: item }: IShapeWithEvents) => {
         }}
         onTransformEnd={(e) => setBox(shapeTransformEnd(e))}
       />
-      <Transform isSelected={isSelected} ref={trRef} />
     </>
   );
 });
