@@ -63,7 +63,6 @@ const useEventStage = () => {
   // ===== MOUSE EVENT HANDLERS =====
   const handleMouseDown = (event: KonvaEventObject<MouseEvent>) => {
     const { x, y } = stageAbsolutePosition(event);
-    console.log(event.target?.attrs?.id, "KEKIERE");
 
     if (
       EVENT_STAGE === "IDLE" &&
@@ -108,13 +107,6 @@ const useEventStage = () => {
 
   const handleMouseUp = async () => {
     if (selection.visible && EVENT_STAGE === "IDLE" && tool === "MOVE") {
-      setSelection({
-        x: 0,
-        y: 0,
-        width: 0,
-        height: 0,
-        visible: false,
-      });
       const childrens = StageRef?.current?.getStage?.()?.children;
 
       if (!childrens) return;
@@ -133,6 +125,13 @@ const useEventStage = () => {
             ?.map((e) => e?.attrs?.id)
             ?.filter((e) => typeof e === "string")
         );
+        setSelection({
+          x: 0,
+          y: 0,
+          width: 0,
+          height: 0,
+          visible: false,
+        });
       }, 1);
     }
 
