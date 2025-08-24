@@ -7,7 +7,6 @@ export const CHANGE_SHAPE_NODE_ATOM = atom(
   (get, set, args: { endId: string }) => {
     const shapes = get(ALL_SHAPES_ATOM);
     const startIds = get(ADD_SHAPE_ID_ATOM); // Ahora es un array de IDs
-    console.log(startIds, "startIds");
 
     if (!Array.isArray(startIds) || startIds.length === 0) return;
 
