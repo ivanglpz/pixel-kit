@@ -1,5 +1,5 @@
 import React from "react";
-import { Layer, Rect, Stage } from "react-konva";
+import { Group, Layer, Rect, Stage } from "react-konva";
 
 type JustifyContent =
   | "flex-start"
@@ -23,7 +23,7 @@ type FlexProps = {
   alignItems?: AlignItems;
   flexWrap?: FlexWrap;
   gap?: number;
-  padding?: number; // nuevo prop
+  padding?: number;
   children: React.ReactElement[];
 };
 
@@ -32,24 +32,22 @@ const groupIntoLines = (
   children: React.ReactElement[],
   flexDirection: FlexDirection,
   flexWrap: FlexWrap,
-  width: number,
-  height: number,
-  childWidth: number,
-  childHeight: number,
+  containerWidth: number,
+  containerHeight: number,
   gap: number
 ): React.ReactElement[][] => {
   if (flexWrap === "nowrap") return [children];
 
-  const limit = flexDirection === "row" ? width : height;
-  const sizePerChild = flexDirection === "row" ? childWidth : childHeight;
-
+  const limit = flexDirection === "row" ? containerWidth : containerHeight;
   const lines: React.ReactElement[][] = [];
   let currentLine: React.ReactElement[] = [];
   let currentSize = 0;
 
-  children.forEach((child, idx) => {
+  children.forEach((child) => {
+    const childSize =
+      flexDirection === "row" ? child.props.width : child.props.height;
     const nextSize =
-      currentSize + sizePerChild + (currentLine.length > 0 ? gap : 0);
+      currentSize + childSize + (currentLine.length > 0 ? gap : 0);
 
     if (nextSize > limit) {
       lines.push(currentLine);
@@ -58,7 +56,7 @@ const groupIntoLines = (
     }
 
     currentLine.push(child);
-    currentSize += sizePerChild + (currentLine.length > 1 ? gap : 0);
+    currentSize += childSize + (currentLine.length > 1 ? gap : 0);
   });
 
   if (currentLine.length > 0) lines.push(currentLine);
@@ -70,33 +68,48 @@ const computeMainLayout = (
   flexDirection: FlexDirection,
   containerWidth: number,
   containerHeight: number,
-  totalChildren: number,
-  childWidth: number,
-  childHeight: number,
+  children: React.ReactElement[],
   gap: number
 ): { startMain: number; spacing: number } => {
-  let startMain = 0;
-  let spacing = gap;
   const mainContainerSize =
     flexDirection === "row" ? containerWidth : containerHeight;
-  const childSize = flexDirection === "row" ? childWidth : childHeight;
-  const totalSize = totalChildren * childSize + (totalChildren - 1) * gap;
+  const totalSize =
+    children.reduce((sum, child) => {
+      const childSize =
+        flexDirection === "row" ? child.props.width : child.props.height;
+      return sum + childSize;
+    }, 0) +
+    Math.max(children.length - 1, 0) * gap;
+
+  let startMain = 0;
+  let spacing = gap;
 
   switch (justifyContent) {
     case "center":
-      startMain = mainContainerSize / 2 - totalSize / 2;
+      startMain = (mainContainerSize - totalSize) / 2;
       break;
     case "flex-end":
       startMain = mainContainerSize - totalSize;
       break;
     case "space-between":
-      if (totalChildren > 1) {
-        spacing =
-          (mainContainerSize - childSize * totalChildren) / (totalChildren - 1);
+      if (children.length > 1) {
+        const contentSize = children.reduce(
+          (sum, child) =>
+            sum +
+            (flexDirection === "row" ? child.props.width : child.props.height),
+          0
+        );
+        spacing = (mainContainerSize - contentSize) / (children.length - 1);
       }
       break;
     case "space-around":
-      spacing = (mainContainerSize - childSize * totalChildren) / totalChildren;
+      const contentSize = children.reduce(
+        (sum, child) =>
+          sum +
+          (flexDirection === "row" ? child.props.width : child.props.height),
+        0
+      );
+      spacing = (mainContainerSize - contentSize) / children.length;
       startMain = spacing / 2;
       break;
   }
@@ -109,16 +122,16 @@ const computeCross = (
   flexDirection: FlexDirection,
   containerWidth: number,
   containerHeight: number,
-  childWidth: number,
-  childHeight: number
+  child: React.ReactElement
 ): number => {
   const crossContainerSize =
     flexDirection === "row" ? containerHeight : containerWidth;
-  const childSize = flexDirection === "row" ? childHeight : childWidth;
+  const childSize =
+    flexDirection === "row" ? child.props.height : child.props.width;
 
   switch (alignItems) {
     case "center":
-      return crossContainerSize / 2 - childSize / 2;
+      return (crossContainerSize - childSize) / 2;
     case "flex-end":
       return crossContainerSize - childSize;
     default:
@@ -135,15 +148,11 @@ const FlexContainer: React.FC<FlexProps> = ({
   alignItems = "flex-start",
   flexWrap = "nowrap",
   gap = 10,
-  padding = 0, // default 0
+  padding = 0,
   children,
 }) => {
   if (display !== "flex") return <>{children}</>;
 
-  const childWidth = 50;
-  const childHeight = 50;
-
-  // ancho/alto efectivos restando padding
   const effectiveWidth = width - padding * 2;
   const effectiveHeight = height - padding * 2;
 
@@ -153,8 +162,6 @@ const FlexContainer: React.FC<FlexProps> = ({
     flexWrap,
     effectiveWidth,
     effectiveHeight,
-    childWidth,
-    childHeight,
     gap
   );
 
@@ -166,44 +173,40 @@ const FlexContainer: React.FC<FlexProps> = ({
       flexDirection,
       effectiveWidth,
       effectiveHeight,
-      line.length,
-      childWidth,
-      childHeight,
+      line,
       gap
     );
 
-    const cross = computeCross(
-      alignItems,
-      flexDirection,
-      effectiveWidth,
-      effectiveHeight,
-      childWidth,
-      childHeight
-    );
+    let accumulatedMain = startMain;
 
-    line.forEach((child, index) => {
-      const main =
-        startMain +
-        index *
-          ((flexDirection === "row" ? childWidth : childHeight) + spacing);
+    line.forEach((child) => {
+      const cross = computeCross(
+        alignItems,
+        flexDirection,
+        effectiveWidth,
+        effectiveHeight,
+        child
+      );
 
       const x =
         flexDirection === "row"
-          ? main + padding
-          : cross + lineIndex * (childWidth + gap) + padding;
+          ? accumulatedMain + padding
+          : cross + lineIndex * (child.props.width + gap) + padding;
       const y =
         flexDirection === "row"
-          ? cross + lineIndex * (childHeight + gap) + padding
-          : main + padding;
+          ? cross + lineIndex * (child.props.height + gap) + padding
+          : accumulatedMain + padding;
 
       positionedChildren.push(
         React.cloneElement(child, {
           x,
           y,
-          width: childWidth,
-          height: childHeight,
         })
       );
+
+      accumulatedMain +=
+        (flexDirection === "row" ? child.props.width : child.props.height) +
+        spacing;
     });
   });
 
@@ -214,25 +217,25 @@ const FlexContainer: React.FC<FlexProps> = ({
 // --- demo ---
 export default function App() {
   // stage config
-  const stageWidth = 800;
-  const stageHeight = 800;
+  const stageWidth = 1200;
+  const stageHeight = 1200;
 
   // container config
-  const containerWidth = 300;
-  const containerHeight = 300;
-  const flexDirection: "row" | "column" = "row";
-  const flexWrap: "nowrap" | "wrap" = "nowrap";
+  const containerWidth = 600;
+  const containerHeight = 600;
+  const flexDirection: "row" | "column" = "column";
+  const flexWrap: "nowrap" | "wrap" = "wrap";
   const justifyContent:
     | "flex-start"
     | "center"
     | "flex-end"
     | "space-between"
-    | "space-around" = "flex-start";
+    | "space-around" = "space-around";
   const alignItems: "flex-start" | "center" | "flex-end" = "flex-start";
   const gap = 10;
 
   // items
-  const items = Array.from({ length: 4 }, (_, i) => i);
+  const items = Array.from({ length: 6 }, (_, i) => i);
 
   return (
     <Stage width={stageWidth} height={stageHeight}>
@@ -249,9 +252,26 @@ export default function App() {
           padding={gap} // padding interno
         >
           {items.map((i) => (
-            <Rect key={i} fill="blue" />
+            <Rect key={i} fill="blue" height={140} width={140} />
           ))}
         </FlexContainer>
+        <Group x={400} y={400}>
+          <FlexContainer
+            width={300}
+            height={300}
+            display="flex"
+            flexDirection={"row"}
+            flexWrap={"nowrap"}
+            justifyContent={"flex-start"}
+            alignItems={"flex-start"}
+            gap={12}
+            padding={2} // padding interno
+          >
+            {items.map((i) => (
+              <Rect key={i} fill="orange" height={20} width={20} />
+            ))}
+          </FlexContainer>
+        </Group>
       </Layer>
     </Stage>
   );
