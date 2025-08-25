@@ -30,9 +30,6 @@ const ShapeBox = memo(({ shape: item }: IShapeWithEvents) => {
     ?.filter((e) => e?.visible && e?.type === "shadow")
     .at(0);
 
-  const offsetX = box.isCreating ? 0 : width / 2;
-  const offsetY = box.isCreating ? 0 : height / 2;
-
   if (!box.visible) return null;
 
   return (
@@ -46,8 +43,6 @@ const ShapeBox = memo(({ shape: item }: IShapeWithEvents) => {
         width={width}
         height={height}
         rotation={rotation}
-        offsetX={offsetX}
-        offsetY={offsetY}
         // Sin offset - calculamos todo manualmente
         // offsetX={width / 2}
         // offsetY={height / 2}

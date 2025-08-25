@@ -2,6 +2,7 @@ import { LineCap, LineJoin } from "konva/lib/Shape";
 import { FC } from "react";
 import { ALL_SHAPES } from "../states/shapes";
 import { IKeyMethods } from "../states/tool";
+import { LayoutFlexProps } from "./layout-flex";
 
 export type WithInitialValue<Value> = {
   init: Value;
@@ -74,6 +75,7 @@ export type IShape = {
   shadowOffsetY: number;
   shadowOpacity: number;
   shadowBlur: number;
+  layouts: Omit<LayoutFlexProps, "children" | "width" | "height" | "display">[];
 };
 
 export type IShapeWithEvents = {

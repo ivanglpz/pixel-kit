@@ -21,15 +21,11 @@ import {
   Scan,
   Smile,
 } from "lucide-react";
-import * as AllIcons from "lucide-static";
 import { ChangeEvent, useRef, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { Dialog } from "../components/dialog";
 import { ListIcons } from "../components/list-icons";
 
-const iconObjects: { [key: string]: string }[] = Object.entries(AllIcons).map(
-  ([name, svg]) => ({ name, svg })
-);
 // Función utilitaria para calcular la escala de imagen
 const calculateScale = (
   originalWidth: number,
@@ -376,6 +372,72 @@ export const LayoutShapeConfig = () => {
     shapeUpdate({ lineJoin, lineCap });
   };
 
+  // Agregar después de las opciones existentes (fontWeightOptions)
+  const flexDirectionOptions = [
+    { id: "flex-direction-row", label: "Row", value: "row" },
+    { id: "flex-direction-column", label: "Column", value: "column" },
+  ];
+
+  const justifyContentOptions = [
+    { id: "justify-flex-start", label: "Start", value: "flex-start" },
+    { id: "justify-center", label: "Center", value: "center" },
+    { id: "justify-flex-end", label: "End", value: "flex-end" },
+    { id: "justify-space-between", label: "Between", value: "space-between" },
+    { id: "justify-space-around", label: "Around", value: "space-around" },
+  ];
+
+  const alignItemsOptions = [
+    { id: "align-flex-start", label: "Start", value: "flex-start" },
+    { id: "align-center", label: "Center", value: "center" },
+    { id: "align-flex-end", label: "End", value: "flex-end" },
+  ];
+
+  const flexWrapOptions = [
+    { id: "flex-nowrap", label: "No wrap", value: "nowrap" },
+    { id: "flex-wrap", label: "Wrap", value: "wrap" },
+  ];
+
+  // Manejadores para layouts (agregar con los demás manejadores)
+  const handleAddLayout = () => {
+    shapeUpdate({
+      layouts: [
+        ...(shape.layouts || []),
+        {
+          id: uuidv4(),
+          visible: true,
+          flexDirection: "row",
+          justifyContent: "flex-start",
+          alignItems: "flex-start",
+          flexWrap: "nowrap",
+          gap: 10,
+          padding: 0,
+        },
+      ],
+    });
+  };
+
+  const handleLayoutVisibilityToggle = (index: number) => {
+    const newLayouts = [...(shape.layouts || [])];
+    newLayouts[index].visible = !newLayouts[index].visible;
+    shapeUpdate({ layouts: newLayouts });
+  };
+
+  const handleLayoutRemove = (index: number) => {
+    const newLayouts = [...(shape.layouts || [])];
+    newLayouts.splice(index, 1);
+    shapeUpdate({ layouts: newLayouts });
+  };
+
+  const handleLayoutPropertyChange = (
+    index: number,
+    property: string,
+    value: any
+  ) => {
+    const newLayouts = [...(shape.layouts || [])];
+    newLayouts[index] = { ...newLayouts[index], [property]: value };
+    shapeUpdate({ layouts: newLayouts });
+  };
+
   return (
     <div
       className={`${css({ display: "flex", flexDirection: "column", gap: "lg" })} scrollbar_container`}
@@ -422,9 +484,7 @@ export const LayoutShapeConfig = () => {
           />
         </div>
       </section>
-
       <Separator />
-
       {/* SECCIÓN: LAYOUT - Dimensiones */}
       <section className={commonStyles.container}>
         <p className={commonStyles.sectionTitle}>Layout</p>
@@ -444,9 +504,136 @@ export const LayoutShapeConfig = () => {
           />
         </div>
       </section>
-
       <Separator />
+      <section className={commonStyles.container}>
+        <SectionHeader title="Layouts" onAdd={handleAddLayout} />
 
+        {/* Lista de layouts */}
+        {shape.layouts?.length
+          ? shape.layouts.map((layout, index) => (
+              <div
+                key={`pixel-kit-shape-layout-${shape.id}-${shape.tool}-${index}`}
+                className={css({
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "md",
+                })}
+              >
+                {/* Header del layout con visibility y remove */}
+                <div className={commonStyles.threeColumnGrid}>
+                  <div
+                    className={css({
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "sm",
+                      color: "text",
+                      fontSize: "sm",
+                      fontWeight: "500",
+                    })}
+                  >
+                    Layout {index + 1}
+                  </div>
+
+                  {/* Botón visibility toggle */}
+                  <button
+                    onClick={() => handleLayoutVisibilityToggle(index)}
+                    className={commonStyles.iconButton}
+                  >
+                    {layout.visible ? <Eye size={18} /> : <EyeOff size={18} />}
+                  </button>
+
+                  {/* Botón remove */}
+                  <button
+                    onClick={() => handleLayoutRemove(index)}
+                    className={commonStyles.iconButton}
+                  >
+                    <Minus size={18} />
+                  </button>
+                </div>
+
+                {/* Controles del layout - solo si está visible */}
+                {layout.visible && (
+                  <>
+                    {/* Flex Direction y Flex Wrap */}
+                    <div className={commonStyles.twoColumnGrid}>
+                      <InputSelect
+                        labelText="Direction"
+                        value={layout.flexDirection}
+                        onChange={(value) =>
+                          handleLayoutPropertyChange(
+                            index,
+                            "flexDirection",
+                            value
+                          )
+                        }
+                        options={flexDirectionOptions}
+                      />
+                      <InputSelect
+                        labelText="Wrap"
+                        value={layout.flexWrap}
+                        onChange={(value) =>
+                          handleLayoutPropertyChange(index, "flexWrap", value)
+                        }
+                        options={flexWrapOptions}
+                      />
+                    </div>
+
+                    {/* Justify Content y Align Items */}
+                    <div className={commonStyles.twoColumnGrid}>
+                      <InputSelect
+                        labelText="Justify"
+                        value={layout.justifyContent}
+                        onChange={(value) =>
+                          handleLayoutPropertyChange(
+                            index,
+                            "justifyContent",
+                            value
+                          )
+                        }
+                        options={justifyContentOptions}
+                      />
+                      <InputSelect
+                        labelText="Align"
+                        value={layout.alignItems}
+                        onChange={(value) =>
+                          handleLayoutPropertyChange(index, "alignItems", value)
+                        }
+                        options={alignItemsOptions}
+                      />
+                    </div>
+
+                    {/* Gap y Padding */}
+                    <div className={commonStyles.twoColumnGrid}>
+                      <InputNumber
+                        iconType="square"
+                        labelText="Gap"
+                        min={0}
+                        max={100}
+                        step={1}
+                        value={layout.gap}
+                        onChange={(value) =>
+                          handleLayoutPropertyChange(index, "gap", value)
+                        }
+                      />
+                      <InputNumber
+                        iconType="square"
+                        labelText="Padding"
+                        min={0}
+                        max={100}
+                        step={1}
+                        value={layout.padding}
+                        onChange={(value) =>
+                          handleLayoutPropertyChange(index, "padding", value)
+                        }
+                      />
+                    </div>
+                  </>
+                )}
+              </div>
+            ))
+          : null}
+      </section>
+      <Separator />
       {/* SECCIÓN: APPEARANCE - Apariencia */}
       <section className={commonStyles.container}>
         <p className={commonStyles.sectionTitle}>Appearance</p>
@@ -535,7 +722,6 @@ export const LayoutShapeConfig = () => {
           </div>
         )}
       </section>
-
       <Separator />
       <Valid isValid={shape.tool === "TEXT"}>
         {/* SECCIÓN: TYPOGRAPHY - Tipografía */}
@@ -595,7 +781,6 @@ export const LayoutShapeConfig = () => {
 
         <Separator />
       </Valid>
-
       {/* SECCIÓN: FILL - Rellenos */}
       <section className={commonStyles.container}>
         <SectionHeader
@@ -692,9 +877,7 @@ export const LayoutShapeConfig = () => {
             ))
           : null}
       </section>
-
       <Separator />
-
       {/* SECCIÓN: STROKE - Bordes */}
       <section className={commonStyles.container}>
         <SectionHeader title="Stroke" onAdd={handleAddStroke} />
@@ -822,9 +1005,7 @@ export const LayoutShapeConfig = () => {
           </>
         ) : null}
       </section>
-
       <Separator />
-
       {/* SECCIÓN: IMAGE - Imagen */}
       {/* <p
         className={css({
@@ -835,9 +1016,7 @@ export const LayoutShapeConfig = () => {
       >
         Image
       </p> */}
-
       {/* <Button text="Browser Files" onClick={() => inputRef.current?.click()} /> */}
-
       {/* Input oculto para archivos */}
       <input
         ref={inputRef}
@@ -854,9 +1033,7 @@ export const LayoutShapeConfig = () => {
           position: "absolute",
         })}
       />
-
       {/* <Separator /> */}
-
       {/* SECCIÓN: EFFECTS - Efectos */}
       <section className={commonStyles.container}>
         <SectionHeader title="Effects" onAdd={handleAddEffect} />

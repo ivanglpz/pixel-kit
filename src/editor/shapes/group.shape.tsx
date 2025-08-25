@@ -2,6 +2,7 @@ import { PrimitiveAtom, useAtomValue } from "jotai";
 import { memo } from "react";
 import { Group } from "react-konva";
 import ShapeBox from "./box.shape";
+import { LayoutFlex } from "./layout-flex";
 import { Shapes } from "./shapes";
 import {
   FCShapeWEvents,
@@ -25,6 +26,18 @@ export const ShapeGroup = memo(
     const offsetX = box.isCreating ? 0 : width / 2;
     const offsetY = box.isCreating ? 0 : height / 2;
 
+    const layout = box.layouts?.at(0);
+
+    const children = childrens?.map((item) => {
+      const Component = Shapes?.[item?.tool] as FCShapeWEvents;
+      return (
+        <Component
+          listShapes={SHAPES}
+          shape={item}
+          key={`pixel-group-shapes-${item?.id}-${item.tool}`}
+        />
+      );
+    });
     return (
       <>
         <ShapeBox shape={item} listShapes={[]} />
@@ -36,19 +49,19 @@ export const ShapeGroup = memo(
           height={height}
           listening={!box.isLocked}
           rotation={rotation}
-          offsetX={offsetX}
-          offsetY={offsetY}
         >
-          {childrens?.map((item) => {
-            const Component = Shapes?.[item?.tool] as FCShapeWEvents;
-            return (
-              <Component
-                listShapes={SHAPES}
-                shape={item}
-                key={`pixel-group-shapes-${item?.id}-${item.tool}`}
-              />
-            );
-          })}
+          {layout ? (
+            <LayoutFlex
+              width={width}
+              height={height}
+              display="flex"
+              {...layout}
+            >
+              {children}
+            </LayoutFlex>
+          ) : (
+            children
+          )}
         </Group>
       </>
     );

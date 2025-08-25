@@ -29,8 +29,6 @@ export const ShapeCircle = memo(({ shape: item }: IShapeWithEvents) => {
 
   // Calcular la posición ajustada para la rotación
 
-  const offsetX = box.isCreating ? 0 : width / 2;
-  const offsetY = box.isCreating ? 0 : height / 2;
   if (!box.visible) return null;
 
   return (
@@ -44,8 +42,6 @@ export const ShapeCircle = memo(({ shape: item }: IShapeWithEvents) => {
         width={width}
         height={height}
         rotation={rotation}
-        offsetX={offsetX}
-        offsetY={offsetY}
         listening={!box.isLocked}
         // 3. Rotación
         // rotationDeg={rotate}
