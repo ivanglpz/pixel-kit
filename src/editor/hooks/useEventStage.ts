@@ -241,11 +241,7 @@ const useEventStage = () => {
     if (!newShape) return;
 
     if (TOOLS_BOX_BASED.includes(newShape.tool)) {
-      SET_CREATE({
-        ...newShape,
-        x: newShape.x + newShape.width / 2,
-        y: newShape.y + newShape.height / 2,
-      });
+      SET_CREATE(newShape);
       SET_CLEAR_CITEM();
       SET_EVENT_STAGE("IDLE");
       setTool("MOVE");
