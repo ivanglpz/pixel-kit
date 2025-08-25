@@ -101,6 +101,8 @@ export const LayerClip = () => {
     rotation: 0,
     layouts: [],
     isCreating: true,
+    fillContainerHeight: false,
+    fillContainerWidth: false,
     fills: [
       {
         color: "#fff",

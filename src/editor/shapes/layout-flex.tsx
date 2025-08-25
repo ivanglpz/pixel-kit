@@ -111,7 +111,14 @@ const flexLayoutAtom = atom(
           flexDirection === "row"
             ? cross + lineIndex * (childState.height + gap) + padding
             : accumulatedMain + padding;
-
+        const newWidth =
+          childState.fillContainerWidth && flexDirection === "row"
+            ? effectiveWidth / line.length - gap * (line.length - 1)
+            : childState.width;
+        const newHeight =
+          childState.fillContainerHeight && flexDirection === "column"
+            ? effectiveHeight / line.length - gap * (line.length - 1)
+            : childState.height;
         // Encontrar el átomo correspondiente y actualizar su estado
         const childAtom = childrenStates.find(
           ({ state }) => state.id === childState.id
@@ -121,6 +128,8 @@ const flexLayoutAtom = atom(
             ...prev,
             x,
             y,
+            width: newWidth,
+            height: newHeight,
           }));
         }
 

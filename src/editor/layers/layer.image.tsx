@@ -59,6 +59,8 @@ export const LayerImage = () => {
     effects: [],
     label: "DRAW",
     parentId: null,
+    fillContainerHeight: false,
+    fillContainerWidth: false,
     opacity: 1,
     layouts: [],
     strokes: [
