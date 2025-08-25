@@ -30,7 +30,6 @@ export type LayoutFlexProps = {
   children: React.ReactElement[];
 };
 
-// Átomo para calcular y aplicar el layout flex
 const flexLayoutAtom = atom(
   null,
   (
@@ -61,7 +60,6 @@ const flexLayoutAtom = atom(
     const effectiveWidth = containerWidth - padding * 2;
     const effectiveHeight = containerHeight - padding * 2;
 
-    // Obtener los estados actuales de los children
     const childrenStates = children.map((child) => {
       const state = get(
         child.props.shape.state as PrimitiveAtom<IShape> &
@@ -69,9 +67,7 @@ const flexLayoutAtom = atom(
       );
       return { state, atom: child.props.shape.state };
     });
-    console.log(childrenStates, "children");
 
-    // Agrupar en líneas si hay wrap
     const lines = groupIntoLines(
       childrenStates.map(({ state }) => state),
       flexDirection,
@@ -81,8 +77,7 @@ const flexLayoutAtom = atom(
       gap
     );
 
-    // Calcular posiciones para cada línea
-    lines.forEach((line, lineIndex) => {
+    lines.forEach((line) => {
       const { startMain, spacing } = computeMainLayout(
         justifyContent,
         flexDirection,
@@ -103,26 +98,28 @@ const flexLayoutAtom = atom(
           childState
         );
 
+        const newWidth = childState.fillContainerWidth
+          ? flexDirection === "row"
+            ? (effectiveWidth - gap * (line.length - 1)) / line.length
+            : effectiveWidth
+          : childState.width;
+
+        const newHeight = childState.fillContainerHeight
+          ? flexDirection === "column"
+            ? (effectiveHeight - gap * (line.length - 1)) / line.length
+            : effectiveHeight
+          : childState.height;
+
         const x =
-          flexDirection === "row"
-            ? accumulatedMain + padding
-            : cross + lineIndex * (childState.width + gap) + padding;
+          flexDirection === "row" ? accumulatedMain + padding : cross + padding;
+
         const y =
-          flexDirection === "row"
-            ? cross + lineIndex * (childState.height + gap) + padding
-            : accumulatedMain + padding;
-        const newWidth =
-          childState.fillContainerWidth && flexDirection === "row"
-            ? effectiveWidth / line.length - gap * (line.length - 1)
-            : childState.width;
-        const newHeight =
-          childState.fillContainerHeight && flexDirection === "column"
-            ? effectiveHeight / line.length - gap * (line.length - 1)
-            : childState.height;
-        // Encontrar el átomo correspondiente y actualizar su estado
+          flexDirection === "row" ? cross + padding : accumulatedMain + padding;
+
         const childAtom = childrenStates.find(
           ({ state }) => state.id === childState.id
         )?.atom;
+
         if (childAtom) {
           set(childAtom, (prev: IShape) => ({
             ...prev,
@@ -134,8 +131,7 @@ const flexLayoutAtom = atom(
         }
 
         accumulatedMain +=
-          (flexDirection === "row" ? childState.width : childState.height) +
-          spacing;
+          (flexDirection === "row" ? newWidth : newHeight) + spacing;
       });
     });
   }
