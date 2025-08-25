@@ -503,6 +503,41 @@ export const LayoutShapeConfig = () => {
             onChange={(v) => shapeUpdate({ height: v })}
           />
         </div>
+        <div className={commonStyles.twoColumnGrid}>
+          <button
+            onClick={() =>
+              shapeUpdate({ fillContainerWidth: !shape.fillContainerWidth })
+            }
+            className={css({
+              background: "bg.muted",
+              borderRadius: "6px",
+              padding: "sm",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              height: "33.5px",
+            })}
+          >
+            {shape.fillContainerWidth ? "yes" : "no"}
+          </button>
+          <button
+            onClick={() =>
+              shapeUpdate({ fillContainerHeight: !shape.fillContainerHeight })
+            }
+            className={css({
+              background: "bg.muted",
+
+              borderRadius: "6px",
+              padding: "sm",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              height: "33.5px",
+            })}
+          >
+            {shape.fillContainerHeight ? "yes" : "no"}
+          </button>
+        </div>
       </section>
       <Separator />
       <section className={commonStyles.container}>

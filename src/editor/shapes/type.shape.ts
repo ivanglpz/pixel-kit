@@ -76,6 +76,8 @@ export type IShape = {
   shadowOpacity: number;
   shadowBlur: number;
   layouts: Omit<LayoutFlexProps, "children" | "width" | "height" | "display">[];
+  fillContainerWidth: boolean;
+  fillContainerHeight: boolean;
 };
 
 export type IShapeWithEvents = {
