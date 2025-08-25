@@ -23,9 +23,6 @@ export const ShapeGroup = memo(
     const childrens = SHAPES?.filter((e) => e?.parentId === box?.id);
     if (!box.visible) return null;
 
-    const offsetX = box.isCreating ? 0 : width / 2;
-    const offsetY = box.isCreating ? 0 : height / 2;
-
     const layout = box.layouts?.at(0);
 
     const children = childrens?.map((item) => {
