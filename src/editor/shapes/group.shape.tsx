@@ -1,6 +1,6 @@
 import { PrimitiveAtom, useAtomValue } from "jotai";
 import { memo } from "react";
-import { Group } from "react-konva";
+import { Group, Rect, Text } from "react-konva";
 import ShapeBox from "./box.shape";
 import { LayoutFlex } from "./layout-flex";
 import { Shapes } from "./shapes";
@@ -40,12 +40,15 @@ export const ShapeGroup = memo(
         <ShapeBox shape={item} listShapes={[]} />
 
         <Group
+          {...box}
           x={x}
           y={y}
           width={width}
           height={height}
           listening={!box.isLocked}
           rotation={rotation}
+          draggable
+          tag={box?.tool}
           clip={{
             x: 0,
             y: 0,
@@ -53,6 +56,22 @@ export const ShapeGroup = memo(
             height: height,
           }}
         >
+          <Text
+            x={0}
+            y={0}
+            text={box.id}
+            fontSize={24}
+            fontFamily="Arial"
+            fill="black"
+          ></Text>
+          <Rect
+            x={0}
+            y={0}
+            width={width}
+            height={height}
+            fill="transparent"
+            listening={false}
+          />
           {layout ? (
             <LayoutFlex
               width={width}

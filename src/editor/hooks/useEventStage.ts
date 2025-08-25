@@ -109,8 +109,139 @@ const useEventStage = () => {
       handleCreatingMode(x, y);
     }
   };
+  function getSelectionAbsoluteBounds(nodes: Konva.Node[]) {
+    if (!nodes.length) return { x: 0, y: 0, width: 0, height: 0 };
 
-  const handleMouseUp = async () => {
+    const rects = nodes.map((n) => n.getClientRect());
+    const minX = Math.min(...rects.map((r) => r.x));
+    const minY = Math.min(...rects.map((r) => r.y));
+    const maxX = Math.max(...rects.map((r) => r.x + r.width));
+    const maxY = Math.max(...rects.map((r) => r.y + r.height));
+
+    return { x: minX, y: minY, width: maxX - minX, height: maxY - minY };
+  }
+  function getTopMostGroupAtPosition(
+    stage: Konva.Stage,
+    pointerPos: { x: number; y: number }
+  ): Konva.Node | null {
+    // Usar el método nativo de Konva para obtener el nodo en la posición
+    const shape = stage.getIntersection(pointerPos);
+
+    if (!shape) return null;
+
+    // Recorrer hacia arriba en la jerarquía para encontrar el grupo más cercano
+    let current = shape;
+    let topMostGroup = null;
+
+    while (current) {
+      const tag = current.getAttr?.("tag");
+      if (tag === "GROUP") {
+        topMostGroup = current;
+      }
+      current = current.getParent();
+    }
+
+    return topMostGroup;
+  }
+  function getAllGroups(
+    node: Konva.Layer | Konva.Group | Konva.Shape | undefined
+  ): Konva.Node[] {
+    let groups: Konva.Node[] = [];
+    if (!node) return groups;
+
+    const tag = node.getAttr?.("tag");
+    if (tag === "GROUP") groups.push(node);
+
+    if ("children" in node) {
+      node.children.forEach((child) => {
+        groups = groups.concat(getAllGroups(child));
+      });
+    }
+
+    return groups;
+  }
+  function isPointInGroup(
+    group: Konva.Node,
+    pointerPos: { x: number; y: number }
+  ): boolean {
+    const rect = group.getClientRect();
+    return (
+      pointerPos.x >= rect.x &&
+      pointerPos.x <= rect.x + rect.width &&
+      pointerPos.y >= rect.y &&
+      pointerPos.y <= rect.y + rect.height
+    );
+  }
+  function getAllGroupsWithDepth(
+    node: Konva.Layer | Konva.Group | Konva.Shape | undefined,
+    depth: number = 0
+  ): Array<{ group: Konva.Node; depth: number }> {
+    let groups: Array<{ group: Konva.Node; depth: number }> = [];
+    if (!node) return groups;
+
+    const tag = node.getAttr?.("tag");
+    if (tag === "GROUP") {
+      groups.push({ group: node, depth });
+    }
+
+    if ("children" in node) {
+      node.children.forEach((child) => {
+        groups = groups.concat(getAllGroupsWithDepth(child, depth + 1));
+      });
+    }
+
+    return groups;
+  }
+  const handleMouseUp = async (event: KonvaEventObject<MouseEvent>) => {
+    if (EVENT_STAGE === "IDLE" && tool === "MOVE" && shapeId?.length > 0) {
+      const stage = StageRef?.current?.getStage?.();
+      if (!stage) return;
+
+      const pointerPos = stage.getPointerPosition();
+      if (!pointerPos) return;
+
+      // MÉTODO 1: Usando getIntersection (Recomendado)
+      const topMostGroup = getTopMostGroupAtPosition(stage, pointerPos);
+
+      if (topMostGroup) {
+        console.log("Grupo más específico:", topMostGroup.attrs?.id);
+      }
+
+      // MÉTODO 2: Alternativo usando análisis manual de profundidad
+      const layer = stage.children.find((e) => e?.attrs?.id === "layer-shapes");
+      if (layer) {
+        const allGroupsWithDepth = getAllGroupsWithDepth(layer);
+
+        // Filtrar grupos que contienen el punto
+        const intersectingGroups = allGroupsWithDepth.filter(({ group }) =>
+          isPointInGroup(group, pointerPos)
+        );
+
+        if (intersectingGroups.length > 0) {
+          // Ordenar por profundidad (más profundo primero) y luego por z-index
+          intersectingGroups.sort((a, b) => {
+            // Primero ordenar por profundidad (más profundo = más específico)
+            if (a.depth !== b.depth) {
+              return b.depth - a.depth;
+            }
+            // Si tienen la misma profundidad, ordenar por z-index
+            const aIndex = a.group.getZIndex();
+            const bIndex = b.group.getZIndex();
+            return bIndex - aIndex;
+          });
+
+          const mostSpecificGroup = intersectingGroups[0].group;
+          console.log(
+            "Grupo más específico (método 2):",
+            mostSpecificGroup.attrs?.id
+          );
+          console.log("Profundidad:", intersectingGroups[0].depth);
+        } else {
+          console.log("principal");
+        }
+      }
+    }
+
     if (selection.visible && EVENT_STAGE === "IDLE" && tool === "MOVE") {
       const childrens = StageRef?.current?.getStage?.()?.children;
 
