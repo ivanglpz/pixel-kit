@@ -21,7 +21,6 @@ import {
   ADD_SHAPE_ID_ATOM,
   GET_SELECTED_SHAPES_ATOM,
   REMOVE_SHAPE_ID_ATOM,
-  RESET_SHAPES_IDS_ATOM,
   UPDATE_SHAPES_IDS_ATOM,
 } from "../states/shape";
 import { CREATE_SHAPE_ATOM, DELETE_SHAPE_ATOM } from "../states/shapes";
@@ -54,7 +53,6 @@ const useEventStage = () => {
   const SET_UPDATE_SHAPES_IDS = useSetAtom(UPDATE_SHAPES_IDS_ATOM);
   const SET_CREATE_CITEM = useSetAtom(CREATE_CURRENT_ITEM_ATOM);
   const SET_CLEAR_CITEM = useSetAtom(CLEAR_CURRENT_ITEM_ATOM);
-  const resetShapesIds = useSetAtom(RESET_SHAPES_IDS_ATOM);
   const setshowClip = useSetAtom(SHOW_CLIP_ATOM);
   const [selection, setSelection] = useAtom(RECTANGLE_SELECTION_ATOM);
 
@@ -69,7 +67,8 @@ const useEventStage = () => {
       [null, undefined, "main-image-render-stage", "pixel-kit-stage"].includes(
         event.target?.attrs?.id
       ) &&
-      tool === "MOVE"
+      tool === "MOVE" &&
+      shapeId?.length === 0
     ) {
       setSelection({
         x,
@@ -82,7 +81,8 @@ const useEventStage = () => {
 
     if (EVENT_STAGE === "CREATE") {
       handleCreateMode(x, y);
-    } else if (EVENT_STAGE === "COPY") {
+    }
+    if (EVENT_STAGE === "COPY") {
       handleCopyMode(x, y);
     }
   };
@@ -90,7 +90,12 @@ const useEventStage = () => {
   const handleMouseMove = (event: KonvaEventObject<MouseEvent>) => {
     const { x, y } = stageAbsolutePosition(event);
 
-    if (selection.visible && EVENT_STAGE === "IDLE" && tool === "MOVE") {
+    if (
+      selection.visible &&
+      EVENT_STAGE === "IDLE" &&
+      tool === "MOVE" &&
+      shapeId?.length === 0
+    ) {
       setSelection({
         x: Math.min(selection.x, x),
         y: Math.min(selection.y, y),
@@ -198,8 +203,6 @@ const useEventStage = () => {
       };
     });
 
-    // resetShapesIds();
-
     for (const element of newShapes) {
       SET_CREATE(element);
     }
@@ -263,7 +266,6 @@ const useEventStage = () => {
   const toolKeydown = (kl: IKeyTool) => {
     setTool(kl);
     SET_CLEAR_CITEM();
-    resetShapesIds();
   };
 
   const handleDeleteShapes = () => {

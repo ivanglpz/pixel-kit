@@ -4,7 +4,6 @@ import { css } from "@stylespixelkit/css";
 import { useAtom, useSetAtom } from "jotai";
 import { useConfiguration } from "../hooks/useConfiguration";
 import { EVENT_ATOM, IStageEvents } from "../states/event";
-import { RESET_SHAPES_IDS_ATOM } from "../states/shape";
 
 export const Tools = () => {
   const [tool, setTool] = useAtom(TOOL_ATOM);
@@ -12,7 +11,6 @@ export const Tools = () => {
 
   const { config } = useConfiguration();
   // const setShapeId = useSetAtom(SHAPE_ID_ATOM);
-  const resetShapesIds = useSetAtom(RESET_SHAPES_IDS_ATOM);
   const setEventStage = useSetAtom(EVENT_ATOM);
   return (
     <div
@@ -56,13 +54,11 @@ export const Tools = () => {
                 if (showClip) {
                   setTool("MOVE");
                   setEventStage("IDLE");
-                  resetShapesIds();
                   setshowClip(false);
                   return;
                 }
                 setTool(item.keyMethod as IKeyTool);
                 setEventStage(item.eventStage as IStageEvents);
-                resetShapesIds();
 
                 setshowClip(true);
 
@@ -70,7 +66,6 @@ export const Tools = () => {
               }
               setTool(item.keyMethod as IKeyTool);
               setEventStage(item.eventStage as IStageEvents);
-              resetShapesIds();
               setshowClip(!showClip);
               setshowClip(false);
             }}
