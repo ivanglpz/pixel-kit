@@ -72,6 +72,7 @@ export const CREATE_SHAPE_ATOM = atom(null, (get, set, args: IShape) => {
   if (!args || !args?.id) return;
 
   set(ALL_SHAPES_ATOM, [
+    ...get(ALL_SHAPES_ATOM),
     {
       id: args?.id,
       tool: args?.tool,
@@ -79,7 +80,6 @@ export const CREATE_SHAPE_ATOM = atom(null, (get, set, args: IShape) => {
       parentId: args?.parentId,
       pageId: get(PAGE_ID_ATOM),
     },
-    ...get(ALL_SHAPES_ATOM),
   ]);
 });
 

@@ -410,7 +410,7 @@ export const LayoutShapeConfig = () => {
           alignItems: "flex-start",
           flexWrap: "nowrap",
           gap: 10,
-          padding: 0,
+          padding: 10,
         },
       ],
     });
@@ -487,9 +487,8 @@ export const LayoutShapeConfig = () => {
       <Separator />
       {/* SECCIÓN: LAYOUT - Dimensiones */}
       <section className={commonStyles.container}>
-        <p className={commonStyles.sectionTitle}>Layout</p>
+        <p className={commonStyles.sectionTitle}>Dimensions</p>
 
-        <p className={commonStyles.labelText}>Dimensions</p>
         <div className={commonStyles.twoColumnGrid}>
           <InputNumber
             iconType="width"
