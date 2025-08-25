@@ -46,6 +46,12 @@ export const ShapeGroup = memo(
           height={height}
           listening={!box.isLocked}
           rotation={rotation}
+          clip={{
+            x: 0,
+            y: 0,
+            width: width,
+            height: height,
+          }}
         >
           {layout ? (
             <LayoutFlex
