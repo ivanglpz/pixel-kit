@@ -60,6 +60,7 @@ export const LayerImage = () => {
     label: "DRAW",
     parentId: null,
     opacity: 1,
+    layouts: [],
     strokes: [
       {
         id: "559c1735-4e62-4c43-aa4c-246ec594ca06",

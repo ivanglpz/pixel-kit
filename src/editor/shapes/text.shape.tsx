@@ -29,9 +29,6 @@ export const ShapeText = memo(({ shape: item }: IShapeWithEvents) => {
     ?.filter((e) => e?.visible && e?.type === "shadow")
     .at(0);
 
-  const offsetX = box.isCreating ? 0 : width / 2;
-  const offsetY = box.isCreating ? 0 : height / 2;
-
   if (!box.visible) return null;
   return (
     <>
@@ -52,8 +49,6 @@ export const ShapeText = memo(({ shape: item }: IShapeWithEvents) => {
         fontSize={box?.fontSize}
         lineHeight={1.45}
         rotation={rotation}
-        offsetX={offsetX}
-        offsetY={offsetY}
         // 3. Rotación
         // rotationDeg={rotate}
         // 4. Relleno y color

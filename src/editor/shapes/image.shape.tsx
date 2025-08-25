@@ -107,9 +107,6 @@ export const ShapeImage = memo((props: IShapeWithEvents) => {
     ?.filter((e) => e?.visible && e?.type === "shadow")
     .at(0);
 
-  const offsetX = box.isCreating ? 0 : width / 2;
-  const offsetY = box.isCreating ? 0 : height / 2;
-
   if (!box.visible) return null;
 
   // =========================
@@ -130,8 +127,6 @@ export const ShapeImage = memo((props: IShapeWithEvents) => {
         image={Imagee}
         // 3. Rotación
         rotation={rotation}
-        offsetX={offsetX}
-        offsetY={offsetY}
         // rotationDeg={rotate}
         listening={!box.isLocked}
         // 4. Relleno

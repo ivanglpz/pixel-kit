@@ -99,6 +99,7 @@ export const LayerClip = () => {
     isLocked: true,
     dash: 0,
     rotation: 0,
+    layouts: [],
     isCreating: true,
     fills: [
       {

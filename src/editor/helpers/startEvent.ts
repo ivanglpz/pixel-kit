@@ -44,6 +44,7 @@ export const shapeStart = (props: Partial<IShape>): IShape => {
         },
       },
     ],
+    layouts: [],
     strokes: [],
     visible: true,
     height: 100,
