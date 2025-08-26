@@ -77,8 +77,35 @@ const flexLayoutAtom = atom(
       gap
     );
 
+    // Para flex-wrap, necesitamos calcular el espacio total usado por todas las líneas
+    let totalCrossSize = 0;
+    lines.forEach((line, index) => {
+      const maxCrossSize = Math.max(
+        ...line.map((child) =>
+          flexDirection === "row" ? child.height : child.width
+        )
+      );
+      totalCrossSize += maxCrossSize + (index > 0 ? gap : 0);
+    });
+
+    // Calcular el offset inicial para align-items cuando hay múltiples líneas
+    let initialCrossOffset = 0;
+    if (flexWrap === "wrap" && lines.length > 1) {
+      const availableCrossSpace =
+        (flexDirection === "row" ? effectiveHeight : effectiveWidth) -
+        totalCrossSize;
+      switch (alignItems) {
+        case "center":
+          initialCrossOffset = availableCrossSpace / 2;
+          break;
+        case "flex-end":
+          initialCrossOffset = availableCrossSpace;
+          break;
+      }
+    }
+
     // Posicionar cada línea considerando el cross axis
-    let crossOffset = 0;
+    let crossOffset = initialCrossOffset;
 
     lines.forEach((line, lineIndex) => {
       const { startMain, spacing } = computeMainLayout(
@@ -100,14 +127,22 @@ const flexLayoutAtom = atom(
       let accumulatedMain = startMain;
 
       line.forEach((childState) => {
-        const cross = computeCross(
-          alignItems,
-          flexDirection,
-          effectiveWidth,
-          effectiveHeight,
-          childState,
-          maxCrossSize
-        );
+        const cross =
+          flexWrap === "wrap" && lines.length > 1
+            ? computeCross(
+                "flex-start", // Usar flex-start para elementos individuales cuando hay wrap
+                flexDirection,
+                effectiveWidth,
+                effectiveHeight,
+                childState
+              )
+            : computeCross(
+                alignItems,
+                flexDirection,
+                effectiveWidth,
+                effectiveHeight,
+                childState
+              );
 
         const newWidth = childState.fillContainerWidth
           ? flexDirection === "row"
@@ -256,21 +291,17 @@ const computeCross = (
   flexDirection: FlexDirection,
   containerWidth: number,
   containerHeight: number,
-  child: IShape,
-  lineCrossSize?: number
+  child: IShape
 ): number => {
   const crossContainerSize =
     flexDirection === "row" ? containerHeight : containerWidth;
   const childSize = flexDirection === "row" ? child.height : child.width;
 
-  // Si tenemos el tamaño de la línea, usar ese como referencia
-  const referenceSize = lineCrossSize || crossContainerSize;
-
   switch (alignItems) {
     case "center":
-      return (referenceSize - childSize) / 2;
+      return (crossContainerSize - childSize) / 2;
     case "flex-end":
-      return referenceSize - childSize;
+      return crossContainerSize - childSize;
     default:
       return 0;
   }
