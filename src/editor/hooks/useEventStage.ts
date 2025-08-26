@@ -24,6 +24,12 @@ import {
   UPDATE_SHAPES_IDS_ATOM,
 } from "../states/shape";
 import { CREATE_SHAPE_ATOM, DELETE_SHAPE_ATOM } from "../states/shapes";
+import {
+  COUNT_UNDO_REDO,
+  LIST_UNDO_REDO,
+  REDO_ATOM,
+  UNDO_ATOM,
+} from "../states/undo-redo";
 import { useConfiguration } from "./useConfiguration";
 import { useReference } from "./useReference";
 
@@ -56,8 +62,12 @@ export const useEventStage = () => {
   const SET_CLEAR_CITEM = useSetAtom(CLEAR_CURRENT_ITEM_ATOM);
   const setshowClip = useSetAtom(SHOW_CLIP_ATOM);
   const [selection, setSelection] = useAtom(RECTANGLE_SELECTION_ATOM);
-
+  const setRedo = useSetAtom(REDO_ATOM);
+  const setUndo = useSetAtom(UNDO_ATOM);
   const { ref: Stage } = useReference({ type: "STAGE" });
+  const lids = useAtomValue(LIST_UNDO_REDO);
+  const ctee = useAtomValue(COUNT_UNDO_REDO);
+  console.log({ undo_redo: lids, count: ctee });
 
   // ===== MOUSE EVENT HANDLERS =====
   const handleMouseDown = (event: KonvaEventObject<MouseEvent>) => {
@@ -377,6 +387,7 @@ export const useEventStage = () => {
       // ✅ Undo (IR HACIA ATRÁS)
       if (meta && !event.shiftKey && key === "z") {
         event.preventDefault();
+        setUndo();
         console.log("IR HACIA ATRÁS PAPI");
         // set(UNDO_ATOM);
         return;
@@ -385,6 +396,7 @@ export const useEventStage = () => {
       // ✅ Redo (IR HACIA ADELANTE)
       if (meta && event.shiftKey && key === "z") {
         event.preventDefault();
+        setRedo();
         console.log("IR HACIA ADELANTE PAPI");
         // set(REDO_ATOM);
         return;
