@@ -145,7 +145,6 @@ export const LayerClip = () => {
     borderRadius: 0,
     fontStyle: "Roboto",
     textDecoration: "none",
-    zIndex: 0,
     fontWeight: "normal",
     fontFamily: "Roboto",
     fontSize: 24,

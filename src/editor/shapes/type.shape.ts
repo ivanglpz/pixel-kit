@@ -70,7 +70,6 @@ export type IShape = {
   fontWeight?: "bold" | "normal" | "lighter" | "bolder" | "100" | "900";
   borderRadius?: number;
   isAllBorderRadius?: boolean;
-  zIndex?: number;
   shadowOffsetX: number;
   shadowOffsetY: number;
   shadowOpacity: number;
