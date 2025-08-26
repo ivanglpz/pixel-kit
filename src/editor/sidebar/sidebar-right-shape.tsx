@@ -24,7 +24,7 @@ import {
   Scan,
   Smile,
 } from "lucide-react";
-import { ChangeEvent, useRef, useState } from "react";
+import React, { ChangeEvent, useRef, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { Dialog } from "../components/dialog";
 import { ListIcons } from "../components/list-icons";
@@ -109,6 +109,166 @@ const Separator = () => (
   />
 );
 
+interface LayoutGridProps {
+  flexDirection: "row" | "column";
+  justifyContent: string;
+  alignItems: string;
+  onLayoutChange: (justifyContent: string, alignItems: string) => void;
+}
+
+const LayoutGrid: React.FC<LayoutGridProps> = ({
+  flexDirection,
+  justifyContent,
+  alignItems,
+  onLayoutChange,
+}) => {
+  // Mapeo de posiciones de la grilla a valores CSS
+  const getGridValues = (row: number, col: number) => {
+    if (flexDirection === "row") {
+      // Para flex-direction: row
+      // Columnas controlan justify-content, filas controlan align-items
+      const justifyValues = ["flex-start", "center", "flex-end"];
+      const alignValues = ["flex-start", "center", "flex-end"];
+
+      return {
+        justify: justifyValues[col],
+        align: alignValues[row],
+      };
+    } else {
+      // Para flex-direction: column
+      // Filas controlan justify-content, columnas controlan align-items
+      const justifyValues = ["flex-start", "center", "flex-end"];
+      const alignValues = ["flex-start", "center", "flex-end"];
+
+      return {
+        justify: justifyValues[row],
+        align: alignValues[col],
+      };
+    }
+  };
+
+  // Función para manejar clics (incluyendo doble clic para space-around/between)
+  const handleGridClick = (row: number, col: number) => {
+    const { justify, align } = getGridValues(row, col);
+
+    // Verificar si es el mismo cuadrado que ya está seleccionado
+    const isSameSquare = justifyContent === justify && alignItems === align;
+
+    if (isSameSquare) {
+      // Si es el mismo cuadrado, alternar entre normal, space-around, space-between
+      if (flexDirection === "row") {
+        // Para row, solo aplicamos space en justify-content
+        if (
+          justify === "flex-start" ||
+          justify === "center" ||
+          justify === "flex-end"
+        ) {
+          if (justifyContent === justify) {
+            onLayoutChange("space-around", align);
+          } else if (justifyContent === "space-around") {
+            onLayoutChange("space-between", align);
+          } else if (justifyContent === "space-between") {
+            onLayoutChange(justify, align);
+          }
+        }
+      } else {
+        // Para column, aplicamos space en justify-content
+        if (
+          justify === "flex-start" ||
+          justify === "center" ||
+          justify === "flex-end"
+        ) {
+          if (justifyContent === justify) {
+            onLayoutChange("space-around", align);
+          } else if (justifyContent === "space-around") {
+            onLayoutChange("space-between", align);
+          } else if (justifyContent === "space-between") {
+            onLayoutChange(justify, align);
+          }
+        }
+      }
+    } else {
+      // Primer clic, establecer valores normales
+      onLayoutChange(justify, align);
+    }
+  };
+
+  // Función para determinar si un cuadrado está activo
+  const isActive = (row: number, col: number) => {
+    const { justify, align } = getGridValues(row, col);
+
+    // Para space-around y space-between, también consideramos activos los cuadrados base
+    if (
+      justifyContent === "space-around" ||
+      justifyContent === "space-between"
+    ) {
+      return (
+        alignItems === align &&
+        (justify === "flex-start" ||
+          justify === "center" ||
+          justify === "flex-end")
+      );
+    }
+
+    return justifyContent === justify && alignItems === align;
+  };
+
+  // Función para obtener el color del cuadrado
+  const getSquareColor = (row: number, col: number) => {
+    const { justify, align } = getGridValues(row, col);
+
+    if (justifyContent === justify && alignItems === align) {
+      if (justifyContent === "space-around") return "blue.500";
+      if (justifyContent === "space-between") return "green.500";
+      return "gray.500";
+    }
+
+    return "bg.muted";
+  };
+
+  return (
+    <div
+      className={css({
+        display: "grid",
+        gridTemplateColumns: "repeat(3, 1fr)",
+        gridTemplateRows: "repeat(3, 1fr)",
+        gap: "2px",
+        aspectRatio: "1",
+        border: "1px solid",
+        borderColor: "border.muted",
+        borderRadius: "md",
+        padding: "4px",
+        backgroundColor: "bg.subtle",
+      })}
+    >
+      {Array.from({ length: 9 }, (_, index) => {
+        const row = Math.floor(index / 3);
+        const col = index % 3;
+
+        return (
+          <button
+            key={`grid-${row}-${col}`}
+            onClick={() => handleGridClick(row, col)}
+            className={css({
+              backgroundColor: getSquareColor(row, col),
+              borderRadius: "sm",
+              border: "none",
+              cursor: "pointer",
+              aspectRatio: "1",
+              transition: "all 0.2s ease",
+              _hover: {
+                backgroundColor: "gray.400",
+              },
+              _active: {
+                transform: "scale(0.95)",
+              },
+            })}
+          />
+        );
+      })}
+    </div>
+  );
+};
 // Componente para título de sección con botón opcional
 export const SectionHeader = ({
   title,
@@ -608,147 +768,133 @@ export const LayoutShapeConfig = () => {
                 {layout.visible && (
                   <>
                     {/* Flex Direction y Flex Wrap */}
-                    <div
-                      className={css({
-                        display: "flex",
-                        flexDirection: "row",
-                        gap: "sm",
-                      })}
-                    >
-                      <button
-                        onClick={() =>
-                          handleLayoutPropertyChange(
-                            index,
-                            "flexDirection",
-                            "column"
-                          )
-                        }
-                        className={`${commonStyles.iconButton} ${css({
-                          padding: "sm",
-                          backgroundColor:
-                            layout.flexDirection === "column"
-                              ? "gray.500"
-                              : "transparent",
-                        })}`}
-                      >
-                        <ArrowDown size={14} />
-                      </button>
-                      <button
-                        onClick={() =>
-                          handleLayoutPropertyChange(
-                            index,
-                            "flexDirection",
-                            "row"
-                          )
-                        }
-                        className={`${commonStyles.iconButton} ${css({
-                          padding: "sm",
-                          backgroundColor:
-                            layout.flexDirection === "row"
-                              ? "gray.500"
-                              : "transparent",
-                        })}`}
-                      >
-                        <ArrowRight size={14} />
-                      </button>
-                      <button
-                        onClick={() =>
-                          handleLayoutPropertyChange(
-                            index,
-                            "flexWrap",
-                            layout.flexWrap === "wrap" ? "nowrap" : "wrap"
-                          )
-                        }
-                        className={`${commonStyles.iconButton} ${css({
-                          padding: "sm",
-                          backgroundColor:
-                            layout.flexWrap === "wrap"
-                              ? "gray.500"
-                              : "transparent",
-                        })}`}
-                      >
-                        <CornerRightDown size={14} />
-                      </button>
-                      {/* <InputSelect
-                        labelText="Wrap"
-                        value={layout.flexWrap}
-                        onChange={(value) =>
-                          handleLayoutPropertyChange(index, "flexWrap", value)
-                        }
-                        options={flexWrapOptions}
-                      /> */}
-                    </div>
-                    {/* <div className={commonStyles.twoColumnGrid}>
-                      <InputSelect
-                        labelText="Direction"
-                        value={layout.flexDirection}
-                        onChange={(value) =>
-                          handleLayoutPropertyChange(
-                            index,
-                            "flexDirection",
-                            value
-                          )
-                        }
-                        options={flexDirectionOptions}
-                      />
-                      <InputSelect
-                        labelText="Wrap"
-                        value={layout.flexWrap}
-                        onChange={(value) =>
-                          handleLayoutPropertyChange(index, "flexWrap", value)
-                        }
-                        options={flexWrapOptions}
-                      />
-                    </div> */}
 
-                    {/* Justify Content y Align Items */}
+                    {/* NUEVO: Layout Grid Visual */}
                     <div className={commonStyles.twoColumnGrid}>
-                      <InputSelect
-                        labelText="Justify"
-                        value={layout.justifyContent}
-                        onChange={(value) =>
+                      <LayoutGrid
+                        flexDirection={layout.flexDirection}
+                        justifyContent={layout.justifyContent}
+                        alignItems={layout.alignItems}
+                        onLayoutChange={(justifyContent, alignItems) => {
                           handleLayoutPropertyChange(
                             index,
                             "justifyContent",
-                            value
-                          )
-                        }
-                        options={justifyContentOptions}
+                            justifyContent
+                          );
+                          handleLayoutPropertyChange(
+                            index,
+                            "alignItems",
+                            alignItems
+                          );
+                        }}
                       />
-                      <InputSelect
-                        labelText="Align"
-                        value={layout.alignItems}
-                        onChange={(value) =>
-                          handleLayoutPropertyChange(index, "alignItems", value)
-                        }
-                        options={alignItemsOptions}
-                      />
-                    </div>
+                      <section
+                        className={css({
+                          display: "flex",
+                          flexDirection: "column",
+                          gap: "lg",
+                        })}
+                      >
+                        <div
+                          className={css({
+                            display: "flex",
+                            flexDirection: "row",
+                            gap: "sm",
+                          })}
+                        >
+                          <button
+                            onClick={() =>
+                              handleLayoutPropertyChange(
+                                index,
+                                "flexDirection",
+                                "column"
+                              )
+                            }
+                            className={`${commonStyles.iconButton} ${css({
+                              padding: "md",
+                              backgroundColor:
+                                layout.flexDirection === "column"
+                                  ? "gray.500"
+                                  : "transparent",
+                            })}`}
+                          >
+                            <ArrowDown size={14} />
+                          </button>
+                          <button
+                            onClick={() =>
+                              handleLayoutPropertyChange(
+                                index,
+                                "flexDirection",
+                                "row"
+                              )
+                            }
+                            className={`${commonStyles.iconButton} ${css({
+                              padding: "md",
 
-                    {/* Gap y Padding */}
-                    <div className={commonStyles.twoColumnGrid}>
-                      <InputNumber
-                        iconType="square"
-                        labelText="Gap"
-                        min={0}
-                        max={100}
-                        step={1}
-                        value={layout.gap}
-                        onChange={(value) =>
-                          handleLayoutPropertyChange(index, "gap", value)
-                        }
-                      />
-                      <InputNumber
-                        iconType="square"
-                        labelText="Padding"
-                        min={0}
-                        max={100}
-                        step={1}
-                        value={layout.padding}
-                        onChange={(value) =>
-                          handleLayoutPropertyChange(index, "padding", value)
-                        }
-                      />
+                              backgroundColor:
+                                layout.flexDirection === "row"
+                                  ? "gray.500"
+                                  : "transparent",
+                            })}`}
+                          >
+                            <ArrowRight size={14} />
+                          </button>
+                          <button
+                            onClick={() =>
+                              handleLayoutPropertyChange(
+                                index,
+                                "flexWrap",
+                                layout.flexWrap === "wrap" ? "nowrap" : "wrap"
+                              )
+                            }
+                            className={`${commonStyles.iconButton} ${css({
+                              padding: "md",
+
+                              backgroundColor:
+                                layout.flexWrap === "wrap"
+                                  ? "gray.500"
+                                  : "transparent",
+                            })}`}
+                          >
+                            <CornerRightDown size={14} />
+                          </button>
+                        </div>
+                        {/* Gap y Padding */}
+                        <div
+                          className={css({
+                            display: "flex",
+                            gap: "lg",
+                            flexDirection: "column",
+                          })}
+                        >
+                          <InputNumber
+                            iconType="square"
+                            labelText="Gap"
+                            min={0}
+                            max={100}
+                            step={1}
+                            value={layout.gap}
+                            onChange={(value) =>
+                              handleLayoutPropertyChange(index, "gap", value)
+                            }
+                          />
+                          <InputNumber
+                            iconType="square"
+                            labelText="Padding"
+                            min={0}
+                            max={100}
+                            step={1}
+                            value={layout.padding}
+                            onChange={(value) =>
+                              handleLayoutPropertyChange(
+                                index,
+                                "padding",
+                                value
+                              )
+                            }
+                          />
+                        </div>
+                      </section>
                     </div>
                   </>
                 )}
