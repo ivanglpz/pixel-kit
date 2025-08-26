@@ -118,14 +118,12 @@ interface LayoutGridProps {
     alignItems: AlignItems
   ) => void;
 }
-
 const LayoutGrid: React.FC<LayoutGridProps> = ({
   flexDirection,
   justifyContent,
   alignItems,
   onLayoutChange,
 }) => {
-  // Define the mapping arrays for both directions
   const justifyContentValues: JustifyContent[] = [
     "flex-start",
     "center",
@@ -133,57 +131,44 @@ const LayoutGrid: React.FC<LayoutGridProps> = ({
   ];
   const alignItemsValues: AlignItems[] = ["flex-start", "center", "flex-end"];
 
-  // Get the appropriate mappings based on flex direction
-  const getGridMappings = () => {
-    if (flexDirection === "row") {
-      return {
-        mainAxis: justifyContentValues, // columns control justifyContent
-        crossAxis: alignItemsValues, // rows control alignItems
-      };
-    } else {
-      return {
-        mainAxis: alignItemsValues, // columns control alignItems (cross becomes main)
-        crossAxis: justifyContentValues, // rows control justifyContent (main becomes cross)
-      };
-    }
-  };
-
-  // Handle grid click with dynamic mapping
   const handleGridClick = (row: number, col: number) => {
     if (flexDirection === "row") {
-      // For row: columns = justifyContent, rows = alignItems
-      const newJustifyContent = justifyContentValues[col];
-      const newAlignItems = alignItemsValues[row];
-      onLayoutChange(newJustifyContent, newAlignItems);
+      onLayoutChange(justifyContentValues[col], alignItemsValues[row]);
     } else {
-      // For column: columns = alignItems, rows = justifyContent
-      const newJustifyContent = justifyContentValues[row];
-      const newAlignItems = alignItemsValues[col];
-      onLayoutChange(newJustifyContent, newAlignItems);
+      onLayoutChange(justifyContentValues[row], alignItemsValues[col]);
     }
   };
 
-  // Get square color with dynamic mapping
-  const getSquareColor = (row: number, col: number): string => {
-    let isActive = false;
-
+  const handleGridDoubleClick = (row: number, col: number) => {
     if (flexDirection === "row") {
-      // For row: columns = justifyContent, rows = alignItems
-      const expectedJustifyContent = justifyContentValues[col];
-      const expectedAlignItems = alignItemsValues[row];
-      isActive =
-        justifyContent === expectedJustifyContent &&
-        alignItems === expectedAlignItems;
+      onLayoutChange("space-between", alignItemsValues[row]);
     } else {
-      // For column: columns = alignItems, rows = justifyContent
-      const expectedJustifyContent = justifyContentValues[row];
-      const expectedAlignItems = alignItemsValues[col];
-      isActive =
-        justifyContent === expectedJustifyContent &&
-        alignItems === expectedAlignItems;
+      onLayoutChange("space-between", alignItemsValues[col]);
+    }
+  };
+
+  const getSquareColor = (row: number, col: number): string => {
+    // Para filas/columnas en space-between
+    if (justifyContent === "space-between") {
+      if (
+        (flexDirection === "row" && alignItemsValues[row] === alignItems) ||
+        (flexDirection === "column" && alignItemsValues[col] === alignItems)
+      ) {
+        return "#ef4444";
+      }
     }
 
-    return isActive ? "#ef4444" : "#3b82f6"; // red-500 for active, blue-500 for inactive
+    // Caso normal de selección individual
+    const expectedJustify =
+      flexDirection === "row"
+        ? justifyContentValues[col]
+        : justifyContentValues[row];
+    const expectedAlign =
+      flexDirection === "row" ? alignItemsValues[row] : alignItemsValues[col];
+
+    return justifyContent === expectedJustify && alignItems === expectedAlign
+      ? "#ef4444"
+      : "#3b82f6";
   };
 
   return (
@@ -209,6 +194,7 @@ const LayoutGrid: React.FC<LayoutGridProps> = ({
           <button
             key={`grid-${row}-${col}`}
             onClick={() => handleGridClick(row, col)}
+            onDoubleClick={() => handleGridDoubleClick(row, col)}
             style={{
               backgroundColor: getSquareColor(row, col),
               borderRadius: "sm",
@@ -223,6 +209,7 @@ const LayoutGrid: React.FC<LayoutGridProps> = ({
     </div>
   );
 };
+
 // Componente para título de sección con botón opcional
 export const SectionHeader = ({
   title,
