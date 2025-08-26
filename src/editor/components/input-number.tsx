@@ -85,27 +85,28 @@ export const InputNumber = ({
           fontSize: "sm",
           backgroundColor: "bg.muted", // Fondo más claro para el selector
           borderRadius: "md",
-          padding: "md",
+          padding: "sm",
           borderWidth: "1px",
           borderStyle: "solid",
           borderColor: "border.muted", // ← usa el semantic token
           gap: "md",
           display: "grid",
-          gridTemplateColumns: "17px 1fr",
+          gridTemplateColumns: "20px 1fr",
           alignItems: "center",
-          height: "33.5px",
+          height: 30,
         })}
       >
         <div
           className={css({
-            width: "17px",
-            height: "17px",
+            width: "20px",
+            height: "20px",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
+            backgroundColor: "gray.500",
+            borderRadius: "4px",
           })}
         >
-          {}
           {typeof typeIcon[iconType] === "string" ? (
             <p
               className={css({
