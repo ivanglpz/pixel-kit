@@ -28,6 +28,7 @@ import React, { ChangeEvent, useRef, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { Dialog } from "../components/dialog";
 import { ListIcons } from "../components/list-icons";
+import { AlignItems, JustifyContent } from "../shapes/layout-flex";
 
 // Función utilitaria para calcular la escala de imagen
 const calculateScale = (
@@ -111,9 +112,12 @@ const Separator = () => (
 
 interface LayoutGridProps {
   flexDirection: "row" | "column";
-  justifyContent: string;
-  alignItems: string;
-  onLayoutChange: (justifyContent: string, alignItems: string) => void;
+  justifyContent: JustifyContent;
+  alignItems: AlignItems;
+  onLayoutChange: (
+    justifyContent: JustifyContent,
+    alignItems: AlignItems
+  ) => void;
 }
 
 const LayoutGrid: React.FC<LayoutGridProps> = ({
@@ -122,108 +126,52 @@ const LayoutGrid: React.FC<LayoutGridProps> = ({
   alignItems,
   onLayoutChange,
 }) => {
-  // Mapeo de posiciones de la grilla a valores CSS
-  const getGridValues = (row: number, col: number) => {
-    if (flexDirection === "row") {
-      // Para flex-direction: row
-      // Columnas controlan justify-content, filas controlan align-items
-      const justifyValues = ["flex-start", "center", "flex-end"];
-      const alignValues = ["flex-start", "center", "flex-end"];
-
-      return {
-        justify: justifyValues[col],
-        align: alignValues[row],
-      };
-    } else {
-      // Para flex-direction: column
-      // Filas controlan justify-content, columnas controlan align-items
-      const justifyValues = ["flex-start", "center", "flex-end"];
-      const alignValues = ["flex-start", "center", "flex-end"];
-
-      return {
-        justify: justifyValues[row],
-        align: alignValues[col],
-      };
-    }
-  };
+  console.log({ flexDirection, justifyContent, alignItems });
 
   // Función para manejar clics (incluyendo doble clic para space-around/between)
   const handleGridClick = (row: number, col: number) => {
-    const { justify, align } = getGridValues(row, col);
-
-    // Verificar si es el mismo cuadrado que ya está seleccionado
-    const isSameSquare = justifyContent === justify && alignItems === align;
-
-    if (isSameSquare) {
-      // Si es el mismo cuadrado, alternar entre normal, space-around, space-between
-      if (flexDirection === "row") {
-        // Para row, solo aplicamos space en justify-content
-        if (
-          justify === "flex-start" ||
-          justify === "center" ||
-          justify === "flex-end"
-        ) {
-          if (justifyContent === justify) {
-            onLayoutChange("space-around", align);
-          } else if (justifyContent === "space-around") {
-            onLayoutChange("space-between", align);
-          } else if (justifyContent === "space-between") {
-            onLayoutChange(justify, align);
-          }
-        }
-      } else {
-        // Para column, aplicamos space en justify-content
-        if (
-          justify === "flex-start" ||
-          justify === "center" ||
-          justify === "flex-end"
-        ) {
-          if (justifyContent === justify) {
-            onLayoutChange("space-around", align);
-          } else if (justifyContent === "space-around") {
-            onLayoutChange("space-between", align);
-          } else if (justifyContent === "space-between") {
-            onLayoutChange(justify, align);
-          }
-        }
-      }
-    } else {
-      // Primer clic, establecer valores normales
-      onLayoutChange(justify, align);
+    if (row === 0 && col == 2) {
+      onLayoutChange("flex-end", "flex-start");
     }
-  };
-
-  // Función para determinar si un cuadrado está activo
-  const isActive = (row: number, col: number) => {
-    const { justify, align } = getGridValues(row, col);
-
-    // Para space-around y space-between, también consideramos activos los cuadrados base
-    if (
-      justifyContent === "space-around" ||
-      justifyContent === "space-between"
-    ) {
-      return (
-        alignItems === align &&
-        (justify === "flex-start" ||
-          justify === "center" ||
-          justify === "flex-end")
-      );
+    if (row === 0 && col === 1) {
+      onLayoutChange("center", "flex-start");
     }
-
-    return justifyContent === justify && alignItems === align;
+    if (row === 0 && col === 0) {
+      onLayoutChange("flex-start", "flex-start");
+    }
   };
 
   // Función para obtener el color del cuadrado
   const getSquareColor = (row: number, col: number) => {
-    const { justify, align } = getGridValues(row, col);
-
-    if (justifyContent === justify && alignItems === align) {
-      if (justifyContent === "space-around") return "blue.500";
-      if (justifyContent === "space-between") return "green.500";
-      return "gray.500";
+    if (row === 0 && col === 0) {
+      if (
+        flexDirection === "row" &&
+        justifyContent === "flex-start" &&
+        alignItems === "flex-start"
+      ) {
+        return "red";
+      }
+    }
+    if (row === 0 && col === 1) {
+      if (
+        flexDirection === "row" &&
+        justifyContent === "center" &&
+        alignItems === "flex-start"
+      ) {
+        return "pink";
+      }
+    }
+    if (row === 0 && col === 2) {
+      if (
+        flexDirection === "row" &&
+        justifyContent === "flex-end" &&
+        alignItems === "flex-start"
+      ) {
+        return "red";
+      }
     }
 
-    return "bg.muted";
+    return "blue";
   };
 
   return (
@@ -249,20 +197,14 @@ const LayoutGrid: React.FC<LayoutGridProps> = ({
           <button
             key={`grid-${row}-${col}`}
             onClick={() => handleGridClick(row, col)}
-            className={css({
+            style={{
               backgroundColor: getSquareColor(row, col),
               borderRadius: "sm",
               border: "none",
               cursor: "pointer",
               aspectRatio: "1",
               transition: "all 0.2s ease",
-              _hover: {
-                backgroundColor: "gray.400",
-              },
-              _active: {
-                transform: "scale(0.95)",
-              },
-            })}
+            }}
           />
         );
       })}
@@ -590,15 +532,31 @@ export const LayoutShapeConfig = () => {
     shapeUpdate({ layouts: newLayouts });
   };
 
+  const handleLayoutPropertyChangelAYD = (
+    index: number,
+    values: {
+      justifyContent: JustifyContent;
+      alignItems: AlignItems;
+    }
+  ) => {
+    const newLayouts = [...(shape.layouts || [])];
+    newLayouts[index] = {
+      ...newLayouts[index],
+      justifyContent: values.justifyContent,
+      alignItems: values.alignItems,
+    };
+    shapeUpdate({ layouts: newLayouts });
+  };
   const handleLayoutPropertyChange = (
     index: number,
     property: string,
-    value: any
+    value: string | number
   ) => {
     const newLayouts = [...(shape.layouts || [])];
     newLayouts[index] = { ...newLayouts[index], [property]: value };
     shapeUpdate({ layouts: newLayouts });
   };
+  console.log(shape.layouts, " shape.layouts");
 
   return (
     <div
@@ -776,16 +734,10 @@ export const LayoutShapeConfig = () => {
                         justifyContent={layout.justifyContent}
                         alignItems={layout.alignItems}
                         onLayoutChange={(justifyContent, alignItems) => {
-                          handleLayoutPropertyChange(
-                            index,
-                            "justifyContent",
-                            justifyContent
-                          );
-                          handleLayoutPropertyChange(
-                            index,
-                            "alignItems",
-                            alignItems
-                          );
+                          handleLayoutPropertyChangelAYD(index, {
+                            alignItems,
+                            justifyContent,
+                          });
                         }}
                       />
                       <section
