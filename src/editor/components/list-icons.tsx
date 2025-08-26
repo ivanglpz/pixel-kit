@@ -92,12 +92,8 @@ export const ListIcons = ({ onCreate, onClose }: ListIconsProps) => {
               borderRadius: "md",
               fontSize: "sm",
             })}
-            onBlur={() => setPause(false)}
-            onMouseLeave={() => setPause(false)}
-            onClick={(e) => {
-              e.stopPropagation();
-              setPause(true);
-            }}
+            onFocus={() => setPause(true)} // Inicia pausa al entrar en el input
+            onBlur={() => setPause(false)} // Quita pausa al salir del input
             onChange={(e) => setquery(e?.target.value)}
           />
         </div>

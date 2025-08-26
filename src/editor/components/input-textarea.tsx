@@ -42,9 +42,8 @@ export const InputTextArea = ({
         value={value}
         onChange={(event) => onChange(event.target.value)}
         disabled={disable}
-        onClick={() => setPause(true)}
-        onBlur={() => setPause(false)}
-        onMouseLeave={() => setPause(false)}
+        onFocus={() => setPause(true)} // Inicia pausa al entrar en el input
+        onBlur={() => setPause(false)} // Quita pausa al salir del input
         className={css({
           width: "100%",
           minHeight: "80px",

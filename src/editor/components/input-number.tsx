@@ -51,7 +51,6 @@ export const InputNumber = ({
 
   const handleNumberChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = Number(event.target.value);
-    setPause(true);
     if (!isNaN(newValue)) {
       onChange(newValue);
     }
@@ -131,9 +130,8 @@ export const InputNumber = ({
             step={step}
             value={value}
             onChange={handleNumberChange}
-            onClick={() => setPause(true)}
-            onBlur={() => setPause(false)}
-            onMouseLeave={() => setPause(false)}
+            onFocus={() => setPause(true)} // Inicia pausa al entrar en el input
+            onBlur={() => setPause(false)} // Quita pausa al salir del input
             className={css({
               color: "text",
               backgroundColor: "transparent",
