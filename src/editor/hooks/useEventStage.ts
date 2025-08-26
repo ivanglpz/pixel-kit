@@ -368,6 +368,28 @@ export const useEventStage = () => {
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       const KEY = event.key?.toUpperCase();
+
+      const isMac = navigator.platform.toUpperCase().includes("MAC");
+      const meta = isMac ? event.metaKey : event.ctrlKey;
+      const alt = event.altKey;
+      const key = event.key.toLowerCase();
+
+      // ✅ Undo (IR HACIA ATRÁS)
+      if (meta && !event.shiftKey && key === "z") {
+        event.preventDefault();
+        console.log("IR HACIA ATRÁS PAPI");
+        // set(UNDO_ATOM);
+        return;
+      }
+
+      // ✅ Redo (IR HACIA ADELANTE)
+      if (meta && event.shiftKey && key === "z") {
+        event.preventDefault();
+        console.log("IR HACIA ADELANTE PAPI");
+        // set(REDO_ATOM);
+        return;
+      }
+
       if (PAUSE) return;
 
       // Handle delete operations

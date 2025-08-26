@@ -7,7 +7,7 @@ import { Shapes } from "../shapes/shapes";
 import { FCShapeWEvents } from "../shapes/type.shape";
 import { RECTANGLE_SELECTION_ATOM } from "../states/rectangle-selection";
 import { ADD_SHAPE_ID_ATOM } from "../states/shape";
-import ALL_SHAPES_ATOM, { ROOT_SHAPES_ATOM } from "../states/shapes";
+import ALL_SHAPES_ATOM, { SHAPES_BY_PAGE_ATOM } from "../states/shapes";
 
 const getAllShapes = (node: Konva.Layer | Konva.Group): Konva.Shape[] => {
   const children = Array.from(node.getChildren());
@@ -20,7 +20,7 @@ const getAllShapes = (node: Konva.Layer | Konva.Group): Konva.Shape[] => {
 };
 
 export const LayerShapes = () => {
-  const ROOT_SHAPES = useAtomValue(ROOT_SHAPES_ATOM);
+  const ROOT_SHAPES = useAtomValue(SHAPES_BY_PAGE_ATOM);
   const ALL_SHAPES = useAtomValue(ALL_SHAPES_ATOM);
   const trRef = useRef<Konva.Transformer>(null);
   const lyRef = useRef<Konva.Layer>(null);
@@ -60,6 +60,12 @@ export const LayerShapes = () => {
           borderStrokeWidth={2}
           anchorCornerRadius={2}
           keepRatio={false}
+          onTransformEnd={() => {
+            console.log("ejecutandose  transform end");
+          }}
+          onDragEnd={() => {
+            console.log("ejecutandose drag end");
+          }}
           anchorStroke={constants.theme.colors.primary}
           boundBoxFunc={(oldBox, newBox) => {
             // Limitar el tamaño mínimo
