@@ -176,7 +176,7 @@ const LayoutGrid: React.FC<LayoutGridProps> = ({
     if (isSpaceBetweenActive(row, col) || isCellSelected(row, col)) {
       return constants.theme.colors.primary;
     }
-    return constants.theme.colors["gray.500"];
+    return "transparent";
   };
 
   return (
@@ -185,12 +185,12 @@ const LayoutGrid: React.FC<LayoutGridProps> = ({
         display: "grid",
         gridTemplateColumns: "repeat(3, 1fr)",
         gridTemplateRows: "repeat(3, 1fr)",
-        gap: "2px",
+        gap: "sm",
         aspectRatio: "1",
         border: "1px solid",
         borderColor: "border.muted",
         borderRadius: "md",
-        padding: "4px",
+        padding: "md",
         backgroundColor: "bg.muted",
       })}
     >
@@ -205,7 +205,8 @@ const LayoutGrid: React.FC<LayoutGridProps> = ({
             onDoubleClick={() => handleGridDoubleClick(row, col)}
             className={css({
               borderRadius: "4",
-              border: "none",
+              border: "1px solid",
+              borderColor: "border.elevated",
               cursor: "pointer",
               aspectRatio: "1",
               transition: "all 0.2s ease",
