@@ -3,6 +3,7 @@ import { atom, PrimitiveAtom } from "jotai";
 import { PAGE_ID_ATOM } from "./pages";
 import { PROJECT_ATOM } from "./projects";
 import { IKeyMethods } from "./tool";
+import { NEW_UNDO_REDO } from "./undo-redo";
 
 export type WithInitialValue<Value> = {
   init: Value;
@@ -10,6 +11,7 @@ export type WithInitialValue<Value> = {
 export type ALL_SHAPES = {
   id: string;
   tool: IKeyMethods;
+  position: number;
   parentId: string | null;
   pageId: string;
   state: PrimitiveAtom<IShape> & WithInitialValue<IShape>;
@@ -23,15 +25,11 @@ export const ALL_SHAPES_ATOM = atom(
   }
 );
 
-export const ROOT_SHAPES_ATOM = atom((get) =>
+export const SHAPES_BY_PAGE_ATOM = atom((get) =>
   get(ALL_SHAPES_ATOM)?.filter(
     (e) => e?.parentId === null && e?.pageId === get(PAGE_ID_ATOM)
   )
 );
-
-export const CLEAR_SHAPES_ATOM = atom(null, (get, set) => {
-  set(ALL_SHAPES_ATOM, []);
-});
 
 export const DELETE_SHAPE_ATOM = atom(
   null,
@@ -41,27 +39,37 @@ export const DELETE_SHAPE_ATOM = atom(
     if (!shape) return;
 
     // ✅ 1. Función recursiva para obtener todos los hijos en cascada
-    const getAllChildrenIds = (
+    const getAllChildren = (
       parentId: string,
       shapes: ALL_SHAPES[]
-    ): string[] => {
+    ): ALL_SHAPES[] => {
       const directChildren = shapes.filter((s) => s.parentId === parentId);
       if (directChildren.length === 0) return [];
 
-      // Recorremos cada hijo, y si es GROUP también obtenemos sus hijos
       return directChildren.flatMap((child) => [
-        child.id,
-        ...getAllChildrenIds(child.id, shapes),
+        child,
+        ...getAllChildren(child.id, shapes),
       ]);
     };
 
-    // ✅ 2. Obtenemos todos los hijos en cascada (si es GROUP)
-    const idsToDelete =
+    // ✅ 2. Obtenemos todos los shapes a eliminar
+    const shapesToDelete =
       shape.tool === "GROUP"
-        ? [shape.id, ...getAllChildrenIds(shape.id, currentShapes)]
-        : [shape.id];
+        ? [shape, ...getAllChildren(shape.id, currentShapes)]
+        : [shape];
 
-    // ✅ 3. Filtramos
+    // ✅ 3. Guardamos en el undo/redo ANTES de eliminar
+    set(NEW_UNDO_REDO, {
+      type: "DELETE",
+      shapes: shapesToDelete.map((s) => ({
+        ...s,
+        // Importante: en vez del atom guardamos el valor plano del estado
+        state: get(s.state),
+      })),
+    });
+
+    // ✅ 4. Filtramos para actualizar ALL_SHAPES_ATOM
+    const idsToDelete = shapesToDelete.map((s) => s.id);
     const newShapes = currentShapes.filter((s) => !idsToDelete.includes(s.id));
 
     set(ALL_SHAPES_ATOM, newShapes);
@@ -71,16 +79,24 @@ export const DELETE_SHAPE_ATOM = atom(
 export const CREATE_SHAPE_ATOM = atom(null, (get, set, args: IShape) => {
   if (!args || !args?.id) return;
 
-  set(ALL_SHAPES_ATOM, [
-    ...get(ALL_SHAPES_ATOM),
-    {
-      id: args?.id,
-      tool: args?.tool,
-      state: atom(args),
-      parentId: args?.parentId,
-      pageId: get(PAGE_ID_ATOM),
-    },
-  ]);
+  const newAllShape: ALL_SHAPES = {
+    id: args?.id,
+    tool: args?.tool,
+    position: get(ALL_SHAPES_ATOM).length,
+    state: atom(args),
+    parentId: args?.parentId,
+    pageId: get(PAGE_ID_ATOM),
+  };
+  set(ALL_SHAPES_ATOM, [...get(ALL_SHAPES_ATOM), newAllShape]);
+  set(NEW_UNDO_REDO, {
+    shapes: [
+      {
+        ...newAllShape,
+        state: args,
+      },
+    ],
+    type: "CREATE",
+  });
 });
 
 export default ALL_SHAPES_ATOM;
