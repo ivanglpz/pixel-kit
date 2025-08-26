@@ -31,7 +31,7 @@ import { useReference } from "./useReference";
 const TOOLS_BOX_BASED = ["BOX", "CIRCLE", "IMAGE", "TEXT", "GROUP"];
 const TOOLS_DRAW_BASED = ["DRAW"];
 const TOOLS_LINE_BASED = ["LINE"];
-const DELETE_KEYS = ["X", "DELETE", "BACKSPACE"];
+const DELETE_KEYS = ["DELETE", "BACKSPACE"];
 
 const useEventStage = () => {
   // ===== STATE HOOKS =====
@@ -83,7 +83,7 @@ const useEventStage = () => {
       handleCreateMode(x, y);
     }
     if (EVENT_STAGE === "COPY") {
-      handleCopyMode(x, y);
+      handleCopyMode();
     }
   };
 
@@ -180,25 +180,30 @@ const useEventStage = () => {
     }
   };
 
-  const handleCopyMode = (x: number, y: number) => {
+  const handleCopyMode = () => {
     const selected = selectedShapes();
 
     const shapesCloneDeep = selected?.map((e) => cloneDeep(e) as IShape);
 
     const groups = shapesCloneDeep?.filter((e) => e?.tool === "GROUP");
-    const mapGroups = new Map<string, string>();
+    const mapGroups = groups?.reduce(
+      (acc, curr) => {
+        return {
+          ...acc,
+          [curr.id]: uuidv4(),
+        };
+      },
+      {} as { [key in string]: string }
+    );
 
-    for (const element of groups) {
-      mapGroups.set(element.id, uuidv4());
-    }
     const newShapes: IShape[] = shapesCloneDeep.map((e) => {
       const newParentId =
-        e.parentId && mapGroups.has(e.parentId)
-          ? mapGroups.get(e.parentId)!
+        e.parentId && mapGroups[e.parentId]
+          ? mapGroups[e.parentId]!
           : e.parentId;
       return {
         ...cloneDeep(e),
-        id: mapGroups.has(e.id) ? mapGroups.get(e.id) : uuidv4(),
+        id: mapGroups[e.id] ? mapGroups[e.id] : uuidv4(),
         parentId: newParentId,
       };
     });
@@ -206,11 +211,8 @@ const useEventStage = () => {
     for (const element of newShapes) {
       SET_CREATE(element);
     }
-    // SET_UPDATE_SHAPES_IDS(newShapes?.map((e) => e?.id));
     SET_EVENT_STAGE("IDLE");
     setTool("MOVE");
-    // SET_CREATE_CITEM(newShapes);
-    // SET_EVENT_STAGE("COPYING");
   };
 
   // ===== CREATING MODE HANDLERS =====
@@ -370,7 +372,9 @@ const useEventStage = () => {
       if (KEY === "ALT") {
         SET_EVENT_STAGE("COPY");
       }
-
+      if (KEY === "SHIFT") {
+        SET_EVENT_STAGE("MULTI_SELECT");
+      }
       // Handle tool shortcuts
       const keysActions = Object.fromEntries(
         config.tools.map((item) => [
@@ -389,65 +393,47 @@ const useEventStage = () => {
         SET_EVENT_STAGE(keysActions[KEY].eventStage);
       }
     };
-
-    const handlePaste = (event: globalThis.ClipboardEvent) => {
-      const clipboardText = event?.clipboardData?.getData("text");
-      const file = event?.clipboardData?.files[0];
-
-      // Handle file paste (images)
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = function (data) {
-          if (typeof data?.target?.result === "string") {
-            createImageFromFile(file, data.target.result);
-          }
-        };
-        reader.readAsDataURL(file);
-        return;
-      }
-
-      // Handle SVG paste
-      if (clipboardText && clipboardText.trim().startsWith("<svg")) {
-        const parser = new DOMParser();
-        const svgDOM = parser
-          .parseFromString(clipboardText, "image/svg+xml")
-          .querySelector("svg");
-
-        if (svgDOM) {
-          const serializer = new XMLSerializer();
-          const svgString = serializer.serializeToString(svgDOM);
-          createImageFromSVG(svgString);
+    const handleFile = (file: File): void => {
+      const reader = new FileReader();
+      reader.onload = (data) => {
+        if (typeof data?.target?.result === "string") {
+          createImageFromFile(file, data.target.result);
         }
+      };
+      reader.readAsDataURL(file);
+    };
+
+    const handleSVG = (svgText: string): void => {
+      const parser = new DOMParser();
+      const svgDOM = parser
+        .parseFromString(svgText, "image/svg+xml")
+        .querySelector("svg");
+      if (!svgDOM) return;
+
+      const serializer = new XMLSerializer();
+      createImageFromSVG(serializer.serializeToString(svgDOM));
+    };
+
+    const handlePaste = (event: ClipboardEvent): void => {
+      const clipboardText: string | null =
+        event.clipboardData?.getData("text") ?? null;
+      const file: File | undefined = event.clipboardData?.files[0];
+
+      if (file) {
+        handleFile(file);
         return;
       }
 
-      // Handle text paste
-      if (
-        clipboardText &&
-        !clipboardText.trim().startsWith("<svg") &&
-        shapeId?.length === 0
-      ) {
-        createTextFromClipboard(clipboardText);
+      if (!clipboardText) return;
+
+      const trimmed = clipboardText.trim();
+      if (trimmed.startsWith("<svg")) {
+        handleSVG(trimmed);
+        return;
       }
-    };
 
-    document.addEventListener("keydown", handleKeyDown);
-    document.addEventListener("paste", handlePaste);
-
-    return () => {
-      document.removeEventListener("keydown", handleKeyDown);
-      document.removeEventListener("paste", handlePaste);
-    };
-  }, [tool, shapeId, config.tools, PAUSE]);
-
-  // ===== KEYBOARD STATE HANDLERS =====
-  useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent): void => {
-      if (event.key === "Alt") {
-        SET_EVENT_STAGE("COPY");
-      }
-      if (event.key === "Shift") {
-        SET_EVENT_STAGE("MULTI_SELECT");
+      if (shapeId?.length === 0) {
+        createTextFromClipboard(trimmed);
       }
     };
 
@@ -456,29 +442,15 @@ const useEventStage = () => {
         SET_EVENT_STAGE("IDLE");
       }
     };
-
-    window.addEventListener("keydown", handleKeyDown);
-    window.addEventListener("keyup", handleKeyUp);
-
-    return () => {
-      window.removeEventListener("keydown", handleKeyDown);
-      window.removeEventListener("keyup", handleKeyUp);
-    };
-  }, []);
-
-  // ===== VISIBILITY CHANGE HANDLER =====
-  useEffect(() => {
-    const handleVisibilityChange = () => {
-      setTool("MOVE");
-      SET_EVENT_STAGE("IDLE");
-    };
-
-    document.addEventListener("visibilitychange", handleVisibilityChange);
+    document.addEventListener("keydown", handleKeyDown);
+    document.addEventListener("keyup", handleKeyUp);
+    document.addEventListener("paste", handlePaste);
 
     return () => {
-      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      document.removeEventListener("keydown", handleKeyDown);
+      document.removeEventListener("paste", handlePaste);
     };
-  }, []);
+  }, [tool, shapeId, config.tools, PAUSE]);
 
   return {
     handleMouseDown,
