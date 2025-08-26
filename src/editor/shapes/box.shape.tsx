@@ -12,7 +12,7 @@ import {
 import { IShape, IShapeWithEvents, WithInitialValue } from "./type.shape";
 
 // eslint-disable-next-line react/display-name
-const ShapeBox = memo(({ SHAPE: item }: IShapeWithEvents) => {
+const ShapeBox = memo(({ shape: item }: IShapeWithEvents) => {
   const [box, setBox] = useAtom(
     item.state as PrimitiveAtom<IShape> & WithInitialValue<IShape>
   );

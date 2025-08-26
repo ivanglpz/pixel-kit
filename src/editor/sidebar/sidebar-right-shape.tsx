@@ -10,7 +10,10 @@ import { SHAPE_SELECTED_ATOM, SHAPE_UPDATE_ATOM } from "@/editor/states/shape";
 import { css } from "@stylespixelkit/css";
 import { useAtomValue, useSetAtom } from "jotai";
 import {
+  ArrowDown,
+  ArrowRight,
   Brush,
+  CornerRightDown,
   Eye,
   EyeOff,
   ImageIcon,
@@ -74,7 +77,6 @@ export const commonStyles = {
     backgroundColor: "transparent",
     border: "none",
     cursor: "pointer",
-    height: 33.5,
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
@@ -606,7 +608,77 @@ export const LayoutShapeConfig = () => {
                 {layout.visible && (
                   <>
                     {/* Flex Direction y Flex Wrap */}
-                    <div className={commonStyles.twoColumnGrid}>
+                    <div
+                      className={css({
+                        display: "flex",
+                        flexDirection: "row",
+                        gap: "sm",
+                      })}
+                    >
+                      <button
+                        onClick={() =>
+                          handleLayoutPropertyChange(
+                            index,
+                            "flexDirection",
+                            "column"
+                          )
+                        }
+                        className={`${commonStyles.iconButton} ${css({
+                          padding: "sm",
+                          backgroundColor:
+                            layout.flexDirection === "column"
+                              ? "gray.500"
+                              : "transparent",
+                        })}`}
+                      >
+                        <ArrowDown size={14} />
+                      </button>
+                      <button
+                        onClick={() =>
+                          handleLayoutPropertyChange(
+                            index,
+                            "flexDirection",
+                            "row"
+                          )
+                        }
+                        className={`${commonStyles.iconButton} ${css({
+                          padding: "sm",
+                          backgroundColor:
+                            layout.flexDirection === "row"
+                              ? "gray.500"
+                              : "transparent",
+                        })}`}
+                      >
+                        <ArrowRight size={14} />
+                      </button>
+                      <button
+                        onClick={() =>
+                          handleLayoutPropertyChange(
+                            index,
+                            "flexWrap",
+                            layout.flexWrap === "wrap" ? "nowrap" : "wrap"
+                          )
+                        }
+                        className={`${commonStyles.iconButton} ${css({
+                          padding: "sm",
+                          backgroundColor:
+                            layout.flexWrap === "wrap"
+                              ? "gray.500"
+                              : "transparent",
+                        })}`}
+                      >
+                        <CornerRightDown size={14} />
+                      </button>
+                      {/* <InputSelect
+                        labelText="Wrap"
+                        value={layout.flexWrap}
+                        onChange={(value) =>
+                          handleLayoutPropertyChange(index, "flexWrap", value)
+                        }
+                        options={flexWrapOptions}
+                      /> */}
+                    </div>
+                    {/* <div className={commonStyles.twoColumnGrid}>
                       <InputSelect
                         labelText="Direction"
                         value={layout.flexDirection}
@@ -627,7 +699,7 @@ export const LayoutShapeConfig = () => {
                         }
                         options={flexWrapOptions}
                       />
-                    </div>
+                    </div> */}
 
                     {/* Justify Content y Align Items */}
                     <div className={commonStyles.twoColumnGrid}>

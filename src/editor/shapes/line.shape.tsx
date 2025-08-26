@@ -13,7 +13,7 @@ import {
   shapeTransformEnd,
 } from "./events.shape";
 
-export const ShapeLine = memo(({ SHAPE: item }: IShapeWithEvents) => {
+export const ShapeLine = memo(({ shape: item }: IShapeWithEvents) => {
   const [box, setBox] = useAtom(
     item.state as PrimitiveAtom<IShape> & WithInitialValue<IShape>
   );
