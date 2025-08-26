@@ -239,15 +239,7 @@ const PxStage: FC<Props> = ({ children }) => {
           onMousemove={handleMouseMove}
           onWheel={handleWheel} // 👈 Zoom real en HD
           onMouseup={handleMouseUp}
-          onTouchStart={(e) =>
-            handleMouseDown(e as unknown as KonvaEventObject<MouseEvent>)
-          }
-          onTouchMove={(e) =>
-            handleMouseMove(e as unknown as KonvaEventObject<MouseEvent>)
-          }
-          onTouchEnd={handleMouseUp}
           onClick={handleClear}
-          onTap={handleClear}
           style={{
             width: "100%",
             height: "100%",
