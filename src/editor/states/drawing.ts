@@ -7,7 +7,6 @@ const Initial: IShape = {
   y: 0,
   tool: "DRAW",
   align: "left",
-  isCreating: false,
   verticalAlign: "top",
   bordersRadius: [0, 0, 0, 0],
   effects: [],
