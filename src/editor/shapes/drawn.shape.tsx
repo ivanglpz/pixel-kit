@@ -16,7 +16,7 @@ import {
   shapeTransformEnd,
 } from "./events.shape";
 
-export const ShapeDraw = memo(({ SHAPE: item }: IShapeWithEvents) => {
+export const ShapeDraw = memo(({ shape: item }: IShapeWithEvents) => {
   const [box, setBox] = useAtom(
     item.state as PrimitiveAtom<IShape> & WithInitialValue<IShape>
   );
