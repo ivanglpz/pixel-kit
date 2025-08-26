@@ -173,7 +173,7 @@ export const LayerClip = () => {
         clipX={box.x}
         clipY={box.y}
       >
-        <ShapeImage listShapes={[]} shape={state} />
+        <ShapeImage ALL_SHAPES={[]} SHAPE={state} />
       </Group>
       <Rect
         ref={shapeRef as MutableRefObject<Konva.Rect>}

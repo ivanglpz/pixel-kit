@@ -97,7 +97,7 @@ export const LayerImage = () => {
 
   return (
     <Layer id="layer-image-preview" listening={false}>
-      <ShapeImage listShapes={[]} shape={state} />
+      <ShapeImage ALL_SHAPES={[]} SHAPE={state} />
     </Layer>
   );
 };

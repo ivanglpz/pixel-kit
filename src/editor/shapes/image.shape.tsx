@@ -64,7 +64,7 @@ function calculateCoverCrop(
 export const ShapeImage = memo((props: IShapeWithEvents) => {
   // Estado local vinculado al átomo
   const [box, setBox] = useAtom(
-    props?.shape.state as PrimitiveAtom<IShape> & WithInitialValue<IShape>
+    props?.SHAPE.state as PrimitiveAtom<IShape> & WithInitialValue<IShape>
   );
 
   // Extraer relleno de tipo imagen
