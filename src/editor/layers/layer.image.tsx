@@ -37,7 +37,6 @@ export const LayerImage = () => {
     isLocked: true,
     dash: 0,
     rotation: 0,
-    isCreating: true,
     fills: [
       {
         color: "#fff",

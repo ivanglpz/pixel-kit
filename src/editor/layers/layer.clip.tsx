@@ -100,7 +100,6 @@ export const LayerClip = () => {
     dash: 0,
     rotation: 0,
     layouts: [],
-    isCreating: true,
     fillContainerHeight: false,
     fillContainerWidth: false,
     fills: [

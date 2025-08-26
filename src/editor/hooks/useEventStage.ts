@@ -56,7 +56,7 @@ const useEventStage = () => {
   const setshowClip = useSetAtom(SHOW_CLIP_ATOM);
   const [selection, setSelection] = useAtom(RECTANGLE_SELECTION_ATOM);
 
-  const { ref: StageRef } = useReference({ type: "STAGE" });
+  const { ref: Stage } = useReference({ type: "STAGE" });
 
   // ===== MOUSE EVENT HANDLERS =====
   const handleMouseDown = (event: KonvaEventObject<MouseEvent>) => {
@@ -112,7 +112,7 @@ const useEventStage = () => {
 
   const handleMouseUp = async () => {
     if (selection.visible && EVENT_STAGE === "IDLE" && tool === "MOVE") {
-      const childrens = StageRef?.current?.getStage?.()?.children;
+      const childrens = Stage?.current?.getStage?.()?.children;
 
       if (!childrens) return;
       const layer = childrens?.find((e) => e?.attrs?.id === "layer-shapes");
@@ -137,12 +137,11 @@ const useEventStage = () => {
           height: 0,
           visible: false,
         });
-      }, 1);
+      }, 10);
     }
 
     if (EVENT_STAGE === "CREATING") {
-      const payloads = CURRENT_ITEM?.map((e) => ({ ...e, isCreating: false }));
-      handleCreatingComplete(payloads);
+      handleCreatingComplete(CURRENT_ITEM);
     }
   };
 
@@ -155,9 +154,11 @@ const useEventStage = () => {
         tool: tool as IShape["tool"],
         x,
         y,
+        id: uuidv4(),
       });
       SET_CREATE_CITEM([createStartElement]);
-    } else if (TOOLS_LINE_BASED.includes(tool)) {
+    }
+    if (TOOLS_LINE_BASED.includes(tool)) {
       const createStartElement = shapeStart({
         ...drawConfig,
         tool: tool as IShape["tool"],
@@ -167,7 +168,8 @@ const useEventStage = () => {
         id: uuidv4(),
       });
       SET_CREATE_CITEM([createStartElement]);
-    } else if (TOOLS_DRAW_BASED.includes(tool)) {
+    }
+    if (TOOLS_DRAW_BASED.includes(tool)) {
       const createStartElement = shapeStart({
         ...drawConfig,
         tool: tool as IShape["tool"],
@@ -186,14 +188,14 @@ const useEventStage = () => {
     const shapesCloneDeep = selected?.map((e) => cloneDeep(e) as IShape);
 
     const groups = shapesCloneDeep?.filter((e) => e?.tool === "GROUP");
-    const mapGroups = groups?.reduce(
+    const mapGroups = groups?.reduce<{ [key in string]: string }>(
       (acc, curr) => {
         return {
           ...acc,
           [curr.id]: uuidv4(),
         };
       },
-      {} as { [key in string]: string }
+      {}
     );
 
     const newShapes: IShape[] = shapesCloneDeep.map((e) => {
@@ -225,13 +227,15 @@ const useEventStage = () => {
     if (TOOLS_BOX_BASED.includes(newShape.tool)) {
       const updateShape = updateProgressElement(x, y, newShape);
       SET_UPDATE_CITEM([updateShape]);
-    } else if (TOOLS_LINE_BASED.includes(newShape.tool)) {
+    }
+    if (TOOLS_LINE_BASED.includes(newShape.tool)) {
       const updateShape = updateProgressElement(x, y, {
         ...newShape,
         points: [newShape?.points?.[0] ?? 0, newShape?.points?.[1] ?? 0, x, y],
       });
       SET_UPDATE_CITEM([updateShape]);
-    } else if (TOOLS_DRAW_BASED.includes(newShape.tool)) {
+    }
+    if (TOOLS_DRAW_BASED.includes(newShape.tool)) {
       const updateShape = updateProgressElement(x, y, {
         ...newShape,
         points: newShape.points?.concat([x, y]),
@@ -244,21 +248,23 @@ const useEventStage = () => {
   const handleCreatingComplete = (payloads: typeof CURRENT_ITEM) => {
     const newShape = payloads.at(0);
     if (!newShape) return;
+    setTimeout(() => {
+      setShapeId(newShape?.id);
+    }, 10);
+
+    SET_CREATE(newShape);
+
+    SET_CLEAR_CITEM();
 
     if (TOOLS_BOX_BASED.includes(newShape.tool)) {
-      SET_CREATE(newShape);
-      SET_CLEAR_CITEM();
       SET_EVENT_STAGE("IDLE");
       setTool("MOVE");
-      setTimeout(() => setShapeId(newShape?.id), 1);
-    } else if (TOOLS_LINE_BASED.includes(newShape.tool)) {
-      SET_CREATE(newShape);
-      SET_CLEAR_CITEM();
+    }
+    if (TOOLS_LINE_BASED.includes(newShape.tool)) {
       SET_EVENT_STAGE("CREATE");
       setTool("LINE");
-    } else if (TOOLS_DRAW_BASED.includes(newShape.tool)) {
-      SET_CREATE(newShape);
-      SET_CLEAR_CITEM();
+    }
+    if (TOOLS_DRAW_BASED.includes(newShape.tool)) {
       SET_EVENT_STAGE("CREATE");
       setTool("DRAW");
     }
