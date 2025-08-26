@@ -7,7 +7,7 @@ import { KonvaEventObject } from "konva/lib/Node";
 import { FC, ReactNode, useEffect, useRef, useState } from "react";
 import { Stage } from "react-konva";
 import { useConfiguration } from "./hooks/useConfiguration";
-import useEventStage from "./hooks/useEventStage";
+import { useEventStage } from "./hooks/useEventStage";
 import { useReference } from "./hooks/useReference";
 import { Tools } from "./sidebar/Tools";
 import { STAGE_DIMENSION_ATOM } from "./states/dimension";

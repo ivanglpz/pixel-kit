@@ -33,7 +33,7 @@ const TOOLS_DRAW_BASED = ["DRAW"];
 const TOOLS_LINE_BASED = ["LINE"];
 const DELETE_KEYS = ["DELETE", "BACKSPACE"];
 
-const useEventStage = () => {
+export const useEventStage = () => {
   // ===== STATE HOOKS =====
   const [tool, setTool] = useAtom(TOOL_ATOM);
   const [shapeId, setShapeId] = useAtom(ADD_SHAPE_ID_ATOM);
@@ -464,5 +464,3 @@ const useEventStage = () => {
     handleMouseUp,
   };
 };
-
-export default useEventStage;
