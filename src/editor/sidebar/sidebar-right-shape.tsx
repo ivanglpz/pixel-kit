@@ -131,12 +131,23 @@ const LayoutGrid: React.FC<LayoutGridProps> = ({
   ];
   const alignItemsValues: AlignItems[] = ["flex-start", "center", "flex-end"];
 
-  const handleGridClick = (row: number, col: number) => {
+  const getGridValues = (row: number, col: number) => {
     if (flexDirection === "row") {
-      onLayoutChange(justifyContentValues[col], alignItemsValues[row]);
+      return {
+        justify: justifyContentValues[col],
+        align: alignItemsValues[row],
+      };
     } else {
-      onLayoutChange(justifyContentValues[row], alignItemsValues[col]);
+      return {
+        justify: justifyContentValues[row],
+        align: alignItemsValues[col],
+      };
     }
+  };
+
+  const handleGridClick = (row: number, col: number) => {
+    const { justify, align } = getGridValues(row, col);
+    onLayoutChange(justify, align);
   };
 
   const handleGridDoubleClick = (row: number, col: number) => {
@@ -147,28 +158,24 @@ const LayoutGrid: React.FC<LayoutGridProps> = ({
     }
   };
 
-  const getSquareColor = (row: number, col: number): string => {
-    // Para filas/columnas en space-between
-    if (justifyContent === "space-between") {
-      if (
-        (flexDirection === "row" && alignItemsValues[row] === alignItems) ||
-        (flexDirection === "column" && alignItemsValues[col] === alignItems)
-      ) {
-        return "#ef4444";
-      }
+  const isSpaceBetweenActive = (row: number, col: number) => {
+    return (
+      justifyContent === "space-between" &&
+      ((flexDirection === "row" && alignItemsValues[row] === alignItems) ||
+        (flexDirection === "column" && alignItemsValues[col] === alignItems))
+    );
+  };
+
+  const isCellSelected = (row: number, col: number) => {
+    const { justify, align } = getGridValues(row, col);
+    return justifyContent === justify && alignItems === align;
+  };
+
+  const getSquareColor = (row: number, col: number) => {
+    if (isSpaceBetweenActive(row, col) || isCellSelected(row, col)) {
+      return "#ef4444";
     }
-
-    // Caso normal de selección individual
-    const expectedJustify =
-      flexDirection === "row"
-        ? justifyContentValues[col]
-        : justifyContentValues[row];
-    const expectedAlign =
-      flexDirection === "row" ? alignItemsValues[row] : alignItemsValues[col];
-
-    return justifyContent === expectedJustify && alignItems === expectedAlign
-      ? "#ef4444"
-      : "#3b82f6";
+    return "#3b82f6";
   };
 
   return (
