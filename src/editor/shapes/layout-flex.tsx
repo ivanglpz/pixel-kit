@@ -77,10 +77,7 @@ const flexLayoutAtom = atom(
       gap
     );
 
-    // Posicionar cada línea
-    let accumulatedCross = padding;
-
-    lines.forEach((line, lineIndex) => {
+    lines.forEach((line) => {
       const { startMain, spacing } = computeMainLayout(
         justifyContent,
         flexDirection,
@@ -90,14 +87,7 @@ const flexLayoutAtom = atom(
         gap
       );
 
-      let accumulatedMain = startMain + padding;
-
-      // Calcular la altura/anchura máxima de la línea para el cross-axis
-      const lineMaxCross = Math.max(
-        ...line.map((child) =>
-          flexDirection === "row" ? child.height : child.width
-        )
-      );
+      let accumulatedMain = startMain;
 
       line.forEach((childState) => {
         const cross = computeCross(
@@ -105,8 +95,7 @@ const flexLayoutAtom = atom(
           flexDirection,
           effectiveWidth,
           effectiveHeight,
-          childState,
-          lineMaxCross
+          childState
         );
 
         const newWidth = childState.fillContainerWidth
@@ -122,10 +111,10 @@ const flexLayoutAtom = atom(
           : childState.height;
 
         const x =
-          flexDirection === "row" ? accumulatedMain : accumulatedCross + cross;
+          flexDirection === "row" ? accumulatedMain + padding : cross + padding;
 
         const y =
-          flexDirection === "row" ? accumulatedCross + cross : accumulatedMain;
+          flexDirection === "row" ? cross + padding : accumulatedMain + padding;
 
         const childAtom = childrenStates.find(
           ({ state }) => state.id === childState.id
@@ -144,9 +133,6 @@ const flexLayoutAtom = atom(
         accumulatedMain +=
           (flexDirection === "row" ? newWidth : newHeight) + spacing;
       });
-
-      // Mover al siguiente línea en el cross-axis
-      accumulatedCross += lineMaxCross + gap;
     });
   }
 );
@@ -167,27 +153,24 @@ const groupIntoLines = (
   let currentLine: IShape[] = [];
   let currentSize = 0;
 
-  children.forEach((child, index) => {
-    const childSize = flexDirection === "row" ? child.width : child.height;
-    const gapSize = currentLine.length > 0 ? gap : 0;
-    const totalSizeWithChild = currentSize + childSize + gapSize;
+  children.forEach((child) => {
+    console.log(child, "child");
 
-    // Si excede el límite y no es el primer elemento de la línea, crear nueva línea
-    if (totalSizeWithChild > limit && currentLine.length > 0) {
-      lines.push([...currentLine]);
-      currentLine = [child];
-      currentSize = childSize;
-    } else {
-      currentLine.push(child);
-      currentSize = totalSizeWithChild;
+    const childSize = flexDirection === "row" ? child.width : child.height;
+    const nextSize =
+      currentSize + childSize + (currentLine.length > 0 ? gap : 0);
+
+    if (nextSize > limit) {
+      lines.push(currentLine);
+      currentLine = [];
+      currentSize = 0;
     }
+
+    currentLine.push(child);
+    currentSize += childSize + (currentLine.length > 1 ? gap : 0);
   });
 
-  // Agregar la última línea si tiene elementos
-  if (currentLine.length > 0) {
-    lines.push(currentLine);
-  }
-
+  if (currentLine.length > 0) lines.push(currentLine);
   return lines;
 };
 
@@ -201,47 +184,41 @@ const computeMainLayout = (
 ): { startMain: number; spacing: number } => {
   const mainContainerSize =
     flexDirection === "row" ? containerWidth : containerHeight;
-
-  const totalChildrenSize = children.reduce((sum, child) => {
-    const childSize = flexDirection === "row" ? child.width : child.height;
-    return sum + childSize;
-  }, 0);
-
-  const totalGapSize = Math.max(children.length - 1, 0) * gap;
-  const totalContentSize = totalChildrenSize + totalGapSize;
-  const freeSpace = mainContainerSize - totalContentSize;
+  const totalSize =
+    children.reduce((sum, child) => {
+      const childSize = flexDirection === "row" ? child.width : child.height;
+      return sum + childSize;
+    }, 0) +
+    Math.max(children.length - 1, 0) * gap;
 
   let startMain = 0;
   let spacing = gap;
 
   switch (justifyContent) {
     case "center":
-      startMain = Math.max(0, freeSpace / 2);
+      startMain = (mainContainerSize - totalSize) / 2;
       break;
     case "flex-end":
-      startMain = Math.max(0, freeSpace);
+      startMain = mainContainerSize - totalSize;
       break;
     case "space-between":
       if (children.length > 1) {
-        spacing =
-          totalChildrenSize > mainContainerSize
-            ? gap
-            : (mainContainerSize - totalChildrenSize) / (children.length - 1);
-        startMain = 0;
-      } else {
-        startMain = Math.max(0, freeSpace / 2);
+        const contentSize = children.reduce(
+          (sum, child) =>
+            sum + (flexDirection === "row" ? child.width : child.height),
+          0
+        );
+        spacing = (mainContainerSize - contentSize) / (children.length - 1);
       }
       break;
     case "space-around":
-      if (children.length > 0) {
-        const spacePerChild = Math.max(0, freeSpace / children.length);
-        spacing = gap + spacePerChild;
-        startMain = spacePerChild / 2;
-      }
-      break;
-    case "flex-start":
-    default:
-      startMain = 0;
+      const contentSize = children.reduce(
+        (sum, child) =>
+          sum + (flexDirection === "row" ? child.width : child.height),
+        0
+      );
+      spacing = (mainContainerSize - contentSize) / children.length;
+      startMain = spacing / 2;
       break;
   }
 
@@ -253,22 +230,17 @@ const computeCross = (
   flexDirection: FlexDirection,
   containerWidth: number,
   containerHeight: number,
-  child: IShape,
-  lineMaxCross?: number
+  child: IShape
 ): number => {
   const crossContainerSize =
     flexDirection === "row" ? containerHeight : containerWidth;
   const childSize = flexDirection === "row" ? child.height : child.width;
 
-  // Para flex wrap, usar el tamaño de la línea en lugar del contenedor completo
-  const effectiveCrossSize = lineMaxCross || crossContainerSize;
-
   switch (alignItems) {
     case "center":
-      return Math.max(0, (effectiveCrossSize - childSize) / 2);
+      return (crossContainerSize - childSize) / 2;
     case "flex-end":
-      return Math.max(0, effectiveCrossSize - childSize);
-    case "flex-start":
+      return crossContainerSize - childSize;
     default:
       return 0;
   }
