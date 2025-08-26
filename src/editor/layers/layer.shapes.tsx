@@ -1,4 +1,4 @@
-import { useAtomValue } from "jotai";
+import { useAtomValue, useSetAtom } from "jotai";
 import Konva from "konva";
 import { useEffect, useRef } from "react";
 import { Layer, Rect, Transformer } from "react-konva";
@@ -8,6 +8,7 @@ import { FCShapeWEvents } from "../shapes/type.shape";
 import { RECTANGLE_SELECTION_ATOM } from "../states/rectangle-selection";
 import { ADD_SHAPE_ID_ATOM } from "../states/shape";
 import ALL_SHAPES_ATOM, { SHAPES_BY_PAGE_ATOM } from "../states/shapes";
+import { UPDATE_UNDO_REDO } from "../states/undo-redo";
 
 const getAllShapes = (node: Konva.Layer | Konva.Group): Konva.Shape[] => {
   const children = Array.from(node.getChildren());
@@ -26,6 +27,7 @@ export const LayerShapes = () => {
   const lyRef = useRef<Konva.Layer>(null);
   const selectedIds = useAtomValue(ADD_SHAPE_ID_ATOM);
   const selection = useAtomValue(RECTANGLE_SELECTION_ATOM);
+  const setUpdateUndoRedo = useSetAtom(UPDATE_UNDO_REDO);
 
   useEffect(() => {
     const allShapes = lyRef.current ? getAllShapes(lyRef.current) : [];
@@ -36,7 +38,7 @@ export const LayerShapes = () => {
     const selected = nodes?.filter((e) => selectedIds?.includes(e.attrs?.id));
     trRef.current?.nodes(selected);
     trRef.current?.getLayer()?.batchDraw();
-  }, [selectedIds]);
+  }, [selectedIds, ROOT_SHAPES, ALL_SHAPES]);
 
   return (
     <>
@@ -61,9 +63,12 @@ export const LayerShapes = () => {
           anchorCornerRadius={2}
           keepRatio={false}
           onTransformEnd={() => {
+            setUpdateUndoRedo();
             console.log("ejecutandose  transform end");
           }}
           onDragEnd={() => {
+            setUpdateUndoRedo();
+
             console.log("ejecutandose drag end");
           }}
           anchorStroke={constants.theme.colors.primary}
