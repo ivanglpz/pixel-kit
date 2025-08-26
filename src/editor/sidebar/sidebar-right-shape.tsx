@@ -486,31 +486,6 @@ export const LayoutShapeConfig = () => {
     shapeUpdate({ lineJoin, lineCap });
   };
 
-  // Agregar después de las opciones existentes (fontWeightOptions)
-  const flexDirectionOptions = [
-    { id: "flex-direction-row", label: "Row", value: "row" },
-    { id: "flex-direction-column", label: "Column", value: "column" },
-  ];
-
-  const justifyContentOptions = [
-    { id: "justify-flex-start", label: "Start", value: "flex-start" },
-    { id: "justify-center", label: "Center", value: "center" },
-    { id: "justify-flex-end", label: "End", value: "flex-end" },
-    { id: "justify-space-between", label: "Between", value: "space-between" },
-    { id: "justify-space-around", label: "Around", value: "space-around" },
-  ];
-
-  const alignItemsOptions = [
-    { id: "align-flex-start", label: "Start", value: "flex-start" },
-    { id: "align-center", label: "Center", value: "center" },
-    { id: "align-flex-end", label: "End", value: "flex-end" },
-  ];
-
-  const flexWrapOptions = [
-    { id: "flex-nowrap", label: "No wrap", value: "nowrap" },
-    { id: "flex-wrap", label: "Wrap", value: "wrap" },
-  ];
-
   // Manejadores para layouts (agregar con los demás manejadores)
   const handleAddLayout = () => {
     shapeUpdate({
@@ -566,7 +541,6 @@ export const LayoutShapeConfig = () => {
     newLayouts[index] = { ...newLayouts[index], [property]: value };
     shapeUpdate({ layouts: newLayouts });
   };
-  console.log(shape.layouts, " shape.layouts");
 
   return (
     <div
@@ -910,7 +884,7 @@ export const LayoutShapeConfig = () => {
                 : "transparent",
               border: "none",
               cursor: "pointer",
-              height: 33.5,
+              height: 30,
               display: "flex",
               alignItems: "center",
               justifyContent: "center",

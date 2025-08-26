@@ -1,7 +1,7 @@
 import { IShape } from "@/editor/shapes/type.shape";
 import { v4 as uuidv4 } from "uuid";
 
-const thickness = 5;
+const thickness = 1;
 
 export const cloneDeep = (value: Object) => {
   if (!value) {
