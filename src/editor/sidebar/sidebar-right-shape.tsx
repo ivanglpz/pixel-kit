@@ -109,7 +109,6 @@ const Separator = () => (
     })}
   />
 );
-
 interface LayoutGridProps {
   flexDirection: "row" | "column";
   justifyContent: JustifyContent;
@@ -126,92 +125,63 @@ const LayoutGrid: React.FC<LayoutGridProps> = ({
   alignItems,
   onLayoutChange,
 }) => {
-  console.log({ flexDirection, justifyContent, alignItems });
+  // Define the mapping arrays for both directions
+  const justifyContentValues: JustifyContent[] = [
+    "flex-start",
+    "center",
+    "flex-end",
+  ];
+  const alignItemsValues: AlignItems[] = ["flex-start", "center", "flex-end"];
 
-  /// Complete handleGridClick function
-  const handleGridClick = (row: number, col: number) => {
-    // Top row (row 0) - alignItems: flex-start
-    if (row === 0 && col === 0) {
-      onLayoutChange("flex-start", "flex-start");
-    }
-    if (row === 0 && col === 1) {
-      onLayoutChange("center", "flex-start");
-    }
-    if (row === 0 && col === 2) {
-      onLayoutChange("flex-end", "flex-start");
-    }
-
-    // Middle row (row 1) - alignItems: center
-    if (row === 1 && col === 0) {
-      onLayoutChange("flex-start", "center");
-    }
-    if (row === 1 && col === 1) {
-      onLayoutChange("center", "center");
-    }
-    if (row === 1 && col === 2) {
-      onLayoutChange("flex-end", "center");
-    }
-
-    // Bottom row (row 2) - alignItems: flex-end
-    if (row === 2 && col === 0) {
-      onLayoutChange("flex-start", "flex-end");
-    }
-    if (row === 2 && col === 1) {
-      onLayoutChange("center", "flex-end");
-    }
-    if (row === 2 && col === 2) {
-      onLayoutChange("flex-end", "flex-end");
+  // Get the appropriate mappings based on flex direction
+  const getGridMappings = () => {
+    if (flexDirection === "row") {
+      return {
+        mainAxis: justifyContentValues, // columns control justifyContent
+        crossAxis: alignItemsValues, // rows control alignItems
+      };
+    } else {
+      return {
+        mainAxis: alignItemsValues, // columns control alignItems (cross becomes main)
+        crossAxis: justifyContentValues, // rows control justifyContent (main becomes cross)
+      };
     }
   };
 
-  // Complete getSquareColor function
-  const getSquareColor = (row: number, col: number) => {
-    const isActive =
-      (row === 0 &&
-        col === 0 &&
-        flexDirection === "row" &&
-        justifyContent === "flex-start" &&
-        alignItems === "flex-start") ||
-      (row === 0 &&
-        col === 1 &&
-        flexDirection === "row" &&
-        justifyContent === "center" &&
-        alignItems === "flex-start") ||
-      (row === 0 &&
-        col === 2 &&
-        flexDirection === "row" &&
-        justifyContent === "flex-end" &&
-        alignItems === "flex-start") ||
-      (row === 1 &&
-        col === 0 &&
-        flexDirection === "row" &&
-        justifyContent === "flex-start" &&
-        alignItems === "center") ||
-      (row === 1 &&
-        col === 1 &&
-        flexDirection === "row" &&
-        justifyContent === "center" &&
-        alignItems === "center") ||
-      (row === 1 &&
-        col === 2 &&
-        flexDirection === "row" &&
-        justifyContent === "flex-end" &&
-        alignItems === "center") ||
-      (row === 2 &&
-        col === 0 &&
-        flexDirection === "row" &&
-        justifyContent === "flex-start" &&
-        alignItems === "flex-end") ||
-      (row === 2 &&
-        col === 1 &&
-        flexDirection === "row" &&
-        justifyContent === "center" &&
-        alignItems === "flex-end") ||
-      (row === 2 &&
-        col === 2 &&
-        flexDirection === "row" &&
-        justifyContent === "flex-end" &&
-        alignItems === "flex-end");
+  // Handle grid click with dynamic mapping
+  const handleGridClick = (row: number, col: number) => {
+    if (flexDirection === "row") {
+      // For row: columns = justifyContent, rows = alignItems
+      const newJustifyContent = justifyContentValues[col];
+      const newAlignItems = alignItemsValues[row];
+      onLayoutChange(newJustifyContent, newAlignItems);
+    } else {
+      // For column: columns = alignItems, rows = justifyContent
+      const newJustifyContent = justifyContentValues[row];
+      const newAlignItems = alignItemsValues[col];
+      onLayoutChange(newJustifyContent, newAlignItems);
+    }
+  };
+
+  // Get square color with dynamic mapping
+  const getSquareColor = (row: number, col: number): string => {
+    let isActive = false;
+
+    if (flexDirection === "row") {
+      // For row: columns = justifyContent, rows = alignItems
+      const expectedJustifyContent = justifyContentValues[col];
+      const expectedAlignItems = alignItemsValues[row];
+      isActive =
+        justifyContent === expectedJustifyContent &&
+        alignItems === expectedAlignItems;
+    } else {
+      // For column: columns = alignItems, rows = justifyContent
+      const expectedJustifyContent = justifyContentValues[row];
+      const expectedAlignItems = alignItemsValues[col];
+      isActive =
+        justifyContent === expectedJustifyContent &&
+        alignItems === expectedAlignItems;
+    }
 
     return isActive ? "#ef4444" : "#3b82f6"; // red-500 for active, blue-500 for inactive
   };
