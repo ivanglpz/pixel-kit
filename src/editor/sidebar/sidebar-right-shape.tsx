@@ -554,7 +554,13 @@ export const LayoutShapeConfig = () => {
                 })}
               >
                 {/* Header del layout con visibility y remove */}
-                <div className={commonStyles.threeColumnGrid}>
+                <div
+                  className={css({
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                  })}
+                >
                   <div
                     className={css({
                       display: "flex",
@@ -567,22 +573,33 @@ export const LayoutShapeConfig = () => {
                   >
                     Layout {index + 1}
                   </div>
-
-                  {/* Botón visibility toggle */}
-                  <button
-                    onClick={() => handleLayoutVisibilityToggle(index)}
-                    className={commonStyles.iconButton}
+                  <div
+                    className={css({
+                      display: "flex",
+                      flexDirection: "row",
+                      gap: "lg",
+                    })}
                   >
-                    {layout.visible ? <Eye size={18} /> : <EyeOff size={18} />}
-                  </button>
+                    {/* Botón visibility toggle */}
+                    <button
+                      onClick={() => handleLayoutVisibilityToggle(index)}
+                      className={commonStyles.iconButton}
+                    >
+                      {layout.visible ? (
+                        <Eye size={18} />
+                      ) : (
+                        <EyeOff size={18} />
+                      )}
+                    </button>
 
-                  {/* Botón remove */}
-                  <button
-                    onClick={() => handleLayoutRemove(index)}
-                    className={commonStyles.iconButton}
-                  >
-                    <Minus size={18} />
-                  </button>
+                    {/* Botón remove */}
+                    <button
+                      onClick={() => handleLayoutRemove(index)}
+                      className={commonStyles.iconButton}
+                    >
+                      <Minus size={18} />
+                    </button>
+                  </div>
                 </div>
 
                 {/* Controles del layout - solo si está visible */}
