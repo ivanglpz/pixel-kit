@@ -169,15 +169,13 @@ export const Nodes = ({
         <div
           onDoubleClick={() => {
             setShow(true);
-            setPause(true);
           }}
           onBlur={() => {
-            setShow(false);
+            console.log("VAMONOS ALV");
+
             setPause(false);
-          }}
-          onMouseLeave={() => {
+
             setShow(false);
-            setPause(false);
           }}
         >
           {show ? (
@@ -190,12 +188,15 @@ export const Nodes = ({
                 fontSize: "x-small",
                 border: "none",
               })}
+              onFocus={() => setPause(true)} // Inicia pausa al entrar en el input
+              onBlur={() => setPause(false)} // Quita pausa al salir del input
             />
           ) : (
             <p
               className={css({
                 textTransform: "capitalize",
                 fontSize: "x-small",
+                lineClamp: 1,
               })}
             >
               {shape.label}

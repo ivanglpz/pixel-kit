@@ -53,11 +53,9 @@ export const Tab = ({
       onMouseLeave={() => {
         sethover(false);
         setShow(false);
-        setPause(false);
       }}
       onDoubleClick={() => {
         setShow(true);
-        setPause(true);
       }}
     >
       <div
@@ -76,15 +74,13 @@ export const Tab = ({
           value={text}
           onChange={(e) => {
             setText(e?.target?.value);
-            setPause(true);
           }}
           className={css({
             backgroundColor: "transparent",
             fontSize: "x-small",
           })}
-          onClick={() => setPause(true)}
-          onBlur={() => setPause(false)}
-          onMouseLeave={() => setPause(false)}
+          onFocus={() => setPause(true)} // Inicia pausa al entrar en el input
+          onBlur={() => setPause(false)} // Quita pausa al salir del input
         />
       ) : (
         <span

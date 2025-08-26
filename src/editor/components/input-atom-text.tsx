@@ -14,9 +14,8 @@ export const InputAtomText: FC<{ atom: PrimitiveAtom<string> }> = ({
       type="text"
       value={value}
       onChange={(e) => setValue(e.target.value)}
-      onClick={() => setPause(true)}
-      onBlur={() => setPause(false)}
-      onMouseLeave={() => setPause(false)}
+      onFocus={() => setPause(true)} // Inicia pausa al entrar en el input
+      onBlur={() => setPause(false)} // Quita pausa al salir del input
       className={css({
         width: "100%",
         backgroundColor: "transparent",

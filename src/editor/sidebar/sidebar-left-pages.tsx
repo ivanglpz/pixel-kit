@@ -45,15 +45,10 @@ const TogglePage = ({
       })}
       onClick={onClick}
       onDoubleClick={() => {
-        setPause(true);
         setShow(true);
         onClick();
       }}
       onBlur={() => {
-        setPause(true);
-        setShow(false);
-      }}
-      onMouseLeave={() => {
         setPause(false);
         setShow(false);
       }}
