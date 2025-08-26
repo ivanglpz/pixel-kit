@@ -128,50 +128,92 @@ const LayoutGrid: React.FC<LayoutGridProps> = ({
 }) => {
   console.log({ flexDirection, justifyContent, alignItems });
 
-  // Función para manejar clics (incluyendo doble clic para space-around/between)
+  /// Complete handleGridClick function
   const handleGridClick = (row: number, col: number) => {
-    if (row === 0 && col == 2) {
-      onLayoutChange("flex-end", "flex-start");
+    // Top row (row 0) - alignItems: flex-start
+    if (row === 0 && col === 0) {
+      onLayoutChange("flex-start", "flex-start");
     }
     if (row === 0 && col === 1) {
       onLayoutChange("center", "flex-start");
     }
-    if (row === 0 && col === 0) {
-      onLayoutChange("flex-start", "flex-start");
+    if (row === 0 && col === 2) {
+      onLayoutChange("flex-end", "flex-start");
+    }
+
+    // Middle row (row 1) - alignItems: center
+    if (row === 1 && col === 0) {
+      onLayoutChange("flex-start", "center");
+    }
+    if (row === 1 && col === 1) {
+      onLayoutChange("center", "center");
+    }
+    if (row === 1 && col === 2) {
+      onLayoutChange("flex-end", "center");
+    }
+
+    // Bottom row (row 2) - alignItems: flex-end
+    if (row === 2 && col === 0) {
+      onLayoutChange("flex-start", "flex-end");
+    }
+    if (row === 2 && col === 1) {
+      onLayoutChange("center", "flex-end");
+    }
+    if (row === 2 && col === 2) {
+      onLayoutChange("flex-end", "flex-end");
     }
   };
 
-  // Función para obtener el color del cuadrado
+  // Complete getSquareColor function
   const getSquareColor = (row: number, col: number) => {
-    if (row === 0 && col === 0) {
-      if (
+    const isActive =
+      (row === 0 &&
+        col === 0 &&
         flexDirection === "row" &&
         justifyContent === "flex-start" &&
-        alignItems === "flex-start"
-      ) {
-        return "red";
-      }
-    }
-    if (row === 0 && col === 1) {
-      if (
+        alignItems === "flex-start") ||
+      (row === 0 &&
+        col === 1 &&
         flexDirection === "row" &&
         justifyContent === "center" &&
-        alignItems === "flex-start"
-      ) {
-        return "pink";
-      }
-    }
-    if (row === 0 && col === 2) {
-      if (
+        alignItems === "flex-start") ||
+      (row === 0 &&
+        col === 2 &&
         flexDirection === "row" &&
         justifyContent === "flex-end" &&
-        alignItems === "flex-start"
-      ) {
-        return "red";
-      }
-    }
+        alignItems === "flex-start") ||
+      (row === 1 &&
+        col === 0 &&
+        flexDirection === "row" &&
+        justifyContent === "flex-start" &&
+        alignItems === "center") ||
+      (row === 1 &&
+        col === 1 &&
+        flexDirection === "row" &&
+        justifyContent === "center" &&
+        alignItems === "center") ||
+      (row === 1 &&
+        col === 2 &&
+        flexDirection === "row" &&
+        justifyContent === "flex-end" &&
+        alignItems === "center") ||
+      (row === 2 &&
+        col === 0 &&
+        flexDirection === "row" &&
+        justifyContent === "flex-start" &&
+        alignItems === "flex-end") ||
+      (row === 2 &&
+        col === 1 &&
+        flexDirection === "row" &&
+        justifyContent === "center" &&
+        alignItems === "flex-end") ||
+      (row === 2 &&
+        col === 2 &&
+        flexDirection === "row" &&
+        justifyContent === "flex-end" &&
+        alignItems === "flex-end");
 
-    return "blue";
+    return isActive ? "#ef4444" : "#3b82f6"; // red-500 for active, blue-500 for inactive
   };
 
   return (
