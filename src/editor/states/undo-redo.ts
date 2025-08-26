@@ -1,7 +1,7 @@
 import { atom } from "jotai";
 import { v4 as uuidv4 } from "uuid";
 import { IShape } from "../shapes/type.shape";
-import ALL_SHAPES_ATOM, { ALL_SHAPES, DELETE_SHAPE_ATOM } from "./shapes";
+import ALL_SHAPES_ATOM, { ALL_SHAPES } from "./shapes";
 
 type UNDO_SHAPE = Omit<ALL_SHAPES, "state"> & {
   state: IShape;
@@ -33,43 +33,46 @@ export const NEW_UNDO_REDO = atom(
   }
 );
 
+// ========== REDO ==========
 export const REDO_ATOM = atom(null, (get, set) => {
   const count = get(COUNT_UNDO_REDO);
   const list = get(LIST_UNDO_REDO);
 
-  // validar si hay algo más adelante
   if (count >= list.length) return;
 
-  const nextIndex = count; // ya que count apunta al siguiente
+  const nextIndex = count;
   const action = list[nextIndex];
-
   if (!action) return;
 
   switch (action.type) {
     case "CREATE": {
       const currentShapes = get(ALL_SHAPES_ATOM);
+      let newShapes = [...currentShapes];
+
       for (const shape of action.shapes) {
         const newAllShape: ALL_SHAPES = {
           ...shape,
-          state: atom(shape.state as IShape), // reconstruimos atom
+          state: atom(shape.state as IShape),
         };
 
-        // insertamos en la posición original
-        const newShapes = [
-          ...currentShapes.slice(0, shape.position),
+        newShapes = [
+          ...newShapes.slice(0, shape.position),
           newAllShape,
-          ...currentShapes.slice(shape.position),
+          ...newShapes.slice(shape.position),
         ];
-
-        set(ALL_SHAPES_ATOM, newShapes);
       }
+
+      set(ALL_SHAPES_ATOM, newShapes);
       break;
     }
 
     case "DELETE": {
-      for (const shape of action.shapes) {
-        set(DELETE_SHAPE_ATOM, { id: shape.id });
-      }
+      const currentShapes = get(ALL_SHAPES_ATOM);
+      const idsToDelete = action.shapes.map((s) => s.id);
+      const newShapes = currentShapes.filter(
+        (s) => !idsToDelete.includes(s.id)
+      );
+      set(ALL_SHAPES_ATOM, newShapes);
       break;
     }
 
@@ -77,7 +80,6 @@ export const REDO_ATOM = atom(null, (get, set) => {
       break;
   }
 
-  // mover puntero hacia adelante
   set(COUNT_UNDO_REDO, count + 1);
 });
 
@@ -88,35 +90,37 @@ export const UNDO_ATOM = atom(null, (get, set) => {
 
   const prevIndex = count - 1;
   const action = get(LIST_UNDO_REDO)[prevIndex];
-
   if (!action) return;
 
   switch (action.type) {
     case "CREATE": {
-      // inversa de create = eliminar
-      for (const shape of action.shapes) {
-        set(DELETE_SHAPE_ATOM, { id: shape.id });
-      }
+      const currentShapes = get(ALL_SHAPES_ATOM);
+      const idsToDelete = action.shapes.map((s) => s.id);
+      const newShapes = currentShapes.filter(
+        (s) => !idsToDelete.includes(s.id)
+      );
+      set(ALL_SHAPES_ATOM, newShapes);
       break;
     }
 
     case "DELETE": {
-      // inversa de delete = restaurar
       const currentShapes = get(ALL_SHAPES_ATOM);
+      let newShapes = [...currentShapes];
+
       for (const shape of action.shapes) {
         const newAllShape: ALL_SHAPES = {
           ...shape,
           state: atom(shape.state as IShape),
         };
 
-        const newShapes = [
-          ...currentShapes.slice(0, shape.position),
+        newShapes = [
+          ...newShapes.slice(0, shape.position),
           newAllShape,
-          ...currentShapes.slice(shape.position),
+          ...newShapes.slice(shape.position),
         ];
-
-        set(ALL_SHAPES_ATOM, newShapes);
       }
+
+      set(ALL_SHAPES_ATOM, newShapes);
       break;
     }
 
@@ -124,6 +128,5 @@ export const UNDO_ATOM = atom(null, (get, set) => {
       break;
   }
 
-  // mover puntero hacia atrás
   set(COUNT_UNDO_REDO, prevIndex);
 });
