@@ -171,8 +171,6 @@ export const Nodes = ({
             setShow(true);
           }}
           onBlur={() => {
-            console.log("VAMONOS ALV");
-
             setPause(false);
 
             setShow(false);

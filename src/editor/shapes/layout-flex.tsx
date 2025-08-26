@@ -207,8 +207,6 @@ const groupIntoLines = (
   let currentSize = 0;
 
   children.forEach((child, index) => {
-    console.log(child, "child");
-
     const childSize = flexDirection === "row" ? child.width : child.height;
 
     // Calcular el tamaño que tendría la línea si agregamos este elemento

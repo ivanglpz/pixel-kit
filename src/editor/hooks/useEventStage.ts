@@ -42,7 +42,6 @@ export const useEventStage = () => {
 
   // ===== READ-ONLY STATE =====
   const PAUSE = useAtomValue(PAUSE_MODE_ATOM);
-  console.log({ PAUSE });
 
   const drawConfig = useAtomValue(DRAW_START_CONFIG_ATOM);
   const selectedShapes = useAtomValue(GET_SELECTED_SHAPES_ATOM);
