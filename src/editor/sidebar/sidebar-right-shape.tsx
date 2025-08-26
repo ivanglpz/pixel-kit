@@ -28,6 +28,7 @@ import React, { ChangeEvent, useRef, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { Dialog } from "../components/dialog";
 import { ListIcons } from "../components/list-icons";
+import { constants } from "../constants/color";
 import { AlignItems, JustifyContent } from "../shapes/layout-flex";
 
 // Función utilitaria para calcular la escala de imagen
@@ -173,9 +174,9 @@ const LayoutGrid: React.FC<LayoutGridProps> = ({
 
   const getSquareColor = (row: number, col: number) => {
     if (isSpaceBetweenActive(row, col) || isCellSelected(row, col)) {
-      return "#ef4444";
+      return constants.theme.colors.primary;
     }
-    return "#3b82f6";
+    return constants.theme.colors["gray.500"];
   };
 
   return (
@@ -190,7 +191,7 @@ const LayoutGrid: React.FC<LayoutGridProps> = ({
         borderColor: "border.muted",
         borderRadius: "md",
         padding: "4px",
-        backgroundColor: "bg.subtle",
+        backgroundColor: "bg.muted",
       })}
     >
       {Array.from({ length: 9 }, (_, index) => {
@@ -202,13 +203,15 @@ const LayoutGrid: React.FC<LayoutGridProps> = ({
             key={`grid-${row}-${col}`}
             onClick={() => handleGridClick(row, col)}
             onDoubleClick={() => handleGridDoubleClick(row, col)}
-            style={{
-              backgroundColor: getSquareColor(row, col),
-              borderRadius: "sm",
+            className={css({
+              borderRadius: "4",
               border: "none",
               cursor: "pointer",
               aspectRatio: "1",
               transition: "all 0.2s ease",
+            })}
+            style={{
+              backgroundColor: getSquareColor(row, col),
             }}
           />
         );
