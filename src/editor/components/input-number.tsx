@@ -93,6 +93,8 @@ export const InputNumber = ({
           display: "grid",
           gridTemplateColumns: "20px 1fr",
           alignItems: "center",
+          justifyContent: "center",
+          alignContent: "center",
           height: 30,
         })}
       >
@@ -111,7 +113,7 @@ export const InputNumber = ({
             <p
               className={css({
                 fontWeight: 600,
-                fontSize: "10px",
+                fontSize: "x-small",
               })}
             >
               {typeIcon[iconType]}
@@ -134,7 +136,6 @@ export const InputNumber = ({
             onMouseLeave={() => setPause(false)}
             className={css({
               color: "text",
-              fontSize: "sm",
               backgroundColor: "transparent",
               flex: 1,
               outline: "none",
@@ -143,15 +144,16 @@ export const InputNumber = ({
               textOverflow: "ellipsis", // Añade los puntos suspensivos
               width: "100%",
               padding: "0 4px",
+              fontSize: "x-small",
             })}
           />
         ) : (
           <p
             className={css({
               color: "text",
-              fontSize: "sm",
               backgroundColor: "transparent",
-              flex: 1,
+              fontSize: "x-small",
+              paddingTop: "3",
             })}
           >
             {value}

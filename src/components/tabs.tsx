@@ -40,6 +40,7 @@ export const Tab = ({
         gridTemplateColumns: "20px 1fr 20px",
         gap: "md",
         alignContent: "center",
+        alignItems: "center",
         backgroundColor: isSelected ? "bg.muted" : "transparent",
         height: "100%",
         width: "190px",
@@ -79,7 +80,7 @@ export const Tab = ({
           }}
           className={css({
             backgroundColor: "transparent",
-            fontSize: "sm",
+            fontSize: "x-small",
           })}
           onClick={() => setPause(true)}
           onBlur={() => setPause(false)}
@@ -88,12 +89,10 @@ export const Tab = ({
       ) : (
         <span
           className={css({
-            fontSize: "sm",
-            flex: 1,
+            fontSize: "x-small",
             textAlign: "left",
             lineClamp: 1,
             wordBreak: "break-all",
-            lineHeight: 1.14,
           })}
         >
           {text}
@@ -180,7 +179,6 @@ export const TabsProjects = () => {
               isEnable={listProjects?.length > 1}
               onClick={() => {
                 setSelected(e.ID);
-                router.push("/app/project");
               }}
               onDelete={() => {
                 setDelete(e?.ID);

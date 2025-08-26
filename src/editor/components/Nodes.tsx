@@ -187,7 +187,7 @@ export const Nodes = ({
               onChange={(e) => setShape({ ...shape, label: e.target.value })}
               className={css({
                 backgroundColor: "transparent",
-                fontSize: "11px",
+                fontSize: "x-small",
                 border: "none",
               })}
             />
@@ -195,7 +195,7 @@ export const Nodes = ({
             <p
               className={css({
                 textTransform: "capitalize",
-                fontSize: "11px",
+                fontSize: "x-small",
               })}
             >
               {shape.label}

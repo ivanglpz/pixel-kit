@@ -64,7 +64,7 @@ const TogglePage = ({
       ) : (
         <span
           className={css({
-            fontSize: "11px",
+            fontSize: "x-small",
           })}
         >
           {name}
