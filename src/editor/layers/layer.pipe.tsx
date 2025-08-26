@@ -16,8 +16,8 @@ export const LayerPipe = () => {
           const Component = Shapes?.[item?.tool] as FCShapeWEvents;
           return (
             <Component
-              listShapes={[]}
-              shape={{
+              ALL_SHAPES={[]}
+              SHAPE={{
                 id: "1",
                 state: atom(item),
                 pageId: "main-image-render-stage",

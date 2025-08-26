@@ -45,8 +45,8 @@ export const LayerShapes = () => {
           const Component = Shapes?.[item?.tool] as FCShapeWEvents;
           return (
             <Component
-              listShapes={ALL_SHAPES}
-              shape={item}
+              ALL_SHAPES={ALL_SHAPES}
+              SHAPE={item}
               key={`pixel-kit-shapes-${item?.id}`}
             />
           );

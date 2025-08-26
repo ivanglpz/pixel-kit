@@ -13,7 +13,7 @@ import {
 
 // eslint-disable-next-line react/display-name
 export const ShapeGroup = memo(
-  ({ shape: item, listShapes: SHAPES }: IShapeWithEvents) => {
+  ({ SHAPE: item, ALL_SHAPES: SHAPES }: IShapeWithEvents) => {
     const box = useAtomValue(
       item.state as PrimitiveAtom<IShape> & WithInitialValue<IShape>
     );
@@ -29,15 +29,15 @@ export const ShapeGroup = memo(
       const Component = Shapes?.[item?.tool] as FCShapeWEvents;
       return (
         <Component
-          listShapes={SHAPES}
-          shape={item}
+          ALL_SHAPES={SHAPES}
+          SHAPE={item}
           key={`pixel-group-shapes-${item?.id}-${item.tool}`}
         />
       );
     });
     return (
       <>
-        <ShapeBox shape={item} listShapes={[]} />
+        <ShapeBox SHAPE={item} ALL_SHAPES={[]} />
 
         <Group
           x={x}
