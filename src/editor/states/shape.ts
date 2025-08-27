@@ -146,9 +146,7 @@ export const GET_SELECTED_SHAPES_ATOM = atom(null, (get, set) => {
   for (const element of newShapes) {
     if (get(element.state).parentId) {
       const FIND_SHAPE = PLANE_SHAPES?.find(
-        (w) =>
-          w.id === element.id &&
-          get(w.state).parentId === get(element.state).parentId
+        (w) => w.id === get(element.state).parentId
       );
       if (!FIND_SHAPE) continue;
       const children = get(FIND_SHAPE.state).children;
