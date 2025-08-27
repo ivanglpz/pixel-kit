@@ -58,12 +58,20 @@ export const DraggableNodeItem = ({
         cursor: "grabbing",
       }}
     >
-      <Nodes shape={childItem} options={childOptions} />
+      <Nodes
+        shape={childItem}
+        options={childOptions}
+        dragControls={childDragControls} // ✅ Pasamos los controles específicos
+      />
     </Reorder.Item>
   );
 };
 
-export const Nodes = ({ shape: item, options = {} }: NodeProps) => {
+export const Nodes = ({
+  shape: item,
+  options = {},
+  dragControls: externalDragControls, // ✅ Recibimos controles externos
+}: NodeProps & { dragControls?: any }) => {
   const [shape, setShape] = useAtom(item.state);
   const [shapeId, setShapeId] = useAtom(ADD_SHAPE_ID_ATOM);
   const [show, setShow] = useState(false);
@@ -73,8 +81,8 @@ export const Nodes = ({ shape: item, options = {} }: NodeProps) => {
   const [isHovered, setIsHovered] = useState(false);
   const setUpdateUndoRedo = useSetAtom(UPDATE_UNDO_REDO);
 
-  // Drag controls para mejor manejo de eventos
-  const dragControls = useDragControls();
+  // ✅ Usar controles externos si están disponibles, sino crear propios
+  const dragControls = externalDragControls;
 
   // Determinar si este elemento está bloqueado por herencia
   const isLockedByParent = options.isLockedByParent || false;
@@ -90,16 +98,15 @@ export const Nodes = ({ shape: item, options = {} }: NodeProps) => {
 
   const handleReorder = useCallback(
     (newOrder: typeof children) => {
-      // Actualizar el orden de los shapes
       setChildren(newOrder);
-      // Opcional: registrar en undo/redo
       setUpdateUndoRedo();
     },
     [setChildren, setUpdateUndoRedo]
   );
 
   // Función para manejar el toggle de isLocked
-  const handleLockToggle = () => {
+  const handleLockToggle = (e: React.MouseEvent) => {
+    e.stopPropagation(); // ✅ Prevenir propagación
     if (!isLockedByParent) {
       setShape({
         ...shape,
@@ -109,13 +116,20 @@ export const Nodes = ({ shape: item, options = {} }: NodeProps) => {
   };
 
   // Función para manejar el toggle de visible
-  const handleVisibilityToggle = () => {
+  const handleVisibilityToggle = (e: React.MouseEvent) => {
+    e.stopPropagation(); // ✅ Prevenir propagación
     if (!isHiddenByParent) {
       setShape({
         ...shape,
         visible: !shape.visible,
       });
     }
+  };
+
+  // ✅ Handler mejorado para el drag
+  const handleDragStart = (e: React.PointerEvent) => {
+    e.stopPropagation(); // Prevenir que el evento se propague al padre
+    dragControls.start(e);
   };
 
   return (
@@ -131,7 +145,7 @@ export const Nodes = ({ shape: item, options = {} }: NodeProps) => {
           fontSize: "sm",
           listStyle: "none",
           display: "grid",
-          gridTemplateColumns: "15px 15px 80px 50px 20px", // Agregamos columna para drag handle
+          gridTemplateColumns: "15px 15px 80px 50px 20px",
           flexDirection: "row",
           alignItems: "center",
           justifyContent: "center",
@@ -147,14 +161,14 @@ export const Nodes = ({ shape: item, options = {} }: NodeProps) => {
             },
           },
           cursor: "pointer",
-          userSelect: "none", // Previene selección de texto durante drag
+          userSelect: "none",
         })}
         onClick={() => {
           setTool("MOVE");
           setShapeId(shape?.id);
         }}
       >
-        {/* Drag Handle */}
+        {/* ✅ Drag Handle mejorado */}
         <div
           className={css({
             display: "flex",
@@ -165,13 +179,11 @@ export const Nodes = ({ shape: item, options = {} }: NodeProps) => {
               cursor: "grabbing",
             },
           })}
-          onPointerDown={(e) => {
-            e.stopPropagation(); // Prevenir conflictos con el click del div padre
-            dragControls.start(e);
-          }}
+          onPointerDown={handleDragStart} // ✅ Usar el handler mejorado
         >
           <GripVertical size={14} opacity={isHovered ? 1 : 0.3} />
         </div>
+
         {shape.tool === "GROUP" && children.length > 0 ? (
           <button
             onClick={(e) => {
@@ -312,11 +324,20 @@ export const Nodes = ({ shape: item, options = {} }: NodeProps) => {
           </div>
         </div>
       </section>
+
+      {/* ✅ Sección de children mejorada */}
       {children?.length > 0 && isExpanded && (
         <div
           style={{
             marginLeft: "20px",
             marginTop: "4px",
+          }}
+          // ✅ Prevenir propagación de eventos de drag en el contenedor
+          onPointerDown={(e) => {
+            // Solo prevenir si el evento viene del contenedor mismo, no de los hijos
+            if (e.target === e.currentTarget) {
+              e.stopPropagation();
+            }
           }}
         >
           <Reorder.Group
@@ -331,7 +352,6 @@ export const Nodes = ({ shape: item, options = {} }: NodeProps) => {
               margin: 0,
               padding: 0,
             }}
-            // Mejoras de rendimiento
             layoutScroll={false}
           >
             {children.map((childItem) => (
