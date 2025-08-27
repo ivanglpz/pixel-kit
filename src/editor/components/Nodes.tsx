@@ -19,6 +19,7 @@ import {
 import { ADD_SHAPE_ID_ATOM } from "../states/shape";
 import { ALL_SHAPES } from "../states/shapes";
 import TOOL_ATOM, { PAUSE_MODE_ATOM } from "../states/tool";
+import { UPDATE_UNDO_REDO } from "../states/undo-redo";
 
 type NodeProps = {
   shape: ALL_SHAPES;
@@ -43,6 +44,7 @@ export const Nodes = ({
   const setTool = useSetAtom(TOOL_ATOM);
   const [isExpanded, setIsExpanded] = useState(true);
   const [isHovered, setIsHovered] = useState(false);
+  const setUpdateUndoRedo = useSetAtom(UPDATE_UNDO_REDO);
 
   // Determinar si este elemento está bloqueado por herencia
   const isLockedByParent = options.isLockedByParent || false;
@@ -66,12 +68,14 @@ export const Nodes = ({
     e.preventDefault();
     e.stopPropagation();
     SET_CHANGE({ endId: item.id });
+    setUpdateUndoRedo();
   };
 
   const handleDropOutside = (e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
     SET_PARENT_CHANGE({ endId: item?.id });
+    setUpdateUndoRedo();
   };
 
   const childrens =
