@@ -274,7 +274,6 @@ export const LayoutShapeConfig = () => {
   const { execute, isRunning } = useDelayedExecutor({
     callback: () => {
       setUpdateUndoRedo();
-      console.log("Ejecutado");
     },
     timer: 1200, // opcional
   });

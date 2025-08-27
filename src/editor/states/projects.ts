@@ -90,7 +90,7 @@ export const PROJECTS_ATOM = atom([
                 tool: "GROUP",
                 pageId: "8eb9cfc3-023f-4204-a745-3d5347d1f057",
                 state: atom({
-                  id: "d459d81f-4bce-4c41-af07-fe4d979d7771",
+                  id: "6dec1d40-cc1e-4217-b53a-4991feb3cf87",
                   x: 187,
                   y: 181,
                   tool: "GROUP",
@@ -102,7 +102,7 @@ export const PROJECTS_ATOM = atom([
                   fillContainerHeight: false,
                   fillContainerWidth: false,
                   label: "GROUP",
-                  parentId: "6dec1d40-cc1e-4217-b53a-4991feb3cf87",
+                  parentId: null,
                   rotation: 0,
                   opacity: 1,
                   fills: [
