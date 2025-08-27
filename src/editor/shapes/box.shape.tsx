@@ -22,7 +22,7 @@ const ShapeBox = memo(({ shape: item }: IShapeWithEvents) => {
 
   const stageDimensions = useAtomValue(STAGE_DIMENSION_ATOM);
   const [shapeId, setShapeId] = useAtom(SHAPE_IDS_ATOM);
-  const isSelected = shapeId.includes(box.id);
+  const isSelected = shapeId.some((w) => w.id === box.id);
 
   // Calcular la posición ajustada para la rotación
 
@@ -37,6 +37,7 @@ const ShapeBox = memo(({ shape: item }: IShapeWithEvents) => {
       <Rect
         // 1. Identificación y referencia
         id={box?.id}
+        parentId={box?.parentId}
         // 2. Posición y tamaño - calculada manualmente para rotación
         x={x}
         y={y}
@@ -75,8 +76,18 @@ const ShapeBox = memo(({ shape: item }: IShapeWithEvents) => {
         // 7. Interactividad y arrastre
         draggable={isSelected}
         // 8. Eventos
-        onTap={() => setShapeId(box?.id)}
-        onClick={() => setShapeId(box?.id)}
+        onTap={() =>
+          setShapeId({
+            id: box?.id,
+            parentId: box.parentId,
+          })
+        }
+        onClick={() =>
+          setShapeId({
+            id: box?.id,
+            parentId: box.parentId,
+          })
+        }
         onDragStart={(e) => setBox(ShapeEventDragStart(e))}
         onDragMove={(e) =>
           setBox(

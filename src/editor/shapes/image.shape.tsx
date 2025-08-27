@@ -100,7 +100,7 @@ export const ShapeImage = memo((props: IShapeWithEvents) => {
   // Estado global
   const stageDimensions = useAtomValue(STAGE_DIMENSION_ATOM);
   const [shapeId, setShapeId] = useAtom(SHAPE_IDS_ATOM);
-  const isSelected = shapeId.includes(box.id);
+  const isSelected = shapeId.some((w) => w.id === box.id);
 
   // Sombra
   const shadow = box?.effects
@@ -117,6 +117,7 @@ export const ShapeImage = memo((props: IShapeWithEvents) => {
       <KonvaImage
         // 1. Identificación y referencia
         id={box?.id}
+        parentId={box?.parentId}
         // 2. Posición y tamaño
         x={x}
         y={y}
@@ -158,8 +159,18 @@ export const ShapeImage = memo((props: IShapeWithEvents) => {
         // 9. Interactividad
         draggable={isSelected}
         // 10. Eventos
-        onTap={() => setShapeId(box?.id)}
-        onClick={() => setShapeId(box?.id)}
+        onTap={() =>
+          setShapeId({
+            id: box?.id,
+            parentId: box.parentId,
+          })
+        }
+        onClick={() =>
+          setShapeId({
+            id: box?.id,
+            parentId: box.parentId,
+          })
+        }
         onDragStart={(e) => setBox(ShapeEventDragStart(e))}
         onDragMove={(e) =>
           setBox(

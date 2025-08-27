@@ -151,7 +151,7 @@ export const Nodes = ({
           flexDirection: "row",
           alignItems: "center",
           borderRadius: "4",
-          backgroundColor: shapeId.includes(shape.id)
+          backgroundColor: shapeId.some((w) => w.id === shape.id)
             ? "gray.800"
             : "transparent",
           _hover: {
@@ -168,7 +168,10 @@ export const Nodes = ({
           e.preventDefault(); // puedes dejar esto si quieres
           e.stopPropagation();
           setTool("MOVE");
-          setShapeId(shape?.id);
+          setShapeId({
+            id: shape?.id,
+            parentId: shape.parentId,
+          });
         }}
       >
         {/* ✅ Drag Handle mejorado */}
