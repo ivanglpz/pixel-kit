@@ -6,13 +6,19 @@ import { PROJECT_ATOM } from "./projects";
 import { ADD_SHAPE_ID_ATOM } from "./shape";
 import ALL_SHAPES_ATOM, { ALL_SHAPES } from "./shapes";
 
-export type UNDO_SHAPE = Omit<ALL_SHAPES, "state"> & {
+export type UNDO_SHAPE = Omit<ALL_SHAPES, "state" | "children"> & {
   state: IShape;
+  children: UNDO_SHAPE[];
 };
+
 export type UNDO_REDO_PROPS = {
   id: string;
   type: "CREATE" | "UPDATE" | "DELETE" | "INITIAL" | "CLEAR_ALL";
   shapes: UNDO_SHAPE[];
+};
+
+export type UNDO_SHAPE_VALUES = Omit<UNDO_REDO_PROPS, "id" | "shapes"> & {
+  shapes: ALL_SHAPES[];
 };
 
 export const COUNT_UNDO_REDO = atom(
@@ -30,28 +36,31 @@ export const LIST_UNDO_REDO = atom(
   }
 );
 
-export const NEW_UNDO_REDO = atom(
-  null,
-  (get, set, args: Omit<UNDO_REDO_PROPS, "id">) => {
-    const list = get(LIST_UNDO_REDO);
-    const count = get(COUNT_UNDO_REDO);
+export const NEW_UNDO_REDO = atom(null, (get, set, args: UNDO_SHAPE_VALUES) => {
+  const list = get(LIST_UNDO_REDO);
+  const count = get(COUNT_UNDO_REDO);
 
-    // Truncar cualquier redo que exista más allá del puntero actual
-    const newList = list.slice(0, count);
+  // Truncar cualquier redo que exista más allá del puntero actual
+  const newList = list.slice(0, count);
 
-    const newUndo: UNDO_REDO_PROPS = {
-      ...args,
-      id: uuidv4(),
-      type: args.type,
-      shapes: args?.shapes?.map((e) => cloneDeep(e)),
+  const cloneShapeRecursive = (shape: ALL_SHAPES): UNDO_SHAPE => {
+    const children = get(shape.children);
+    return {
+      ...shape,
+      state: cloneDeep(get(shape.state)),
+      children: children?.map(cloneShapeRecursive) ?? [],
     };
-    // Agregar el nuevo registro
-    set(LIST_UNDO_REDO, [...newList, newUndo]);
+  };
+  const newUndo: UNDO_REDO_PROPS = {
+    ...args,
+    id: uuidv4(),
+    type: args.type,
+    shapes: args.shapes.map(cloneShapeRecursive),
+  };
 
-    // Mover el puntero al final del nuevo historial
-    set(COUNT_UNDO_REDO, newList.length + 1);
-  }
-);
+  set(LIST_UNDO_REDO, [...newList, newUndo]);
+  set(COUNT_UNDO_REDO, newList.length + 1);
+});
 
 export const UPDATE_UNDO_REDO = atom(null, (get, set) => {
   const shapeIds = get(ADD_SHAPE_ID_ATOM);
@@ -60,16 +69,10 @@ export const UPDATE_UNDO_REDO = atom(null, (get, set) => {
   // shapes seleccionados en este momento
   const selected = allShapes.filter((e) => shapeIds.includes(e.id));
 
-  // preparar shapes para guardar en undo/redo
-  const undoShapes: UNDO_SHAPE[] = selected.map((s) => ({
-    ...s,
-    state: cloneDeep(get(s.state)), // guardamos el estado actual del atom
-  }));
-
   // registrar acción de tipo UPDATE
   set(NEW_UNDO_REDO, {
     type: "UPDATE",
-    shapes: undoShapes,
+    shapes: selected,
   });
 });
 
@@ -118,16 +121,16 @@ export const REDO_ATOM = atom(null, (get, set) => {
 
     case "UPDATE": {
       const currentShapes = get(ALL_SHAPES_ATOM);
-      const newShapes = currentShapes.map((s) => {
-        const updated = action.shapes.find((u) => u.id === s.id);
-        if (!updated) return s;
-        return {
-          ...updated,
-          state: atom(cloneDeep(updated.state) as IShape),
-        };
-      });
-      set(ALL_SHAPES_ATOM, newShapes);
-      break;
+      // const newShapes = currentShapes.map((s) => {
+      //   const updated = action.shapes.find((u) => u.id === s.id);
+      //   if (!updated) return s;
+      //   return {
+      //     ...updated,
+      //     state: atom(cloneDeep(updated.state) as IShape),
+      //   };
+      // });
+      // set(ALL_SHAPES_ATOM, newShapes);
+      // break;
     }
 
     default:
@@ -180,15 +183,15 @@ export const UNDO_ATOM = atom(null, (get, set) => {
 
     case "UPDATE": {
       const currentShapes = get(ALL_SHAPES_ATOM);
-      const newShapes = currentShapes.map((s) => {
-        const old = action.shapes.find((u) => u.id === s.id);
-        if (!old) return s;
-        return {
-          ...old,
-          state: atom(cloneDeep(old.state) as IShape),
-        };
-      });
-      set(ALL_SHAPES_ATOM, newShapes);
+      // const newShapes = currentShapes.map((s) => {
+      //   const old = action.shapes.find((u) => u.id === s.id);
+      //   if (!old) return s;
+      //   return {
+      //     ...old,
+      //     state: atom(cloneDeep(old.state) as IShape),
+      //   };
+      // });
+      // set(ALL_SHAPES_ATOM, newShapes);
       break;
     }
 

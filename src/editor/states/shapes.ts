@@ -98,12 +98,7 @@ export const CREATE_SHAPE_ATOM = atom(null, (get, set, args: IShape) => {
   };
   set(ALL_SHAPES_ATOM, [...get(ALL_SHAPES_ATOM), newAllShape]);
   set(NEW_UNDO_REDO, {
-    shapes: [
-      {
-        ...newAllShape,
-        state: args,
-      },
-    ],
+    shapes: [newAllShape],
     type: "CREATE",
   });
 });
