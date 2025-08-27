@@ -18,8 +18,6 @@ const SidebarRight: FC = () => {
   const shapeIds = useAtomValue(SHAPE_IDS_ATOM);
   const tool = useAtomValue(TOOL_ATOM);
 
-  console.log(shapeIds, "shapeIds");
-
   return (
     <aside
       className={css({

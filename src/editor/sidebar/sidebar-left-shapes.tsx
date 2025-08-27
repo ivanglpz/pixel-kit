@@ -44,8 +44,6 @@ export const SidebarLeftShapes = () => {
     e.preventDefault();
   };
 
-  console.log(ALL_SHAPES, "ALL_SHAPES");
-
   return (
     <div
       onDrop={handleDropOutside}
