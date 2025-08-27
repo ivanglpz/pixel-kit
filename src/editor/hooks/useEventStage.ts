@@ -50,7 +50,7 @@ export const useEventStage = () => {
   const PAUSE = useAtomValue(PAUSE_MODE_ATOM);
 
   const drawConfig = useAtomValue(DRAW_START_CONFIG_ATOM);
-  const selectedShapes = useAtomValue(GET_SELECTED_SHAPES_ATOM);
+  const selectedShapes = useSetAtom(GET_SELECTED_SHAPES_ATOM);
   const { config } = useConfiguration();
 
   // ===== SETTERS =====
