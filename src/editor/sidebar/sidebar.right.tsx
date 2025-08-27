@@ -4,7 +4,7 @@ import { css } from "@stylespixelkit/css";
 import { useAtomValue } from "jotai";
 import { FC } from "react";
 import { StageMode } from "../components/ChangeEnv";
-import { ADD_SHAPE_ID_ATOM } from "../states/shape";
+import { SHAPE_IDS_ATOM } from "../states/shape";
 import TOOL_ATOM from "../states/tool";
 import { StageCanvasColor } from "./canvas";
 import { Clip } from "./clip";
@@ -15,7 +15,7 @@ import { LayoutShapeConfig } from "./sidebar-right-shape";
 const SidebarRight: FC = () => {
   const { config } = useConfiguration();
 
-  const shapeIds = useAtomValue(ADD_SHAPE_ID_ATOM);
+  const shapeIds = useAtomValue(SHAPE_IDS_ATOM);
   const tool = useAtomValue(TOOL_ATOM);
 
   return (

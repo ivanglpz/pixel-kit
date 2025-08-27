@@ -7,7 +7,7 @@ import { IShape, IShapeWithEvents, WithInitialValue } from "./type.shape";
 /* eslint-disable react/display-name */
 import { useAtomValue } from "jotai";
 import { STAGE_DIMENSION_ATOM } from "../states/dimension";
-import { ADD_SHAPE_ID_ATOM } from "../states/shape";
+import { SHAPE_IDS_ATOM } from "../states/shape";
 
 import {
   shapeEventDragMove,
@@ -22,7 +22,7 @@ export const ShapeText = memo(({ shape: item }: IShapeWithEvents) => {
   const { width, height, x, y, strokeWidth, dash, rotation } = box;
 
   const stageDimensions = useAtomValue(STAGE_DIMENSION_ATOM);
-  const [shapeId, setShapeId] = useAtom(ADD_SHAPE_ID_ATOM);
+  const [shapeId, setShapeId] = useAtom(SHAPE_IDS_ATOM);
   const isSelected = shapeId.includes(box.id);
 
   const shadow = box?.effects

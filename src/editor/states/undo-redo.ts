@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from "uuid";
 import { cloneDeep } from "../helpers/startEvent";
 import { IShape } from "../shapes/type.shape";
 import { PROJECT_ATOM } from "./projects";
-import { ADD_SHAPE_ID_ATOM } from "./shape";
+import { SHAPE_IDS_ATOM } from "./shape";
 import ALL_SHAPES_ATOM, { ALL_SHAPES } from "./shapes";
 
 export type UNDO_SHAPE = Omit<ALL_SHAPES, "state" | "children"> & {
@@ -63,7 +63,7 @@ export const NEW_UNDO_REDO = atom(null, (get, set, args: UNDO_SHAPE_VALUES) => {
 });
 
 export const UPDATE_UNDO_REDO = atom(null, (get, set) => {
-  const shapeIds = get(ADD_SHAPE_ID_ATOM);
+  const shapeIds = get(SHAPE_IDS_ATOM);
   const allShapes = get(ALL_SHAPES_ATOM);
 
   // shapes seleccionados en este momento

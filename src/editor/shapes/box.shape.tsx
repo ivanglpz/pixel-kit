@@ -2,7 +2,7 @@ import { PrimitiveAtom, useAtom, useAtomValue } from "jotai";
 import { memo } from "react";
 import { Rect } from "react-konva";
 import { STAGE_DIMENSION_ATOM } from "../states/dimension";
-import { ADD_SHAPE_ID_ATOM } from "../states/shape";
+import { SHAPE_IDS_ATOM } from "../states/shape";
 import {
   shapeEventDragMove,
   ShapeEventDragStart,
@@ -21,7 +21,7 @@ const ShapeBox = memo(({ shape: item }: IShapeWithEvents) => {
   const rotation = Number(box.rotation) || 0;
 
   const stageDimensions = useAtomValue(STAGE_DIMENSION_ATOM);
-  const [shapeId, setShapeId] = useAtom(ADD_SHAPE_ID_ATOM);
+  const [shapeId, setShapeId] = useAtom(SHAPE_IDS_ATOM);
   const isSelected = shapeId.includes(box.id);
 
   // Calcular la posición ajustada para la rotación

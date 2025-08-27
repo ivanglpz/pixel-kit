@@ -2,7 +2,7 @@
 import { PrimitiveAtom, useAtom, useAtomValue } from "jotai";
 import { memo } from "react";
 import { STAGE_DIMENSION_ATOM } from "../states/dimension";
-import { ADD_SHAPE_ID_ATOM } from "../states/shape";
+import { SHAPE_IDS_ATOM } from "../states/shape";
 import { ShapeEventDragStart } from "./events.shape";
 import { IShape, IShapeWithEvents, WithInitialValue } from "./type.shape";
 
@@ -20,7 +20,7 @@ export const ShapeCircle = memo(({ shape: item }: IShapeWithEvents) => {
   const { width, height, x, y, strokeWidth, dash, rotation } = box;
 
   const stageDimensions = useAtomValue(STAGE_DIMENSION_ATOM);
-  const [shapeId, setShapeId] = useAtom(ADD_SHAPE_ID_ATOM);
+  const [shapeId, setShapeId] = useAtom(SHAPE_IDS_ATOM);
   const isSelected = shapeId.includes(box.id);
 
   const shadow = box?.effects
