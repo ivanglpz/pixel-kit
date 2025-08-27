@@ -593,15 +593,24 @@ export const LayoutShapeConfig = () => {
       ) : null}
       {/* SECCIÓN: SHAPE - Información general */}
       <section className={commonStyles.container}>
-        <p className={commonStyles.sectionTitle}>Shape</p>
-        {isRunning ? (
-          <div className="lds-ring">
-            <div></div>
-            <div></div>
-            <div></div>
-            <div></div>
-          </div>
-        ) : null}
+        <div
+          className={css({
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "space-between",
+            alignItems: "center",
+          })}
+        >
+          <p className={commonStyles.sectionTitle}>Shape</p>
+          {isRunning ? (
+            <div className="lds-ring">
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+            </div>
+          ) : null}
+        </div>
         {/* Posición */}
         <p className={commonStyles.labelText}>Position</p>
         <div className={commonStyles.twoColumnGrid}>
