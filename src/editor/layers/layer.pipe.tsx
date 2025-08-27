@@ -20,10 +20,9 @@ export const LayerPipe = () => {
               layoutShapes={[]}
               shape={{
                 id: "1",
-                state: atom(item),
+                state: atom({ ...item, children: atom([] as ALL_SHAPES[]) }),
                 pageId: "main-image-render-stage",
                 tool: item.tool,
-                children: atom([] as ALL_SHAPES[]),
               }}
               key={`pixel-kit-temporal-shape-${item.id}`}
             />

@@ -1,3 +1,4 @@
+import { PrimitiveAtom } from "jotai";
 import { LineCap, LineJoin } from "konva/lib/Shape";
 import { FC } from "react";
 import { ALL_SHAPES } from "../states/shapes";
@@ -76,6 +77,7 @@ export type IShape = {
   layouts: Omit<LayoutFlexProps, "children" | "width" | "height" | "display">[];
   fillContainerWidth: boolean;
   fillContainerHeight: boolean;
+  children: PrimitiveAtom<ALL_SHAPES[]> & WithInitialValue<ALL_SHAPES[]>;
 };
 
 export type IShapeWithEvents = {

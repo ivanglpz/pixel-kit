@@ -14,7 +14,6 @@ export type ALL_SHAPES = {
   tool: IKeyMethods;
   pageId: string;
   state: PrimitiveAtom<IShape> & WithInitialValue<IShape>;
-  children: PrimitiveAtom<ALL_SHAPES[]> & WithInitialValue<ALL_SHAPES[]>;
 };
 
 export const ALL_SHAPES_ATOM = atom(
@@ -46,8 +45,8 @@ export const PLANE_SHAPES_ATOM = atom((get) => {
   const getAllShapes = (nodes: ALL_SHAPES[]): ALL_SHAPES[] =>
     nodes.flatMap((node) => {
       const children =
-        get(node.children).length > 0
-          ? getAllShapes(get(node.children) as ALL_SHAPES[])
+        get(get(node.state).children).length > 0
+          ? getAllShapes(get(get(node.state).children) as ALL_SHAPES[])
           : [];
       return [{ ...node }, ...children];
     });
@@ -104,9 +103,11 @@ export const CREATE_SHAPE_ATOM = atom(null, (get, set, args: IShape) => {
   const newAllShape: ALL_SHAPES = {
     id: args?.id,
     tool: args?.tool,
-    state: atom(args),
+    state: atom({
+      ...args,
+      children: atom([] as ALL_SHAPES[]),
+    }),
     pageId: get(PAGE_ID_ATOM),
-    children: atom([] as ALL_SHAPES[]),
   };
   set(ALL_SHAPES_ATOM, [...get(ALL_SHAPES_ATOM), newAllShape]);
   set(NEW_UNDO_REDO, {

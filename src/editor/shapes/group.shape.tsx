@@ -20,7 +20,7 @@ export const ShapeGroup = memo(
 
     const { x, y, height, width, rotation } = box;
 
-    const childrens = useAtomValue(item.children);
+    const childrens = useAtomValue(box.children);
     if (!box.visible) return null;
 
     const layout = box.layouts?.at(0);
