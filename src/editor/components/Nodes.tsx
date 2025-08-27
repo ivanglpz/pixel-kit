@@ -145,11 +145,11 @@ export const Nodes = ({
           listStyle: "none",
           display: "grid",
           padding: "md",
-          gridTemplateColumns: "15px 15px 15px 1fr 30px",
+          gridTemplateColumns: "10px 15px 15px 120px 50px",
+          gap: "4",
           flexDirection: "row",
           alignItems: "center",
-          gap: "md",
-          borderRadius: "md",
+          borderRadius: "4",
           backgroundColor: shapeId.includes(shape.id)
             ? "gray.800"
             : "transparent",
@@ -161,7 +161,7 @@ export const Nodes = ({
           },
           cursor: "pointer",
           userSelect: "none",
-          width: 220,
+          width: 235,
         })}
         onClick={() => {
           setTool("MOVE");
@@ -205,7 +205,7 @@ export const Nodes = ({
             )}
           </button>
         ) : (
-          <span></span>
+          <div></div>
         )}
 
         {iconsWithTools[shape.tool]}
@@ -328,8 +328,7 @@ export const Nodes = ({
       {children?.length > 0 && isExpanded && (
         <div
           style={{
-            marginLeft: "20px",
-            marginTop: "4px",
+            marginLeft: "15px",
           }}
           // ✅ Prevenir propagación de eventos de drag en el contenedor
           onPointerDown={(e) => {
@@ -349,7 +348,6 @@ export const Nodes = ({
               listStyle: "none",
               margin: 0,
               padding: 0,
-              gap: "4px",
             }}
             layoutScroll={false}
           >
