@@ -13,10 +13,6 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { constants } from "../constants/color";
-import {
-  CHANGE_PARENTID_NODE_ATOM,
-  CHANGE_SHAPE_NODE_ATOM,
-} from "../states/nodes";
 import { ADD_SHAPE_ID_ATOM } from "../states/shape";
 import { ALL_SHAPES } from "../states/shapes";
 import TOOL_ATOM, { PAUSE_MODE_ATOM } from "../states/tool";
@@ -24,21 +20,14 @@ import { UPDATE_UNDO_REDO } from "../states/undo-redo";
 
 type NodeProps = {
   shape: ALL_SHAPES;
-  listShapes: ALL_SHAPES[];
   options?: {
     isLockedByParent?: boolean;
     isHiddenByParent?: boolean;
   };
 };
 
-export const Nodes = ({
-  shape: item,
-  listShapes: SHAPES,
-  options = {},
-}: NodeProps) => {
+export const Nodes = ({ shape: item, options = {} }: NodeProps) => {
   const [shape, setShape] = useAtom(item.state);
-  const SET_CHANGE = useSetAtom(CHANGE_SHAPE_NODE_ATOM);
-  const SET_PARENT_CHANGE = useSetAtom(CHANGE_PARENTID_NODE_ATOM);
   const [shapeId, setShapeId] = useAtom(ADD_SHAPE_ID_ATOM);
   const [show, setShow] = useState(false);
   const setPause = useSetAtom(PAUSE_MODE_ATOM);
@@ -57,32 +46,14 @@ export const Nodes = ({
     isHiddenByParent: isHiddenByParent || !shape.visible,
   };
 
-  const handleDragStart = (e: React.DragEvent) => {
-    setShapeId(item?.id);
-  };
+  const [children, setChildren] = useAtom(item.children);
 
-  const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault();
-  };
-
-  const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    SET_CHANGE({ endId: item.id });
+  const handleReorder = (newOrder: typeof children) => {
+    // Actualizar el orden de los shapes
+    setChildren(newOrder);
+    // Opcional: registrar en undo/redo
     setUpdateUndoRedo();
   };
-
-  const handleDropOutside = (e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    SET_PARENT_CHANGE({ endId: item?.id });
-    setUpdateUndoRedo();
-  };
-
-  const childrens =
-    item?.tool === "GROUP"
-      ? SHAPES?.filter((e) => e?.parentId === item?.id)
-      : [];
 
   // Función para manejar el toggle de isLocked
   const handleLockToggle = () => {
@@ -108,10 +79,6 @@ export const Nodes = ({
     <>
       <div
         id={shape.id + ` ${shape.tool}`}
-        // draggable
-        // onDragStart={handleDragStart}
-        // onDragOver={handleDragOver}
-        // onDrop={handleDrop}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
         className={css({
@@ -143,7 +110,7 @@ export const Nodes = ({
           setShapeId(shape?.id);
         }}
       >
-        {shape.tool === "GROUP" && childrens.length > 0 ? (
+        {shape.tool === "GROUP" && children.length > 0 ? (
           <button
             onClick={(e) => {
               e.stopPropagation();
@@ -176,7 +143,6 @@ export const Nodes = ({
           }}
           onBlur={() => {
             setPause(false);
-
             setShow(false);
           }}
         >
@@ -190,8 +156,8 @@ export const Nodes = ({
                 fontSize: "x-small",
                 border: "none",
               })}
-              onFocus={() => setPause(true)} // Inicia pausa al entrar en el input
-              onBlur={() => setPause(false)} // Quita pausa al salir del input
+              onFocus={() => setPause(true)}
+              onBlur={() => setPause(false)}
             />
           ) : (
             <p
@@ -223,14 +189,12 @@ export const Nodes = ({
             })}
           >
             {isLockedByParent ? (
-              // Si está bloqueado por el padre, mostrar dot
               <DotIcon
                 strokeWidth={8}
                 size={14}
                 color={constants.theme.colors.primary}
               />
             ) : (
-              // Si no está bloqueado por el padre, mostrar controles normales
               <>
                 {!isHovered && shape.isLocked ? (
                   <Lock size={14} color={constants.theme.colors.primary} />
@@ -258,14 +222,12 @@ export const Nodes = ({
             })}
           >
             {isHiddenByParent ? (
-              // Si está oculto por el padre, mostrar dot
               <DotIcon
                 strokeWidth={8}
                 size={14}
                 color={constants.theme.colors.primary}
               />
             ) : (
-              // Si no está oculto por el padre, mostrar controles normales
               <>
                 {!isHovered && !shape.visible ? (
                   <EyeClosed size={14} color={constants.theme.colors.primary} />
@@ -289,33 +251,55 @@ export const Nodes = ({
         </div>
       </div>
 
-      {childrens?.length > 0 && isExpanded && (
-        <Reorder.Group
-          axis="y"
-          values={childrens}
-          onReorder={(e) => {
-            console.log(e, "iiiii");
-          }}
+      {children?.length > 0 && isExpanded && (
+        <div
           style={{
-            display: "flex",
-            flexDirection: "column",
-            gap: "8px",
+            marginLeft: "20px", // Indentación visual para mostrar jerarquía
+            marginTop: "4px",
           }}
+          // Prevenir propagación de eventos de drag del padre
+          onDragStart={(e) => e.stopPropagation()}
+          onDragOver={(e) => e.stopPropagation()}
+          onDrop={(e) => e.stopPropagation()}
         >
-          {childrens.map((item) => (
-            <Reorder.Item
-              key={item.id}
-              value={item.id}
-              style={{
-                backgroundColor: "blue",
-                borderRadius: "6px",
-                cursor: "grab",
-              }}
-            >
-              <Nodes listShapes={SHAPES} shape={item} options={childOptions} />
-            </Reorder.Item>
-          ))}
-        </Reorder.Group>
+          <Reorder.Group
+            key={shape.id}
+            axis="y"
+            values={children} // Usar el array completo de objetos
+            onReorder={handleReorder}
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              gap: "4px",
+              listStyle: "none",
+              margin: 0,
+              padding: 0,
+            }}
+          >
+            {children.map((childItem) => (
+              <Reorder.Item
+                key={childItem.id}
+                value={childItem} // Pasar el objeto completo, igual que en el padre
+                style={{
+                  borderRadius: "6px",
+                  cursor: "grab",
+                  userSelect: "none",
+                }}
+                whileDrag={{
+                  scale: 1.02,
+                  boxShadow: "0px 3px 10px rgba(0,0,0,0.15)",
+                  zIndex: 1000,
+                }}
+                // Prevenir interferencia con el drag del padre
+                onDragStart={(e) => {
+                  e.stopPropagation();
+                }}
+              >
+                <Nodes shape={childItem} options={childOptions} />
+              </Reorder.Item>
+            ))}
+          </Reorder.Group>
+        </div>
       )}
     </>
   );

@@ -1,5 +1,4 @@
 import { Nodes } from "@/editor/components/Nodes";
-import { CHANGE_PARENTID_NODE_ATOM } from "@/editor/states/nodes";
 import ALL_SHAPES_ATOM from "@/editor/states/shapes";
 import { UPDATE_UNDO_REDO } from "@/editor/states/undo-redo";
 import { Reorder } from "framer-motion";
@@ -8,7 +7,6 @@ import React from "react";
 
 export const SidebarLeftShapes = () => {
   const [ALL_SHAPES, SET_ALL_SHAPES] = useAtom(ALL_SHAPES_ATOM);
-  const SET_PARENT_CHANGE = useSetAtom(CHANGE_PARENTID_NODE_ATOM);
   const setUpdateUndoRedo = useSetAtom(UPDATE_UNDO_REDO);
 
   const handleReorder = (newOrder: typeof ALL_SHAPES) => {
@@ -20,8 +18,10 @@ export const SidebarLeftShapes = () => {
 
   const handleDropOutside = (e: React.DragEvent) => {
     e.preventDefault();
-    SET_PARENT_CHANGE({ endId: null });
+    // SET_PARENT_CHANGE({ endId: null });
   };
+
+  console.log(ALL_SHAPES, "ALL_SHAPES");
 
   return (
     <div onDrop={handleDropOutside} onDragOver={(e) => e.preventDefault()}>
@@ -53,7 +53,7 @@ export const SidebarLeftShapes = () => {
               zIndex: 1000,
             }}
           >
-            <Nodes listShapes={ALL_SHAPES} shape={item} />
+            <Nodes shape={item} />
           </Reorder.Item>
         ))}
       </Reorder.Group>
