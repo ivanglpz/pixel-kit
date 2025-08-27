@@ -89,10 +89,10 @@ export const LayerImage = () => {
   };
   const state: ALL_SHAPES = {
     id: "1c46a759-c0f4-4978-8781-5f10ca8cfe8d",
-    parentId: null,
     pageId: "f860ad7b-27ac-491a-ba77-1a81f004dac1",
     state: atom(shape),
     tool: "IMAGE",
+    children: atom([] as ALL_SHAPES[]),
   };
 
   return (
