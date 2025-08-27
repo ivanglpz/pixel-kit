@@ -5,12 +5,12 @@ import { PAGE_ID_ATOM } from "./pages";
 import { PROJECT_ATOM } from "./projects";
 import ALL_SHAPES_ATOM from "./shapes";
 
-export const ADD_SHAPE_ID_ATOM = atom(
+export const SHAPE_IDS_ATOM = atom(
   (get) => {
     const PAGES = get(get(PROJECT_ATOM).PAGE.LIST);
     const FIND_PAGE = PAGES.find((e) => e?.id === get(PAGE_ID_ATOM));
     if (!FIND_PAGE) {
-      throw new Error("Page  shape ids is require");
+      throw new Error("SHAPE_IDS_ATOM_GET: Page not found");
     }
     return get(FIND_PAGE.SHAPE.ID);
   },
@@ -19,7 +19,7 @@ export const ADD_SHAPE_ID_ATOM = atom(
     const PAGES = get(get(PROJECT_ATOM).PAGE.LIST);
     const FIND_PAGE = PAGES.find((e) => e?.id === get(PAGE_ID_ATOM));
     if (!FIND_PAGE) {
-      throw new Error("Page  shape ids is require");
+      throw new Error("SHAPE_IDS_ATOM_SET: Page not found");
     }
     const ids = FIND_PAGE.SHAPE.ID;
     const event = get(EVENT_ATOM);
@@ -47,7 +47,7 @@ export const UPDATE_SHAPES_IDS_ATOM = atom(null, (get, set, args: string[]) => {
   const PAGES = get(get(PROJECT_ATOM).PAGE.LIST);
   const FIND_PAGE = PAGES.find((e) => e?.id === get(PAGE_ID_ATOM));
   if (!FIND_PAGE) {
-    throw new Error("Page  shape ids is require");
+    throw new Error("UPDATE_SHAPES_IDS_ATOM_GET: Page not found");
   }
   const ids = FIND_PAGE.SHAPE.ID;
 
@@ -58,7 +58,7 @@ export const REMOVE_SHAPE_ID_ATOM = atom(null, (get, set, args: string) => {
   const PAGES = get(get(PROJECT_ATOM).PAGE.LIST);
   const FIND_PAGE = PAGES.find((e) => e?.id === get(PAGE_ID_ATOM));
   if (!FIND_PAGE) {
-    throw new Error("Page  shape ids is require");
+    throw new Error("REMOVE_SHAPE_ID_ATOM_GET: Page not found");
   }
   const ids = FIND_PAGE.SHAPE.ID;
 
@@ -73,15 +73,12 @@ export const RESET_SHAPES_IDS_ATOM = atom(null, (get, set) => {
   const PAGES = get(get(PROJECT_ATOM).PAGE.LIST);
   const FIND_PAGE = PAGES.find((e) => e?.id === get(PAGE_ID_ATOM));
   if (!FIND_PAGE) {
-    throw new Error("Page  shape ids is require");
+    throw new Error("RESET_SHAPES_IDS_ATOM_GET: Page not found");
   }
-  const ids = FIND_PAGE.SHAPE.ID;
-
-  set(ids, []);
 });
 export const SHAPE_SELECTED_ATOM = atom((get) => {
   const shape = get(ALL_SHAPES_ATOM)?.find(
-    (e) => e?.id === get(ADD_SHAPE_ID_ATOM).at(0)
+    (e) => e?.id === get(SHAPE_IDS_ATOM).at(0)
   );
 
   if (!shape || !shape.state) return null;
@@ -92,7 +89,7 @@ export const SHAPE_SELECTED_ATOM = atom((get) => {
 export const GET_SELECTED_SHAPES_ATOM = atom((get) => {
   return () => {
     const rootShapes = get(ALL_SHAPES_ATOM);
-    const selectedIds = get(ADD_SHAPE_ID_ATOM);
+    const selectedIds = get(SHAPE_IDS_ATOM);
 
     if (!rootShapes) return [];
 
@@ -141,7 +138,7 @@ export const SHAPE_UPDATE_ATOM = atom(
   null,
   (get, set, args: Partial<IShape>) => {
     const findShape = get(ALL_SHAPES_ATOM)?.find(
-      (e) => e?.id === get(ADD_SHAPE_ID_ATOM).at(0)
+      (e) => e?.id === get(SHAPE_IDS_ATOM).at(0)
     );
     if (!findShape || !findShape.state) return null;
     set(findShape?.state, { ...get(findShape.state), ...args });

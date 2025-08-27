@@ -18,9 +18,9 @@ import { DRAW_START_CONFIG_ATOM } from "../states/drawing";
 import { EVENT_ATOM } from "../states/event";
 import { RECTANGLE_SELECTION_ATOM } from "../states/rectangle-selection";
 import {
-  ADD_SHAPE_ID_ATOM,
   GET_SELECTED_SHAPES_ATOM,
   REMOVE_SHAPE_ID_ATOM,
+  SHAPE_IDS_ATOM,
   UPDATE_SHAPES_IDS_ATOM,
 } from "../states/shape";
 import { CREATE_SHAPE_ATOM, DELETE_SHAPE_ATOM } from "../states/shapes";
@@ -42,7 +42,7 @@ const DELETE_KEYS = ["DELETE", "BACKSPACE"];
 export const useEventStage = () => {
   // ===== STATE HOOKS =====
   const [tool, setTool] = useAtom(TOOL_ATOM);
-  const [shapeId, setShapeId] = useAtom(ADD_SHAPE_ID_ATOM);
+  const [shapeId, setShapeId] = useAtom(SHAPE_IDS_ATOM);
   const [CURRENT_ITEM, SET_UPDATE_CITEM] = useAtom(CURRENT_ITEM_ATOM);
   const [EVENT_STAGE, SET_EVENT_STAGE] = useAtom(EVENT_ATOM);
 

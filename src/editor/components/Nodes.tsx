@@ -14,7 +14,7 @@ import {
 } from "lucide-react";
 import { useCallback, useState } from "react";
 import { constants } from "../constants/color";
-import { ADD_SHAPE_ID_ATOM } from "../states/shape";
+import { SHAPE_IDS_ATOM } from "../states/shape";
 import { ALL_SHAPES } from "../states/shapes";
 import TOOL_ATOM, { PAUSE_MODE_ATOM } from "../states/tool";
 import { UPDATE_UNDO_REDO } from "../states/undo-redo";
@@ -73,7 +73,7 @@ export const Nodes = ({
   dragControls: externalDragControls, // ✅ Recibimos controles externos
 }: NodeProps & { dragControls?: any }) => {
   const [shape, setShape] = useAtom(item.state);
-  const [shapeId, setShapeId] = useAtom(ADD_SHAPE_ID_ATOM);
+  const [shapeId, setShapeId] = useAtom(SHAPE_IDS_ATOM);
   const [show, setShow] = useState(false);
   const setPause = useSetAtom(PAUSE_MODE_ATOM);
   const setTool = useSetAtom(TOOL_ATOM);
