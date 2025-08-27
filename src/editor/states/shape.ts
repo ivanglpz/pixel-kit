@@ -1,10 +1,10 @@
 import { IShape } from "@/editor/shapes/type.shape";
 import { atom } from "jotai";
+import { v4 as uuidv4 } from "uuid";
 import { EVENT_ATOM } from "./event";
 import { IPageShapeIds, PAGE_ID_ATOM } from "./pages";
 import { PROJECT_ATOM } from "./projects";
-import { PLANE_SHAPES_ATOM } from "./shapes";
-
+import { ALL_SHAPES, PLANE_SHAPES_ATOM } from "./shapes";
 export const SHAPE_IDS_ATOM = atom(
   (get) => {
     const PAGES = get(get(PROJECT_ATOM).PAGE.LIST);
@@ -106,52 +106,44 @@ export const SHAPE_SELECTED_ATOM = atom((get) => {
 
 export const GET_SELECTED_SHAPES_ATOM = atom((get) => {
   return () => {
-    // const rootShapes = get(ALL_SHAPES_ATOM);
-    // const selectedIds = get(SHAPE_IDS_ATOM);
+    const rootShapes = get(PLANE_SHAPES_ATOM);
+    const selectedIds = get(SHAPE_IDS_ATOM);
 
-    // if (!rootShapes) return [];
+    if (!rootShapes) return [];
 
-    // // Función para obtener todos los hijos de un grupo recursivamente
-    // const getGroupChildren = (groupId: string): string[] => {
-    //   const children = rootShapes
-    //     .filter((shape) => get(shape?.state)?.parentId === groupId)
-    //     .map((shape) => shape.id);
+    const shapesSelected = rootShapes.filter((shape) =>
+      selectedIds.some((w) => w.id === shape.id)
+    );
 
-    //   // Recursivamente obtener hijos de grupos anidados
-    //   const nestedChildren = children.flatMap((childId) => {
-    //     const childShape = rootShapes.find((s) => s.id === childId);
-    //     if (childShape && get(childShape.state)?.tool === "GROUP") {
-    //       return getGroupChildren(childId);
-    //     }
-    //     return [];
-    //   });
+    const recursiveCloneShape = (
+      shape: ALL_SHAPES,
+      parentId: string | null = null
+    ): ALL_SHAPES => {
+      const state = get(shape.state);
+      const newId = uuidv4(); // Generamos un nuevo ID
 
-    //   return [...children, ...nestedChildren];
-    // };
+      // Clonamos los children recursivamente pasando el nuevo ID como parentId
+      const updatedChildren = get(state.children).map((child) =>
+        recursiveCloneShape(child, newId)
+      );
 
-    // // Obtener todas las formas seleccionadas y sus dependencias
-    // const allSelectedIds = new Set<string>();
+      return {
+        ...shape,
+        id: newId, // asignamos el nuevo ID
+        state: atom({
+          ...state,
+          id: newId, // también en el state
+          parentId, // el parentId que viene del nivel superior
+          children: atom(updatedChildren),
+        }),
+      };
+    };
 
-    // selectedIds.forEach((id) => {
-    //   const shape = rootShapes.find((s) => s.id === id);
-    //   if (shape) {
-    //     allSelectedIds.add(id);
-
-    //     // Si es un grupo, agregar todos sus hijos
-    //     if (get(shape.state)?.tool === "GROUP") {
-    //       const children = getGroupChildren(id);
-    //       children.forEach((childId) => allSelectedIds.add(childId));
-    //     }
-    //   }
-    // });
-    return [];
-    // Filtrar y mapear las formas
-    // return rootShapes
-    //   .filter((shape) => allSelectedIds.has(shape.id))
-    //   .map((shape) => get(shape.state));
+    return shapesSelected.map((shape) =>
+      recursiveCloneShape(shape, get(shape.state).parentId)
+    );
   };
 });
-
 export const SHAPE_UPDATE_ATOM = atom(
   null,
   (get, set, args: Partial<IShape>) => {

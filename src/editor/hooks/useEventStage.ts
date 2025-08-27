@@ -9,7 +9,7 @@ import { useEffect } from "react";
 import { v4 as uuidv4 } from "uuid";
 import stageAbsolutePosition from "../helpers/position";
 import { shapeProgressEvent } from "../helpers/progressEvent";
-import { cloneDeep, shapeStart } from "../helpers/startEvent";
+import { shapeStart } from "../helpers/startEvent";
 import CURRENT_ITEM_ATOM, {
   CLEAR_CURRENT_ITEM_ATOM,
   CREATE_CURRENT_ITEM_ATOM,
@@ -67,6 +67,7 @@ export const useEventStage = () => {
   const { ref: Stage } = useReference({ type: "STAGE" });
   const LIST_UNDO = useAtomValue(LIST_UNDO_REDO);
   const COUNT_UNDO = useAtomValue(COUNT_UNDO_REDO);
+  // console.log({ LIST_UNDO, COUNT_UNDO });
 
   // ===== MOUSE EVENT HANDLERS =====
   const handleMouseDown = (event: KonvaEventObject<MouseEvent>) => {
@@ -198,35 +199,36 @@ export const useEventStage = () => {
 
   const handleCopyMode = () => {
     const selected = selectedShapes();
+    console.log(selected, "selected");
 
-    const shapesCloneDeep = selected?.map((e) => cloneDeep(e) as IShape);
+    // const shapesCloneDeep = selected?.map((e) => cloneDeep(e) as IShape);
 
-    const groups = shapesCloneDeep?.filter((e) => e?.tool === "GROUP");
-    const mapGroups = groups?.reduce<{ [key in string]: string }>(
-      (acc, curr) => {
-        return {
-          ...acc,
-          [curr.id]: uuidv4(),
-        };
-      },
-      {}
-    );
+    // const groups = shapesCloneDeep?.filter((e) => e?.tool === "GROUP");
+    // const mapGroups = groups?.reduce<{ [key in string]: string }>(
+    //   (acc, curr) => {
+    //     return {
+    //       ...acc,
+    //       [curr.id]: uuidv4(),
+    //     };
+    //   },
+    //   {}
+    // );
 
-    const newShapes: IShape[] = shapesCloneDeep.map((e) => {
-      const newParentId =
-        e.parentId && mapGroups[e.parentId]
-          ? mapGroups[e.parentId]!
-          : e.parentId;
-      return {
-        ...cloneDeep(e),
-        id: mapGroups[e.id] ? mapGroups[e.id] : uuidv4(),
-        parentId: newParentId,
-      };
-    });
+    // const newShapes: IShape[] = shapesCloneDeep.map((e) => {
+    //   const newParentId =
+    //     e.parentId && mapGroups[e.parentId]
+    //       ? mapGroups[e.parentId]!
+    //       : e.parentId;
+    //   return {
+    //     ...cloneDeep(e),
+    //     id: mapGroups[e.id] ? mapGroups[e.id] : uuidv4(),
+    //     parentId: newParentId,
+    //   };
+    // });
 
-    for (const element of newShapes) {
-      SET_CREATE(element);
-    }
+    // for (const element of newShapes) {
+    //   SET_CREATE(element);
+    // }
     SET_EVENT_STAGE("IDLE");
     setTool("MOVE");
   };

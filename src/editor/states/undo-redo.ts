@@ -7,8 +7,9 @@ import { SHAPE_IDS_ATOM } from "./shape";
 import ALL_SHAPES_ATOM, { ALL_SHAPES } from "./shapes";
 
 export type UNDO_SHAPE = Omit<ALL_SHAPES, "state" | "children"> & {
-  state: IShape;
-  children: UNDO_SHAPE[];
+  state: Omit<IShape, "children"> & {
+    children: UNDO_SHAPE[];
+  };
 };
 
 export type UNDO_REDO_PROPS = {
@@ -44,11 +45,13 @@ export const NEW_UNDO_REDO = atom(null, (get, set, args: UNDO_SHAPE_VALUES) => {
   const newList = list.slice(0, count);
 
   const cloneShapeRecursive = (shape: ALL_SHAPES): UNDO_SHAPE => {
-    const children = get(shape.children);
+    const children = get(get(shape.state).children);
     return {
       ...shape,
-      state: cloneDeep(get(shape.state)),
-      children: children?.map(cloneShapeRecursive) ?? [],
+      state: {
+        ...cloneDeep(get(shape.state)),
+        children: children?.map(cloneShapeRecursive) ?? [],
+      },
     };
   };
   const newUndo: UNDO_REDO_PROPS = {
@@ -67,13 +70,13 @@ export const UPDATE_UNDO_REDO = atom(null, (get, set) => {
   const allShapes = get(ALL_SHAPES_ATOM);
 
   // shapes seleccionados en este momento
-  const selected = allShapes.filter((e) => shapeIds.includes(e.id));
+  // const selected = allShapes.filter((e) => shapeIds.includes(e.id));
 
-  // registrar acción de tipo UPDATE
-  set(NEW_UNDO_REDO, {
-    type: "UPDATE",
-    shapes: selected,
-  });
+  // // registrar acción de tipo UPDATE
+  // set(NEW_UNDO_REDO, {
+  //   type: "UPDATE",
+  //   shapes: selected,
+  // });
 });
 
 // ========== REDO ==========
