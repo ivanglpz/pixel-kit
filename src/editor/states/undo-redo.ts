@@ -89,18 +89,18 @@ export const REDO_ATOM = atom(null, (get, set) => {
       const currentShapes = get(ALL_SHAPES_ATOM);
       let newShapes = [...currentShapes];
 
-      for (const shape of action.shapes) {
-        const newAllShape: ALL_SHAPES = {
-          ...shape,
-          state: atom(cloneDeep(shape.state) as IShape),
-        };
+      // for (const shape of action.shapes) {
+      //   const newAllShape: ALL_SHAPES = {
+      //     ...shape,
+      //     state: atom(cloneDeep(shape.state) as IShape),
+      //   };
 
-        newShapes = [
-          ...newShapes.slice(0, shape.position),
-          newAllShape,
-          ...newShapes.slice(shape.position),
-        ];
-      }
+      //   newShapes = [
+      //     ...newShapes.slice(0, shape.position),
+      //     newAllShape,
+      //     ...newShapes.slice(shape.position),
+      //   ];
+      // }
 
       set(ALL_SHAPES_ATOM, newShapes);
       break;
@@ -161,18 +161,18 @@ export const UNDO_ATOM = atom(null, (get, set) => {
       const currentShapes = get(ALL_SHAPES_ATOM);
       let newShapes = [...currentShapes];
 
-      for (const shape of action.shapes) {
-        const newAllShape: ALL_SHAPES = {
-          ...shape,
-          state: atom(cloneDeep(shape.state) as IShape),
-        };
+      // for (const shape of action.shapes) {
+      //   const newAllShape: ALL_SHAPES = {
+      //     ...shape,
+      //     state: atom(cloneDeep(shape.state) as IShape),
+      //   };
 
-        newShapes = [
-          ...newShapes.slice(0, shape.position),
-          newAllShape,
-          ...newShapes.slice(shape.position),
-        ];
-      }
+      //   newShapes = [
+      //     ...newShapes.slice(0, shape.position),
+      //     newAllShape,
+      //     ...newShapes.slice(shape.position),
+      //   ];
+      // }
 
       set(ALL_SHAPES_ATOM, newShapes);
       break;
