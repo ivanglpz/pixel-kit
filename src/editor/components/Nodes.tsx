@@ -95,7 +95,7 @@ export const Nodes = ({
     isHiddenByParent: isHiddenByParent || !shape.visible,
   };
 
-  const [children, setChildren] = useAtom(item.children);
+  const [children, setChildren] = useAtom(shape.children);
 
   const handleReorder = useCallback(
     (newOrder: typeof children) => {

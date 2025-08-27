@@ -14,7 +14,7 @@ export const cloneDeep = (value: Object) => {
 };
 
 export const shapeStart = (props: Partial<IShape>): IShape => {
-  const initial: IShape = {
+  const initial: Omit<IShape, "children"> = {
     id: uuidv4(),
     x: 0,
     y: 0,
