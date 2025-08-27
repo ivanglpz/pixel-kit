@@ -8,6 +8,7 @@ type UseDelayedExecutorProps = {
 type UseDelayedExecutorReturn = {
   execute: () => void;
   isRunning: boolean;
+  cancel: () => void;
 };
 
 export function useDelayedExecutor({
@@ -17,15 +18,27 @@ export function useDelayedExecutor({
   const [isRunning, setIsRunning] = useState<boolean>(false);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
+  const cancel = useCallback(() => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+    }
+    setIsRunning(false);
+  }, []);
+
   const execute = useCallback(() => {
-    if (isRunning) return;
+    // Cancelar timeout anterior si existe
+    cancel();
+
+    // Iniciar nuevo timeout
     setIsRunning(true);
 
     timeoutRef.current = setTimeout(() => {
       callback();
       setIsRunning(false);
+      timeoutRef.current = null;
     }, timer);
-  }, [callback, timer, isRunning]);
+  }, [callback, timer, cancel]);
 
-  return { execute, isRunning };
+  return { execute, isRunning, cancel };
 }

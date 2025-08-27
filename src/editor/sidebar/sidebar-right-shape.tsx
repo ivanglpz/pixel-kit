@@ -276,7 +276,7 @@ export const LayoutShapeConfig = () => {
       setUpdateUndoRedo();
       console.log("Ejecutado");
     },
-    timer: 1500, // opcional
+    timer: 1200, // opcional
   });
 
   // Si no hay shape seleccionado, no renderizar nada
