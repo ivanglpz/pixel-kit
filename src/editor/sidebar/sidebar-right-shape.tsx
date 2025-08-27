@@ -29,7 +29,9 @@ import { v4 as uuidv4 } from "uuid";
 import { Dialog } from "../components/dialog";
 import { ListIcons } from "../components/list-icons";
 import { constants } from "../constants/color";
+import { useDelayedExecutor } from "../hooks/useDelayExecutor";
 import { AlignItems, JustifyContent } from "../shapes/layout-flex";
+import { UPDATE_UNDO_REDO } from "../states/undo-redo";
 
 // Función utilitaria para calcular la escala de imagen
 const calculateScale = (
@@ -267,6 +269,15 @@ export const LayoutShapeConfig = () => {
   const shape = useAtomValue(SHAPE_SELECTED_ATOM);
   const inputRef = useRef<HTMLInputElement>(null);
   const shapeUpdate = useSetAtom(SHAPE_UPDATE_ATOM);
+  const setUpdateUndoRedo = useSetAtom(UPDATE_UNDO_REDO);
+
+  const { execute, isRunning } = useDelayedExecutor({
+    callback: () => {
+      setUpdateUndoRedo();
+      console.log("Ejecutado");
+    },
+    timer: 1500, // opcional
+  });
 
   // Si no hay shape seleccionado, no renderizar nada
   if (shape === null) return null;
@@ -316,12 +327,14 @@ export const LayoutShapeConfig = () => {
           ...(shape.fills || []),
         ],
       });
+      execute(); // Ejecutar después del cambio
     };
 
     const dataImage =
       "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svgString);
     img.src = dataImage;
   };
+
   // Manejadores de eventos
   const handleFiles = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -359,6 +372,7 @@ export const LayoutShapeConfig = () => {
             ...(shape.fills || []),
           ],
         });
+        execute(); // Ejecutar después del cambio
       };
       image.src = reader?.result as string;
     };
@@ -385,24 +399,28 @@ export const LayoutShapeConfig = () => {
         },
       ],
     });
+    execute(); // Ejecutar después del cambio
   };
 
   const handleFillColorChange = (index: number, color: string) => {
     const newFills = [...shape.fills];
     newFills[index].color = color;
     shapeUpdate({ fills: newFills });
+    execute(); // Ejecutar después del cambio
   };
 
   const handleFillVisibilityToggle = (index: number) => {
     const newFills = [...shape.fills];
     newFills[index].visible = !newFills[index].visible;
     shapeUpdate({ fills: newFills });
+    execute(); // Ejecutar después del cambio
   };
 
   const handleFillRemove = (index: number) => {
     const newFills = [...shape.fills];
     newFills.splice(index, 1);
     shapeUpdate({ fills: newFills });
+    execute(); // Ejecutar después del cambio
   };
 
   // Manejadores para strokes
@@ -417,24 +435,28 @@ export const LayoutShapeConfig = () => {
         },
       ],
     });
+    execute(); // Ejecutar después del cambio
   };
 
   const handleStrokeColorChange = (index: number, color: string) => {
     const newStrokes = [...shape.strokes];
     newStrokes[index].color = color;
     shapeUpdate({ strokes: newStrokes });
+    execute(); // Ejecutar después del cambio
   };
 
   const handleStrokeVisibilityToggle = (index: number) => {
     const newStrokes = [...shape.strokes];
     newStrokes[index].visible = !newStrokes[index].visible;
     shapeUpdate({ strokes: newStrokes });
+    execute(); // Ejecutar después del cambio
   };
 
   const handleStrokeRemove = (index: number) => {
     const newStrokes = [...shape.strokes];
     newStrokes.splice(index, 1);
     shapeUpdate({ strokes: newStrokes });
+    execute(); // Ejecutar después del cambio
   };
 
   // Manejadores para effects
@@ -450,24 +472,28 @@ export const LayoutShapeConfig = () => {
         },
       ],
     });
+    execute(); // Ejecutar después del cambio
   };
 
   const handleEffectColorChange = (index: number, color: string) => {
     const newEffects = [...(shape.effects ?? [])];
     newEffects[index].color = color;
     shapeUpdate({ effects: newEffects });
+    execute(); // Ejecutar después del cambio
   };
 
   const handleEffectVisibilityToggle = (index: number) => {
     const newEffects = [...(shape.effects ?? [])];
     newEffects[index].visible = !newEffects[index].visible;
     shapeUpdate({ effects: newEffects });
+    execute(); // Ejecutar después del cambio
   };
 
   const handleEffectRemove = (index: number) => {
     const newEffects = [...(shape.effects ?? [])];
     newEffects.splice(index, 1);
     shapeUpdate({ effects: newEffects });
+    execute(); // Ejecutar después del cambio
   };
 
   // Manejador para border radius individual
@@ -476,6 +502,7 @@ export const LayoutShapeConfig = () => {
     const newRadii = [...currentRadii];
     newRadii[index] = value || 0;
     shapeUpdate({ bordersRadius: newRadii });
+    execute(); // Ejecutar después del cambio
   };
 
   // Manejadores para line styles
@@ -484,6 +511,7 @@ export const LayoutShapeConfig = () => {
     lineCap: IShape["lineCap"]
   ) => {
     shapeUpdate({ lineJoin, lineCap });
+    execute(); // Ejecutar después del cambio
   };
 
   // Manejadores para layouts (agregar con los demás manejadores)
@@ -503,18 +531,21 @@ export const LayoutShapeConfig = () => {
         },
       ],
     });
+    execute(); // Ejecutar después del cambio
   };
 
   const handleLayoutVisibilityToggle = (index: number) => {
     const newLayouts = [...(shape.layouts || [])];
     newLayouts[index].visible = !newLayouts[index].visible;
     shapeUpdate({ layouts: newLayouts });
+    execute(); // Ejecutar después del cambio
   };
 
   const handleLayoutRemove = (index: number) => {
     const newLayouts = [...(shape.layouts || [])];
     newLayouts.splice(index, 1);
     shapeUpdate({ layouts: newLayouts });
+    execute(); // Ejecutar después del cambio
   };
 
   const handleLayoutPropertyChangelAYD = (
@@ -531,7 +562,9 @@ export const LayoutShapeConfig = () => {
       alignItems: values.alignItems,
     };
     shapeUpdate({ layouts: newLayouts });
+    execute(); // Ejecutar después del cambio
   };
+
   const handleLayoutPropertyChange = (
     index: number,
     property: string,
@@ -540,6 +573,7 @@ export const LayoutShapeConfig = () => {
     const newLayouts = [...(shape.layouts || [])];
     newLayouts[index] = { ...newLayouts[index], [property]: value };
     shapeUpdate({ layouts: newLayouts });
+    execute(); // Ejecutar después del cambio
   };
 
   return (
@@ -560,20 +594,33 @@ export const LayoutShapeConfig = () => {
       {/* SECCIÓN: SHAPE - Información general */}
       <section className={commonStyles.container}>
         <p className={commonStyles.sectionTitle}>Shape</p>
-
+        {isRunning ? (
+          <div className="lds-ring">
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+          </div>
+        ) : null}
         {/* Posición */}
         <p className={commonStyles.labelText}>Position</p>
         <div className={commonStyles.twoColumnGrid}>
           <InputNumber
             iconType="x"
             value={shape.x}
-            onChange={(v) => shapeUpdate({ x: v })}
+            onChange={(v) => {
+              shapeUpdate({ x: v });
+              execute(); // Ejecutar después del cambio
+            }}
           />
           <InputNumber
             iconType="y"
             labelText=""
             value={shape.y}
-            onChange={(v) => shapeUpdate({ y: v })}
+            onChange={(v) => {
+              shapeUpdate({ y: v });
+              execute(); // Ejecutar después del cambio
+            }}
           />
         </div>
         <p className={commonStyles.labelText}>Rotation</p>
@@ -584,7 +631,10 @@ export const LayoutShapeConfig = () => {
             max={360}
             step={1}
             value={shape.rotation}
-            onChange={(v) => shapeUpdate({ rotation: v })}
+            onChange={(v) => {
+              shapeUpdate({ rotation: v });
+              execute(); // Ejecutar después del cambio
+            }}
           />
         </div>
       </section>
@@ -597,20 +647,27 @@ export const LayoutShapeConfig = () => {
           <InputNumber
             iconType="width"
             value={Number(shape.width) || 0}
-            onChange={(v) => shapeUpdate({ width: v })}
+            onChange={(v) => {
+              shapeUpdate({ width: v });
+              execute(); // Ejecutar después del cambio
+            }}
           />
           <InputNumber
             iconType="height"
             labelText=""
             value={Number(shape.height) || 0}
-            onChange={(v) => shapeUpdate({ height: v })}
+            onChange={(v) => {
+              shapeUpdate({ height: v });
+              execute(); // Ejecutar después del cambio
+            }}
           />
         </div>
         <div className={commonStyles.twoColumnGrid}>
           <button
-            onClick={() =>
-              shapeUpdate({ fillContainerWidth: !shape.fillContainerWidth })
-            }
+            onClick={() => {
+              shapeUpdate({ fillContainerWidth: !shape.fillContainerWidth });
+              execute(); // Ejecutar después del cambio
+            }}
             className={css({
               background: "bg.muted",
               borderRadius: "6px",
@@ -624,9 +681,10 @@ export const LayoutShapeConfig = () => {
             {shape.fillContainerWidth ? "yes" : "no"}
           </button>
           <button
-            onClick={() =>
-              shapeUpdate({ fillContainerHeight: !shape.fillContainerHeight })
-            }
+            onClick={() => {
+              shapeUpdate({ fillContainerHeight: !shape.fillContainerHeight });
+              execute(); // Ejecutar después del cambio
+            }}
             className={css({
               background: "bg.muted",
 
@@ -860,7 +918,10 @@ export const LayoutShapeConfig = () => {
               max={1}
               step={0.1}
               value={shape.opacity}
-              onChange={(e) => shapeUpdate({ opacity: e })}
+              onChange={(e) => {
+                shapeUpdate({ opacity: e });
+                execute(); // Ejecutar después del cambio
+              }}
             />
             <InputNumber
               iconType="br"
@@ -872,7 +933,10 @@ export const LayoutShapeConfig = () => {
               value={
                 shape.isAllBorderRadius ? "Mixed" : shape.borderRadius || 0
               }
-              onChange={(e) => shapeUpdate({ borderRadius: e })}
+              onChange={(e) => {
+                shapeUpdate({ borderRadius: e });
+                execute(); // Ejecutar después del cambio
+              }}
             />
           </div>
 
@@ -889,9 +953,10 @@ export const LayoutShapeConfig = () => {
               alignItems: "center",
               justifyContent: "center",
             })}
-            onClick={() =>
-              shapeUpdate({ isAllBorderRadius: !shape.isAllBorderRadius })
-            }
+            onClick={() => {
+              shapeUpdate({ isAllBorderRadius: !shape.isAllBorderRadius });
+              execute(); // Ejecutar después del cambio
+            }}
           >
             <Scan size={14} />
           </button>
@@ -945,9 +1010,10 @@ export const LayoutShapeConfig = () => {
             <div className={css({ gridColumn: "2" })}>
               <InputSelect
                 value={shape.fontFamily ?? "Roboto"}
-                onChange={(e) =>
-                  shapeUpdate({ fontFamily: e as IShape["fontFamily"] })
-                }
+                onChange={(e) => {
+                  shapeUpdate({ fontFamily: e as IShape["fontFamily"] });
+                  execute(); // Ejecutar después del cambio
+                }}
                 options={fontFamilyOptions}
               />
             </div>
@@ -956,9 +1022,10 @@ export const LayoutShapeConfig = () => {
             <InputSelect
               labelText=""
               value={shape.fontWeight ?? "normal"}
-              onChange={(e) =>
-                shapeUpdate({ fontWeight: e as IShape["fontWeight"] })
-              }
+              onChange={(e) => {
+                shapeUpdate({ fontWeight: e as IShape["fontWeight"] });
+                execute(); // Ejecutar después del cambio
+              }}
               options={fontWeightOptions}
             />
 
@@ -969,7 +1036,10 @@ export const LayoutShapeConfig = () => {
               min={12}
               max={72}
               step={4}
-              onChange={(e) => shapeUpdate({ fontSize: e })}
+              onChange={(e) => {
+                shapeUpdate({ fontSize: e });
+                execute(); // Ejecutar después del cambio
+              }}
               value={shape.fontSize || 0}
             />
 
@@ -977,7 +1047,10 @@ export const LayoutShapeConfig = () => {
             <div className={css({ gridColumn: 2, gridRow: 3 })}>
               <InputTextArea
                 labelText=""
-                onChange={(e) => shapeUpdate({ text: e })}
+                onChange={(e) => {
+                  shapeUpdate({ text: e });
+                  execute(); // Ejecutar después del cambio
+                }}
                 value={shape.text || ""}
               />
             </div>
@@ -1130,7 +1203,10 @@ export const LayoutShapeConfig = () => {
                 step={1}
                 labelText="Weight"
                 value={shape.strokeWidth || 0}
-                onChange={(v) => shapeUpdate({ strokeWidth: v })}
+                onChange={(v) => {
+                  shapeUpdate({ strokeWidth: v });
+                  execute(); // Ejecutar después del cambio
+                }}
               />
 
               {/* Line Style Buttons */}
@@ -1204,24 +1280,16 @@ export const LayoutShapeConfig = () => {
               min={0}
               max={100}
               step={5}
-              onChange={(e) => shapeUpdate({ dash: e })}
+              onChange={(e) => {
+                shapeUpdate({ dash: e });
+                execute(); // Ejecutar después del cambio
+              }}
               value={shape.dash || 0}
             />
           </>
         ) : null}
       </section>
       <Separator />
-      {/* SECCIÓN: IMAGE - Imagen */}
-      {/* <p
-        className={css({
-          color: "text",
-          fontWeight: "600",
-          fontSize: "sm",
-        })}
-      >
-        Image
-      </p> */}
-      {/* <Button text="Browser Files" onClick={() => inputRef.current?.click()} /> */}
       {/* Input oculto para archivos */}
       <input
         ref={inputRef}
@@ -1238,7 +1306,6 @@ export const LayoutShapeConfig = () => {
           position: "absolute",
         })}
       />
-      {/* <Separator /> */}
       {/* SECCIÓN: EFFECTS - Efectos */}
       <section className={commonStyles.container}>
         <SectionHeader title="Effects" onAdd={handleAddEffect} />
@@ -1284,19 +1351,24 @@ export const LayoutShapeConfig = () => {
         <Valid isValid={shape.effects.length > 0}>
           <p className={commonStyles.labelText}>Position</p>
           <div className={commonStyles.twoColumnGrid}>
-            {/* TODO: Corregir los manejadores - actualmente todos actualizan 'dash' */}
             <InputNumber
               iconType="x"
               min={0}
               max={100}
-              onChange={(e) => shapeUpdate({ shadowOffsetX: e })} // FIXME: debería actualizar effect.x
+              onChange={(e) => {
+                shapeUpdate({ shadowOffsetX: e });
+                execute(); // Ejecutar después del cambio
+              }}
               value={shape.shadowOffsetX}
             />
             <InputNumber
               iconType="y"
               min={0}
               max={100}
-              onChange={(e) => shapeUpdate({ shadowOffsetY: e })} // FIXME: debería actualizar effect.y
+              onChange={(e) => {
+                shapeUpdate({ shadowOffsetY: e });
+                execute(); // Ejecutar después del cambio
+              }}
               value={shape.shadowOffsetY}
             />
           </div>
@@ -1306,7 +1378,10 @@ export const LayoutShapeConfig = () => {
               labelText="blur"
               min={0}
               max={100}
-              onChange={(e) => shapeUpdate({ shadowBlur: e })} // FIXME: debería actualizar effect.blur
+              onChange={(e) => {
+                shapeUpdate({ shadowBlur: e });
+                execute(); // Ejecutar después del cambio
+              }}
               value={shape.shadowBlur}
             />
             <InputNumber
@@ -1315,7 +1390,10 @@ export const LayoutShapeConfig = () => {
               min={0}
               max={1}
               step={0.1}
-              onChange={(e) => shapeUpdate({ shadowOpacity: e })} // FIXME: debería actualizar effect.opacity
+              onChange={(e) => {
+                shapeUpdate({ shadowOpacity: e });
+                execute(); // Ejecutar después del cambio
+              }}
               value={shape.shadowOpacity}
             />
           </div>
