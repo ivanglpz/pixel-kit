@@ -1,6 +1,7 @@
 import { atom, PrimitiveAtom } from "jotai";
 import { v4 as uuidv4 } from "uuid";
 import { MODE } from "../hooks/useConfiguration";
+import { IShape } from "../shapes/type.shape";
 import { canvasTheme } from "./canvas";
 import { ICLIP_DIMENSION } from "./clipImage";
 import { IStageEvents } from "./event";
@@ -89,7 +90,7 @@ export const PROJECTS_ATOM = atom([
                 tool: "GROUP",
                 pageId: "8eb9cfc3-023f-4204-a745-3d5347d1f057",
                 state: atom({
-                  id: "09c9296a-ce4d-44d3-930f-f5ff8f1ce32b",
+                  id: "d459d81f-4bce-4c41-af07-fe4d979d7771",
                   x: 187,
                   y: 181,
                   tool: "GROUP",
@@ -148,7 +149,7 @@ export const PROJECTS_ATOM = atom([
                     tool: "GROUP",
                     pageId: "8eb9cfc3-023f-4204-a745-3d5347d1f057",
                     state: atom({
-                      id: "09c9296a-ce4d-44d3-930f-f5ff8f1ce32b",
+                      id: "85f26efc-856d-4c33-92f3-f6bd5dfc713e",
                       x: 187,
                       y: 181,
                       tool: "GROUP",
@@ -208,7 +209,7 @@ export const PROJECTS_ATOM = atom([
                     tool: "GROUP",
                     pageId: "8eb9cfc3-023f-4204-a745-3d5347d1f057",
                     state: atom({
-                      id: "09c9296a-ce4d-44d3-930f-f5ff8f1ce32b",
+                      id: "26b14bc8-d9bf-4870-b52d-f9a2300ee096",
                       x: 187,
                       y: 181,
                       tool: "GROUP",
@@ -268,7 +269,7 @@ export const PROJECTS_ATOM = atom([
                     tool: "GROUP",
                     pageId: "8eb9cfc3-023f-4204-a745-3d5347d1f057",
                     state: atom({
-                      id: "09c9296a-ce4d-44d3-930f-f5ff8f1ce32b",
+                      id: "22814ad7-ede7-4088-99a9-c6cc10f77455",
                       x: 187,
                       y: 181,
                       tool: "GROUP",

@@ -1,6 +1,6 @@
 import { iconsWithTools } from "@/assets";
 import { css } from "@stylespixelkit/css";
-import { Reorder, useDragControls } from "framer-motion";
+import { DragControls, Reorder, useDragControls } from "framer-motion";
 import { useAtom, useSetAtom } from "jotai";
 import {
   ChevronDown,
@@ -25,6 +25,7 @@ type NodeProps = {
     isLockedByParent?: boolean;
     isHiddenByParent?: boolean;
   };
+  dragControls: DragControls;
 };
 
 type DraggableNodeItemProps = {
@@ -71,7 +72,7 @@ export const Nodes = ({
   shape: item,
   options = {},
   dragControls: externalDragControls, // ✅ Recibimos controles externos
-}: NodeProps & { dragControls?: any }) => {
+}: NodeProps) => {
   const [shape, setShape] = useAtom(item.state);
   const [shapeId, setShapeId] = useAtom(SHAPE_IDS_ATOM);
   const [show, setShow] = useState(false);
@@ -163,7 +164,9 @@ export const Nodes = ({
           userSelect: "none",
           width: 235,
         })}
-        onClick={() => {
+        onClick={(e) => {
+          e.preventDefault(); // puedes dejar esto si quieres
+          e.stopPropagation();
           setTool("MOVE");
           setShapeId(shape?.id);
         }}
