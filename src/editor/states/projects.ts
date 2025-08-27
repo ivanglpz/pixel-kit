@@ -20,10 +20,6 @@ export type IPROJECT = {
     LIST: PrimitiveAtom<IPage[]> & WithInitialValue<IPage[]>;
     ID: PrimitiveAtom<string> & WithInitialValue<string>;
   };
-  SHAPE: {
-    LIST: PrimitiveAtom<ALL_SHAPES[]> & WithInitialValue<ALL_SHAPES[]>;
-    ID: PrimitiveAtom<string[]> & WithInitialValue<string[]>;
-  };
   UNDOREDO: {
     COUNT_UNDO_REDO: PrimitiveAtom<number> & WithInitialValue<number>;
     LIST_UNDO_REDO: PrimitiveAtom<UNDO_REDO_PROPS[]> &
@@ -63,6 +59,10 @@ export const PROJECTS_ATOM = atom([
           color: atom(canvasTheme.dark),
           isVisible: atom(true),
           type: "EDIT_IMAGE",
+          SHAPE: {
+            ID: atom<string[]>([]),
+            LIST: atom<ALL_SHAPES[]>([]),
+          },
         },
         {
           id: "bc0631c9-e167-4cef-887c-4d6f9b4d8dc6",
@@ -70,6 +70,10 @@ export const PROJECTS_ATOM = atom([
           color: atom(canvasTheme.dark),
           isVisible: atom(true),
           type: "FREE_DRAW",
+          SHAPE: {
+            ID: atom<string[]>([]),
+            LIST: atom<ALL_SHAPES[]>([]),
+          },
         },
         {
           id: "8eb9cfc3-023f-4204-a745-3d5347d1f057",
@@ -77,14 +81,15 @@ export const PROJECTS_ATOM = atom([
           color: atom(canvasTheme.dark),
           isVisible: atom(true),
           type: "DESIGN_MODE",
+          SHAPE: {
+            ID: atom<string[]>([]),
+            LIST: atom<ALL_SHAPES[]>([]),
+          },
         },
       ]),
       ID: atom<string>("8eb9cfc3-023f-4204-a745-3d5347d1f057"),
     },
-    SHAPE: {
-      ID: atom<string[]>([]),
-      LIST: atom<ALL_SHAPES[]>([]),
-    },
+
     EVENT: atom<IStageEvents>("IDLE"),
     CLIP: {
       SHOW: atom(false),
@@ -135,6 +140,10 @@ export const NEW_PROJECT = atom(null, (get, set) => {
             color: atom(canvasTheme.dark),
             isVisible: atom(true),
             type: "EDIT_IMAGE",
+            SHAPE: {
+              ID: atom<string[]>([]),
+              LIST: atom<ALL_SHAPES[]>([]),
+            },
           },
           {
             id: uuidv4(),
@@ -142,6 +151,10 @@ export const NEW_PROJECT = atom(null, (get, set) => {
             color: atom(canvasTheme.dark),
             isVisible: atom(true),
             type: "FREE_DRAW",
+            SHAPE: {
+              ID: atom<string[]>([]),
+              LIST: atom<ALL_SHAPES[]>([]),
+            },
           },
           {
             id: PAGEUUID,
@@ -149,14 +162,15 @@ export const NEW_PROJECT = atom(null, (get, set) => {
             color: atom(canvasTheme.dark),
             isVisible: atom(true),
             type: "DESIGN_MODE",
+            SHAPE: {
+              ID: atom<string[]>([]),
+              LIST: atom<ALL_SHAPES[]>([]),
+            },
           },
         ]),
         ID: atom<string>(PAGEUUID),
       },
-      SHAPE: {
-        ID: atom<string[]>([]),
-        LIST: atom<ALL_SHAPES[]>([]),
-      },
+
       EVENT: atom<IStageEvents>("IDLE"),
       CLIP: {
         SHOW: atom(false),

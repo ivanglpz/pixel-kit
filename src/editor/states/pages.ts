@@ -2,7 +2,7 @@ import { atom, PrimitiveAtom } from "jotai";
 import { MODE, MODE_ATOM } from "../hooks/useConfiguration";
 import { canvasTheme } from "./canvas";
 import { PROJECT_ATOM } from "./projects";
-import { WithInitialValue } from "./shapes";
+import { ALL_SHAPES, WithInitialValue } from "./shapes";
 
 export type IPage = {
   id: string;
@@ -10,6 +10,10 @@ export type IPage = {
   color: PrimitiveAtom<string> & WithInitialValue<string>;
   isVisible: PrimitiveAtom<boolean> & WithInitialValue<boolean>;
   type: MODE;
+  SHAPE: {
+    LIST: PrimitiveAtom<ALL_SHAPES[]> & WithInitialValue<ALL_SHAPES[]>;
+    ID: PrimitiveAtom<string[]> & WithInitialValue<string[]>;
+  };
 };
 export const PAGES_ATOM = atom(
   (get) => get(get(PROJECT_ATOM).PAGE.LIST),
@@ -54,6 +58,10 @@ export const NEW_PAGE = atom(null, (get, set) => {
     color: atom(canvasTheme.dark),
     isVisible: atom(true),
     type: mode,
+    SHAPE: {
+      ID: atom<string[]>([]),
+      LIST: atom<ALL_SHAPES[]>([]),
+    },
   };
   set(PAGE_ID_ATOM, newPage.id);
   set(PAGES_ATOM, [...pages, newPage]);

@@ -1,5 +1,6 @@
 import { iconsWithTools } from "@/assets";
 import { css } from "@stylespixelkit/css";
+import { Reorder } from "framer-motion";
 import { useAtom, useSetAtom } from "jotai";
 import {
   ChevronDown,
@@ -105,12 +106,12 @@ export const Nodes = ({
 
   return (
     <>
-      <li
+      <div
         id={shape.id + ` ${shape.tool}`}
-        draggable
-        onDragStart={handleDragStart}
-        onDragOver={handleDragOver}
-        onDrop={handleDrop}
+        // draggable
+        // onDragStart={handleDragStart}
+        // onDragOver={handleDragOver}
+        // onDrop={handleDrop}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
         className={css({
@@ -120,7 +121,7 @@ export const Nodes = ({
           fontSize: "sm",
           listStyle: "none",
           display: "grid",
-          gridTemplateColumns: "15px 15px 120px 50px",
+          gridTemplateColumns: "15px 15px 80px 50px",
           flexDirection: "row",
           alignItems: "center",
           justifyContent: "center",
@@ -136,7 +137,6 @@ export const Nodes = ({
             },
           },
           cursor: "pointer",
-          width: 230,
         })}
         onClick={() => {
           setTool("MOVE");
@@ -287,30 +287,35 @@ export const Nodes = ({
             )}
           </div>
         </div>
-      </li>
+      </div>
 
       {childrens?.length > 0 && isExpanded && (
-        <ul
-          className={css({
-            marginLeft: "12px",
+        <Reorder.Group
+          axis="y"
+          values={childrens}
+          onReorder={(e) => {
+            console.log(e, "iiiii");
+          }}
+          style={{
             display: "flex",
             flexDirection: "column",
-            gap: "sm",
-            borderLeftColor: "primary",
-            borderLeftWidth: 2,
-          })}
-          onDragOver={(e) => e.preventDefault()}
-          onDrop={handleDropOutside}
+            gap: "8px",
+          }}
         >
-          {childrens.map((child) => (
-            <Nodes
-              key={`child-${child.id}`}
-              listShapes={SHAPES}
-              shape={child}
-              options={childOptions}
-            />
+          {childrens.map((item) => (
+            <Reorder.Item
+              key={item.id}
+              value={item.id}
+              style={{
+                backgroundColor: "blue",
+                borderRadius: "6px",
+                cursor: "grab",
+              }}
+            >
+              <Nodes listShapes={SHAPES} shape={item} options={childOptions} />
+            </Reorder.Item>
           ))}
-        </ul>
+        </Reorder.Group>
       )}
     </>
   );
