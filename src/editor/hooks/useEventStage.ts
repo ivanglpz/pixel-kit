@@ -23,7 +23,7 @@ import {
   SHAPE_IDS_ATOM,
   UPDATE_SHAPES_IDS_ATOM,
 } from "../states/shape";
-import { CREATE_SHAPE_ATOM, DELETE_SHAPE_ATOM } from "../states/shapes";
+import { CREATE_SHAPE_ATOM, DELETE_SHAPES_ATOM } from "../states/shapes";
 import {
   COUNT_UNDO_REDO,
   LIST_UNDO_REDO,
@@ -55,7 +55,7 @@ export const useEventStage = () => {
 
   // ===== SETTERS =====
   const SET_CREATE = useSetAtom(CREATE_SHAPE_ATOM);
-  const DELETE_SHAPE = useSetAtom(DELETE_SHAPE_ATOM);
+  const DELETE_SHAPE = useSetAtom(DELETE_SHAPES_ATOM);
   const removeShapeId = useSetAtom(REMOVE_SHAPE_ID_ATOM);
   const SET_UPDATE_SHAPES_IDS = useSetAtom(UPDATE_SHAPES_IDS_ATOM);
   const SET_CREATE_CITEM = useSetAtom(CREATE_CURRENT_ITEM_ATOM);
@@ -139,8 +139,11 @@ export const useEventStage = () => {
       setTimeout(() => {
         SET_UPDATE_SHAPES_IDS(
           selected
-            ?.map((e) => e?.attrs?.id)
-            ?.filter((e) => typeof e === "string")
+            ?.map((e) => ({
+              id: e?.attrs?.id,
+              parentId: e?.attrs?.parentId,
+            }))
+            ?.filter((e) => typeof e?.id === "string")
         );
         setSelection({
           x: 0,
@@ -261,7 +264,10 @@ export const useEventStage = () => {
     const newShape = payloads.at(0);
     if (!newShape) return;
     setTimeout(() => {
-      setShapeId(newShape?.id);
+      setShapeId({
+        id: newShape?.id,
+        parentId: newShape?.parentId,
+      });
     }, 10);
 
     SET_CREATE(newShape);
@@ -289,10 +295,10 @@ export const useEventStage = () => {
   };
 
   const handleDeleteShapes = () => {
-    for (const element of shapeId) {
-      DELETE_SHAPE({ id: element });
-      removeShapeId(element);
-    }
+    DELETE_SHAPE();
+    // for (const element of shapeId) {
+    //   removeShapeId(element);
+    // }
   };
 
   const createImageFromFile = (file: File, dataUrl: string) => {

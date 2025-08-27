@@ -40,6 +40,8 @@ export const ShapeGroup = memo(
         <ShapeBox shape={item} layoutShapes={[]} />
 
         <Group
+          id={box?.id}
+          parentId={box?.parentId}
           x={x}
           y={y}
           width={width}

@@ -27,6 +27,7 @@ export const LayerShapes = () => {
   const selectedIds = useAtomValue(SHAPE_IDS_ATOM);
   const selection = useAtomValue(RECTANGLE_SELECTION_ATOM);
   const setUpdateUndoRedo = useSetAtom(UPDATE_UNDO_REDO);
+  console.log(selectedIds, "selectedIds");
 
   useEffect(() => {
     const allShapes = lyRef.current ? getAllShapes(lyRef.current) : [];
@@ -34,7 +35,9 @@ export const LayerShapes = () => {
       (child) => child?.attrs?.id !== "transformer-editable"
     );
 
-    const selected = nodes?.filter((e) => selectedIds?.includes(e.attrs?.id));
+    const selected = nodes?.filter((e) =>
+      selectedIds?.some((w) => w.id === e.attrs?.id)
+    );
     trRef.current?.nodes(selected);
     trRef.current?.getLayer()?.batchDraw();
   }, [selectedIds, ALL_SHAPES]);
