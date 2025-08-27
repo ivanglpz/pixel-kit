@@ -63,7 +63,7 @@ export const UPDATE_UNDO_REDO = atom(null, (get, set) => {
   // preparar shapes para guardar en undo/redo
   const undoShapes: UNDO_SHAPE[] = selected.map((s) => ({
     ...s,
-    state: get(s.state), // guardamos el estado actual del atom
+    state: cloneDeep(get(s.state)), // guardamos el estado actual del atom
   }));
 
   // registrar acción de tipo UPDATE
@@ -122,7 +122,7 @@ export const REDO_ATOM = atom(null, (get, set) => {
         const updated = action.shapes.find((u) => u.id === s.id);
         if (!updated) return s;
         return {
-          ...s,
+          ...updated,
           state: atom(cloneDeep(updated.state) as IShape),
         };
       });
@@ -164,7 +164,7 @@ export const UNDO_ATOM = atom(null, (get, set) => {
       for (const shape of action.shapes) {
         const newAllShape: ALL_SHAPES = {
           ...shape,
-          state: atom(shape.state as IShape),
+          state: atom(cloneDeep(shape.state) as IShape),
         };
 
         newShapes = [
@@ -184,8 +184,8 @@ export const UNDO_ATOM = atom(null, (get, set) => {
         const old = action.shapes.find((u) => u.id === s.id);
         if (!old) return s;
         return {
-          ...s,
-          state: atom(old.state as IShape),
+          ...old,
+          state: atom(cloneDeep(old.state) as IShape),
         };
       });
       set(ALL_SHAPES_ATOM, newShapes);
