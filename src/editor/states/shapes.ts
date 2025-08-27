@@ -42,6 +42,19 @@ export const ALL_SHAPES_ATOM = atom(
   }
 );
 
+export const PLANE_SHAPES_ATOM = atom((get) => {
+  const getAllShapes = (nodes: ALL_SHAPES[]): ALL_SHAPES[] =>
+    nodes.flatMap((node) => {
+      const children =
+        get(node.children).length > 0
+          ? getAllShapes(get(node.children) as ALL_SHAPES[])
+          : [];
+      return [{ ...node }, ...children];
+    });
+
+  return getAllShapes(get(ALL_SHAPES_ATOM));
+});
+
 export const DELETE_SHAPES_ATOM = atom(null, (get, set) => {
   const currentShapes = get(ALL_SHAPES_ATOM);
   const shapesSelected = get(SHAPE_IDS_ATOM);

@@ -3,7 +3,7 @@ import { atom } from "jotai";
 import { EVENT_ATOM } from "./event";
 import { IPageShapeIds, PAGE_ID_ATOM } from "./pages";
 import { PROJECT_ATOM } from "./projects";
-import ALL_SHAPES_ATOM from "./shapes";
+import { PLANE_SHAPES_ATOM } from "./shapes";
 
 export const SHAPE_IDS_ATOM = atom(
   (get) => {
@@ -89,9 +89,11 @@ export const RESET_SHAPES_IDS_ATOM = atom(null, (get, set) => {
 
   set(ids, []);
 });
+
 export const SHAPE_SELECTED_ATOM = atom((get) => {
   const shapeSelected = get(SHAPE_IDS_ATOM).at(0);
-  const shape = get(ALL_SHAPES_ATOM)?.find(
+
+  const shape = get(PLANE_SHAPES_ATOM)?.find(
     (e) =>
       e?.id === shapeSelected?.id &&
       get(e?.state).parentId === shapeSelected.parentId
@@ -154,7 +156,7 @@ export const SHAPE_UPDATE_ATOM = atom(
   null,
   (get, set, args: Partial<IShape>) => {
     const shapeSelected = get(SHAPE_IDS_ATOM).at(0);
-    const findShape = get(ALL_SHAPES_ATOM)?.find(
+    const findShape = get(PLANE_SHAPES_ATOM)?.find(
       (e) =>
         e?.id === shapeSelected?.id &&
         get(e?.state).parentId === shapeSelected.parentId
@@ -162,9 +164,5 @@ export const SHAPE_UPDATE_ATOM = atom(
     if (!findShape || !findShape.state) return null;
 
     set(findShape?.state, { ...get(findShape.state), ...args });
-
-    // const findShape = get(ALL_SHAPES_ATOM)?.find(
-    //   (e) => e?.id === get(SHAPE_IDS_ATOM).at(0)
-    // );
   }
 );
