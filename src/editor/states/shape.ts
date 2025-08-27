@@ -1,13 +1,27 @@
 import { IShape } from "@/editor/shapes/type.shape";
 import { atom } from "jotai";
 import { EVENT_ATOM } from "./event";
+import { PAGE_ID_ATOM } from "./pages";
 import { PROJECT_ATOM } from "./projects";
 import ALL_SHAPES_ATOM from "./shapes";
 
 export const ADD_SHAPE_ID_ATOM = atom(
-  (get) => get(get(PROJECT_ATOM).SHAPE.ID),
+  (get) => {
+    const PAGES = get(get(PROJECT_ATOM).PAGE.LIST);
+    const FIND_PAGE = PAGES.find((e) => e?.id === get(PAGE_ID_ATOM));
+    if (!FIND_PAGE) {
+      throw new Error("Page  shape ids is require");
+    }
+    return get(FIND_PAGE.SHAPE.ID);
+  },
   (get, _set, id: string) => {
-    const ids = get(PROJECT_ATOM).SHAPE.ID;
+    // const ids = get(PROJECT_ATOM).SHAPE.ID;
+    const PAGES = get(get(PROJECT_ATOM).PAGE.LIST);
+    const FIND_PAGE = PAGES.find((e) => e?.id === get(PAGE_ID_ATOM));
+    if (!FIND_PAGE) {
+      throw new Error("Page  shape ids is require");
+    }
+    const ids = FIND_PAGE.SHAPE.ID;
     const event = get(EVENT_ATOM);
     const listIds = get(ids);
 
@@ -30,14 +44,25 @@ export const ADD_SHAPE_ID_ATOM = atom(
   }
 );
 export const UPDATE_SHAPES_IDS_ATOM = atom(null, (get, set, args: string[]) => {
-  const ids = get(PROJECT_ATOM).SHAPE.ID;
+  const PAGES = get(get(PROJECT_ATOM).PAGE.LIST);
+  const FIND_PAGE = PAGES.find((e) => e?.id === get(PAGE_ID_ATOM));
+  if (!FIND_PAGE) {
+    throw new Error("Page  shape ids is require");
+  }
+  const ids = FIND_PAGE.SHAPE.ID;
 
   set(ids, args);
 });
 
 export const REMOVE_SHAPE_ID_ATOM = atom(null, (get, set, args: string) => {
-  const ids = get(PROJECT_ATOM).SHAPE.ID;
-  const listIds = get(get(PROJECT_ATOM).SHAPE.ID);
+  const PAGES = get(get(PROJECT_ATOM).PAGE.LIST);
+  const FIND_PAGE = PAGES.find((e) => e?.id === get(PAGE_ID_ATOM));
+  if (!FIND_PAGE) {
+    throw new Error("Page  shape ids is require");
+  }
+  const ids = FIND_PAGE.SHAPE.ID;
+
+  const listIds = get(FIND_PAGE.SHAPE.ID);
 
   set(
     ids,
@@ -45,7 +70,14 @@ export const REMOVE_SHAPE_ID_ATOM = atom(null, (get, set, args: string) => {
   );
 });
 export const RESET_SHAPES_IDS_ATOM = atom(null, (get, set) => {
-  set(get(PROJECT_ATOM).SHAPE.ID, []);
+  const PAGES = get(get(PROJECT_ATOM).PAGE.LIST);
+  const FIND_PAGE = PAGES.find((e) => e?.id === get(PAGE_ID_ATOM));
+  if (!FIND_PAGE) {
+    throw new Error("Page  shape ids is require");
+  }
+  const ids = FIND_PAGE.SHAPE.ID;
+
+  set(ids, []);
 });
 export const SHAPE_SELECTED_ATOM = atom((get) => {
   const shape = get(ALL_SHAPES_ATOM)?.find(

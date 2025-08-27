@@ -18,17 +18,28 @@ export type ALL_SHAPES = {
 };
 
 export const ALL_SHAPES_ATOM = atom(
-  (get) => get(get(PROJECT_ATOM).SHAPE.LIST),
-  (_get, _set, newTool: ALL_SHAPES[]) => {
-    const toolAtom = _get(PROJECT_ATOM).SHAPE.LIST;
-    _set(toolAtom, newTool);
+  // (get) => get(get(PROJECT_ATOM)..LIST),
+  // (_get, _set, newTool: ALL_SHAPES[]) => {
+  //   const toolAtom = _get(PROJECT_ATOM).SHAPE.LIST;
+  //   _set(toolAtom, newTool);
+  // }
+  (get) => {
+    const PAGES = get(get(PROJECT_ATOM).PAGE.LIST);
+    const FIND_PAGE = PAGES.find((e) => e?.id === get(PAGE_ID_ATOM));
+    if (!FIND_PAGE) {
+      throw new Error("Page  shapes is require");
+    }
+    return get(FIND_PAGE.SHAPE.LIST);
+  },
+  (get, set, newTool: ALL_SHAPES[]) => {
+    const PAGES = get(get(PROJECT_ATOM).PAGE.LIST);
+    const FIND_PAGE = PAGES.find((e) => e?.id === get(PAGE_ID_ATOM));
+    if (!FIND_PAGE) {
+      throw new Error("Page  shapes is require");
+    }
+    set(FIND_PAGE.SHAPE.LIST, newTool);
+    return;
   }
-);
-
-export const SHAPES_BY_PAGE_ATOM = atom((get) =>
-  get(ALL_SHAPES_ATOM)?.filter(
-    (e) => e?.parentId === null && e?.pageId === get(PAGE_ID_ATOM)
-  )
 );
 
 export const DELETE_SHAPE_ATOM = atom(

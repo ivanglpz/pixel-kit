@@ -67,7 +67,6 @@ export const useEventStage = () => {
   const { ref: Stage } = useReference({ type: "STAGE" });
   const lids = useAtomValue(LIST_UNDO_REDO);
   const ctee = useAtomValue(COUNT_UNDO_REDO);
-  console.log({ undo_redo: lids, count: ctee });
 
   // ===== MOUSE EVENT HANDLERS =====
   const handleMouseDown = (event: KonvaEventObject<MouseEvent>) => {

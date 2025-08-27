@@ -7,7 +7,7 @@ import { Shapes } from "../shapes/shapes";
 import { FCShapeWEvents } from "../shapes/type.shape";
 import { RECTANGLE_SELECTION_ATOM } from "../states/rectangle-selection";
 import { ADD_SHAPE_ID_ATOM } from "../states/shape";
-import ALL_SHAPES_ATOM, { SHAPES_BY_PAGE_ATOM } from "../states/shapes";
+import ALL_SHAPES_ATOM from "../states/shapes";
 import { UPDATE_UNDO_REDO } from "../states/undo-redo";
 
 const getAllShapes = (node: Konva.Layer | Konva.Group): Konva.Shape[] => {
@@ -21,7 +21,6 @@ const getAllShapes = (node: Konva.Layer | Konva.Group): Konva.Shape[] => {
 };
 
 export const LayerShapes = () => {
-  const ROOT_SHAPES = useAtomValue(SHAPES_BY_PAGE_ATOM);
   const ALL_SHAPES = useAtomValue(ALL_SHAPES_ATOM);
   const trRef = useRef<Konva.Transformer>(null);
   const lyRef = useRef<Konva.Layer>(null);
@@ -38,12 +37,12 @@ export const LayerShapes = () => {
     const selected = nodes?.filter((e) => selectedIds?.includes(e.attrs?.id));
     trRef.current?.nodes(selected);
     trRef.current?.getLayer()?.batchDraw();
-  }, [selectedIds, ROOT_SHAPES, ALL_SHAPES]);
+  }, [selectedIds, ALL_SHAPES]);
 
   return (
     <>
       <Layer id="layer-shapes" ref={lyRef}>
-        {ROOT_SHAPES?.map((item) => {
+        {ALL_SHAPES?.map((item) => {
           const Component = Shapes?.[item?.tool] as FCShapeWEvents;
           return (
             <Component
