@@ -3,6 +3,7 @@ import { Layer } from "react-konva";
 import { Shapes } from "../shapes/shapes";
 import { FCShapeWEvents } from "../shapes/type.shape";
 import CURRENT_ITEM_ATOM from "../states/currentItem";
+import { ALL_SHAPES } from "../states/shapes";
 
 export const LayerPipe = () => {
   const CURRENT_ITEMS = useAtomValue(CURRENT_ITEM_ATOM);
@@ -22,7 +23,7 @@ export const LayerPipe = () => {
                 state: atom(item),
                 pageId: "main-image-render-stage",
                 tool: item.tool,
-                parentId: null,
+                children: atom([] as ALL_SHAPES[]),
               }}
               key={`pixel-kit-temporal-shape-${item.id}`}
             />
