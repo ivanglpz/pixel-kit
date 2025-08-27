@@ -388,7 +388,6 @@ export const useEventStage = () => {
       if (meta && !event.shiftKey && key === "z") {
         event.preventDefault();
         setUndo();
-        console.log("IR HACIA ATRÁS PAPI");
         // set(UNDO_ATOM);
         return;
       }
@@ -397,7 +396,6 @@ export const useEventStage = () => {
       if (meta && event.shiftKey && key === "z") {
         event.preventDefault();
         setRedo();
-        console.log("IR HACIA ADELANTE PAPI");
         // set(REDO_ATOM);
         return;
       }

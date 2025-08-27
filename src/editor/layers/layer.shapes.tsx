@@ -64,12 +64,9 @@ export const LayerShapes = () => {
           keepRatio={false}
           onTransformEnd={() => {
             setUpdateUndoRedo();
-            console.log("ejecutandose  transform end");
           }}
           onDragEnd={() => {
             setUpdateUndoRedo();
-
-            console.log("ejecutandose drag end");
           }}
           anchorStroke={constants.theme.colors.primary}
           boundBoxFunc={(oldBox, newBox) => {
