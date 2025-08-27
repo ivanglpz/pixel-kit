@@ -140,15 +140,14 @@ export const Nodes = ({
         onMouseLeave={() => setIsHovered(false)}
         className={css({
           color: "text",
-          padding: "md",
           height: 30,
           fontSize: "sm",
           listStyle: "none",
           display: "grid",
-          gridTemplateColumns: "15px 15px 80px 50px 20px",
+          padding: "md",
+          gridTemplateColumns: "15px 15px 15px 1fr 30px",
           flexDirection: "row",
           alignItems: "center",
-          justifyContent: "center",
           gap: "md",
           borderRadius: "md",
           backgroundColor: shapeId.includes(shape.id)
@@ -162,6 +161,7 @@ export const Nodes = ({
           },
           cursor: "pointer",
           userSelect: "none",
+          width: 220,
         })}
         onClick={() => {
           setTool("MOVE");
@@ -191,7 +191,6 @@ export const Nodes = ({
               setIsExpanded((prev) => !prev);
             }}
             className={css({
-              marginLeft: "auto",
               border: "none",
               color: "white",
               cursor: "pointer",
@@ -347,10 +346,10 @@ export const Nodes = ({
             style={{
               display: "flex",
               flexDirection: "column",
-              gap: "4px",
               listStyle: "none",
               margin: 0,
               padding: 0,
+              gap: "4px",
             }}
             layoutScroll={false}
           >

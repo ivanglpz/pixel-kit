@@ -1,6 +1,7 @@
 import { Nodes } from "@/editor/components/Nodes";
 import ALL_SHAPES_ATOM from "@/editor/states/shapes";
 import { UPDATE_UNDO_REDO } from "@/editor/states/undo-redo";
+import { css } from "@stylespixelkit/css";
 import { Reorder, useDragControls } from "framer-motion";
 import { useAtom, useSetAtom } from "jotai";
 import React from "react";
@@ -46,7 +47,13 @@ export const SidebarLeftShapes = () => {
   console.log(ALL_SHAPES, "ALL_SHAPES");
 
   return (
-    <div onDrop={handleDropOutside} onDragOver={(e) => e.preventDefault()}>
+    <div
+      onDrop={handleDropOutside}
+      onDragOver={(e) => e.preventDefault()}
+      className={css({
+        overflow: "scroll",
+      })}
+    >
       <Reorder.Group
         axis="y"
         values={ALL_SHAPES}
@@ -54,7 +61,6 @@ export const SidebarLeftShapes = () => {
         style={{
           display: "flex",
           flexDirection: "column",
-          gap: "8px",
           listStyle: "none",
           margin: 0,
           padding: 0,

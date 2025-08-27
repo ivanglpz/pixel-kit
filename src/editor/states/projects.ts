@@ -86,7 +86,7 @@ export const PROJECTS_ATOM = atom([
             ID: atom<string[]>([]),
             LIST: atom<ALL_SHAPES[]>([
               {
-                id: "09c9296a-ce4d-44d3-930f-f5ff8f1ce32b",
+                id: "6dec1d40-cc1e-4217-b53a-4991feb3cf87",
                 tool: "GROUP",
                 pageId: "8eb9cfc3-023f-4204-a745-3d5347d1f057",
                 state: atom({
@@ -146,7 +146,7 @@ export const PROJECTS_ATOM = atom([
 
                 children: atom([
                   {
-                    id: "09c9296a-ce4d-44d3-930f-f5ff8f1ce32b",
+                    id: "c73a53c1-5392-4159-aa33-0857e9b4d2e6",
                     tool: "GROUP",
                     pageId: "8eb9cfc3-023f-4204-a745-3d5347d1f057",
                     state: atom({
@@ -206,7 +206,7 @@ export const PROJECTS_ATOM = atom([
                     children: atom([]),
                   },
                   {
-                    id: "09c9296a-ce4d-44d3-930f-f5ff8f1ce32b",
+                    id: "117e35f9-1d44-42a6-839e-76bc9ca51e4b",
                     tool: "GROUP",
                     pageId: "8eb9cfc3-023f-4204-a745-3d5347d1f057",
                     state: atom({
@@ -267,7 +267,7 @@ export const PROJECTS_ATOM = atom([
                   },
 
                   {
-                    id: "09c9296a-ce4d-44d3-930f-f5ff8f1ce32b",
+                    id: "5d6e3538-1f94-4383-b2e1-4f14c89318b0",
                     tool: "GROUP",
                     pageId: "8eb9cfc3-023f-4204-a745-3d5347d1f057",
                     state: atom({
