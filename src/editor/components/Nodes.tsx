@@ -1,6 +1,6 @@
 import { iconsWithTools } from "@/assets";
 import { css } from "@stylespixelkit/css";
-import { Reorder } from "framer-motion";
+import { Reorder, useDragControls } from "framer-motion";
 import { useAtom, useSetAtom } from "jotai";
 import {
   ChevronDown,
@@ -8,10 +8,11 @@ import {
   DotIcon,
   Eye,
   EyeClosed,
+  GripVertical,
   Lock,
   Unlock,
 } from "lucide-react";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { constants } from "../constants/color";
 import { ADD_SHAPE_ID_ATOM } from "../states/shape";
 import { ALL_SHAPES } from "../states/shapes";
@@ -26,6 +27,42 @@ type NodeProps = {
   };
 };
 
+type DraggableNodeItemProps = {
+  childItem: ALL_SHAPES;
+  childOptions: {
+    isLockedByParent?: boolean;
+    isHiddenByParent?: boolean;
+  };
+};
+
+export const DraggableNodeItem = ({
+  childItem,
+  childOptions,
+}: DraggableNodeItemProps) => {
+  const childDragControls = useDragControls();
+
+  return (
+    <Reorder.Item
+      key={childItem.id}
+      value={childItem}
+      dragListener={false} // Deshabilitamos el listener automático
+      dragControls={childDragControls} // Usamos controles manuales
+      style={{
+        borderRadius: "6px",
+        userSelect: "none",
+      }}
+      whileDrag={{
+        scale: 1.02,
+        boxShadow: "0px 3px 10px rgba(0,0,0,0.15)",
+        zIndex: 1000,
+        cursor: "grabbing",
+      }}
+    >
+      <Nodes shape={childItem} options={childOptions} />
+    </Reorder.Item>
+  );
+};
+
 export const Nodes = ({ shape: item, options = {} }: NodeProps) => {
   const [shape, setShape] = useAtom(item.state);
   const [shapeId, setShapeId] = useAtom(ADD_SHAPE_ID_ATOM);
@@ -35,6 +72,9 @@ export const Nodes = ({ shape: item, options = {} }: NodeProps) => {
   const [isExpanded, setIsExpanded] = useState(true);
   const [isHovered, setIsHovered] = useState(false);
   const setUpdateUndoRedo = useSetAtom(UPDATE_UNDO_REDO);
+
+  // Drag controls para mejor manejo de eventos
+  const dragControls = useDragControls();
 
   // Determinar si este elemento está bloqueado por herencia
   const isLockedByParent = options.isLockedByParent || false;
@@ -48,12 +88,15 @@ export const Nodes = ({ shape: item, options = {} }: NodeProps) => {
 
   const [children, setChildren] = useAtom(item.children);
 
-  const handleReorder = (newOrder: typeof children) => {
-    // Actualizar el orden de los shapes
-    setChildren(newOrder);
-    // Opcional: registrar en undo/redo
-    setUpdateUndoRedo();
-  };
+  const handleReorder = useCallback(
+    (newOrder: typeof children) => {
+      // Actualizar el orden de los shapes
+      setChildren(newOrder);
+      // Opcional: registrar en undo/redo
+      setUpdateUndoRedo();
+    },
+    [setChildren, setUpdateUndoRedo]
+  );
 
   // Función para manejar el toggle de isLocked
   const handleLockToggle = () => {
@@ -77,7 +120,7 @@ export const Nodes = ({ shape: item, options = {} }: NodeProps) => {
 
   return (
     <>
-      <div
+      <section
         id={shape.id + ` ${shape.tool}`}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
@@ -88,7 +131,7 @@ export const Nodes = ({ shape: item, options = {} }: NodeProps) => {
           fontSize: "sm",
           listStyle: "none",
           display: "grid",
-          gridTemplateColumns: "15px 15px 80px 50px",
+          gridTemplateColumns: "15px 15px 80px 50px 20px", // Agregamos columna para drag handle
           flexDirection: "row",
           alignItems: "center",
           justifyContent: "center",
@@ -104,12 +147,31 @@ export const Nodes = ({ shape: item, options = {} }: NodeProps) => {
             },
           },
           cursor: "pointer",
+          userSelect: "none", // Previene selección de texto durante drag
         })}
         onClick={() => {
           setTool("MOVE");
           setShapeId(shape?.id);
         }}
       >
+        {/* Drag Handle */}
+        <div
+          className={css({
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            cursor: "grab",
+            _active: {
+              cursor: "grabbing",
+            },
+          })}
+          onPointerDown={(e) => {
+            e.stopPropagation(); // Prevenir conflictos con el click del div padre
+            dragControls.start(e);
+          }}
+        >
+          <GripVertical size={14} opacity={isHovered ? 1 : 0.3} />
+        </div>
         {shape.tool === "GROUP" && children.length > 0 ? (
           <button
             onClick={(e) => {
@@ -249,23 +311,17 @@ export const Nodes = ({ shape: item, options = {} }: NodeProps) => {
             )}
           </div>
         </div>
-      </div>
-
+      </section>
       {children?.length > 0 && isExpanded && (
         <div
           style={{
-            marginLeft: "20px", // Indentación visual para mostrar jerarquía
+            marginLeft: "20px",
             marginTop: "4px",
           }}
-          // Prevenir propagación de eventos de drag del padre
-          onDragStart={(e) => e.stopPropagation()}
-          onDragOver={(e) => e.stopPropagation()}
-          onDrop={(e) => e.stopPropagation()}
         >
           <Reorder.Group
-            key={shape.id}
             axis="y"
-            values={children} // Usar el array completo de objetos
+            values={children}
             onReorder={handleReorder}
             style={{
               display: "flex",
@@ -275,28 +331,15 @@ export const Nodes = ({ shape: item, options = {} }: NodeProps) => {
               margin: 0,
               padding: 0,
             }}
+            // Mejoras de rendimiento
+            layoutScroll={false}
           >
             {children.map((childItem) => (
-              <Reorder.Item
+              <DraggableNodeItem
                 key={childItem.id}
-                value={childItem} // Pasar el objeto completo, igual que en el padre
-                style={{
-                  borderRadius: "6px",
-                  cursor: "grab",
-                  userSelect: "none",
-                }}
-                whileDrag={{
-                  scale: 1.02,
-                  boxShadow: "0px 3px 10px rgba(0,0,0,0.15)",
-                  zIndex: 1000,
-                }}
-                // Prevenir interferencia con el drag del padre
-                onDragStart={(e) => {
-                  e.stopPropagation();
-                }}
-              >
-                <Nodes shape={childItem} options={childOptions} />
-              </Reorder.Item>
+                childItem={childItem}
+                childOptions={childOptions}
+              />
             ))}
           </Reorder.Group>
         </div>
