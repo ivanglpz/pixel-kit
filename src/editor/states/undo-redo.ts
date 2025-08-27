@@ -1,20 +1,34 @@
 import { atom } from "jotai";
 import { v4 as uuidv4 } from "uuid";
+import { cloneDeep } from "../helpers/startEvent";
 import { IShape } from "../shapes/type.shape";
+import { PROJECT_ATOM } from "./projects";
 import { ADD_SHAPE_ID_ATOM } from "./shape";
 import ALL_SHAPES_ATOM, { ALL_SHAPES } from "./shapes";
 
-type UNDO_SHAPE = Omit<ALL_SHAPES, "state"> & {
+export type UNDO_SHAPE = Omit<ALL_SHAPES, "state"> & {
   state: IShape;
 };
-type UNDO_REDO_PROPS = {
+export type UNDO_REDO_PROPS = {
   id: string;
   type: "CREATE" | "UPDATE" | "DELETE" | "INITIAL" | "CLEAR_ALL";
   shapes: UNDO_SHAPE[];
 };
 
-export const COUNT_UNDO_REDO = atom<number>(0);
-export const LIST_UNDO_REDO = atom<UNDO_REDO_PROPS[]>([]);
+export const COUNT_UNDO_REDO = atom(
+  (get) => get(get(PROJECT_ATOM).UNDOREDO.COUNT_UNDO_REDO),
+  (_get, _set, newTool: number) => {
+    const toolAtom = _get(PROJECT_ATOM).UNDOREDO.COUNT_UNDO_REDO;
+    _set(toolAtom, newTool);
+  }
+);
+export const LIST_UNDO_REDO = atom(
+  (get) => get(get(PROJECT_ATOM).UNDOREDO.LIST_UNDO_REDO),
+  (_get, _set, newTool: UNDO_REDO_PROPS[]) => {
+    const toolAtom = _get(PROJECT_ATOM).UNDOREDO.LIST_UNDO_REDO;
+    _set(toolAtom, newTool);
+  }
+);
 
 export const NEW_UNDO_REDO = atom(
   null,
@@ -25,7 +39,12 @@ export const NEW_UNDO_REDO = atom(
     // Truncar cualquier redo que exista más allá del puntero actual
     const newList = list.slice(0, count);
 
-    const newUndo: UNDO_REDO_PROPS = { ...args, id: uuidv4(), type: args.type };
+    const newUndo: UNDO_REDO_PROPS = {
+      ...args,
+      id: uuidv4(),
+      type: args.type,
+      shapes: args?.shapes?.map((e) => cloneDeep(e)),
+    };
     // Agregar el nuevo registro
     set(LIST_UNDO_REDO, [...newList, newUndo]);
 
@@ -73,7 +92,7 @@ export const REDO_ATOM = atom(null, (get, set) => {
       for (const shape of action.shapes) {
         const newAllShape: ALL_SHAPES = {
           ...shape,
-          state: atom(shape.state as IShape),
+          state: atom(cloneDeep(shape.state) as IShape),
         };
 
         newShapes = [
@@ -104,7 +123,7 @@ export const REDO_ATOM = atom(null, (get, set) => {
         if (!updated) return s;
         return {
           ...s,
-          state: atom(updated.state as IShape),
+          state: atom(cloneDeep(updated.state) as IShape),
         };
       });
       set(ALL_SHAPES_ATOM, newShapes);

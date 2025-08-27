@@ -8,6 +8,7 @@ import { INITIAL_RENDER_IMAGE, IRENDER_IMAGE } from "./image";
 import { IPage } from "./pages";
 import { ALL_SHAPES, WithInitialValue } from "./shapes";
 import { IKeyTool } from "./tool";
+import { UNDO_REDO_PROPS } from "./undo-redo";
 
 export type IPROJECT = {
   ID: string;
@@ -22,6 +23,11 @@ export type IPROJECT = {
   SHAPE: {
     LIST: PrimitiveAtom<ALL_SHAPES[]> & WithInitialValue<ALL_SHAPES[]>;
     ID: PrimitiveAtom<string[]> & WithInitialValue<string[]>;
+  };
+  UNDOREDO: {
+    COUNT_UNDO_REDO: PrimitiveAtom<number> & WithInitialValue<number>;
+    LIST_UNDO_REDO: PrimitiveAtom<UNDO_REDO_PROPS[]> &
+      WithInitialValue<UNDO_REDO_PROPS[]>;
   };
   EVENT: PrimitiveAtom<IStageEvents> & WithInitialValue<IStageEvents>;
   CLIP: {
@@ -45,6 +51,10 @@ export const PROJECTS_ATOM = atom([
     MODE_ATOM: atom<MODE>("DESIGN_MODE"),
     TOOL: atom<IKeyTool>("MOVE"),
     PAUSE_MODE: atom<boolean>(false),
+    UNDOREDO: {
+      COUNT_UNDO_REDO: atom<number>(0),
+      LIST_UNDO_REDO: atom<UNDO_REDO_PROPS[]>([]),
+    },
     PAGE: {
       LIST: atom<IPage[]>([
         {
@@ -112,6 +122,10 @@ export const NEW_PROJECT = atom(null, (get, set) => {
       name: atom("Project"),
       MODE_ATOM: atom<MODE>("DESIGN_MODE"),
       TOOL: atom<IKeyTool>("MOVE"),
+      UNDOREDO: {
+        COUNT_UNDO_REDO: atom<number>(0),
+        LIST_UNDO_REDO: atom<UNDO_REDO_PROPS[]>([]),
+      },
       PAUSE_MODE: atom<boolean>(false),
       PAGE: {
         LIST: atom<IPage[]>([

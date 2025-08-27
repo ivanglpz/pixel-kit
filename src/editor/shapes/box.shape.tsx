@@ -83,7 +83,9 @@ const ShapeBox = memo(({ shape: item }: IShapeWithEvents) => {
             shapeEventDragMove(e, stageDimensions.width, stageDimensions.height)
           )
         }
-        onDragEnd={(e) => setBox(shapeEventDragStop(e))}
+        onDragEnd={(e) => {
+          setBox(shapeEventDragStop(e));
+        }}
         onTransform={(e) => {
           setBox({
             ...box,
