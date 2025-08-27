@@ -127,7 +127,8 @@ export const useEventStage = () => {
       if (!childrens) return;
       const layer = childrens?.find((e) => e?.attrs?.id === "layer-shapes");
       const nodes = layer?.children?.filter?.(
-        (child) => child?.attrs?.id !== "transformer-editable"
+        (child) =>
+          child?.attrs?.id !== "transformer-editable" && child?.attrs?.listening
       );
       if (!nodes) return;
       const selected = nodes.filter((shape) =>
