@@ -207,7 +207,7 @@ export const PROJECTS_ATOM = atom([
                             tool: "BOX",
                             state: atom({
                               id: "0ab7d473-6ec8-46e8-94c5-964ed32e8f80",
-                              parentId: "6dec1d40-cc1e-4217-b53a-4991feb3cf87",
+                              parentId: "7fed5f8d-4367-46f8-aa83-152cd822ceca",
                               x: 10,
                               y: 10,
                               tool: "BOX",
