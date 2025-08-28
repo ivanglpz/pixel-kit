@@ -4,7 +4,7 @@ import { UPDATE_UNDO_REDO } from "@/editor/states/undo-redo";
 import { css } from "@stylespixelkit/css";
 import { Reorder, useDragControls } from "framer-motion";
 import { useAtom, useSetAtom } from "jotai";
-import { Box } from "lucide-react";
+import { Folders, Trash } from "lucide-react";
 import { ContextMenu, useContextMenu } from "../components/context-menu";
 
 // ✅ Componente wrapper para elementos de nivel superior
@@ -59,9 +59,16 @@ export const SidebarLeftShapes = () => {
         id={"sidebar-left-shapes"}
         options={[
           {
-            label: "Option 1",
-            icon: <Box size={14} />,
+            label: "Move to root",
+            icon: <Folders size={14} />,
             onClick: () => alert("AFUERA"),
+            isEnabled: true,
+          },
+          {
+            label: "Clear All",
+            icon: <Trash size={14} />,
+            onClick: () => alert("AFUERA"),
+            isEnabled: true,
           },
         ]}
       />

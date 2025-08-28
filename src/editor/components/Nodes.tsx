@@ -3,14 +3,16 @@ import { css } from "@stylespixelkit/css";
 import { DragControls, Reorder, useDragControls } from "framer-motion";
 import { useAtom, useSetAtom } from "jotai";
 import {
-  Box,
   ChevronDown,
   ChevronRight,
   DotIcon,
   Eye,
   EyeClosed,
+  FolderCog,
   GripVertical,
+  Group,
   Lock,
+  Trash,
   Unlock,
 } from "lucide-react";
 import { useCallback, useState } from "react";
@@ -142,21 +144,26 @@ export const Nodes = ({
         id={shape.id}
         options={[
           {
-            label: "Option 1",
-            icon: <Box size={14} />,
+            label: "Move to Group",
+            icon: <Group size={14} />,
             onClick: () => alert("Option 1 clicked" + shape.id),
+            isEnabled:
+              shape.tool === "GROUP" &&
+              shapeId.filter((shp) => shp.id !== shape.id)?.length > 0,
           },
           {
-            label: "Option 2",
-            icon: <Box size={14} />,
+            label: "Rename",
+            icon: <FolderCog size={14} />,
 
-            onClick: () => alert("Option 2 clicked"),
+            onClick: () => setShow(true),
+            isEnabled: true,
           },
           {
-            label: "Option 3",
-            icon: <Box size={14} />,
+            label: "Delete",
+            icon: <Trash size={14} />,
 
             onClick: () => alert("Option 3 clicked"),
+            isEnabled: true,
           },
         ]}
       />
@@ -263,7 +270,6 @@ export const Nodes = ({
               className={css({
                 backgroundColor: "transparent",
                 fontSize: "x-small",
-                border: "none",
               })}
               onFocus={() => setPause(true)}
               onBlur={() => setPause(false)}

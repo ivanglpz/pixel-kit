@@ -6,6 +6,8 @@ export interface ContextMenuOption {
   icon: ReactNode;
   label: string;
   onClick: () => void;
+  isEnabled: boolean;
+  style?: "default" | "danger";
 }
 
 interface ContextMenuProps {
@@ -63,7 +65,7 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({ options, id }) => {
           ref={menuRef}
           style={{
             position: "absolute",
-            top: position.y,
+            top: position.y - 20,
             left: position.x,
             zIndex: 1000,
           }}
@@ -80,35 +82,37 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({ options, id }) => {
           })}
           onClick={(e) => e.stopPropagation()}
         >
-          {options.map((option, index) => (
-            <button
-              key={index}
-              onClick={() => handleOptionClick(option.onClick)}
-              className={css({
-                padding: "md",
-                cursor: "pointer",
-                display: "grid",
-                borderRadius: "4",
-                _hover: { backgroundColor: "bg.elevated" },
-                gridTemplateColumns: "15px 1fr",
-                alignItems: "center",
-                gap: "md",
-              })}
-            >
-              <div
+          {options
+            ?.filter((e) => e?.isEnabled)
+            .map((option, index) => (
+              <button
+                key={index}
+                onClick={() => handleOptionClick(option.onClick)}
                 className={css({
-                  display: "flex",
-                  justifyContent: "center",
+                  padding: "md",
+                  cursor: "pointer",
+                  display: "grid",
+                  borderRadius: "4",
+                  _hover: { backgroundColor: "bg.elevated" },
+                  gridTemplateColumns: "15px 1fr",
                   alignItems: "center",
+                  gap: "md",
                 })}
               >
-                {option.icon}
-              </div>
-              <div className={css({ display: "flex" })}>
-                <p className={css({ fontSize: "10px" })}>{option.label}</p>
-              </div>
-            </button>
-          ))}
+                <div
+                  className={css({
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                  })}
+                >
+                  {option.icon}
+                </div>
+                <div className={css({ display: "flex" })}>
+                  <p className={css({ fontSize: "10px" })}>{option.label}</p>
+                </div>
+              </button>
+            ))}
         </div>
       )}
     </>
