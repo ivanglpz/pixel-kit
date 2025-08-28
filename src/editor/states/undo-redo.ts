@@ -94,19 +94,6 @@ export const REDO_ATOM = atom(null, (get, set) => {
       const currentShapes = get(ALL_SHAPES_ATOM);
       let newShapes = [...currentShapes];
 
-      // for (const shape of action.shapes) {
-      //   const newAllShape: ALL_SHAPES = {
-      //     ...shape,
-      //     state: atom(cloneDeep(shape.state) as IShape),
-      //   };
-
-      //   newShapes = [
-      //     ...newShapes.slice(0, shape.position),
-      //     newAllShape,
-      //     ...newShapes.slice(shape.position),
-      //   ];
-      // }
-
       set(ALL_SHAPES_ATOM, newShapes);
       break;
     }
@@ -237,18 +224,53 @@ export const UNDO_ATOM = atom(null, (get, set) => {
               })
             ),
           });
+        } else {
+          const FIND_SHAPE = currentShapes.find(
+            (w) => w.id === element.state.id
+          );
+          if (!FIND_SHAPE) continue;
+          console.log(FIND_SHAPE, "FIND_SHAPE");
+
+          const convertUndoShapeToAllShapes = (
+            undoShape: UNDO_SHAPE
+          ): ALL_SHAPES => {
+            return {
+              id: undoShape.id,
+              pageId: undoShape.pageId,
+              tool: undoShape.tool,
+              state: atom<IShape>({
+                ...undoShape.state,
+                children: atom(
+                  undoShape.state.children.map(convertUndoShapeToAllShapes)
+                ),
+              }),
+            } as ALL_SHAPES;
+          };
+          const result = element.state.children.map(
+            convertUndoShapeToAllShapes
+          );
+
+          // const payload: IShape = {
+          //   ...element.state,
+          //   children: atom(result),
+          // };
+          // set(FIND_SHAPE.state, {
+          //   ...get(FIND_SHAPE.state),
+          //   children: atom(
+          //     get(get(FIND_SHAPE.state).children).map((w) => {
+          //       if (w.id === payload.id) {
+          //         return {
+          //           ...w,
+          //           state: atom(payload),
+          //         };
+          //       }
+          //       return w;
+          //     })
+          //   ),
+          // });
         }
       }
 
-      // const newShapes = currentShapes.map((s) => {
-      //   const old = action.shapes.find((u) => u.id === s.id);
-      //   if (!old) return s;
-      //   return {
-      //     ...old,
-      //     state: atom(cloneDeep(old.state) as IShape),
-      //   };
-      // });
-      // set(ALL_SHAPES_ATOM, newShapes);
       break;
     }
 
