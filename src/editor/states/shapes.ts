@@ -74,7 +74,6 @@ export const DELETE_SHAPES_ATOM = atom(null, (get, set) => {
   const selected = currentShapes.filter((e) =>
     shapesSelected.some((w) => w.id === e.id)
   );
-  console.log(selected, "selected");
 
   // registrar acción de tipo UPDATE
   set(NEW_UNDO_REDO, {
