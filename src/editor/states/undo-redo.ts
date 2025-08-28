@@ -170,12 +170,61 @@ export const UNDO_ATOM = atom(null, (get, set) => {
     }
 
     case "UPDATE": {
-      const revertedShapes = currentShapes.map((s) => {
-        const update = action.shapes.find((u) => u.id === s.id);
-        if (!update) return s;
-        return convertUndoShapeToAllShapes(update);
-      });
-      set(ALL_SHAPES_ATOM, revertedShapes);
+      const currentShapes = get(PLANE_SHAPES_ATOM);
+      console.log(action, "action");
+
+      for (const element of action.shapes) {
+        if (element.state.parentId) {
+          const FIND_SHAPE = currentShapes.find(
+            (w) => w.id === element.state.parentId
+          );
+          if (!FIND_SHAPE) continue;
+
+          const convertUndoShapeToAllShapes = (
+            undoShape: UNDO_SHAPE
+          ): ALL_SHAPES => {
+            return {
+              id: undoShape.id,
+              pageId: undoShape.pageId,
+              tool: undoShape.tool,
+              state: atom<IShape>({
+                ...undoShape.state,
+                children: atom(
+                  undoShape.state.children.map(convertUndoShapeToAllShapes)
+                ),
+              }),
+            } as ALL_SHAPES;
+          };
+          const result = element.state.children.map(
+            convertUndoShapeToAllShapes
+          );
+
+          const payload: IShape = {
+            ...element.state,
+            children: atom(result),
+          };
+
+          console.log(FIND_SHAPE, "FIND_SHAPE");
+
+          console.log(payload, "payload");
+
+          set(FIND_SHAPE.state, {
+            ...get(FIND_SHAPE.state),
+            children: atom(
+              get(get(FIND_SHAPE.state).children).map((w) => {
+                if (w.id === payload.id) {
+                  return {
+                    ...w,
+                    state: atom(payload),
+                  };
+                }
+                return w;
+              })
+            ),
+          });
+        }
+      }
+
       break;
     }
 
