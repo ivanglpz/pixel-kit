@@ -18,7 +18,7 @@ import {
 import { useCallback, useState } from "react";
 import { constants } from "../constants/color";
 import { SHAPE_IDS_ATOM } from "../states/shape";
-import { ALL_SHAPES } from "../states/shapes";
+import { ALL_SHAPES, MOVE_SHAPES_BY_ID } from "../states/shapes";
 import TOOL_ATOM, { PAUSE_MODE_ATOM } from "../states/tool";
 import { UPDATE_UNDO_REDO } from "../states/undo-redo";
 import { ContextMenu, useContextMenu } from "./context-menu";
@@ -86,6 +86,8 @@ export const Nodes = ({
   const [isHovered, setIsHovered] = useState(false);
   const setUpdateUndoRedo = useSetAtom(UPDATE_UNDO_REDO);
 
+  const setMove = useSetAtom(MOVE_SHAPES_BY_ID);
+
   const { open } = useContextMenu();
   // ✅ Usar controles externos si están disponibles, sino crear propios
   const dragControls = externalDragControls;
@@ -146,7 +148,7 @@ export const Nodes = ({
           {
             label: "Move to Group",
             icon: <Group size={14} />,
-            onClick: () => alert("Option 1 clicked" + shape.id),
+            onClick: () => setMove(shape.id),
             isEnabled:
               shape.tool === "GROUP" &&
               shapeId.filter((shp) => shp.id !== shape.id)?.length > 0,

@@ -82,6 +82,95 @@ export const DELETE_SHAPES_ATOM = atom(null, (get, set) => {
   });
 });
 
+export const MOVE_SHAPES_BY_ID = atom(null, (get, set, args: string) => {
+  const currentShapes = get(PLANE_SHAPES_ATOM);
+  const shapesSelected = get(SHAPE_IDS_ATOM);
+  const selectedShapes = currentShapes.filter((w) =>
+    shapesSelected.some((e) => e.id === w.id)
+  );
+  const FIND_SHAPE = currentShapes.find((s) => s.id === args);
+  if (!FIND_SHAPE) return;
+
+  const convertUndoShapeToAllShapes = (undoShape: ALL_SHAPES): ALL_SHAPES => {
+    return {
+      id: undoShape.id,
+      pageId: undoShape.pageId,
+      tool: undoShape.tool,
+      state: atom<IShape>({
+        ...get(undoShape.state),
+        parentId: get(FIND_SHAPE.state).parentId,
+        children: atom(
+          get(get(undoShape.state).children).map(convertUndoShapeToAllShapes)
+        ),
+      }),
+    } as ALL_SHAPES;
+  };
+  const result = selectedShapes.map(convertUndoShapeToAllShapes);
+
+  set(FIND_SHAPE.state, {
+    ...get(FIND_SHAPE.state),
+    children: atom(get(get(FIND_SHAPE.state).children).concat(result)),
+  });
+
+  for (const element of shapesSelected) {
+    if (element.parentId) {
+      const FIND_SHAPE = currentShapes.find((r) => r.id === element.parentId);
+      if (!FIND_SHAPE) continue;
+
+      set(FIND_SHAPE.state, {
+        ...get(FIND_SHAPE.state),
+        children: atom(
+          get(get(FIND_SHAPE.state).children).filter((u) => u.id !== element.id)
+        ),
+      });
+    } else {
+      set(
+        ALL_SHAPES_ATOM,
+        get(ALL_SHAPES_ATOM).filter((e) => e.id !== element.id)
+      );
+    }
+  }
+});
+export const MOVE_SHAPES_TO_ROOT = atom(null, (get, set) => {
+  const currentShapes = get(PLANE_SHAPES_ATOM);
+  const shapesSelected = get(SHAPE_IDS_ATOM);
+  const selectedShapes = currentShapes.filter((w) =>
+    shapesSelected.some((e) => e.id === w.id)
+  );
+
+  const convertUndoShapeToAllShapes = (undoShape: ALL_SHAPES): ALL_SHAPES => {
+    return {
+      id: undoShape.id,
+      pageId: undoShape.pageId,
+      tool: undoShape.tool,
+      state: atom<IShape>({
+        ...get(undoShape.state),
+        parentId: null,
+        children: atom(
+          get(get(undoShape.state).children).map(convertUndoShapeToAllShapes)
+        ),
+      }),
+    } as ALL_SHAPES;
+  };
+  const result = selectedShapes.map(convertUndoShapeToAllShapes);
+
+  set(ALL_SHAPES_ATOM, get(ALL_SHAPES_ATOM).concat(result));
+
+  for (const element of shapesSelected) {
+    if (element.parentId) {
+      const FIND_SHAPE = currentShapes.find((r) => r.id === element.parentId);
+      if (!FIND_SHAPE) continue;
+
+      set(FIND_SHAPE.state, {
+        ...get(FIND_SHAPE.state),
+        children: atom(
+          get(get(FIND_SHAPE.state).children).filter((u) => u.id !== element.id)
+        ),
+      });
+    }
+  }
+});
+
 export const CREATE_SHAPE_ATOM = atom(null, (get, set, args: IShape) => {
   if (!args || !args?.id) return;
   const newAllShape: ALL_SHAPES = {

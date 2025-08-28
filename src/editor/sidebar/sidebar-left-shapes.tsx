@@ -1,5 +1,5 @@
 import { Nodes } from "@/editor/components/Nodes";
-import ALL_SHAPES_ATOM from "@/editor/states/shapes";
+import ALL_SHAPES_ATOM, { MOVE_SHAPES_TO_ROOT } from "@/editor/states/shapes";
 import { UPDATE_UNDO_REDO } from "@/editor/states/undo-redo";
 import { css } from "@stylespixelkit/css";
 import { Reorder, useDragControls } from "framer-motion";
@@ -35,7 +35,7 @@ const DraggableRootItem = ({ item }: { item: any }) => {
 export const SidebarLeftShapes = () => {
   const [ALL_SHAPES, SET_ALL_SHAPES] = useAtom(ALL_SHAPES_ATOM);
   const setUpdateUndoRedo = useSetAtom(UPDATE_UNDO_REDO);
-
+  const setmove = useSetAtom(MOVE_SHAPES_TO_ROOT);
   const handleReorder = (newOrder: typeof ALL_SHAPES) => {
     SET_ALL_SHAPES(newOrder);
     setUpdateUndoRedo();
@@ -61,7 +61,7 @@ export const SidebarLeftShapes = () => {
           {
             label: "Move to root",
             icon: <Folders size={14} />,
-            onClick: () => alert("AFUERA"),
+            onClick: () => setmove(),
             isEnabled: true,
           },
           {
