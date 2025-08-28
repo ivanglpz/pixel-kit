@@ -1,47 +1,158 @@
-import { Reorder } from "framer-motion";
-import React, { useState } from "react";
+import { css } from "@stylespixelkit/css";
+import { Box } from "lucide-react";
+import React, { MouseEvent, ReactNode, useState } from "react";
 
-interface Item {
-  id: string;
-  content: string;
+import { useEffect, useRef } from "react";
+
+export interface ContextMenuOption {
+  icon: ReactNode;
+  label: string;
+  onClick: () => void;
 }
 
-const initialItems: Item[] = [
-  { id: "1", content: "Item 1" },
-  { id: "2", content: "Item 2" },
-  { id: "3", content: "Item 3" },
-  { id: "4", content: "Item 4" },
-];
+interface ContextMenuProps {
+  options: ContextMenuOption[];
+  children: ReactNode;
+}
 
-const VerticalReorderList: React.FC = () => {
-  const [items, setItems] = useState<Item[]>(initialItems);
+const ContextMenu: React.FC<ContextMenuProps> = ({ options, children }) => {
+  const [menuPos, setMenuPos] = useState<{ x: number; y: number } | null>(null);
+  const menuRef = useRef<HTMLDivElement | null>(null);
+
+  const handleContextMenu = (e: MouseEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    setMenuPos({ x: e.clientX, y: e.clientY });
+  };
+
+  const handleClickOutside = (e: MouseEvent<Document>) => {
+    if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+      setMenuPos(null);
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener("click", handleClickOutside as any);
+    return () => {
+      document.removeEventListener("click", handleClickOutside as any);
+    };
+  }, []);
+
+  const handleOptionClick = (onClick: () => void) => {
+    onClick();
+    setMenuPos(null);
+  };
 
   return (
-    <div style={{ width: "300px", margin: "20px auto" }}>
-      <Reorder.Group
-        axis="y"
-        values={items}
-        onReorder={setItems}
-        style={{ display: "flex", flexDirection: "column", gap: "8px" }}
-      >
-        {items.map((item) => (
-          <Reorder.Item
-            key={item.id}
-            value={item}
-            style={{
-              padding: "12px",
-              backgroundColor: "#f0f0f0",
-              borderRadius: "6px",
-              cursor: "grab",
-              boxShadow: "0 1px 3px rgba(0,0,0,0.2)",
-            }}
-          >
-            {item.content}
-          </Reorder.Item>
-        ))}
-      </Reorder.Group>
+    <div
+      onContextMenu={handleContextMenu}
+      style={{ width: "100%", height: "100%" }}
+    >
+      {children}
+
+      {menuPos && (
+        <div
+          ref={menuRef}
+          style={{
+            position: "absolute",
+            top: menuPos.y,
+            left: menuPos.x,
+            zIndex: 1000,
+          }}
+          className={css({
+            padding: "md",
+            gap: "md",
+            display: "flex",
+            flexDirection: "column",
+            backgroundColor: "bg",
+            borderRadius: "lg",
+            border: "container",
+            width: 120,
+            maxHeight: 140,
+            height: "100%",
+          })}
+          onClick={(e) => e.stopPropagation()} // evita que se cierre al hacer click dentro
+        >
+          {options.map((option, index) => (
+            <button
+              key={index}
+              onClick={() => handleOptionClick(option.onClick)}
+              className={css({
+                padding: "md",
+                cursor: "pointer",
+                display: "grid",
+                borderRadius: "4",
+                _hover: {
+                  backgroundColor: "bg.elevated",
+                },
+                gridTemplateColumns: "15px 1fr",
+                alignItems: "center",
+                gap: "md",
+              })}
+            >
+              <div
+                className={css({
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                })}
+              >
+                {option.icon}
+              </div>
+              <div
+                className={css({
+                  display: "flex",
+                })}
+              >
+                <p
+                  className={css({
+                    fontSize: "10px",
+                  })}
+                >
+                  {option.label}
+                </p>
+              </div>
+            </button>
+          ))}
+        </div>
+      )}
     </div>
   );
 };
 
-export default VerticalReorderList;
+const App: React.FC = () => {
+  const options: ContextMenuOption[] = [
+    {
+      label: "Option 1",
+      icon: <Box size={14} />,
+      onClick: () => alert("Option 1 clicked"),
+    },
+    {
+      label: "Option 2",
+      icon: <Box size={14} />,
+
+      onClick: () => alert("Option 2 clicked"),
+    },
+    {
+      label: "Option 3",
+      icon: <Box size={14} />,
+
+      onClick: () => alert("Option 3 clicked"),
+    },
+  ];
+
+  return (
+    <div
+      style={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+      }}
+    >
+      <ContextMenu options={options}>
+        <p>Right-click anywhere in this area</p>
+      </ContextMenu>
+    </div>
+  );
+};
+
+export default App;
