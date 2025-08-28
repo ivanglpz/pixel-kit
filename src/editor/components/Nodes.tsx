@@ -199,7 +199,7 @@ export const Nodes = ({
           },
           cursor: "pointer",
           userSelect: "none",
-          width: 235,
+          width: 240,
         })}
         onClick={(e) => {
           e.preventDefault(); // puedes dejar esto si quieres
