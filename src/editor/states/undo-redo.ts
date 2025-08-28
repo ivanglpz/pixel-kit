@@ -104,7 +104,7 @@ export const REDO_ATOM = atom(null, (get, set) => {
   const action = list[count];
   if (!action) return;
 
-  const currentShapes = get(ALL_SHAPES_ATOM);
+  const currentShapes = get(PLANE_SHAPES_ATOM);
 
   switch (action.type) {
     case "CREATE": {
@@ -149,7 +149,7 @@ export const UNDO_ATOM = atom(null, (get, set) => {
   const action = get(LIST_UNDO_REDO)[count - 1];
   if (!action) return;
 
-  const currentShapes = get(ALL_SHAPES_ATOM);
+  const currentShapes = get(PLANE_SHAPES_ATOM);
 
   switch (action.type) {
     case "CREATE": {
