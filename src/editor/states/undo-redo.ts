@@ -169,10 +169,6 @@ export const REDO_ATOM = atom(null, (get, set) => {
             children: atom(result),
           };
 
-          console.log(FIND_SHAPE, "FIND_SHAPE");
-
-          console.log(payload, "payload");
-
           set(FIND_SHAPE.state, {
             ...get(FIND_SHAPE.state),
             children: atom(
@@ -191,7 +187,6 @@ export const REDO_ATOM = atom(null, (get, set) => {
           const FIND_SHAPE = currentShapes.find(
             (w) => w.id === element.state.id
           );
-          console.log(FIND_SHAPE, "FIND_SHAPE PARENT ID NO EXISTE");
 
           if (!FIND_SHAPE) continue;
 
@@ -218,11 +213,6 @@ export const REDO_ATOM = atom(null, (get, set) => {
             ...element.state,
             children: atom(result),
           };
-
-          console.log(FIND_SHAPE, "FIND_SHAPE");
-
-          console.log(payload, "payload");
-          console.log(element.state, "element.state");
 
           set(FIND_SHAPE.state, {
             ...cloneDeep(element.state),
@@ -296,6 +286,51 @@ export const UNDO_ATOM = atom(null, (get, set) => {
           const FIND_SHAPE = currentShapes.find(
             (w) => w.id === element.state.parentId
           );
+          if (!FIND_SHAPE) continue;
+
+          const convertUndoShapeToAllShapes = (
+            undoShape: UNDO_SHAPE
+          ): ALL_SHAPES => {
+            return {
+              id: undoShape.id,
+              pageId: undoShape.pageId,
+              tool: undoShape.tool,
+              state: atom<IShape>({
+                ...undoShape.state,
+                children: atom(
+                  undoShape.state.children.map(convertUndoShapeToAllShapes)
+                ),
+              }),
+            } as ALL_SHAPES;
+          };
+          const result = element.state.children.map(
+            convertUndoShapeToAllShapes
+          );
+
+          const payload: IShape = {
+            ...element.state,
+            children: atom(result),
+          };
+
+          set(FIND_SHAPE.state, {
+            ...cloneDeep(element.state),
+            children: atom(
+              get(get(FIND_SHAPE.state).children).map((w) => {
+                if (w.id === payload.id) {
+                  return {
+                    ...w,
+                    state: atom(payload),
+                  };
+                }
+                return w;
+              })
+            ),
+          });
+        } else {
+          const FIND_SHAPE = currentShapes.find(
+            (w) => w.id === element.state.id
+          );
+
           if (!FIND_SHAPE) continue;
 
           const convertUndoShapeToAllShapes = (
