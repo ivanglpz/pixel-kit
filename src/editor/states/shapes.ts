@@ -50,8 +50,37 @@ export const PLANE_SHAPES_ATOM = atom((get) => {
 });
 
 export const DELETE_SHAPES_ATOM = atom(null, (get, set) => {
-  const currentShapes = get(ALL_SHAPES_ATOM);
+  const currentShapes = get(PLANE_SHAPES_ATOM);
   const shapesSelected = get(SHAPE_IDS_ATOM);
+
+  for (const element of shapesSelected) {
+    if (element.parentId) {
+      const FIND_SHAPE = currentShapes.find((w) => w.id === element.parentId);
+
+      if (!FIND_SHAPE) continue;
+      set(FIND_SHAPE.state, {
+        ...get(FIND_SHAPE.state),
+        children: atom(
+          get(get(FIND_SHAPE.state).children).filter((e) => e.id !== element.id)
+        ),
+      });
+    } else {
+      set(
+        ALL_SHAPES_ATOM,
+        get(ALL_SHAPES_ATOM).filter((e) => e.id !== element.id)
+      );
+    }
+  }
+  const selected = currentShapes.filter((e) =>
+    shapesSelected.some((w) => w.id === e.id)
+  );
+  console.log(selected, "selected");
+
+  // registrar acción de tipo UPDATE
+  set(NEW_UNDO_REDO, {
+    type: "DELETE",
+    shapes: selected,
+  });
 });
 
 export const CREATE_SHAPE_ATOM = atom(null, (get, set, args: IShape) => {
