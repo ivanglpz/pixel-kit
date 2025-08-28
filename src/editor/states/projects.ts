@@ -101,7 +101,7 @@ export const PROJECTS_ATOM = atom([
                   isLocked: false,
                   fillContainerHeight: false,
                   fillContainerWidth: false,
-                  label: "GROUP",
+                  label: "EL PADRE 1",
                   parentId: null,
                   rotation: 0,
                   opacity: 1,
@@ -160,7 +160,7 @@ export const PROJECTS_ATOM = atom([
                         isLocked: false,
                         fillContainerHeight: false,
                         fillContainerWidth: false,
-                        label: "GROUP",
+                        label: "EL PADRE 2",
                         rotation: 0,
                         opacity: 1,
                         fills: [
@@ -218,7 +218,7 @@ export const PROJECTS_ATOM = atom([
                               isLocked: false,
                               fillContainerHeight: false,
                               fillContainerWidth: false,
-                              label: "BOX",
+                              label: "EL HIJO",
                               rotation: 0,
                               opacity: 1,
                               fills: [
