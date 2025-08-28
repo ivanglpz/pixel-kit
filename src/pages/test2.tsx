@@ -67,8 +67,7 @@ const ContextMenu: React.FC<ContextMenuProps> = ({ options, children }) => {
             borderRadius: "lg",
             border: "container",
             width: 120,
-            maxHeight: 140,
-            height: "100%",
+            height: "auto",
           })}
           onClick={(e) => e.stopPropagation()} // evita que se cierre al hacer click dentro
         >
