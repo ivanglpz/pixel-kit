@@ -98,7 +98,7 @@ export const MOVE_SHAPES_BY_ID = atom(null, (get, set, args: string) => {
       tool: undoShape.tool,
       state: atom<IShape>({
         ...get(undoShape.state),
-        parentId: get(FIND_SHAPE.state).parentId,
+        parentId: get(FIND_SHAPE.state).id,
         children: atom(
           get(get(undoShape.state).children).map(convertUndoShapeToAllShapes)
         ),
@@ -132,10 +132,10 @@ export const MOVE_SHAPES_BY_ID = atom(null, (get, set, args: string) => {
   }
 });
 export const MOVE_SHAPES_TO_ROOT = atom(null, (get, set) => {
-  const currentShapes = get(PLANE_SHAPES_ATOM);
-  const shapesSelected = get(SHAPE_IDS_ATOM);
-  const selectedShapes = currentShapes.filter((w) =>
-    shapesSelected.some((e) => e.id === w.id)
+  const PLANE_SHAPES = get(PLANE_SHAPES_ATOM);
+  const SELECTED = get(SHAPE_IDS_ATOM);
+  const selectedShapes = PLANE_SHAPES.filter((w) =>
+    SELECTED.some((e) => e.id === w.id)
   );
 
   const convertUndoShapeToAllShapes = (undoShape: ALL_SHAPES): ALL_SHAPES => {
@@ -154,11 +154,10 @@ export const MOVE_SHAPES_TO_ROOT = atom(null, (get, set) => {
   };
   const result = selectedShapes.map(convertUndoShapeToAllShapes);
 
-  set(ALL_SHAPES_ATOM, get(ALL_SHAPES_ATOM).concat(result));
-
-  for (const element of shapesSelected) {
+  for (const element of SELECTED) {
     if (element.parentId) {
-      const FIND_SHAPE = currentShapes.find((r) => r.id === element.parentId);
+      const FIND_SHAPE = PLANE_SHAPES.find((r) => r.id === element.parentId);
+
       if (!FIND_SHAPE) continue;
 
       set(FIND_SHAPE.state, {
@@ -169,6 +168,9 @@ export const MOVE_SHAPES_TO_ROOT = atom(null, (get, set) => {
       });
     }
   }
+  // setTimeout(() => {
+  //   set(ALL_SHAPES_ATOM, get(ALL_SHAPES_ATOM).concat(result));
+  // }, 1);
 });
 
 export const CREATE_SHAPE_ATOM = atom(null, (get, set, args: IShape) => {
