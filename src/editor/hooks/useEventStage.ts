@@ -264,18 +264,16 @@ export const useEventStage = () => {
   const handleCreatingComplete = (payloads: typeof CURRENT_ITEM) => {
     const newShape = payloads.at(0);
     if (!newShape) return;
-    setTimeout(() => {
-      setShapeId({
-        id: newShape?.id,
-        parentId: newShape?.parentId,
-      });
-    }, 10);
 
     SET_CREATE(newShape);
 
-    SET_CLEAR_CITEM();
-
     if (TOOLS_BOX_BASED.includes(newShape.tool)) {
+      setTimeout(() => {
+        setShapeId({
+          id: newShape?.id,
+          parentId: newShape?.parentId,
+        });
+      }, 10);
       SET_EVENT_STAGE("IDLE");
       setTool("MOVE");
     }
@@ -287,6 +285,7 @@ export const useEventStage = () => {
       SET_EVENT_STAGE("CREATE");
       setTool("DRAW");
     }
+    SET_CLEAR_CITEM();
   };
 
   // ===== UTILITY FUNCTIONS =====

@@ -1,8 +1,7 @@
 import { atom } from "jotai";
 import { IShape } from "../shapes/type.shape";
-import { ALL_SHAPES } from "./shapes";
 
-const Initial: IShape = {
+const Initial: Omit<IShape, "children"> = {
   id: "559c1735-4e62-4c43-aa4c-246ec594ca06",
   x: 0,
   y: 0,
@@ -62,6 +61,5 @@ const Initial: IShape = {
   fontFamily: "Roboto",
   fontSize: 24,
   text: "",
-  children: atom([] as ALL_SHAPES[]),
 };
 export const DRAW_START_CONFIG_ATOM = atom(Initial);
