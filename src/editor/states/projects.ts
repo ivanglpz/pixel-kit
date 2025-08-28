@@ -20,11 +20,7 @@ export type IPROJECT = {
     LIST: PrimitiveAtom<IPage[]> & WithInitialValue<IPage[]>;
     ID: PrimitiveAtom<string> & WithInitialValue<string>;
   };
-  UNDOREDO: {
-    COUNT_UNDO_REDO: PrimitiveAtom<number> & WithInitialValue<number>;
-    LIST_UNDO_REDO: PrimitiveAtom<UNDO_REDO_PROPS[]> &
-      WithInitialValue<UNDO_REDO_PROPS[]>;
-  };
+
   EVENT: PrimitiveAtom<IStageEvents> & WithInitialValue<IStageEvents>;
   CLIP: {
     SHOW: PrimitiveAtom<boolean> & WithInitialValue<boolean>;
@@ -47,10 +43,7 @@ export const PROJECTS_ATOM = atom([
     MODE_ATOM: atom<MODE>("DESIGN_MODE"),
     TOOL: atom<IKeyTool>("MOVE"),
     PAUSE_MODE: atom<boolean>(false),
-    UNDOREDO: {
-      COUNT_UNDO_REDO: atom<number>(0),
-      LIST_UNDO_REDO: atom<UNDO_REDO_PROPS[]>([]),
-    },
+
     PAGE: {
       LIST: atom<IPage[]>([
         {
@@ -63,6 +56,10 @@ export const PROJECTS_ATOM = atom([
             ID: atom<IPageShapeIds[]>([]),
             LIST: atom<ALL_SHAPES[]>([]),
           },
+          UNDOREDO: {
+            COUNT_UNDO_REDO: atom<number>(0),
+            LIST_UNDO_REDO: atom<UNDO_REDO_PROPS[]>([]),
+          },
         },
         {
           id: "bc0631c9-e167-4cef-887c-4d6f9b4d8dc6",
@@ -73,6 +70,10 @@ export const PROJECTS_ATOM = atom([
           SHAPE: {
             ID: atom<IPageShapeIds[]>([]),
             LIST: atom<ALL_SHAPES[]>([]),
+          },
+          UNDOREDO: {
+            COUNT_UNDO_REDO: atom<number>(0),
+            LIST_UNDO_REDO: atom<UNDO_REDO_PROPS[]>([]),
           },
         },
         {
@@ -268,6 +269,10 @@ export const PROJECTS_ATOM = atom([
               // },
             ]),
           },
+          UNDOREDO: {
+            COUNT_UNDO_REDO: atom<number>(0),
+            LIST_UNDO_REDO: atom<UNDO_REDO_PROPS[]>([]),
+          },
         },
       ]),
       ID: atom<string>("8eb9cfc3-023f-4204-a745-3d5347d1f057"),
@@ -310,10 +315,7 @@ export const NEW_PROJECT = atom(null, (get, set) => {
       name: atom("Project"),
       MODE_ATOM: atom<MODE>("DESIGN_MODE"),
       TOOL: atom<IKeyTool>("MOVE"),
-      UNDOREDO: {
-        COUNT_UNDO_REDO: atom<number>(0),
-        LIST_UNDO_REDO: atom<UNDO_REDO_PROPS[]>([]),
-      },
+
       PAUSE_MODE: atom<boolean>(false),
       PAGE: {
         LIST: atom<IPage[]>([
@@ -327,6 +329,10 @@ export const NEW_PROJECT = atom(null, (get, set) => {
               ID: atom<IPageShapeIds[]>([]),
               LIST: atom<ALL_SHAPES[]>([]),
             },
+            UNDOREDO: {
+              COUNT_UNDO_REDO: atom<number>(0),
+              LIST_UNDO_REDO: atom<UNDO_REDO_PROPS[]>([]),
+            },
           },
           {
             id: uuidv4(),
@@ -338,6 +344,10 @@ export const NEW_PROJECT = atom(null, (get, set) => {
               ID: atom<IPageShapeIds[]>([]),
               LIST: atom<ALL_SHAPES[]>([]),
             },
+            UNDOREDO: {
+              COUNT_UNDO_REDO: atom<number>(0),
+              LIST_UNDO_REDO: atom<UNDO_REDO_PROPS[]>([]),
+            },
           },
           {
             id: PAGEUUID,
@@ -348,6 +358,10 @@ export const NEW_PROJECT = atom(null, (get, set) => {
             SHAPE: {
               ID: atom<IPageShapeIds[]>([]),
               LIST: atom<ALL_SHAPES[]>([]),
+            },
+            UNDOREDO: {
+              COUNT_UNDO_REDO: atom<number>(0),
+              LIST_UNDO_REDO: atom<UNDO_REDO_PROPS[]>([]),
             },
           },
         ]),
