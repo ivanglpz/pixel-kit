@@ -150,11 +150,27 @@ export const REDO_ATOM = atom(null, (get, set) => {
     }
 
     case "DELETE": {
-      const idsToDelete = action.shapes.map((s) => s.id);
-      set(
-        ALL_SHAPES_ATOM,
-        currentShapes.filter((s) => !idsToDelete.includes(s.id))
-      );
+      for (const element of action.shapes) {
+        if (element.state.parentId) {
+          const FIND_SHAPE = currentShapes.find(
+            (w) => w.id === element.state.parentId
+          );
+          if (!FIND_SHAPE) continue;
+          set(FIND_SHAPE.state, {
+            ...get(FIND_SHAPE.state),
+            children: atom(
+              get(get(FIND_SHAPE.state).children).filter(
+                (w) => w.id !== element.state.id
+              )
+            ),
+          });
+        } else {
+          set(
+            ALL_SHAPES_ATOM,
+            get(ALL_SHAPES_ATOM).filter((w) => w.id !== element.state.id)
+          );
+        }
+      }
       break;
     }
 
