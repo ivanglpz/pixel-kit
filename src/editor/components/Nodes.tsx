@@ -135,7 +135,7 @@ export const Nodes = ({
 
   return (
     <>
-      <section
+      <div
         id={shape.id + ` ${shape.tool}`}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
@@ -146,7 +146,7 @@ export const Nodes = ({
           listStyle: "none",
           display: "grid",
           padding: "md",
-          gridTemplateColumns: "10px 15px 15px 120px 50px",
+          gridTemplateColumns: "15px 15px 15px 120px 50px",
           gap: "4",
           flexDirection: "row",
           alignItems: "center",
@@ -328,44 +328,32 @@ export const Nodes = ({
             )}
           </div>
         </div>
-      </section>
+      </div>
 
       {/* ✅ Sección de children mejorada */}
       {children?.length > 0 && isExpanded && (
-        <div
+        <Reorder.Group
+          axis="y"
+          values={children}
+          onReorder={handleReorder}
           style={{
-            marginLeft: "15px",
+            display: "flex",
+            flexDirection: "column",
+            listStyle: "none",
+            margin: 0,
+            marginLeft: "20px",
+            padding: 0,
           }}
-          // ✅ Prevenir propagación de eventos de drag en el contenedor
-          onPointerDown={(e) => {
-            // Solo prevenir si el evento viene del contenedor mismo, no de los hijos
-            if (e.target === e.currentTarget) {
-              e.stopPropagation();
-            }
-          }}
+          layoutScroll={false}
         >
-          <Reorder.Group
-            axis="y"
-            values={children}
-            onReorder={handleReorder}
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              listStyle: "none",
-              margin: 0,
-              padding: 0,
-            }}
-            layoutScroll={false}
-          >
-            {children.map((childItem) => (
-              <DraggableNodeItem
-                key={childItem.id}
-                childItem={childItem}
-                childOptions={childOptions}
-              />
-            ))}
-          </Reorder.Group>
-        </div>
+          {children.map((childItem) => (
+            <DraggableNodeItem
+              key={childItem.id}
+              childItem={childItem}
+              childOptions={childOptions}
+            />
+          ))}
+        </Reorder.Group>
       )}
     </>
   );
