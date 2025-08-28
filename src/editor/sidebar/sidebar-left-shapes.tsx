@@ -4,7 +4,8 @@ import { UPDATE_UNDO_REDO } from "@/editor/states/undo-redo";
 import { css } from "@stylespixelkit/css";
 import { Reorder, useDragControls } from "framer-motion";
 import { useAtom, useSetAtom } from "jotai";
-import React from "react";
+import { Box } from "lucide-react";
+import { ContextMenu, useContextMenu } from "../components/context-menu";
 
 // ✅ Componente wrapper para elementos de nivel superior
 const DraggableRootItem = ({ item }: { item: any }) => {
@@ -40,18 +41,30 @@ export const SidebarLeftShapes = () => {
     setUpdateUndoRedo();
   };
 
-  const handleDropOutside = (e: React.DragEvent) => {
-    e.preventDefault();
-  };
+  const { open } = useContextMenu();
 
   return (
     <div
-      onDrop={handleDropOutside}
       onDragOver={(e) => e.preventDefault()}
       className={css({
         overflow: "scroll",
       })}
+      onContextMenu={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        open("sidebar-left-shapes", e.clientX, e.clientY);
+      }}
     >
+      <ContextMenu
+        id={"sidebar-left-shapes"}
+        options={[
+          {
+            label: "Option 1",
+            icon: <Box size={14} />,
+            onClick: () => alert("AFUERA"),
+          },
+        ]}
+      />
       <Reorder.Group
         axis="y"
         values={ALL_SHAPES}

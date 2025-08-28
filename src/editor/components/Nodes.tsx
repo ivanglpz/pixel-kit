@@ -3,6 +3,7 @@ import { css } from "@stylespixelkit/css";
 import { DragControls, Reorder, useDragControls } from "framer-motion";
 import { useAtom, useSetAtom } from "jotai";
 import {
+  Box,
   ChevronDown,
   ChevronRight,
   DotIcon,
@@ -18,6 +19,7 @@ import { SHAPE_IDS_ATOM } from "../states/shape";
 import { ALL_SHAPES } from "../states/shapes";
 import TOOL_ATOM, { PAUSE_MODE_ATOM } from "../states/tool";
 import { UPDATE_UNDO_REDO } from "../states/undo-redo";
+import { ContextMenu, useContextMenu } from "./context-menu";
 
 type NodeProps = {
   shape: ALL_SHAPES;
@@ -82,6 +84,7 @@ export const Nodes = ({
   const [isHovered, setIsHovered] = useState(false);
   const setUpdateUndoRedo = useSetAtom(UPDATE_UNDO_REDO);
 
+  const { open } = useContextMenu();
   // ✅ Usar controles externos si están disponibles, sino crear propios
   const dragControls = externalDragControls;
 
@@ -135,10 +138,37 @@ export const Nodes = ({
 
   return (
     <>
+      <ContextMenu
+        id={shape.id}
+        options={[
+          {
+            label: "Option 1",
+            icon: <Box size={14} />,
+            onClick: () => alert("Option 1 clicked" + shape.id),
+          },
+          {
+            label: "Option 2",
+            icon: <Box size={14} />,
+
+            onClick: () => alert("Option 2 clicked"),
+          },
+          {
+            label: "Option 3",
+            icon: <Box size={14} />,
+
+            onClick: () => alert("Option 3 clicked"),
+          },
+        ]}
+      />
       <div
         id={shape.id + ` ${shape.tool}`}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
+        onContextMenu={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          open(shape.id, e.clientX, e.clientY);
+        }}
         className={css({
           color: "text",
           height: 30,
