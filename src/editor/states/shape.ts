@@ -95,9 +95,7 @@ export const SHAPE_SELECTED_ATOM = atom((get) => {
   const shapeSelected = get(SHAPE_IDS_ATOM).at(0);
 
   const shape = get(PLANE_SHAPES_ATOM)?.find(
-    (e) =>
-      e?.id === shapeSelected?.id &&
-      get(e?.state).parentId === shapeSelected.parentId
+    (e) => e?.id === shapeSelected?.id
   );
 
   if (!shape || !shape.state) return null;

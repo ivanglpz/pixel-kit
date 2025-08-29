@@ -82,6 +82,8 @@ export const DELETE_SHAPES_ATOM = atom(null, (get, set) => {
   });
 });
 
+// ===== Funciones de movimiento actualizadas =====
+
 export const MOVE_SHAPES_BY_ID = atom(null, (get, set, args: string) => {
   const currentShapes = get(PLANE_SHAPES_ATOM);
   const shapesSelected = get(SHAPE_IDS_ATOM);
@@ -90,6 +92,9 @@ export const MOVE_SHAPES_BY_ID = atom(null, (get, set, args: string) => {
   );
   const FIND_SHAPE = currentShapes.find((s) => s.id === args);
   if (!FIND_SHAPE) return;
+
+  // Guardar estado anterior para undo/redo
+  const prevShapes = [...selectedShapes];
 
   // recrea un árbol fresco con atom nuevos
   const cloneShapeRecursive = (
@@ -140,6 +145,14 @@ export const MOVE_SHAPES_BY_ID = atom(null, (get, set, args: string) => {
       );
     }
   }
+
+  // Registrar la acción MOVE para undo/redo
+
+  set(NEW_UNDO_REDO, {
+    type: "MOVE",
+    shapes: result,
+    prevShapes: prevShapes,
+  });
 });
 
 export const MOVE_SHAPES_TO_ROOT = atom(null, (get, set) => {
@@ -148,6 +161,9 @@ export const MOVE_SHAPES_TO_ROOT = atom(null, (get, set) => {
   const selectedShapes = PLANE_SHAPES.filter((w) =>
     SELECTED.some((e) => e.id === w.id)
   );
+
+  // Guardar estado anterior para undo/redo
+  const prevShapes = [...selectedShapes];
 
   const cloneShapeRecursive = (shape: ALL_SHAPES): ALL_SHAPES => {
     return {
@@ -180,6 +196,13 @@ export const MOVE_SHAPES_TO_ROOT = atom(null, (get, set) => {
 
   // añadir al root con átomos frescos
   set(ALL_SHAPES_ATOM, [...get(ALL_SHAPES_ATOM), ...result]);
+
+  // Registrar la acción MOVE para undo/redo
+  set(NEW_UNDO_REDO, {
+    type: "MOVE",
+    shapes: result,
+    prevShapes: prevShapes,
+  });
 });
 
 export const CREATE_SHAPE_ATOM = atom(null, (get, set, args: IShape) => {
