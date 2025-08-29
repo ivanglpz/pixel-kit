@@ -20,7 +20,10 @@ export type UNDO_REDO_PROPS = {
   prevShapes?: UNDO_SHAPE[]; // Estado anterior para operaciones MOVE
 };
 
-export type UNDO_SHAPE_VALUES = Omit<UNDO_REDO_PROPS, "id" | "shapes"> & {
+export type UNDO_SHAPE_VALUES = Omit<
+  UNDO_REDO_PROPS,
+  "id" | "shapes" | "prevShapes"
+> & {
   shapes: ALL_SHAPES[];
   prevShapes?: ALL_SHAPES[];
 };
