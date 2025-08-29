@@ -91,36 +91,46 @@ export const MOVE_SHAPES_BY_ID = atom(null, (get, set, args: string) => {
   const FIND_SHAPE = currentShapes.find((s) => s.id === args);
   if (!FIND_SHAPE) return;
 
-  const convertUndoShapeToAllShapes = (undoShape: ALL_SHAPES): ALL_SHAPES => {
+  // recrea un árbol fresco con atom nuevos
+  const cloneShapeRecursive = (
+    shape: ALL_SHAPES,
+    parentId: string
+  ): ALL_SHAPES => {
     return {
-      id: undoShape.id,
-      pageId: undoShape.pageId,
-      tool: undoShape.tool,
+      id: shape.id,
+      pageId: shape.pageId,
+      tool: shape.tool,
       state: atom<IShape>({
-        ...get(undoShape.state),
-        parentId: get(FIND_SHAPE.state).id,
+        ...get(shape.state),
+        parentId,
         children: atom(
-          get(get(undoShape.state).children).map(convertUndoShapeToAllShapes)
+          get(get(shape.state).children).map((c) =>
+            cloneShapeRecursive(c, shape.id)
+          )
         ),
       }),
-    } as ALL_SHAPES;
+    };
   };
-  const result = selectedShapes.map(convertUndoShapeToAllShapes);
 
+  const result = selectedShapes.map((s) =>
+    cloneShapeRecursive(s, get(FIND_SHAPE.state).id)
+  );
+
+  // agregar nuevos hijos con referencia fresca
   set(FIND_SHAPE.state, {
     ...get(FIND_SHAPE.state),
-    children: atom(get(get(FIND_SHAPE.state).children).concat(result)),
+    children: atom([...get(get(FIND_SHAPE.state).children), ...result]),
   });
 
+  // remover de donde estaban antes
   for (const element of shapesSelected) {
     if (element.parentId) {
-      const FIND_SHAPE = currentShapes.find((r) => r.id === element.parentId);
-      if (!FIND_SHAPE) continue;
-
-      set(FIND_SHAPE.state, {
-        ...get(FIND_SHAPE.state),
+      const parent = currentShapes.find((r) => r.id === element.parentId);
+      if (!parent) continue;
+      set(parent.state, {
+        ...get(parent.state),
         children: atom(
-          get(get(FIND_SHAPE.state).children).filter((u) => u.id !== element.id)
+          get(get(parent.state).children).filter((u) => u.id !== element.id)
         ),
       });
     } else {
@@ -131,6 +141,7 @@ export const MOVE_SHAPES_BY_ID = atom(null, (get, set, args: string) => {
     }
   }
 });
+
 export const MOVE_SHAPES_TO_ROOT = atom(null, (get, set) => {
   const PLANE_SHAPES = get(PLANE_SHAPES_ATOM);
   const SELECTED = get(SHAPE_IDS_ATOM);
@@ -138,39 +149,37 @@ export const MOVE_SHAPES_TO_ROOT = atom(null, (get, set) => {
     SELECTED.some((e) => e.id === w.id)
   );
 
-  const convertUndoShapeToAllShapes = (undoShape: ALL_SHAPES): ALL_SHAPES => {
+  const cloneShapeRecursive = (shape: ALL_SHAPES): ALL_SHAPES => {
     return {
-      id: undoShape.id,
-      pageId: undoShape.pageId,
-      tool: undoShape.tool,
+      id: shape.id,
+      pageId: shape.pageId,
+      tool: shape.tool,
       state: atom<IShape>({
-        ...get(undoShape.state),
+        ...get(shape.state),
         parentId: null,
-        children: atom(
-          get(get(undoShape.state).children).map(convertUndoShapeToAllShapes)
-        ),
+        children: atom(get(get(shape.state).children).map(cloneShapeRecursive)),
       }),
-    } as ALL_SHAPES;
+    };
   };
-  const result = selectedShapes.map(convertUndoShapeToAllShapes);
 
+  const result = selectedShapes.map(cloneShapeRecursive);
+
+  // quitar de sus padres
   for (const element of SELECTED) {
     if (element.parentId) {
-      const FIND_SHAPE = PLANE_SHAPES.find((r) => r.id === element.parentId);
-
-      if (!FIND_SHAPE) continue;
-
-      set(FIND_SHAPE.state, {
-        ...get(FIND_SHAPE.state),
+      const parent = PLANE_SHAPES.find((r) => r.id === element.parentId);
+      if (!parent) continue;
+      set(parent.state, {
+        ...get(parent.state),
         children: atom(
-          get(get(FIND_SHAPE.state).children).filter((u) => u.id !== element.id)
+          get(get(parent.state).children).filter((u) => u.id !== element.id)
         ),
       });
     }
   }
-  // setTimeout(() => {
-  //   set(ALL_SHAPES_ATOM, get(ALL_SHAPES_ATOM).concat(result));
-  // }, 1);
+
+  // añadir al root con átomos frescos
+  set(ALL_SHAPES_ATOM, [...get(ALL_SHAPES_ATOM), ...result]);
 });
 
 export const CREATE_SHAPE_ATOM = atom(null, (get, set, args: IShape) => {
