@@ -386,7 +386,7 @@ export const Nodes = ({
         >
           {children.map((childItem) => (
             <DraggableNodeItem
-              key={childItem.id}
+              key={childItem.id + shape.id + String(shape.parentId)}
               childItem={childItem}
               childOptions={childOptions}
             />
