@@ -1,5 +1,6 @@
 import { IShape } from "@/editor/shapes/type.shape";
 import { atom, PrimitiveAtom } from "jotai";
+import { MODE_ATOM } from "../hooks/useConfiguration";
 import { PAGE_ID_ATOM } from "./pages";
 import { PROJECT_ATOM } from "./projects";
 import { SHAPE_IDS_ATOM } from "./shape";
@@ -18,7 +19,7 @@ export type ALL_SHAPES = {
 
 export const ALL_SHAPES_ATOM = atom(
   (get) => {
-    const PAGES = get(get(PROJECT_ATOM).PAGE.LIST);
+    const PAGES = get(get(PROJECT_ATOM).MODE[get(MODE_ATOM)].LIST);
     const FIND_PAGE = PAGES.find((e) => e?.id === get(PAGE_ID_ATOM));
     if (!FIND_PAGE) {
       throw new Error("Page  shapes is require");
@@ -26,7 +27,7 @@ export const ALL_SHAPES_ATOM = atom(
     return get(FIND_PAGE.SHAPE.LIST);
   },
   (get, set, newTool: ALL_SHAPES[]) => {
-    const PAGES = get(get(PROJECT_ATOM).PAGE.LIST);
+    const PAGES = get(get(PROJECT_ATOM).MODE[get(MODE_ATOM)].LIST);
     const FIND_PAGE = PAGES.find((e) => e?.id === get(PAGE_ID_ATOM));
     if (!FIND_PAGE) {
       throw new Error("Page  shapes is require");

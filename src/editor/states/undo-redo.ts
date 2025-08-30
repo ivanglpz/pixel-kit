@@ -1,6 +1,7 @@
 import { atom, Getter, Setter } from "jotai";
 import { v4 as uuidv4 } from "uuid";
 import { cloneDeep } from "../helpers/startEvent";
+import { MODE_ATOM } from "../hooks/useConfiguration";
 import { IShape } from "../shapes/type.shape";
 import { PAGE_ID_ATOM } from "./pages";
 import { PROJECT_ATOM } from "./projects";
@@ -30,7 +31,7 @@ export type UNDO_SHAPE_VALUES = Omit<
 
 export const COUNT_UNDO_REDO = atom(
   (get) => {
-    const PAGES = get(get(PROJECT_ATOM).PAGE.LIST);
+    const PAGES = get(get(PROJECT_ATOM).MODE[get(MODE_ATOM)].LIST);
     const FIND_PAGE = PAGES.find((e) => e?.id === get(PAGE_ID_ATOM));
     if (!FIND_PAGE) {
       throw new Error("COUNT_UNDO_REDO_GET: Page not found");
@@ -38,7 +39,7 @@ export const COUNT_UNDO_REDO = atom(
     return get(FIND_PAGE.UNDOREDO.COUNT_UNDO_REDO);
   },
   (get, _set, shape: number) => {
-    const PAGES = get(get(PROJECT_ATOM).PAGE.LIST);
+    const PAGES = get(get(PROJECT_ATOM).MODE[get(MODE_ATOM)].LIST);
     const FIND_PAGE = PAGES.find((e) => e?.id === get(PAGE_ID_ATOM));
     if (!FIND_PAGE) {
       throw new Error("COUNT_UNDO_REDO_SET: Page not found");
@@ -49,7 +50,7 @@ export const COUNT_UNDO_REDO = atom(
 
 export const LIST_UNDO_REDO = atom(
   (get) => {
-    const PAGES = get(get(PROJECT_ATOM).PAGE.LIST);
+    const PAGES = get(get(PROJECT_ATOM).MODE[get(MODE_ATOM)].LIST);
     const FIND_PAGE = PAGES.find((e) => e?.id === get(PAGE_ID_ATOM));
     if (!FIND_PAGE) {
       throw new Error("COUNT_UNDO_REDO_GET: Page not found");
@@ -57,7 +58,7 @@ export const LIST_UNDO_REDO = atom(
     return get(FIND_PAGE.UNDOREDO.LIST_UNDO_REDO);
   },
   (get, _set, shape: UNDO_REDO_PROPS[]) => {
-    const PAGES = get(get(PROJECT_ATOM).PAGE.LIST);
+    const PAGES = get(get(PROJECT_ATOM).MODE[get(MODE_ATOM)].LIST);
     const FIND_PAGE = PAGES.find((e) => e?.id === get(PAGE_ID_ATOM));
     if (!FIND_PAGE) {
       throw new Error("COUNT_UNDO_REDO_SET: Page not found");
