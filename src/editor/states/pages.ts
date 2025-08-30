@@ -25,17 +25,17 @@ export type IPage = {
   };
 };
 export const PAGES_ATOM = atom(
-  (get) => get(get(PROJECT_ATOM).PAGE.LIST),
+  (get) => get(get(PROJECT_ATOM).MODE[get(MODE_ATOM)].LIST),
   (_get, _set, newTool: IPage[]) => {
-    const toolAtom = _get(PROJECT_ATOM).PAGE.LIST;
+    const toolAtom = _get(PROJECT_ATOM).MODE[_get(MODE_ATOM)].LIST;
     _set(toolAtom, newTool);
   }
 );
 
 export const PAGE_ID_ATOM = atom(
-  (get) => get(get(PROJECT_ATOM).PAGE.ID),
+  (get) => get(get(PROJECT_ATOM).MODE[get(MODE_ATOM)].ID),
   (_get, _set, newTool: string) => {
-    const toolAtom = _get(PROJECT_ATOM).PAGE.ID;
+    const toolAtom = _get(PROJECT_ATOM).MODE[_get(MODE_ATOM)].ID;
     _set(toolAtom, newTool);
   }
 );

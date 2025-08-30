@@ -16,9 +16,11 @@ export type IPROJECT = {
   MODE_ATOM: PrimitiveAtom<MODE> & WithInitialValue<MODE>;
   TOOL: PrimitiveAtom<IKeyTool> & WithInitialValue<IKeyTool>;
   PAUSE_MODE: PrimitiveAtom<boolean> & WithInitialValue<boolean>;
-  PAGE: {
-    LIST: PrimitiveAtom<IPage[]> & WithInitialValue<IPage[]>;
-    ID: PrimitiveAtom<string> & WithInitialValue<string>;
+  MODE: {
+    [key in MODE]: {
+      LIST: PrimitiveAtom<IPage[]> & WithInitialValue<IPage[]>;
+      ID: PrimitiveAtom<string> & WithInitialValue<string>;
+    };
   };
 
   EVENT: PrimitiveAtom<IStageEvents> & WithInitialValue<IStageEvents>;
@@ -32,6 +34,7 @@ export type IPROJECT = {
     RENDER: PrimitiveAtom<IRENDER_IMAGE> & WithInitialValue<IRENDER_IMAGE>;
   };
 };
+
 export const PROJECT_ID_ATOM = atom<string>(
   "415ee03c-ce26-4e8b-b373-8c1c0e0d9dd4"
 );
@@ -43,239 +46,68 @@ export const PROJECTS_ATOM = atom([
     MODE_ATOM: atom<MODE>("DESIGN_MODE"),
     TOOL: atom<IKeyTool>("MOVE"),
     PAUSE_MODE: atom<boolean>(false),
+    MODE: {
+      DESIGN_MODE: {
+        LIST: atom<IPage[]>([
+          {
+            id: "8eb9cfc3-023f-4204-a745-3d5347d1f057",
+            name: atom("Page 1"),
+            color: atom(canvasTheme.dark),
+            isVisible: atom(true),
+            type: "DESIGN_MODE",
+            SHAPE: {
+              ID: atom<IPageShapeIds[]>([]),
+              LIST: atom<ALL_SHAPES[]>([]),
+            },
+            UNDOREDO: {
+              COUNT_UNDO_REDO: atom<number>(0),
+              LIST_UNDO_REDO: atom<UNDO_REDO_PROPS[]>([]),
+            },
+          },
+        ]),
+        ID: atom<string>("8eb9cfc3-023f-4204-a745-3d5347d1f057"),
+      },
+      EDIT_IMAGE: {
+        LIST: atom<IPage[]>([
+          {
+            id: "c9fafa46-137a-4f89-94c5-acb3d787ac34",
+            name: atom("Page 1"),
+            color: atom(canvasTheme.dark),
+            isVisible: atom(true),
+            type: "EDIT_IMAGE",
+            SHAPE: {
+              ID: atom<IPageShapeIds[]>([]),
+              LIST: atom<ALL_SHAPES[]>([]),
+            },
+            UNDOREDO: {
+              COUNT_UNDO_REDO: atom<number>(0),
+              LIST_UNDO_REDO: atom<UNDO_REDO_PROPS[]>([]),
+            },
+          },
+        ]),
+        ID: atom<string>("c9fafa46-137a-4f89-94c5-acb3d787ac34"),
+      },
 
-    PAGE: {
-      LIST: atom<IPage[]>([
-        {
-          id: "f860ad7b-27ac-491a-ba77-1a81f004dac1",
-          name: atom("Page 1"),
-          color: atom(canvasTheme.dark),
-          isVisible: atom(true),
-          type: "EDIT_IMAGE",
-          SHAPE: {
-            ID: atom<IPageShapeIds[]>([]),
-            LIST: atom<ALL_SHAPES[]>([]),
+      FREE_DRAW: {
+        LIST: atom<IPage[]>([
+          {
+            id: "7fca22f8-ce7c-4494-87b7-f5c21240d7aa",
+            name: atom("Page 1"),
+            color: atom(canvasTheme.dark),
+            isVisible: atom(true),
+            type: "FREE_DRAW",
+            SHAPE: {
+              ID: atom<IPageShapeIds[]>([]),
+              LIST: atom<ALL_SHAPES[]>([]),
+            },
+            UNDOREDO: {
+              COUNT_UNDO_REDO: atom<number>(0),
+              LIST_UNDO_REDO: atom<UNDO_REDO_PROPS[]>([]),
+            },
           },
-          UNDOREDO: {
-            COUNT_UNDO_REDO: atom<number>(0),
-            LIST_UNDO_REDO: atom<UNDO_REDO_PROPS[]>([]),
-          },
-        },
-        {
-          id: "bc0631c9-e167-4cef-887c-4d6f9b4d8dc6",
-          name: atom("Page 1"),
-          color: atom(canvasTheme.dark),
-          isVisible: atom(true),
-          type: "FREE_DRAW",
-          SHAPE: {
-            ID: atom<IPageShapeIds[]>([]),
-            LIST: atom<ALL_SHAPES[]>([]),
-          },
-          UNDOREDO: {
-            COUNT_UNDO_REDO: atom<number>(0),
-            LIST_UNDO_REDO: atom<UNDO_REDO_PROPS[]>([]),
-          },
-        },
-        {
-          id: "8eb9cfc3-023f-4204-a745-3d5347d1f057",
-          name: atom("Page 1"),
-          color: atom(canvasTheme.dark),
-          isVisible: atom(true),
-          type: "DESIGN_MODE",
-          SHAPE: {
-            ID: atom<IPageShapeIds[]>([]),
-            LIST: atom<ALL_SHAPES[]>([
-              // {
-              //   id: "6dec1d40-cc1e-4217-b53a-4991feb3cf87",
-              //   tool: "GROUP",
-              //   pageId: "8eb9cfc3-023f-4204-a745-3d5347d1f057",
-              //   state: atom({
-              //     id: "6dec1d40-cc1e-4217-b53a-4991feb3cf87",
-              //     x: 187,
-              //     y: 181,
-              //     tool: "GROUP",
-              //     align: "left",
-              //     verticalAlign: "top",
-              //     bordersRadius: [0, 0, 0, 0],
-              //     effects: [],
-              //     isLocked: false,
-              //     fillContainerHeight: false,
-              //     fillContainerWidth: false,
-              //     label: "EL PADRE 1",
-              //     parentId: null,
-              //     rotation: 0,
-              //     opacity: 1,
-              //     fills: [
-              //       {
-              //         visible: true,
-              //         color: "#ffffff",
-              //         opacity: 1,
-              //         type: "fill",
-              //         id: "0bd0c14a-eaa1-405b-b8cf-39a20f854288",
-              //         image: {
-              //           height: 0,
-              //           name: "",
-              //           src: "",
-              //           width: 0,
-              //         },
-              //       },
-              //     ],
-              //     layouts: [],
-              //     strokes: [],
-              //     visible: true,
-              //     height: 227,
-              //     width: 111,
-              //     points: [],
-              //     strokeWidth: 1,
-              //     lineCap: "round",
-              //     lineJoin: "round",
-              //     shadowBlur: 0,
-              //     shadowOffsetY: 1,
-              //     shadowOffsetX: 1,
-              //     shadowOpacity: 1,
-              //     isAllBorderRadius: false,
-              //     borderRadius: 0,
-              //     dash: 0,
-              //     fontStyle: "Roboto",
-              //     textDecoration: "none",
-              //     fontWeight: "normal",
-              //     fontFamily: "Roboto",
-              //     fontSize: 24,
-              //     text: "Hello World",
-              //     children: atom([
-              //       {
-              //         id: "7fed5f8d-4367-46f8-aa83-152cd822ceca",
-              //         pageId: "8eb9cfc3-023f-4204-a745-3d5347d1f057",
-              //         tool: "GROUP",
-              //         state: atom({
-              //           id: "7fed5f8d-4367-46f8-aa83-152cd822ceca",
-              //           parentId: "6dec1d40-cc1e-4217-b53a-4991feb3cf87",
-              //           x: 10,
-              //           y: 10,
-              //           tool: "GROUP",
-              //           align: "left",
-              //           verticalAlign: "top",
-              //           bordersRadius: [0, 0, 0, 0],
-              //           effects: [],
-              //           isLocked: false,
-              //           fillContainerHeight: false,
-              //           fillContainerWidth: false,
-              //           label: "EL PADRE 2",
-              //           rotation: 0,
-              //           opacity: 1,
-              //           fills: [
-              //             {
-              //               visible: true,
-              //               color: "#ff0101ff",
-              //               opacity: 1,
-              //               type: "fill",
-              //               id: "0bd0c14a-eaa1-405b-b8cf-39a20f854288",
-              //               image: {
-              //                 height: 0,
-              //                 name: "",
-              //                 src: "",
-              //                 width: 0,
-              //               },
-              //             },
-              //           ],
-              //           layouts: [],
-              //           strokes: [],
-              //           visible: true,
-              //           height: 227,
-              //           width: 111,
-              //           points: [],
-              //           strokeWidth: 1,
-              //           lineCap: "round",
-              //           lineJoin: "round",
-              //           shadowBlur: 0,
-              //           shadowOffsetY: 1,
-              //           shadowOffsetX: 1,
-              //           shadowOpacity: 1,
-              //           isAllBorderRadius: false,
-              //           borderRadius: 0,
-              //           dash: 0,
-              //           fontStyle: "Roboto",
-              //           textDecoration: "none",
-              //           fontWeight: "normal",
-              //           fontFamily: "Roboto",
-              //           fontSize: 24,
-              //           text: "Hello World",
-              //           children: atom([
-              //             {
-              //               id: "0ab7d473-6ec8-46e8-94c5-964ed32e8f80",
-              //               pageId: "8eb9cfc3-023f-4204-a745-3d5347d1f057",
-              //               tool: "BOX",
-              //               state: atom({
-              //                 id: "0ab7d473-6ec8-46e8-94c5-964ed32e8f80",
-              //                 parentId: "7fed5f8d-4367-46f8-aa83-152cd822ceca",
-              //                 x: 10,
-              //                 y: 10,
-              //                 tool: "BOX",
-              //                 align: "left",
-              //                 verticalAlign: "top",
-              //                 bordersRadius: [0, 0, 0, 0],
-              //                 effects: [],
-              //                 isLocked: false,
-              //                 fillContainerHeight: false,
-              //                 fillContainerWidth: false,
-              //                 label: "EL HIJO",
-              //                 rotation: 0,
-              //                 opacity: 1,
-              //                 fills: [
-              //                   {
-              //                     visible: true,
-              //                     color: "#01ff2bff",
-              //                     opacity: 1,
-              //                     type: "fill",
-              //                     id: "0bd0c14a-eaa1-405b-b8cf-39a20f854288",
-              //                     image: {
-              //                       height: 0,
-              //                       name: "",
-              //                       src: "",
-              //                       width: 0,
-              //                     },
-              //                   },
-              //                 ],
-              //                 layouts: [],
-              //                 strokes: [],
-              //                 visible: true,
-              //                 height: 227,
-              //                 width: 111,
-              //                 points: [],
-              //                 strokeWidth: 1,
-              //                 lineCap: "round",
-              //                 lineJoin: "round",
-              //                 shadowBlur: 0,
-              //                 shadowOffsetY: 1,
-              //                 shadowOffsetX: 1,
-              //                 shadowOpacity: 1,
-              //                 isAllBorderRadius: false,
-              //                 borderRadius: 0,
-              //                 dash: 0,
-              //                 fontStyle: "Roboto",
-              //                 textDecoration: "none",
-              //                 fontWeight: "normal",
-              //                 fontFamily: "Roboto",
-              //                 fontSize: 24,
-              //                 text: "Hello World",
-              //                 children: atom([] as ALL_SHAPES[]),
-              //               } as IShape),
-              //             },
-              //           ] as ALL_SHAPES[]),
-              //         } as IShape),
-              //       },
-              //     ] as ALL_SHAPES[]),
-              //   } as IShape),
-              // },
-            ]),
-          },
-          UNDOREDO: {
-            COUNT_UNDO_REDO: atom<number>(0),
-            LIST_UNDO_REDO: atom<UNDO_REDO_PROPS[]>([]),
-          },
-        },
-      ]),
-      ID: atom<string>("8eb9cfc3-023f-4204-a745-3d5347d1f057"),
+        ]),
+        ID: atom<string>("7fca22f8-ce7c-4494-87b7-f5c21240d7aa"),
+      },
     },
 
     EVENT: atom<IStageEvents>("IDLE"),
@@ -306,8 +138,11 @@ export const PROJECT_ATOM = atom((get) => {
 });
 
 export const NEW_PROJECT = atom(null, (get, set) => {
-  const PAGEUUID = uuidv4();
   const NEWPROJECTID = uuidv4();
+  const NEW_DESIGN_MODE_UUID = uuidv4();
+  const NEWEDIT_IMAGE_UUID = uuidv4();
+  const NEW_FREE_DRAW_UUID = uuidv4();
+
   set(PROJECTS_ATOM, [
     ...get(PROJECTS_ATOM),
     {
@@ -317,55 +152,68 @@ export const NEW_PROJECT = atom(null, (get, set) => {
       TOOL: atom<IKeyTool>("MOVE"),
 
       PAUSE_MODE: atom<boolean>(false),
-      PAGE: {
-        LIST: atom<IPage[]>([
-          {
-            id: uuidv4(),
-            name: atom("Page 1"),
-            color: atom(canvasTheme.dark),
-            isVisible: atom(true),
-            type: "EDIT_IMAGE",
-            SHAPE: {
-              ID: atom<IPageShapeIds[]>([]),
-              LIST: atom<ALL_SHAPES[]>([]),
+      MODE: {
+        DESIGN_MODE: {
+          LIST: atom<IPage[]>([
+            {
+              id: NEW_DESIGN_MODE_UUID,
+              name: atom("Page 1"),
+              color: atom(canvasTheme.dark),
+              isVisible: atom(true),
+              type: "DESIGN_MODE",
+              SHAPE: {
+                ID: atom<IPageShapeIds[]>([]),
+                LIST: atom<ALL_SHAPES[]>([]),
+              },
+              UNDOREDO: {
+                COUNT_UNDO_REDO: atom<number>(0),
+                LIST_UNDO_REDO: atom<UNDO_REDO_PROPS[]>([]),
+              },
             },
-            UNDOREDO: {
-              COUNT_UNDO_REDO: atom<number>(0),
-              LIST_UNDO_REDO: atom<UNDO_REDO_PROPS[]>([]),
+          ]),
+          ID: atom<string>(NEW_DESIGN_MODE_UUID),
+        },
+        EDIT_IMAGE: {
+          LIST: atom<IPage[]>([
+            {
+              id: NEWEDIT_IMAGE_UUID,
+              name: atom("Page 1"),
+              color: atom(canvasTheme.dark),
+              isVisible: atom(true),
+              type: "EDIT_IMAGE",
+              SHAPE: {
+                ID: atom<IPageShapeIds[]>([]),
+                LIST: atom<ALL_SHAPES[]>([]),
+              },
+              UNDOREDO: {
+                COUNT_UNDO_REDO: atom<number>(0),
+                LIST_UNDO_REDO: atom<UNDO_REDO_PROPS[]>([]),
+              },
             },
-          },
-          {
-            id: uuidv4(),
-            name: atom("Page 1"),
-            color: atom(canvasTheme.dark),
-            isVisible: atom(true),
-            type: "FREE_DRAW",
-            SHAPE: {
-              ID: atom<IPageShapeIds[]>([]),
-              LIST: atom<ALL_SHAPES[]>([]),
+          ]),
+          ID: atom<string>(NEWEDIT_IMAGE_UUID),
+        },
+
+        FREE_DRAW: {
+          LIST: atom<IPage[]>([
+            {
+              id: NEW_FREE_DRAW_UUID,
+              name: atom("Page 1"),
+              color: atom(canvasTheme.dark),
+              isVisible: atom(true),
+              type: "FREE_DRAW",
+              SHAPE: {
+                ID: atom<IPageShapeIds[]>([]),
+                LIST: atom<ALL_SHAPES[]>([]),
+              },
+              UNDOREDO: {
+                COUNT_UNDO_REDO: atom<number>(0),
+                LIST_UNDO_REDO: atom<UNDO_REDO_PROPS[]>([]),
+              },
             },
-            UNDOREDO: {
-              COUNT_UNDO_REDO: atom<number>(0),
-              LIST_UNDO_REDO: atom<UNDO_REDO_PROPS[]>([]),
-            },
-          },
-          {
-            id: PAGEUUID,
-            name: atom("Page 1"),
-            color: atom(canvasTheme.dark),
-            isVisible: atom(true),
-            type: "DESIGN_MODE",
-            SHAPE: {
-              ID: atom<IPageShapeIds[]>([]),
-              LIST: atom<ALL_SHAPES[]>([]),
-            },
-            UNDOREDO: {
-              COUNT_UNDO_REDO: atom<number>(0),
-              LIST_UNDO_REDO: atom<UNDO_REDO_PROPS[]>([]),
-            },
-          },
-        ]),
-        ID: atom<string>(PAGEUUID),
+          ]),
+          ID: atom<string>(NEW_FREE_DRAW_UUID),
+        },
       },
 
       EVENT: atom<IStageEvents>("IDLE"),
