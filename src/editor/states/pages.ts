@@ -1,7 +1,7 @@
 import { atom, PrimitiveAtom } from "jotai";
-import { MODE, MODE_ATOM } from "../hooks/useConfiguration";
 import { IShape } from "../shapes/type.shape";
 import { canvasTheme } from "./canvas";
+import { MODE, MODE_ATOM } from "./mode";
 import { PROJECT_ATOM } from "./projects";
 import { ALL_SHAPES, WithInitialValue } from "./shapes";
 import { UNDO_REDO_PROPS } from "./undo-redo";
@@ -24,6 +24,19 @@ export type IPage = {
       WithInitialValue<UNDO_REDO_PROPS[]>;
   };
 };
+
+export const CURRENT_PAGE_ATOM = atom<IPage>((get) => {
+  const mode = get(MODE_ATOM);
+  const project = get(PROJECT_ATOM);
+  const pages = get(project.MODE[mode].LIST);
+  const pageId = get(project.MODE[mode].ID);
+
+  const findPage = pages.find((e) => e?.id === pageId);
+  if (!findPage) {
+    throw new Error("CURRENT_PAGE_ATOM_GET: PAGE BY MODE NOT FOUND");
+  }
+  return findPage;
+});
 export const PAGES_ATOM = atom(
   (get) => get(get(PROJECT_ATOM).MODE[get(MODE_ATOM)].LIST),
   (_get, _set, newTool: IPage[]) => {

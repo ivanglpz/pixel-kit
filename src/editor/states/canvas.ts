@@ -1,5 +1,5 @@
 import { atom } from "jotai";
-import { MODE_ATOM } from "../hooks/useConfiguration";
+import { MODE_ATOM } from "./mode";
 import { PROJECT_ATOM } from "./projects";
 
 export const canvasTheme: { [key in "dark" | "light"]: string } = {
