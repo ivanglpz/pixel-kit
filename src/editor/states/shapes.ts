@@ -1,6 +1,6 @@
 import { IShape } from "@/editor/shapes/type.shape";
 import { atom, PrimitiveAtom } from "jotai";
-import { MODE_ATOM } from "../hooks/useConfiguration";
+import { MODE_ATOM } from "./mode";
 import { PAGE_ID_ATOM } from "./pages";
 import { PROJECT_ATOM } from "./projects";
 import { SHAPE_IDS_ATOM } from "./shape";

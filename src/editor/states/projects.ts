@@ -1,10 +1,10 @@
 import { atom, PrimitiveAtom } from "jotai";
 import { v4 as uuidv4 } from "uuid";
-import { MODE } from "../hooks/useConfiguration";
 import { canvasTheme } from "./canvas";
 import { ICLIP_DIMENSION } from "./clipImage";
 import { IStageEvents } from "./event";
 import { INITIAL_RENDER_IMAGE, IRENDER_IMAGE } from "./image";
+import { MODE } from "./mode";
 import { IPage, IPageShapeIds } from "./pages";
 import { ALL_SHAPES, WithInitialValue } from "./shapes";
 import { IKeyTool } from "./tool";

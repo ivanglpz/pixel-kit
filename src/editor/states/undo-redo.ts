@@ -1,8 +1,8 @@
 import { atom, Getter, Setter } from "jotai";
 import { v4 as uuidv4 } from "uuid";
 import { cloneDeep } from "../helpers/startEvent";
-import { MODE_ATOM } from "../hooks/useConfiguration";
 import { IShape } from "../shapes/type.shape";
+import { MODE_ATOM } from "./mode";
 import { PAGE_ID_ATOM } from "./pages";
 import { PROJECT_ATOM } from "./projects";
 import { SHAPE_IDS_ATOM } from "./shape";
