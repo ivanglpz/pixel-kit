@@ -23,18 +23,7 @@ export const Tools = () => {
     >
       {config.tools?.map((item, index) => {
         const isSelected = item?.keyMethod === tool;
-        if (item?.isSeparation) {
-          return (
-            <div
-              key={`separator-$${index}`}
-              className={css({
-                height: "25px",
-                width: 1,
-                backgroundColor: "gray.500",
-              })}
-            />
-          );
-        }
+
         return (
           <button
             key={`sidebar-methods-key-${item.keyMethod}`}

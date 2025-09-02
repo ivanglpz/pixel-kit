@@ -2,9 +2,7 @@ import { atom, Getter, Setter } from "jotai";
 import { v4 as uuidv4 } from "uuid";
 import { cloneDeep } from "../helpers/startEvent";
 import { IShape } from "../shapes/type.shape";
-import { MODE_ATOM } from "./mode";
-import { PAGE_ID_ATOM } from "./pages";
-import { PROJECT_ATOM } from "./projects";
+import { GET_MODE, PAGE_ID_ATOM } from "./pages";
 import { SHAPE_IDS_ATOM } from "./shape";
 import ALL_SHAPES_ATOM, { ALL_SHAPES, PLANE_SHAPES_ATOM } from "./shapes";
 
@@ -31,7 +29,7 @@ export type UNDO_SHAPE_VALUES = Omit<
 
 export const COUNT_UNDO_REDO = atom(
   (get) => {
-    const PAGES = get(get(PROJECT_ATOM).MODE[get(MODE_ATOM)].LIST);
+    const PAGES = get(get(GET_MODE).LIST);
     const FIND_PAGE = PAGES.find((e) => e?.id === get(PAGE_ID_ATOM));
     if (!FIND_PAGE) {
       throw new Error("COUNT_UNDO_REDO_GET: Page not found");
@@ -39,7 +37,7 @@ export const COUNT_UNDO_REDO = atom(
     return get(FIND_PAGE.UNDOREDO.COUNT_UNDO_REDO);
   },
   (get, _set, shape: number) => {
-    const PAGES = get(get(PROJECT_ATOM).MODE[get(MODE_ATOM)].LIST);
+    const PAGES = get(get(GET_MODE).LIST);
     const FIND_PAGE = PAGES.find((e) => e?.id === get(PAGE_ID_ATOM));
     if (!FIND_PAGE) {
       throw new Error("COUNT_UNDO_REDO_SET: Page not found");
@@ -50,7 +48,7 @@ export const COUNT_UNDO_REDO = atom(
 
 export const LIST_UNDO_REDO = atom(
   (get) => {
-    const PAGES = get(get(PROJECT_ATOM).MODE[get(MODE_ATOM)].LIST);
+    const PAGES = get(get(GET_MODE).LIST);
     const FIND_PAGE = PAGES.find((e) => e?.id === get(PAGE_ID_ATOM));
     if (!FIND_PAGE) {
       throw new Error("COUNT_UNDO_REDO_GET: Page not found");
@@ -58,7 +56,7 @@ export const LIST_UNDO_REDO = atom(
     return get(FIND_PAGE.UNDOREDO.LIST_UNDO_REDO);
   },
   (get, _set, shape: UNDO_REDO_PROPS[]) => {
-    const PAGES = get(get(PROJECT_ATOM).MODE[get(MODE_ATOM)].LIST);
+    const PAGES = get(get(GET_MODE).LIST);
     const FIND_PAGE = PAGES.find((e) => e?.id === get(PAGE_ID_ATOM));
     if (!FIND_PAGE) {
       throw new Error("COUNT_UNDO_REDO_SET: Page not found");

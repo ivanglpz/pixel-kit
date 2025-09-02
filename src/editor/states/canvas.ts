@@ -1,5 +1,6 @@
 import { atom } from "jotai";
 import { MODE_ATOM } from "./mode";
+import { GET_MODE } from "./pages";
 import { PROJECT_ATOM } from "./projects";
 
 export const canvasTheme: { [key in "dark" | "light"]: string } = {
@@ -9,12 +10,12 @@ export const canvasTheme: { [key in "dark" | "light"]: string } = {
 
 const STAGE_CANVAS_BACKGROUND = atom(
   (get) => {
-    const PAGES = get(get(PROJECT_ATOM).MODE[get(MODE_ATOM)].LIST);
-    const PAGEID = get(get(PROJECT_ATOM).MODE[get(MODE_ATOM)].ID);
+    const PAGES = get(get(GET_MODE).LIST);
+    const PAGEID = get(get(GET_MODE).ID);
 
     const FIND_PAGE = PAGES.find((e) => e?.id === PAGEID);
     if (!FIND_PAGE) {
-      throw new Error("PAGE CANVAS NOT FOUND");
+      throw new Error("STAGE_CANVAS_BACKGROUND: PAGE NOT FOUND");
     }
     return get(FIND_PAGE.color);
   },
@@ -24,7 +25,7 @@ const STAGE_CANVAS_BACKGROUND = atom(
 
     const FIND_PAGE = PAGES.find((e) => e?.id === PAGEID);
     if (!FIND_PAGE) {
-      throw new Error("PAGE CANVAS NOT FOUND");
+      throw new Error("STAGE_CANVAS_BACKGROUND: PAGE CANVAS NOT FOUND");
     }
     _set(FIND_PAGE.color, newTool);
   }
