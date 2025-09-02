@@ -1,4 +1,5 @@
 import { atom, PrimitiveAtom } from "jotai";
+import { v4 as uuidv4 } from "uuid";
 import { IShape } from "../shapes/type.shape";
 import { canvasTheme } from "./canvas";
 import { MODE, MODE_ATOM } from "./mode";
@@ -25,30 +26,22 @@ export type IPage = {
   };
 };
 
-export const CURRENT_PAGE_ATOM = atom<IPage>((get) => {
-  const mode = get(MODE_ATOM);
-  const project = get(PROJECT_ATOM);
-  const pages = get(project.MODE[mode].LIST);
-  const pageId = get(project.MODE[mode].ID);
-
-  const findPage = pages.find((e) => e?.id === pageId);
-  if (!findPage) {
-    throw new Error("CURRENT_PAGE_ATOM_GET: PAGE BY MODE NOT FOUND");
-  }
-  return findPage;
+export const GET_MODE = atom((get) => {
+  return get(PROJECT_ATOM).MODE[get(MODE_ATOM)];
 });
+
 export const PAGES_ATOM = atom(
-  (get) => get(get(PROJECT_ATOM).MODE[get(MODE_ATOM)].LIST),
+  (get) => get(get(GET_MODE).LIST),
   (_get, _set, newTool: IPage[]) => {
-    const toolAtom = _get(PROJECT_ATOM).MODE[_get(MODE_ATOM)].LIST;
+    const toolAtom = _get(GET_MODE).LIST;
     _set(toolAtom, newTool);
   }
 );
 
 export const PAGE_ID_ATOM = atom(
-  (get) => get(get(PROJECT_ATOM).MODE[get(MODE_ATOM)].ID),
+  (get) => get(get(GET_MODE).ID),
   (_get, _set, newTool: string) => {
-    const toolAtom = _get(PROJECT_ATOM).MODE[_get(MODE_ATOM)].ID;
+    const toolAtom = _get(GET_MODE).ID;
     _set(toolAtom, newTool);
   }
 );
@@ -75,7 +68,7 @@ export const NEW_PAGE = atom(null, (get, set) => {
   const pages = get(PAGES_ATOM);
   const pagesByType = pages.filter((p) => p.type === mode);
   const newPage: IPage = {
-    id: crypto.randomUUID(),
+    id: uuidv4(),
     name: atom(`Page ${pagesByType.length + 1}`),
     color: atom(canvasTheme.dark),
     isVisible: atom(true),

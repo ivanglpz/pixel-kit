@@ -20,7 +20,6 @@ type Config = {
     keyMethod?: IKeyTool;
     keyBoard?: string;
     eventStage?: IStageEvents;
-    isSeparation?: boolean;
     showClip?: boolean;
   }[];
   show_layer_background: boolean;
@@ -55,9 +54,6 @@ const configs: { [key in MODE]: Config } = {
         eventStage: "IDLE",
       },
       {
-        isSeparation: true,
-      },
-      {
         icon: icons.box,
         keyMethod: "BOX",
         keyBoard: "W",
@@ -87,9 +83,6 @@ const configs: { [key in MODE]: Config } = {
         keyMethod: "TEXT",
         keyBoard: "S",
         eventStage: "CREATE",
-      },
-      {
-        isSeparation: true,
       },
 
       {
@@ -125,9 +118,7 @@ const configs: { [key in MODE]: Config } = {
         keyBoard: "Q",
         eventStage: "IDLE",
       },
-      {
-        isSeparation: true,
-      },
+
       {
         icon: icons.box,
         keyMethod: "BOX",
@@ -158,9 +149,6 @@ const configs: { [key in MODE]: Config } = {
         keyMethod: "TEXT",
         keyBoard: "S",
         eventStage: "CREATE",
-      },
-      {
-        isSeparation: true,
       },
 
       {
