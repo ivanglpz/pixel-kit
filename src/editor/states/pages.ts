@@ -26,22 +26,32 @@ export type IPage = {
   };
 };
 
-export const GET_MODE = atom((get) => {
+export const GET_PAGES_BY_MODE = atom((get) => {
   return get(PROJECT_ATOM).MODE[get(MODE_ATOM)];
+});
+export const PAGE_BY_MODE = atom((get) => {
+  const PAGES = get(get(GET_PAGES_BY_MODE).LIST);
+  const PAGEID = get(get(GET_PAGES_BY_MODE).ID);
+
+  const FIND_PAGE = PAGES.find((e) => e?.id === PAGEID);
+  if (!FIND_PAGE) {
+    throw new Error("PROJECT_BY_MODE: PAGE NOT FOUND");
+  }
+  return FIND_PAGE;
 });
 
 export const PAGES_ATOM = atom(
-  (get) => get(get(GET_MODE).LIST),
+  (get) => get(get(GET_PAGES_BY_MODE).LIST),
   (_get, _set, newTool: IPage[]) => {
-    const toolAtom = _get(GET_MODE).LIST;
+    const toolAtom = _get(GET_PAGES_BY_MODE).LIST;
     _set(toolAtom, newTool);
   }
 );
 
 export const PAGE_ID_ATOM = atom(
-  (get) => get(get(GET_MODE).ID),
+  (get) => get(get(GET_PAGES_BY_MODE).ID),
   (_get, _set, newTool: string) => {
-    const toolAtom = _get(GET_MODE).ID;
+    const toolAtom = _get(GET_PAGES_BY_MODE).ID;
     _set(toolAtom, newTool);
   }
 );
