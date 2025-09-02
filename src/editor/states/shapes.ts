@@ -1,6 +1,6 @@
 import { IShape } from "@/editor/shapes/type.shape";
 import { atom, PrimitiveAtom } from "jotai";
-import { PAGE_BY_MODE, PAGE_ID_ATOM } from "./pages";
+import { CURRENT_PAGE, PAGE_ID_ATOM } from "./pages";
 import { SHAPE_IDS_ATOM } from "./shape";
 import { IKeyMethods } from "./tool";
 import { NEW_UNDO_REDO } from "./undo-redo";
@@ -17,10 +17,10 @@ export type ALL_SHAPES = {
 
 export const ALL_SHAPES_ATOM = atom(
   (get) => {
-    return get(get(PAGE_BY_MODE).SHAPE.LIST);
+    return get(get(CURRENT_PAGE).SHAPES.LIST);
   },
   (get, set, newTool: ALL_SHAPES[]) => {
-    set(get(PAGE_BY_MODE).SHAPE.LIST, newTool);
+    set(get(CURRENT_PAGE).SHAPES.LIST, newTool);
     return;
   }
 );

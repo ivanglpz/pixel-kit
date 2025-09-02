@@ -3,14 +3,14 @@ import { atom } from "jotai";
 import { v4 as uuidv4 } from "uuid";
 import { cloneDeep } from "../helpers/startEvent";
 import { EVENT_ATOM } from "./event";
-import { GET_MODE, IPageShapeIds, PAGE_BY_MODE, PAGE_ID_ATOM } from "./pages";
+import { CURRENT_PAGE, IPageShapeIds } from "./pages";
 import ALL_SHAPES_ATOM, { ALL_SHAPES, PLANE_SHAPES_ATOM } from "./shapes";
 export const SHAPE_IDS_ATOM = atom(
   (get) => {
-    return get(get(PAGE_BY_MODE).SHAPE.ID);
+    return get(get(CURRENT_PAGE).SHAPES.ID);
   },
   (get, _set, shape: IPageShapeIds) => {
-    const ids = get(PAGE_BY_MODE).SHAPE.ID;
+    const ids = get(CURRENT_PAGE).SHAPES.ID;
     const event = get(EVENT_ATOM);
     const listIds = get(ids);
 
@@ -39,13 +39,7 @@ export const SHAPE_IDS_ATOM = atom(
 export const UPDATE_SHAPES_IDS_ATOM = atom(
   null,
   (get, set, args: IPageShapeIds[]) => {
-    const PAGES = get(get(GET_MODE).LIST);
-    const FIND_PAGE = PAGES.find((e) => e?.id === get(PAGE_ID_ATOM));
-    if (!FIND_PAGE) {
-      throw new Error("UPDATE_SHAPES_IDS_ATOM_GET: Page not found");
-    }
-    const ids = FIND_PAGE.SHAPE.ID;
-
+    const ids = get(CURRENT_PAGE).SHAPES.ID;
     set(ids, args);
   }
 );
@@ -53,9 +47,9 @@ export const UPDATE_SHAPES_IDS_ATOM = atom(
 export const REMOVE_SHAPE_ID_ATOM = atom(
   null,
   (get, set, args: IPageShapeIds) => {
-    const SHAPE_IDS_ATOM = get(PAGE_BY_MODE).SHAPE.ID;
+    const SHAPE_IDS_ATOM = get(CURRENT_PAGE).SHAPES.ID;
 
-    const IDS = get(get(PAGE_BY_MODE).SHAPE.ID);
+    const IDS = get(get(CURRENT_PAGE).SHAPES.ID);
 
     set(
       SHAPE_IDS_ATOM,
@@ -64,7 +58,7 @@ export const REMOVE_SHAPE_ID_ATOM = atom(
   }
 );
 export const RESET_SHAPES_IDS_ATOM = atom(null, (get, set) => {
-  const SHAPE_IDS_ATOM = get(PAGE_BY_MODE).SHAPE.ID;
+  const SHAPE_IDS_ATOM = get(CURRENT_PAGE).SHAPES.ID;
 
   set(SHAPE_IDS_ATOM, []);
 });
