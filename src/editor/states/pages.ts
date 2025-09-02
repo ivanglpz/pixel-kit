@@ -2,7 +2,7 @@ import { atom, PrimitiveAtom } from "jotai";
 import { v4 as uuidv4 } from "uuid";
 import { IShape } from "../shapes/type.shape";
 import { canvasTheme } from "./canvas";
-import { MODE, MODE_ATOM } from "./mode";
+import { MODE_ATOM } from "./mode";
 import { PROJECT_ATOM } from "./projects";
 import { ALL_SHAPES, WithInitialValue } from "./shapes";
 import { UNDO_REDO_PROPS } from "./undo-redo";
@@ -14,7 +14,6 @@ export type IPage = {
   name: PrimitiveAtom<string> & WithInitialValue<string>;
   color: PrimitiveAtom<string> & WithInitialValue<string>;
   isVisible: PrimitiveAtom<boolean> & WithInitialValue<boolean>;
-  type: MODE;
   SHAPE: {
     LIST: PrimitiveAtom<ALL_SHAPES[]> & WithInitialValue<ALL_SHAPES[]>;
     ID: PrimitiveAtom<IPageShapeIds[]> & WithInitialValue<IPageShapeIds[]>;
@@ -26,12 +25,12 @@ export type IPage = {
   };
 };
 
-export const GET_PAGES_BY_MODE = atom((get) => {
+export const GET_MODE = atom((get) => {
   return get(PROJECT_ATOM).MODE[get(MODE_ATOM)];
 });
 export const PAGE_BY_MODE = atom((get) => {
-  const PAGES = get(get(GET_PAGES_BY_MODE).LIST);
-  const PAGEID = get(get(GET_PAGES_BY_MODE).ID);
+  const PAGES = get(get(GET_MODE).LIST);
+  const PAGEID = get(get(GET_MODE).ID);
 
   const FIND_PAGE = PAGES.find((e) => e?.id === PAGEID);
   if (!FIND_PAGE) {
@@ -41,48 +40,44 @@ export const PAGE_BY_MODE = atom((get) => {
 });
 
 export const PAGES_ATOM = atom(
-  (get) => get(get(GET_PAGES_BY_MODE).LIST),
+  (get) => get(get(GET_MODE).LIST),
   (_get, _set, newTool: IPage[]) => {
-    const toolAtom = _get(GET_PAGES_BY_MODE).LIST;
+    const toolAtom = _get(GET_MODE).LIST;
     _set(toolAtom, newTool);
   }
 );
 
 export const PAGE_ID_ATOM = atom(
-  (get) => get(get(GET_PAGES_BY_MODE).ID),
+  (get) => get(get(GET_MODE).ID),
   (_get, _set, newTool: string) => {
-    const toolAtom = _get(GET_PAGES_BY_MODE).ID;
+    const toolAtom = _get(GET_MODE).ID;
     _set(toolAtom, newTool);
   }
 );
 
 export const RESET_PAGE_ID_ATOM = atom(null, (get, set) => {
-  const mode = get(MODE_ATOM);
   const pages = get(PAGES_ATOM);
-  const page = pages.find((p) => p.type === mode);
+  const page = pages?.at?.(0);
   if (!page) {
-    throw new Error(`No page found for mode: ${mode}`);
+    throw new Error("PAGE_RESET_NOT_FOUND");
   }
+
   set(PAGE_ID_ATOM, page.id);
 });
 
 export const PAGES_BY_TYPE_ATOM = atom((get) => {
-  const mode = get(MODE_ATOM);
   const pages = get(PAGES_ATOM);
-  return pages.filter((p) => p.type === mode);
+  return pages;
 });
 
 export const NEW_PAGE = atom(null, (get, set) => {
-  const mode = get(MODE_ATOM);
-
   const pages = get(PAGES_ATOM);
-  const pagesByType = pages.filter((p) => p.type === mode);
+  // const pagesByType = pages.filter((p) => p.type === mode);
   const newPage: IPage = {
     id: uuidv4(),
-    name: atom(`Page ${pagesByType.length + 1}`),
+    name: atom(`Page ${pages.length + 1}`),
     color: atom(canvasTheme.dark),
     isVisible: atom(true),
-    type: mode,
     SHAPE: {
       ID: atom<IPageShapeIds[]>([]),
       LIST: atom<ALL_SHAPES[]>([]),

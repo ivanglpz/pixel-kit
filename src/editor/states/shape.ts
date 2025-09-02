@@ -3,12 +3,7 @@ import { atom } from "jotai";
 import { v4 as uuidv4 } from "uuid";
 import { cloneDeep } from "../helpers/startEvent";
 import { EVENT_ATOM } from "./event";
-import {
-  GET_PAGES_BY_MODE,
-  IPageShapeIds,
-  PAGE_BY_MODE,
-  PAGE_ID_ATOM,
-} from "./pages";
+import { GET_MODE, IPageShapeIds, PAGE_BY_MODE, PAGE_ID_ATOM } from "./pages";
 import ALL_SHAPES_ATOM, { ALL_SHAPES, PLANE_SHAPES_ATOM } from "./shapes";
 export const SHAPE_IDS_ATOM = atom(
   (get) => {
@@ -44,7 +39,7 @@ export const SHAPE_IDS_ATOM = atom(
 export const UPDATE_SHAPES_IDS_ATOM = atom(
   null,
   (get, set, args: IPageShapeIds[]) => {
-    const PAGES = get(get(GET_PAGES_BY_MODE).LIST);
+    const PAGES = get(get(GET_MODE).LIST);
     const FIND_PAGE = PAGES.find((e) => e?.id === get(PAGE_ID_ATOM));
     if (!FIND_PAGE) {
       throw new Error("UPDATE_SHAPES_IDS_ATOM_GET: Page not found");
