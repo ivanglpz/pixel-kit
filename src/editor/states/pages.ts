@@ -14,7 +14,7 @@ export type IPage = {
   name: PrimitiveAtom<string> & WithInitialValue<string>;
   color: PrimitiveAtom<string> & WithInitialValue<string>;
   isVisible: PrimitiveAtom<boolean> & WithInitialValue<boolean>;
-  SHAPE: {
+  SHAPES: {
     LIST: PrimitiveAtom<ALL_SHAPES[]> & WithInitialValue<ALL_SHAPES[]>;
     ID: PrimitiveAtom<IPageShapeIds[]> & WithInitialValue<IPageShapeIds[]>;
   };
@@ -28,7 +28,7 @@ export type IPage = {
 export const GET_MODE = atom((get) => {
   return get(PROJECT_ATOM).MODE[get(MODE_ATOM)];
 });
-export const PAGE_BY_MODE = atom((get) => {
+export const CURRENT_PAGE = atom((get) => {
   const PAGES = get(get(GET_MODE).LIST);
   const PAGEID = get(get(GET_MODE).ID);
 
@@ -78,7 +78,7 @@ export const NEW_PAGE = atom(null, (get, set) => {
     name: atom(`Page ${pages.length + 1}`),
     color: atom(canvasTheme.dark),
     isVisible: atom(true),
-    SHAPE: {
+    SHAPES: {
       ID: atom<IPageShapeIds[]>([]),
       LIST: atom<ALL_SHAPES[]>([]),
     },

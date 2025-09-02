@@ -2,7 +2,7 @@ import { atom, Getter, Setter } from "jotai";
 import { v4 as uuidv4 } from "uuid";
 import { cloneDeep } from "../helpers/startEvent";
 import { IShape } from "../shapes/type.shape";
-import { PAGE_BY_MODE } from "./pages";
+import { CURRENT_PAGE } from "./pages";
 import { SHAPE_IDS_ATOM } from "./shape";
 import ALL_SHAPES_ATOM, { ALL_SHAPES, PLANE_SHAPES_ATOM } from "./shapes";
 
@@ -29,19 +29,19 @@ export type UNDO_SHAPE_VALUES = Omit<
 
 export const COUNT_UNDO_REDO = atom(
   (get) => {
-    return get(get(PAGE_BY_MODE).UNDOREDO.COUNT_UNDO_REDO);
+    return get(get(CURRENT_PAGE).UNDOREDO.COUNT_UNDO_REDO);
   },
   (get, _set, shape: number) => {
-    return _set(get(PAGE_BY_MODE).UNDOREDO.COUNT_UNDO_REDO, shape);
+    return _set(get(CURRENT_PAGE).UNDOREDO.COUNT_UNDO_REDO, shape);
   }
 );
 
 export const LIST_UNDO_REDO = atom(
   (get) => {
-    return get(get(PAGE_BY_MODE).UNDOREDO.LIST_UNDO_REDO);
+    return get(get(CURRENT_PAGE).UNDOREDO.LIST_UNDO_REDO);
   },
   (get, _set, shape: UNDO_REDO_PROPS[]) => {
-    return _set(get(PAGE_BY_MODE).UNDOREDO.LIST_UNDO_REDO, shape);
+    return _set(get(CURRENT_PAGE).UNDOREDO.LIST_UNDO_REDO, shape);
   }
 );
 

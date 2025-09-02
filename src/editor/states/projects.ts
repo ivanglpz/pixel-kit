@@ -54,7 +54,7 @@ export const PROJECTS_ATOM = atom([
             name: atom("Page 1"),
             color: atom(canvasTheme.dark),
             isVisible: atom(true),
-            SHAPE: {
+            SHAPES: {
               ID: atom<IPageShapeIds[]>([]),
               LIST: atom<ALL_SHAPES[]>([]),
             },
@@ -73,7 +73,7 @@ export const PROJECTS_ATOM = atom([
             name: atom("Page 1"),
             color: atom(canvasTheme.dark),
             isVisible: atom(true),
-            SHAPE: {
+            SHAPES: {
               ID: atom<IPageShapeIds[]>([]),
               LIST: atom<ALL_SHAPES[]>([]),
             },
@@ -93,7 +93,7 @@ export const PROJECTS_ATOM = atom([
             name: atom("Page 1"),
             color: atom(canvasTheme.dark),
             isVisible: atom(true),
-            SHAPE: {
+            SHAPES: {
               ID: atom<IPageShapeIds[]>([]),
               LIST: atom<ALL_SHAPES[]>([]),
             },
@@ -157,7 +157,7 @@ export const NEW_PROJECT = atom(null, (get, set) => {
               name: atom("Page 1"),
               color: atom(canvasTheme.dark),
               isVisible: atom(true),
-              SHAPE: {
+              SHAPES: {
                 ID: atom<IPageShapeIds[]>([]),
                 LIST: atom<ALL_SHAPES[]>([]),
               },
@@ -176,7 +176,7 @@ export const NEW_PROJECT = atom(null, (get, set) => {
               name: atom("Page 1"),
               color: atom(canvasTheme.dark),
               isVisible: atom(true),
-              SHAPE: {
+              SHAPES: {
                 ID: atom<IPageShapeIds[]>([]),
                 LIST: atom<ALL_SHAPES[]>([]),
               },
@@ -196,7 +196,7 @@ export const NEW_PROJECT = atom(null, (get, set) => {
               name: atom("Page 1"),
               color: atom(canvasTheme.dark),
               isVisible: atom(true),
-              SHAPE: {
+              SHAPES: {
                 ID: atom<IPageShapeIds[]>([]),
                 LIST: atom<ALL_SHAPES[]>([]),
               },
