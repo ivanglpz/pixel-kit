@@ -3,25 +3,19 @@ import { atom } from "jotai";
 import { v4 as uuidv4 } from "uuid";
 import { cloneDeep } from "../helpers/startEvent";
 import { EVENT_ATOM } from "./event";
-import { GET_MODE, IPageShapeIds, PAGE_ID_ATOM } from "./pages";
+import {
+  GET_PAGES_BY_MODE,
+  IPageShapeIds,
+  PAGE_BY_MODE,
+  PAGE_ID_ATOM,
+} from "./pages";
 import ALL_SHAPES_ATOM, { ALL_SHAPES, PLANE_SHAPES_ATOM } from "./shapes";
 export const SHAPE_IDS_ATOM = atom(
   (get) => {
-    const PAGES = get(get(GET_MODE).LIST);
-    const FIND_PAGE = PAGES.find((e) => e?.id === get(PAGE_ID_ATOM));
-    if (!FIND_PAGE) {
-      throw new Error("SHAPE_IDS_ATOM_GET: Page not found");
-    }
-    return get(FIND_PAGE.SHAPE.ID);
+    return get(get(PAGE_BY_MODE).SHAPE.ID);
   },
   (get, _set, shape: IPageShapeIds) => {
-    // const ids = get(PROJECT_ATOM).SHAPE.ID;
-    const PAGES = get(get(GET_MODE).LIST);
-    const FIND_PAGE = PAGES.find((e) => e?.id === get(PAGE_ID_ATOM));
-    if (!FIND_PAGE) {
-      throw new Error("SHAPE_IDS_ATOM_SET: Page not found");
-    }
-    const ids = FIND_PAGE.SHAPE.ID;
+    const ids = get(PAGE_BY_MODE).SHAPE.ID;
     const event = get(EVENT_ATOM);
     const listIds = get(ids);
 
@@ -50,7 +44,7 @@ export const SHAPE_IDS_ATOM = atom(
 export const UPDATE_SHAPES_IDS_ATOM = atom(
   null,
   (get, set, args: IPageShapeIds[]) => {
-    const PAGES = get(get(GET_MODE).LIST);
+    const PAGES = get(get(GET_PAGES_BY_MODE).LIST);
     const FIND_PAGE = PAGES.find((e) => e?.id === get(PAGE_ID_ATOM));
     if (!FIND_PAGE) {
       throw new Error("UPDATE_SHAPES_IDS_ATOM_GET: Page not found");
@@ -64,30 +58,20 @@ export const UPDATE_SHAPES_IDS_ATOM = atom(
 export const REMOVE_SHAPE_ID_ATOM = atom(
   null,
   (get, set, args: IPageShapeIds) => {
-    const PAGES = get(get(GET_MODE).LIST);
-    const FIND_PAGE = PAGES.find((e) => e?.id === get(PAGE_ID_ATOM));
-    if (!FIND_PAGE) {
-      throw new Error("REMOVE_SHAPE_ID_ATOM_GET: Page not found");
-    }
-    const ids = FIND_PAGE.SHAPE.ID;
+    const SHAPE_IDS_ATOM = get(PAGE_BY_MODE).SHAPE.ID;
 
-    const listIds = get(FIND_PAGE.SHAPE.ID);
+    const IDS = get(get(PAGE_BY_MODE).SHAPE.ID);
 
     set(
-      ids,
-      listIds?.filter((e) => e?.id === args.id && e?.parentId === args.parentId)
+      SHAPE_IDS_ATOM,
+      IDS?.filter((e) => e?.id === args.id && e?.parentId === args.parentId)
     );
   }
 );
 export const RESET_SHAPES_IDS_ATOM = atom(null, (get, set) => {
-  const PAGES = get(get(GET_MODE).LIST);
-  const FIND_PAGE = PAGES.find((e) => e?.id === get(PAGE_ID_ATOM));
-  if (!FIND_PAGE) {
-    throw new Error("RESET_SHAPES_IDS_ATOM_GET: Page not found");
-  }
-  const ids = FIND_PAGE.SHAPE.ID;
+  const SHAPE_IDS_ATOM = get(PAGE_BY_MODE).SHAPE.ID;
 
-  set(ids, []);
+  set(SHAPE_IDS_ATOM, []);
 });
 
 export const SHAPE_SELECTED_ATOM = atom((get) => {
