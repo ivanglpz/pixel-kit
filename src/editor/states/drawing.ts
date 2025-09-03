@@ -11,7 +11,7 @@ const Initial: Omit<IShape, "children"> = {
   bordersRadius: [0, 0, 0, 0],
   effects: [],
   isLocked: false,
-  label: "DRAW",
+  label: "Draw",
   fillContainerHeight: false,
   fillContainerWidth: false,
   layouts: [],
