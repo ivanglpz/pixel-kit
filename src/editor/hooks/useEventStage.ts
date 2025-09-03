@@ -26,6 +26,7 @@ import {
 } from "../states/shape";
 import { CREATE_SHAPE_ATOM, DELETE_SHAPES_ATOM } from "../states/shapes";
 import { REDO_ATOM, UNDO_ATOM } from "../states/undo-redo";
+import { capitalize } from "../utils/capitalize";
 import { useConfiguration } from "./useConfiguration";
 import { useReference } from "./useReference";
 
@@ -162,6 +163,7 @@ export const useEventStage = () => {
         x,
         y,
         id: uuidv4(),
+        label: capitalize(tool),
       });
       SET_CREATE_CITEM([createStartElement]);
     }
@@ -173,6 +175,7 @@ export const useEventStage = () => {
         y: 0,
         points: [x, y],
         id: uuidv4(),
+        label: capitalize(tool),
       });
       SET_CREATE_CITEM([createStartElement]);
     }
@@ -184,6 +187,7 @@ export const useEventStage = () => {
         y: 0,
         points: [x, y, x, y],
         id: uuidv4(),
+        label: capitalize(tool),
       });
       SET_CREATE_CITEM([createStartElement]);
     }
