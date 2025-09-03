@@ -1,18 +1,12 @@
 import { PrimitiveAtom, useAtom, useAtomValue } from "jotai";
-import { memo } from "react";
 import { Rect } from "react-konva";
 import { STAGE_DIMENSION_ATOM } from "../states/dimension";
 import { SHAPE_IDS_ATOM } from "../states/shape";
-import {
-  shapeEventDragMove,
-  ShapeEventDragStart,
-  shapeEventDragStop,
-  shapeTransformEnd,
-} from "./events.shape";
+import { shapeEventDragMove, shapeTransformEnd } from "./events.shape";
 import { IShape, IShapeWithEvents, WithInitialValue } from "./type.shape";
 
 // eslint-disable-next-line react/display-name
-const ShapeBox = memo(({ shape: item }: IShapeWithEvents) => {
+const ShapeBox = ({ shape: item }: IShapeWithEvents) => {
   const [box, setBox] = useAtom(
     item.state as PrimitiveAtom<IShape> & WithInitialValue<IShape>
   );
@@ -76,27 +70,17 @@ const ShapeBox = memo(({ shape: item }: IShapeWithEvents) => {
         // 7. Interactividad y arrastre
         draggable={isSelected}
         // 8. Eventos
-        onTap={() =>
-          setShapeId({
-            id: box?.id,
-            parentId: box.parentId,
-          })
-        }
         onClick={() =>
           setShapeId({
             id: box?.id,
             parentId: box.parentId,
           })
         }
-        onDragStart={(e) => setBox(ShapeEventDragStart(e))}
         onDragMove={(e) =>
           setBox(
             shapeEventDragMove(e, stageDimensions.width, stageDimensions.height)
           )
         }
-        onDragEnd={(e) => {
-          setBox(shapeEventDragStop(e));
-        }}
         onTransform={(e) => {
           setBox({
             ...box,
@@ -113,6 +97,6 @@ const ShapeBox = memo(({ shape: item }: IShapeWithEvents) => {
       />
     </>
   );
-});
+};
 
 export default ShapeBox;
