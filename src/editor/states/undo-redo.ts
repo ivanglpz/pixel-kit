@@ -1,6 +1,6 @@
 import { atom, Getter, Setter } from "jotai";
 import { v4 as uuidv4 } from "uuid";
-import { cloneDeep } from "../helpers/startEvent";
+import { cloneDeep } from "../helpers/shape-schema";
 import { IShape } from "../shapes/type.shape";
 import { CURRENT_PAGE } from "./pages";
 import { SHAPE_IDS_ATOM } from "./shape";
@@ -412,11 +412,6 @@ export const UNDO_ATOM = atom(null, (get, set) => {
           const result = element.state.children.map(
             convertUndoShapeToAllShapes
           );
-
-          const payload: IShape = {
-            ...element.state,
-            children: atom(result),
-          };
 
           set(FIND_SHAPE.state, {
             ...cloneDeep(element.state),

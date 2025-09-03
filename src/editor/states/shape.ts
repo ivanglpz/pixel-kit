@@ -1,7 +1,7 @@
 import { IShape } from "@/editor/shapes/type.shape";
 import { atom } from "jotai";
 import { v4 as uuidv4 } from "uuid";
-import { cloneDeep } from "../helpers/startEvent";
+import { cloneDeep } from "../helpers/shape-schema";
 import { EVENT_ATOM } from "./event";
 import { CURRENT_PAGE, IPageShapeIds } from "./pages";
 import ALL_SHAPES_ATOM, { ALL_SHAPES, PLANE_SHAPES_ATOM } from "./shapes";
@@ -44,19 +44,6 @@ export const UPDATE_SHAPES_IDS_ATOM = atom(
   }
 );
 
-export const REMOVE_SHAPE_ID_ATOM = atom(
-  null,
-  (get, set, args: IPageShapeIds) => {
-    const SHAPE_IDS_ATOM = get(CURRENT_PAGE).SHAPES.ID;
-
-    const IDS = get(get(CURRENT_PAGE).SHAPES.ID);
-
-    set(
-      SHAPE_IDS_ATOM,
-      IDS?.filter((e) => e?.id === args.id && e?.parentId === args.parentId)
-    );
-  }
-);
 export const RESET_SHAPES_IDS_ATOM = atom(null, (get, set) => {
   const SHAPE_IDS_ATOM = get(CURRENT_PAGE).SHAPES.ID;
 

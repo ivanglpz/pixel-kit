@@ -8,8 +8,10 @@ import { KonvaEventObject } from "konva/lib/Node";
 import { useEffect } from "react";
 import { v4 as uuidv4 } from "uuid";
 import stageAbsolutePosition from "../helpers/position";
-import { shapeProgressEvent } from "../helpers/progressEvent";
-import { shapeStart } from "../helpers/startEvent";
+import {
+  CreateShapeSchema,
+  UpdateShapeDimension,
+} from "../helpers/shape-schema";
 import CURRENT_ITEM_ATOM, {
   CLEAR_CURRENT_ITEM_ATOM,
   CREATE_CURRENT_ITEM_ATOM,
@@ -19,17 +21,11 @@ import { EVENT_ATOM } from "../states/event";
 import { RECTANGLE_SELECTION_ATOM } from "../states/rectangle-selection";
 import {
   GET_SELECTED_SHAPES_ATOM,
-  REMOVE_SHAPE_ID_ATOM,
   SHAPE_IDS_ATOM,
   UPDATE_SHAPES_IDS_ATOM,
 } from "../states/shape";
 import { CREATE_SHAPE_ATOM, DELETE_SHAPES_ATOM } from "../states/shapes";
-import {
-  COUNT_UNDO_REDO,
-  LIST_UNDO_REDO,
-  REDO_ATOM,
-  UNDO_ATOM,
-} from "../states/undo-redo";
+import { REDO_ATOM, UNDO_ATOM } from "../states/undo-redo";
 import { useConfiguration } from "./useConfiguration";
 import { useReference } from "./useReference";
 
@@ -56,7 +52,6 @@ export const useEventStage = () => {
   // ===== SETTERS =====
   const SET_CREATE = useSetAtom(CREATE_SHAPE_ATOM);
   const DELETE_SHAPE = useSetAtom(DELETE_SHAPES_ATOM);
-  const removeShapeId = useSetAtom(REMOVE_SHAPE_ID_ATOM);
   const SET_UPDATE_SHAPES_IDS = useSetAtom(UPDATE_SHAPES_IDS_ATOM);
   const SET_CREATE_CITEM = useSetAtom(CREATE_CURRENT_ITEM_ATOM);
   const SET_CLEAR_CITEM = useSetAtom(CLEAR_CURRENT_ITEM_ATOM);
@@ -65,8 +60,6 @@ export const useEventStage = () => {
   const setRedo = useSetAtom(REDO_ATOM);
   const setUndo = useSetAtom(UNDO_ATOM);
   const { ref: Stage } = useReference({ type: "STAGE" });
-  const LIST_UNDO = useAtomValue(LIST_UNDO_REDO);
-  const COUNT_UNDO = useAtomValue(COUNT_UNDO_REDO);
 
   // ===== MOUSE EVENT HANDLERS =====
   const handleMouseDown = (event: KonvaEventObject<MouseEvent>) => {
@@ -164,7 +157,7 @@ export const useEventStage = () => {
     SET_EVENT_STAGE("CREATING");
 
     if (TOOLS_BOX_BASED.includes(tool)) {
-      const createStartElement = shapeStart({
+      const createStartElement = CreateShapeSchema({
         tool: tool as IShape["tool"],
         x,
         y,
@@ -173,7 +166,7 @@ export const useEventStage = () => {
       SET_CREATE_CITEM([createStartElement]);
     }
     if (TOOLS_LINE_BASED.includes(tool)) {
-      const createStartElement = shapeStart({
+      const createStartElement = CreateShapeSchema({
         ...drawConfig,
         tool: tool as IShape["tool"],
         x: 0,
@@ -184,7 +177,7 @@ export const useEventStage = () => {
       SET_CREATE_CITEM([createStartElement]);
     }
     if (TOOLS_DRAW_BASED.includes(tool)) {
-      const createStartElement = shapeStart({
+      const createStartElement = CreateShapeSchema({
         ...drawConfig,
         tool: tool as IShape["tool"],
         x: 0,
@@ -199,34 +192,6 @@ export const useEventStage = () => {
   const handleCopyMode = () => {
     selectedShapes();
 
-    // const shapesCloneDeep = selected?.map((e) => cloneDeep(e) as IShape);
-
-    // const groups = shapesCloneDeep?.filter((e) => e?.tool === "GROUP");
-    // const mapGroups = groups?.reduce<{ [key in string]: string }>(
-    //   (acc, curr) => {
-    //     return {
-    //       ...acc,
-    //       [curr.id]: uuidv4(),
-    //     };
-    //   },
-    //   {}
-    // );
-
-    // const newShapes: IShape[] = shapesCloneDeep.map((e) => {
-    //   const newParentId =
-    //     e.parentId && mapGroups[e.parentId]
-    //       ? mapGroups[e.parentId]!
-    //       : e.parentId;
-    //   return {
-    //     ...cloneDeep(e),
-    //     id: mapGroups[e.id] ? mapGroups[e.id] : uuidv4(),
-    //     parentId: newParentId,
-    //   };
-    // });
-
-    // for (const element of newShapes) {
-    //   SET_CREATE(element);
-    // }
     SET_EVENT_STAGE("IDLE");
     setTool("MOVE");
   };
@@ -236,21 +201,19 @@ export const useEventStage = () => {
     const newShape = CURRENT_ITEM.at(0);
     if (!newShape) return;
 
-    const updateProgressElement = shapeProgressEvent[newShape.tool];
-
     if (TOOLS_BOX_BASED.includes(newShape.tool)) {
-      const updateShape = updateProgressElement(x, y, newShape);
+      const updateShape = UpdateShapeDimension(x, y, newShape);
       SET_UPDATE_CITEM([updateShape]);
     }
     if (TOOLS_LINE_BASED.includes(newShape.tool)) {
-      const updateShape = updateProgressElement(x, y, {
+      const updateShape = UpdateShapeDimension(x, y, {
         ...newShape,
         points: [newShape?.points?.[0] ?? 0, newShape?.points?.[1] ?? 0, x, y],
       });
       SET_UPDATE_CITEM([updateShape]);
     }
     if (TOOLS_DRAW_BASED.includes(newShape.tool)) {
-      const updateShape = updateProgressElement(x, y, {
+      const updateShape = UpdateShapeDimension(x, y, {
         ...newShape,
         points: newShape.points?.concat([x, y]),
       });
@@ -303,7 +266,7 @@ export const useEventStage = () => {
     const image = new Image();
     image.src = dataUrl;
     image.onload = () => {
-      const createStartElement = shapeStart({
+      const createStartElement = CreateShapeSchema({
         tool: "IMAGE",
         x: 0,
         y: 0,
@@ -330,7 +293,7 @@ export const useEventStage = () => {
   };
 
   const createTextFromClipboard = (text: string) => {
-    const createStartElement = shapeStart({
+    const createStartElement = CreateShapeSchema({
       tool: "TEXT",
       x: 0,
       y: 0,
@@ -349,7 +312,7 @@ export const useEventStage = () => {
       canvas.height = img.height;
       ctx?.drawImage(img, 0, 0);
 
-      const createStartElement = shapeStart({
+      const createStartElement = CreateShapeSchema({
         tool: "IMAGE",
         x: 0,
         y: 0,
