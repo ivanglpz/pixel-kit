@@ -257,9 +257,6 @@ export const useEventStage = () => {
 
   const handleDeleteShapes = () => {
     DELETE_SHAPE();
-    // for (const element of shapeId) {
-    //   removeShapeId(element);
-    // }
   };
 
   const createImageFromFile = (file: File, dataUrl: string) => {
@@ -400,6 +397,7 @@ export const useEventStage = () => {
         SET_EVENT_STAGE(keysActions[KEY].eventStage);
       }
     };
+
     const handleFile = (file: File): void => {
       const reader = new FileReader();
       reader.onload = (data) => {

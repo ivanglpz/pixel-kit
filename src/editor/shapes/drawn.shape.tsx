@@ -1,6 +1,5 @@
 /* eslint-disable react/display-name */
 import { PrimitiveAtom, useAtom } from "jotai";
-import { memo } from "react";
 import { Line } from "react-konva";
 import { IShape, IShapeWithEvents, WithInitialValue } from "./type.shape";
 
@@ -16,7 +15,7 @@ import {
   shapeTransformEnd,
 } from "./events.shape";
 
-export const ShapeDraw = memo(({ shape: item }: IShapeWithEvents) => {
+export const ShapeDraw = ({ shape: item }: IShapeWithEvents) => {
   const [box, setBox] = useAtom(
     item.state as PrimitiveAtom<IShape> & WithInitialValue<IShape>
   );
@@ -104,4 +103,4 @@ export const ShapeDraw = memo(({ shape: item }: IShapeWithEvents) => {
       />
     </>
   );
-});
+};

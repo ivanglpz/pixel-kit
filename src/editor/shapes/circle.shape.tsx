@@ -1,6 +1,5 @@
 /* eslint-disable react/display-name */
 import { PrimitiveAtom, useAtom, useAtomValue } from "jotai";
-import { memo } from "react";
 import { STAGE_DIMENSION_ATOM } from "../states/dimension";
 import { SHAPE_IDS_ATOM } from "../states/shape";
 import { ShapeEventDragStart } from "./events.shape";
@@ -12,7 +11,7 @@ import {
   shapeEventDragStop,
   shapeTransformEnd,
 } from "./events.shape";
-export const ShapeCircle = memo(({ shape: item }: IShapeWithEvents) => {
+export const ShapeCircle = ({ shape: item }: IShapeWithEvents) => {
   const [box, setBox] = useAtom(
     item.state as PrimitiveAtom<IShape> & WithInitialValue<IShape>
   );
@@ -109,4 +108,4 @@ export const ShapeCircle = memo(({ shape: item }: IShapeWithEvents) => {
       />
     </>
   );
-});
+};

@@ -2,7 +2,7 @@
 /* eslint-disable jsx-a11y/alt-text */
 
 // React
-import { memo, useMemo } from "react";
+import { useMemo } from "react";
 
 // Estado global (jotai)
 import { PrimitiveAtom, useAtom, useAtomValue } from "jotai";
@@ -61,7 +61,7 @@ function calculateCoverCrop(
 // Componente ShapeImage
 // =========================
 
-export const ShapeImage = memo((props: IShapeWithEvents) => {
+export const ShapeImage = (props: IShapeWithEvents) => {
   // Estado local vinculado al átomo
   const [box, setBox] = useAtom(
     props?.shape.state as PrimitiveAtom<IShape> & WithInitialValue<IShape>
@@ -194,4 +194,4 @@ export const ShapeImage = memo((props: IShapeWithEvents) => {
       />
     </>
   );
-});
+};

@@ -1,6 +1,5 @@
 /* eslint-disable react/display-name */
 import { PrimitiveAtom, useAtom, useAtomValue } from "jotai";
-import { memo } from "react";
 import { Line } from "react-konva";
 import { STAGE_DIMENSION_ATOM } from "../states/dimension";
 import { SHAPE_IDS_ATOM } from "../states/shape";
@@ -13,7 +12,7 @@ import {
   shapeTransformEnd,
 } from "./events.shape";
 
-export const ShapeLine = memo(({ shape: item }: IShapeWithEvents) => {
+export const ShapeLine = ({ shape: item }: IShapeWithEvents) => {
   const [box, setBox] = useAtom(
     item.state as PrimitiveAtom<IShape> & WithInitialValue<IShape>
   );
@@ -103,4 +102,4 @@ export const ShapeLine = memo(({ shape: item }: IShapeWithEvents) => {
       />
     </>
   );
-});
+};

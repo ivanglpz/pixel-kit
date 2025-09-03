@@ -1,4 +1,3 @@
-import { MemoExoticComponent } from "react";
 import { IKeyTool } from "../states/tool";
 import ShapeBox from "./box.shape";
 import { ShapeCircle } from "./circle.shape";
@@ -10,9 +9,7 @@ import { ShapeText } from "./text.shape";
 import { IShapeWithEvents } from "./type.shape";
 
 export type IMapperElements = {
-  [key in IKeyTool]?: MemoExoticComponent<
-    (item: IShapeWithEvents) => JSX.Element | null
-  >;
+  [key in IKeyTool]?: (item: IShapeWithEvents) => JSX.Element | null;
 };
 
 export const Shapes: IMapperElements = {
