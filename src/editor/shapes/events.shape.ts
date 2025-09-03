@@ -11,7 +11,7 @@ export const ShapeEventDragStart =
     return payload;
   };
 
-const coordinatesShapeMove = (
+export const coordinatesShapeMove = (
   prev: IShape,
   stageWidth: number,
   stageHeight: number,

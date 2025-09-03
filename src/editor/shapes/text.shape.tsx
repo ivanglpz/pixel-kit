@@ -8,19 +8,14 @@ import { useAtomValue } from "jotai";
 import { STAGE_DIMENSION_ATOM } from "../states/dimension";
 import { SHAPE_IDS_ATOM } from "../states/shape";
 
-import {
-  shapeEventDragMove,
-  ShapeEventDragStart,
-  shapeEventDragStop,
-  shapeTransformEnd,
-} from "./events.shape";
+import { coordinatesShapeMove, shapeEventDragMove } from "./events.shape";
 export const ShapeText = ({ shape: item }: IShapeWithEvents) => {
   const [box, setBox] = useAtom(
     item.state as PrimitiveAtom<IShape> & WithInitialValue<IShape>
   );
   const { width, height, x, y, strokeWidth, dash, rotation } = box;
 
-  const stageDimensions = useAtomValue(STAGE_DIMENSION_ATOM);
+  const stage = useAtomValue(STAGE_DIMENSION_ATOM);
   const [shapeId, setShapeId] = useAtom(SHAPE_IDS_ATOM);
   const isSelected = shapeId.some((w) => w.id === box.id);
 
@@ -79,38 +74,34 @@ export const ShapeText = ({ shape: item }: IShapeWithEvents) => {
         // 8. Interactividad y arrastre
         draggable={isSelected}
         // 9. Eventos
-        onTap={() =>
-          setShapeId({
-            id: box?.id,
-            parentId: box.parentId,
-          })
-        }
         onClick={() =>
           setShapeId({
             id: box?.id,
             parentId: box.parentId,
           })
         }
-        onDragStart={(e) => setBox(ShapeEventDragStart(e))}
         onDragMove={(e) =>
-          setBox(
-            shapeEventDragMove(e, stageDimensions.width, stageDimensions.height)
-          )
+          setBox(shapeEventDragMove(e, stage.width, stage.height))
         }
-        onDragEnd={(e) => setBox(shapeEventDragStop(e))}
         onTransform={(e) => {
+          const scaleX = e.target.scaleX();
+          const scaleY = e.target.scaleY();
+          e.target.scaleX(1);
+          e.target.scaleY(1);
+          const payload = coordinatesShapeMove(
+            box,
+            stage.width,
+            stage.height,
+            e
+          );
+
           setBox({
-            ...box,
+            ...payload,
             rotation: e.target.rotation(),
-            ...shapeEventDragMove(
-              e,
-              stageDimensions.width,
-              stageDimensions.height
-            ),
+            width: Math.max(5, e.target.width() * scaleX),
+            height: Math.max(e.target.height() * scaleY),
           });
-          setBox(shapeTransformEnd(e));
         }}
-        onTransformEnd={(e) => setBox(shapeTransformEnd(e))}
       />
     </>
   );

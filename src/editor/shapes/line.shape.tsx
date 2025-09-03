@@ -5,12 +5,7 @@ import { STAGE_DIMENSION_ATOM } from "../states/dimension";
 import { SHAPE_IDS_ATOM } from "../states/shape";
 import { IShape, IShapeWithEvents, WithInitialValue } from "./type.shape";
 
-import {
-  shapeEventDragMove,
-  ShapeEventDragStart,
-  shapeEventDragStop,
-  shapeTransformEnd,
-} from "./events.shape";
+import { coordinatesShapeMove, shapeEventDragMove } from "./events.shape";
 
 export const ShapeLine = ({ shape: item }: IShapeWithEvents) => {
   const [box, setBox] = useAtom(
@@ -19,7 +14,7 @@ export const ShapeLine = ({ shape: item }: IShapeWithEvents) => {
 
   const { width, height, x, y, strokeWidth, dash } = box;
 
-  const stageDimensions = useAtomValue(STAGE_DIMENSION_ATOM);
+  const stage = useAtomValue(STAGE_DIMENSION_ATOM);
   const [shapeId, setShapeId] = useAtom(SHAPE_IDS_ATOM);
   const isSelected = shapeId.some((w) => w.id === box.id);
 
@@ -73,32 +68,34 @@ export const ShapeLine = ({ shape: item }: IShapeWithEvents) => {
         // 8. Interactividad y arrastre
         draggable={isSelected}
         // 9. Eventos
-        onTap={() =>
-          setShapeId({
-            id: box?.id,
-            parentId: box.parentId,
-          })
-        }
         onClick={() =>
           setShapeId({
             id: box?.id,
             parentId: box.parentId,
           })
         }
-        onDragStart={(e) => setBox(ShapeEventDragStart(e))}
         onDragMove={(e) =>
-          setBox(
-            shapeEventDragMove(e, stageDimensions.width, stageDimensions.height)
-          )
+          setBox(shapeEventDragMove(e, stage.width, stage.height))
         }
-        onDragEnd={(e) => setBox(shapeEventDragStop(e))}
         onTransform={(e) => {
-          setBox(
-            shapeEventDragMove(e, stageDimensions.width, stageDimensions.height)
+          const scaleX = e.target.scaleX();
+          const scaleY = e.target.scaleY();
+          e.target.scaleX(1);
+          e.target.scaleY(1);
+          const payload = coordinatesShapeMove(
+            box,
+            stage.width,
+            stage.height,
+            e
           );
-          setBox(shapeTransformEnd(e));
+
+          setBox({
+            ...payload,
+            rotation: e.target.rotation(),
+            width: Math.max(5, e.target.width() * scaleX),
+            height: Math.max(e.target.height() * scaleY),
+          });
         }}
-        onTransformEnd={(e) => setBox(shapeTransformEnd(e))}
       />
     </>
   );
