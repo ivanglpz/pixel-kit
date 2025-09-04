@@ -660,75 +660,104 @@ export const LayoutShapeConfig = () => {
       <section className={commonStyles.container}>
         <p className={commonStyles.sectionTitle}>Dimensions</p>
 
-        <div className={commonStyles.two2ColumnGrid}>
-          <InputNumber
-            iconType="width"
-            value={Number(shape.width) || 0}
-            onChange={(v) => {
-              shapeUpdate({ width: v });
-              execute(); // Ejecutar después del cambio
-            }}
-          />
-          <button
-            onClick={() => {
-              shapeUpdate({ fillContainerWidth: !shape.fillContainerWidth });
-              execute(); // Ejecutar después del cambio
-            }}
-            className={css({
-              background: "bg.muted",
-              borderRadius: "6px",
-              padding: "6px",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            })}
-          >
-            <ArrowLeftRight
-              size={14}
-              color={
-                shape.fillContainerWidth
-                  ? constants.theme.colors.primary
-                  : constants.theme.colors["gray.200"]
-              }
-              strokeWidth={2.5}
+        {Boolean(shape.parentId) ? (
+          <>
+            <div className={commonStyles.two2ColumnGrid}>
+              <InputNumber
+                iconType="width"
+                value={Number(shape.width) || 0}
+                onChange={(v) => {
+                  shapeUpdate({ width: v });
+                  execute(); // Ejecutar después del cambio
+                }}
+              />
+              <button
+                onClick={() => {
+                  shapeUpdate({
+                    fillContainerWidth: !shape.fillContainerWidth,
+                  });
+                  execute(); // Ejecutar después del cambio
+                }}
+                className={css({
+                  background: "bg.muted",
+                  borderRadius: "6px",
+                  padding: "6px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                })}
+              >
+                <ArrowLeftRight
+                  size={14}
+                  color={
+                    shape.fillContainerWidth
+                      ? constants.theme.colors.primary
+                      : constants.theme.colors["gray.200"]
+                  }
+                  strokeWidth={2.5}
+                />
+              </button>
+            </div>
+            <div className={commonStyles.two2ColumnGrid}>
+              <InputNumber
+                iconType="height"
+                labelText=""
+                value={Number(shape.height) || 0}
+                onChange={(v) => {
+                  shapeUpdate({ height: v });
+                  execute(); // Ejecutar después del cambio
+                }}
+              />
+              <button
+                onClick={() => {
+                  shapeUpdate({
+                    fillContainerHeight: !shape.fillContainerHeight,
+                  });
+                  execute(); // Ejecutar después del cambio
+                }}
+                className={css({
+                  background: "bg.muted",
+                  borderRadius: "6px",
+                  padding: "6px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                })}
+              >
+                <ArrowUpDown
+                  size={14}
+                  strokeWidth={2.5}
+                  color={
+                    shape.fillContainerHeight
+                      ? constants.theme.colors.primary
+                      : constants.theme.colors["gray.200"]
+                  }
+                />
+              </button>
+            </div>
+          </>
+        ) : null}
+        {!Boolean(shape.parentId) ? (
+          <div className={commonStyles.twoColumnGrid}>
+            <InputNumber
+              iconType="width"
+              value={Number(shape.width) || 0}
+              onChange={(v) => {
+                shapeUpdate({ width: v });
+                execute(); // Ejecutar después del cambio
+              }}
             />
-          </button>
-        </div>
-        <div className={commonStyles.two2ColumnGrid}>
-          <InputNumber
-            iconType="height"
-            labelText=""
-            value={Number(shape.height) || 0}
-            onChange={(v) => {
-              shapeUpdate({ height: v });
-              execute(); // Ejecutar después del cambio
-            }}
-          />
-          <button
-            onClick={() => {
-              shapeUpdate({ fillContainerHeight: !shape.fillContainerHeight });
-              execute(); // Ejecutar después del cambio
-            }}
-            className={css({
-              background: "bg.muted",
-              borderRadius: "6px",
-              padding: "6px",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            })}
-          >
-            <ArrowUpDown
-              size={14}
-              strokeWidth={2.5}
-              color={
-                shape.fillContainerHeight
-                  ? constants.theme.colors.primary
-                  : constants.theme.colors["gray.200"]
-              }
+            <InputNumber
+              iconType="height"
+              labelText=""
+              value={Number(shape.height) || 0}
+              onChange={(v) => {
+                shapeUpdate({ height: v });
+                execute(); // Ejecutar después del cambio
+              }}
             />
-          </button>
-        </div>
+          </div>
+        ) : null}
 
         {/* <div className={commonStyles.twoColumnGrid}>
           <button
