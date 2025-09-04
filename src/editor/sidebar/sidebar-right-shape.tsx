@@ -1155,8 +1155,8 @@ export const LayoutShapeConfig = () => {
             <InputNumber
               iconType="font"
               labelText=""
-              min={12}
-              max={72}
+              min={4}
+              max={180}
               step={4}
               onChange={(e) => {
                 shapeUpdate({ fontSize: e });
