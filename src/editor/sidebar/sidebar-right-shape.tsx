@@ -11,7 +11,9 @@ import { css } from "@stylespixelkit/css";
 import { useAtomValue, useSetAtom } from "jotai";
 import {
   ArrowDown,
+  ArrowLeftRight,
   ArrowRight,
+  ArrowUpDown,
   Brush,
   CornerRightDown,
   Eye,
@@ -67,7 +69,13 @@ export const commonStyles = {
   twoColumnGrid: css({
     display: "grid",
     gridTemplateColumns: "2",
-    gap: "lg",
+    gap: "md",
+  }),
+
+  two2ColumnGrid: css({
+    display: "grid",
+    gridTemplateColumns: "1fr 35px",
+    gap: "md",
   }),
 
   threeColumnGrid: css({
@@ -84,6 +92,7 @@ export const commonStyles = {
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
+    height: "29px",
   }),
 
   addButton: css({
@@ -651,7 +660,7 @@ export const LayoutShapeConfig = () => {
       <section className={commonStyles.container}>
         <p className={commonStyles.sectionTitle}>Dimensions</p>
 
-        <div className={commonStyles.twoColumnGrid}>
+        <div className={commonStyles.two2ColumnGrid}>
           <InputNumber
             iconType="width"
             value={Number(shape.width) || 0}
@@ -660,6 +669,32 @@ export const LayoutShapeConfig = () => {
               execute(); // Ejecutar después del cambio
             }}
           />
+          <button
+            onClick={() => {
+              shapeUpdate({ fillContainerWidth: !shape.fillContainerWidth });
+              execute(); // Ejecutar después del cambio
+            }}
+            className={css({
+              background: "bg.muted",
+              borderRadius: "6px",
+              padding: "6px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            })}
+          >
+            <ArrowLeftRight
+              size={14}
+              color={
+                shape.fillContainerWidth
+                  ? constants.theme.colors.primary
+                  : constants.theme.colors["gray.200"]
+              }
+              strokeWidth={2.5}
+            />
+          </button>
+        </div>
+        <div className={commonStyles.two2ColumnGrid}>
           <InputNumber
             iconType="height"
             labelText=""
@@ -669,8 +704,33 @@ export const LayoutShapeConfig = () => {
               execute(); // Ejecutar después del cambio
             }}
           />
+          <button
+            onClick={() => {
+              shapeUpdate({ fillContainerHeight: !shape.fillContainerHeight });
+              execute(); // Ejecutar después del cambio
+            }}
+            className={css({
+              background: "bg.muted",
+              borderRadius: "6px",
+              padding: "6px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            })}
+          >
+            <ArrowUpDown
+              size={14}
+              strokeWidth={2.5}
+              color={
+                shape.fillContainerHeight
+                  ? constants.theme.colors.primary
+                  : constants.theme.colors["gray.200"]
+              }
+            />
+          </button>
         </div>
-        <div className={commonStyles.twoColumnGrid}>
+
+        {/* <div className={commonStyles.twoColumnGrid}>
           <button
             onClick={() => {
               shapeUpdate({ fillContainerWidth: !shape.fillContainerWidth });
@@ -686,7 +746,14 @@ export const LayoutShapeConfig = () => {
               height: "33.5px",
             })}
           >
-            {shape.fillContainerWidth ? "yes" : "no"}
+            <ArrowLeftRight
+              size={14}
+              color={
+                shape.fillContainerWidth
+                  ? constants.theme.colors.primary
+                  : constants.theme.colors["gray.200"]
+              }
+            />
           </button>
           <button
             onClick={() => {
@@ -704,9 +771,16 @@ export const LayoutShapeConfig = () => {
               height: "33.5px",
             })}
           >
-            {shape.fillContainerHeight ? "yes" : "no"}
+            <ArrowUpDown
+              size={14}
+              color={
+                shape.fillContainerHeight
+                  ? constants.theme.colors.primary
+                  : constants.theme.colors["gray.200"]
+              }
+            />
           </button>
-        </div>
+        </div> */}
       </section>
       <Separator />
       <section className={commonStyles.container}>
@@ -1149,7 +1223,7 @@ export const LayoutShapeConfig = () => {
                   onClick={() => handleFillVisibilityToggle(index)}
                   className={commonStyles.iconButton}
                 >
-                  {fill.visible ? <Eye size={18} /> : <EyeOff size={18} />}
+                  {fill.visible ? <Eye size={14} /> : <EyeOff size={14} />}
                 </button>
 
                 {/* Botón remove */}
@@ -1157,7 +1231,7 @@ export const LayoutShapeConfig = () => {
                   onClick={() => handleFillRemove(index)}
                   className={commonStyles.iconButton}
                 >
-                  <Minus size={18} />
+                  <Minus size={14} />
                 </button>
               </div>
             ))
@@ -1188,7 +1262,7 @@ export const LayoutShapeConfig = () => {
                   onClick={() => handleStrokeVisibilityToggle(index)}
                   className={commonStyles.iconButton}
                 >
-                  {stroke.visible ? <Eye size={18} /> : <EyeOff size={18} />}
+                  {stroke.visible ? <Eye size={14} /> : <EyeOff size={14} />}
                 </button>
 
                 {/* Botón remove */}
@@ -1196,7 +1270,7 @@ export const LayoutShapeConfig = () => {
                   onClick={() => handleStrokeRemove(index)}
                   className={commonStyles.iconButton}
                 >
-                  <Minus size={18} />
+                  <Minus size={14} />
                 </button>
               </div>
             ))}
@@ -1240,7 +1314,7 @@ export const LayoutShapeConfig = () => {
                     height: "33.5px",
                   })}
                 >
-                  <Brush size={16} />
+                  <Brush size={14} />
                 </button>
 
                 <button
@@ -1258,7 +1332,7 @@ export const LayoutShapeConfig = () => {
                     height: "33.5px",
                   })}
                 >
-                  <Ruler size={16} />
+                  <Ruler size={14} />
                 </button>
 
                 <button
@@ -1276,7 +1350,7 @@ export const LayoutShapeConfig = () => {
                     height: "33.5px",
                   })}
                 >
-                  <PenTool size={16} />
+                  <PenTool size={14} />
                 </button>
               </div>
             </div>
