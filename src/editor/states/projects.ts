@@ -8,7 +8,7 @@ import { MODE } from "./mode";
 import { IPage, IPageShapeIds } from "./pages";
 import { ALL_SHAPES, WithInitialValue } from "./shapes";
 import { IKeyTool } from "./tool";
-import { UNDO_REDO_PROPS } from "./undo-redo";
+import { UndoRedoAction } from "./undo-redo";
 
 export type IPROJECT = {
   ID: string;
@@ -60,7 +60,7 @@ export const PROJECTS_ATOM = atom([
             },
             UNDOREDO: {
               COUNT_UNDO_REDO: atom<number>(0),
-              LIST_UNDO_REDO: atom<UNDO_REDO_PROPS[]>([]),
+              LIST_UNDO_REDO: atom<UndoRedoAction[]>([]),
             },
           },
         ]),
@@ -79,7 +79,7 @@ export const PROJECTS_ATOM = atom([
             },
             UNDOREDO: {
               COUNT_UNDO_REDO: atom<number>(0),
-              LIST_UNDO_REDO: atom<UNDO_REDO_PROPS[]>([]),
+              LIST_UNDO_REDO: atom<UndoRedoAction[]>([]),
             },
           },
         ]),
@@ -99,7 +99,7 @@ export const PROJECTS_ATOM = atom([
             },
             UNDOREDO: {
               COUNT_UNDO_REDO: atom<number>(0),
-              LIST_UNDO_REDO: atom<UNDO_REDO_PROPS[]>([]),
+              LIST_UNDO_REDO: atom<UndoRedoAction[]>([]),
             },
           },
         ]),
@@ -163,7 +163,7 @@ export const NEW_PROJECT = atom(null, (get, set) => {
               },
               UNDOREDO: {
                 COUNT_UNDO_REDO: atom<number>(0),
-                LIST_UNDO_REDO: atom<UNDO_REDO_PROPS[]>([]),
+                LIST_UNDO_REDO: atom<UndoRedoAction[]>([]),
               },
             },
           ]),
@@ -182,7 +182,7 @@ export const NEW_PROJECT = atom(null, (get, set) => {
               },
               UNDOREDO: {
                 COUNT_UNDO_REDO: atom<number>(0),
-                LIST_UNDO_REDO: atom<UNDO_REDO_PROPS[]>([]),
+                LIST_UNDO_REDO: atom<UndoRedoAction[]>([]),
               },
             },
           ]),
@@ -202,7 +202,7 @@ export const NEW_PROJECT = atom(null, (get, set) => {
               },
               UNDOREDO: {
                 COUNT_UNDO_REDO: atom<number>(0),
-                LIST_UNDO_REDO: atom<UNDO_REDO_PROPS[]>([]),
+                LIST_UNDO_REDO: atom<UndoRedoAction[]>([]),
               },
             },
           ]),
