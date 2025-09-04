@@ -374,6 +374,7 @@ export const useEventStage = () => {
       // Handle delete operations
       if (DELETE_KEYS.includes(KEY)) {
         handleDeleteShapes();
+        setTool("MOVE");
       }
 
       // Handle Alt key for copy mode

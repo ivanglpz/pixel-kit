@@ -65,6 +65,9 @@ export const DELETE_SHAPES_ATOM = atom(null, (get, set) => {
   );
 
   // registrar acción de tipo UPDATE
+  const SHAPE_IDS_ = get(CURRENT_PAGE).SHAPES.ID;
+
+  set(SHAPE_IDS_, []);
   set(NEW_UNDO_REDO, {
     type: "DELETE",
     shapes: selected,
