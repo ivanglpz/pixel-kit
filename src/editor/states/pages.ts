@@ -5,7 +5,7 @@ import { canvasTheme } from "./canvas";
 import { MODE_ATOM } from "./mode";
 import { PROJECT_ATOM } from "./projects";
 import { ALL_SHAPES, WithInitialValue } from "./shapes";
-import { UNDO_REDO_PROPS } from "./undo-redo";
+import { UndoRedoAction } from "./undo-redo";
 
 export type IPageShapeIds = Pick<IShape, "id" | "parentId">;
 
@@ -20,8 +20,8 @@ export type IPage = {
   };
   UNDOREDO: {
     COUNT_UNDO_REDO: PrimitiveAtom<number> & WithInitialValue<number>;
-    LIST_UNDO_REDO: PrimitiveAtom<UNDO_REDO_PROPS[]> &
-      WithInitialValue<UNDO_REDO_PROPS[]>;
+    LIST_UNDO_REDO: PrimitiveAtom<UndoRedoAction[]> &
+      WithInitialValue<UndoRedoAction[]>;
   };
 };
 
@@ -84,7 +84,7 @@ export const NEW_PAGE = atom(null, (get, set) => {
     },
     UNDOREDO: {
       COUNT_UNDO_REDO: atom<number>(0),
-      LIST_UNDO_REDO: atom<UNDO_REDO_PROPS[]>([]),
+      LIST_UNDO_REDO: atom<UndoRedoAction[]>([]),
     },
   };
   set(PAGE_ID_ATOM, newPage.id);
