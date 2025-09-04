@@ -177,7 +177,154 @@ const removeShapesFromCurrentPositions = (
   }
 };
 
-// ========== REDO ==========
+// ===== NUEVO: Helper para capturar estado actual antes del move =====
+export const CAPTURE_MOVE_STATE = atom(
+  null,
+  (get, set, shapesToMove: string[]) => {
+    const currentShapes = get(PLANE_SHAPES_ATOM);
+
+    const capturedShapes: UNDO_SHAPE[] = [];
+
+    for (const shapeId of shapesToMove) {
+      const shape = currentShapes.find((s) => s.id === shapeId);
+      if (!shape) continue;
+
+      const cloneShapeRecursive = (shape: ALL_SHAPES): UNDO_SHAPE => {
+        const children = get(get(shape.state).children);
+        return {
+          ...shape,
+          state: {
+            ...cloneDeep(get(shape.state)),
+            children: children?.map(cloneShapeRecursive) ?? [],
+          },
+        };
+      };
+
+      capturedShapes.push(cloneShapeRecursive(shape));
+    }
+
+    return capturedShapes;
+  }
+);
+
+// ===== NUEVO: Atom para registrar operación MOVE completa =====
+export const REGISTER_MOVE_OPERATION = atom(
+  null,
+  (
+    get,
+    set,
+    args: {
+      movedShapes: string[]; // IDs de las shapes que se movieron
+      newParentId?: string; // ID del nuevo padre (undefined = root)
+    }
+  ) => {
+    // 1. Capturar estado ANTES del move (estado previo)
+    const prevShapes = get(CAPTURE_MOVE_STATE);
+
+    // 2. Capturar estado DESPUÉS del move (estado actual)
+    const currentShapes = get(PLANE_SHAPES_ATOM);
+    const currentMovedShapes: UNDO_SHAPE[] = [];
+
+    const cloneShapeRecursive = (shape: ALL_SHAPES): UNDO_SHAPE => {
+      const children = get(get(shape.state).children);
+      return {
+        ...shape,
+        state: {
+          ...cloneDeep(get(shape.state)),
+          children: children?.map(cloneShapeRecursive) ?? [],
+        },
+      };
+    };
+
+    for (const shapeId of args.movedShapes) {
+      const shape = currentShapes.find((s) => s.id === shapeId);
+      if (shape) {
+        currentMovedShapes.push(cloneShapeRecursive(shape));
+      }
+    }
+
+    // 3. Registrar la operación MOVE
+    set(NEW_UNDO_REDO, {
+      type: "MOVE",
+      shapes: currentMovedShapes, // Estado después del move
+      prevShapes: prevShapes, // Estado antes del move
+    });
+  }
+);
+
+// ===== Helper mejorado para remover shapes completamente =====
+const removeShapeCompletely = (
+  get: Getter,
+  set: Setter,
+  shapeId: string
+): boolean => {
+  const currentShapes = get(PLANE_SHAPES_ATOM);
+  const shapeToRemove = currentShapes.find((s) => s.id === shapeId);
+
+  if (!shapeToRemove) return false;
+
+  const currentParentId = get(shapeToRemove.state).parentId;
+
+  if (currentParentId) {
+    // Remover del padre
+    const parent = currentShapes.find((s) => s.id === currentParentId);
+    if (!parent) return false;
+
+    const currentChildren = get(get(parent.state).children);
+    const filteredChildren = currentChildren.filter(
+      (child) => child.id !== shapeId
+    );
+
+    set(parent.state, {
+      ...get(parent.state),
+      children: atom(filteredChildren),
+    });
+  } else {
+    // Remover del root
+    const currentRootShapes = get(ALL_SHAPES_ATOM);
+    const filteredRootShapes = currentRootShapes.filter(
+      (s) => s.id !== shapeId
+    );
+    set(ALL_SHAPES_ATOM, filteredRootShapes);
+  }
+
+  return true;
+};
+
+// ===== Helper mejorado para agregar shape en posición específica =====
+const addShapeToContainer = (
+  get: Getter,
+  set: Setter,
+  shape: UNDO_SHAPE,
+  targetParentId: string | null
+): void => {
+  const convertedShape = convertUndoShapeToAllShapes(shape);
+
+  // Actualizar el parentId del shape convertido
+  set(convertedShape.state, {
+    ...get(convertedShape.state),
+    parentId: targetParentId,
+  });
+
+  if (targetParentId) {
+    // Agregar como child
+    const currentShapes = get(PLANE_SHAPES_ATOM);
+    const parent = currentShapes.find((s) => s.id === targetParentId);
+    if (!parent) return;
+
+    const currentChildren = get(get(parent.state).children);
+    set(parent.state, {
+      ...get(parent.state),
+      children: atom([...currentChildren, convertedShape]),
+    });
+  } else {
+    // Agregar al root
+    const currentRootShapes = get(ALL_SHAPES_ATOM);
+    set(ALL_SHAPES_ATOM, [...currentRootShapes, convertedShape]);
+  }
+};
+
+// ===== REDO actualizado =====
 export const REDO_ATOM = atom(null, (get, set) => {
   const count = get(COUNT_UNDO_REDO);
   const list = get(LIST_UNDO_REDO);
@@ -187,38 +334,20 @@ export const REDO_ATOM = atom(null, (get, set) => {
   const action = list[count];
   if (!action) return;
 
-  const currentShapes = get(PLANE_SHAPES_ATOM);
-
   switch (action.type) {
     case "CREATE": {
       const newShapes: ALL_SHAPES[] = action.shapes.map(
         convertUndoShapeToAllShapes
       );
+      const currentShapes = get(ALL_SHAPES_ATOM);
       set(ALL_SHAPES_ATOM, [...currentShapes, ...newShapes]);
       break;
     }
 
     case "DELETE": {
+      // Eliminar las shapes
       for (const element of action.shapes) {
-        if (element.state.parentId) {
-          const FIND_SHAPE = currentShapes.find(
-            (w) => w.id === element.state.parentId
-          );
-          if (!FIND_SHAPE) continue;
-          set(FIND_SHAPE.state, {
-            ...get(FIND_SHAPE.state),
-            children: atom(
-              get(get(FIND_SHAPE.state).children).filter(
-                (w) => w.id !== element.state.id
-              )
-            ),
-          });
-        } else {
-          set(
-            ALL_SHAPES_ATOM,
-            get(ALL_SHAPES_ATOM).filter((w) => w.id !== element.state.id)
-          );
-        }
+        removeShapeCompletely(get, set, element.id);
       }
       break;
     }
@@ -227,69 +356,42 @@ export const REDO_ATOM = atom(null, (get, set) => {
       const currentShapes = get(PLANE_SHAPES_ATOM);
 
       for (const element of action.shapes) {
-        if (element.state.parentId) {
-          const FIND_SHAPE = currentShapes.find(
-            (w) => w.id === element.state.parentId
-          );
-          if (!FIND_SHAPE) continue;
+        const existingShape = currentShapes.find((s) => s.id === element.id);
+        if (!existingShape) continue;
 
-          const result = element.state.children.map(
-            convertUndoShapeToAllShapes
-          );
+        const convertedChildren = element.state.children.map(
+          convertUndoShapeToAllShapes
+        );
 
-          const payload: IShape = {
-            ...element.state,
-            children: atom(result),
-          };
-
-          set(FIND_SHAPE.state, {
-            ...get(FIND_SHAPE.state),
-            children: atom(
-              get(get(FIND_SHAPE.state).children).map((w) => {
-                if (w.id === payload.id) {
-                  return {
-                    ...w,
-                    state: atom(payload),
-                  };
-                }
-                return w;
-              })
-            ),
-          });
-        } else {
-          const FIND_SHAPE = currentShapes.find(
-            (w) => w.id === element.state.id
-          );
-
-          if (!FIND_SHAPE) continue;
-
-          const result = element.state.children.map(
-            convertUndoShapeToAllShapes
-          );
-
-          const payload: IShape = {
-            ...element.state,
-            children: atom(result),
-          };
-
-          set(FIND_SHAPE.state, {
-            ...cloneDeep(element.state),
-            children: atom(result),
-          });
-        }
+        set(existingShape.state, {
+          ...cloneDeep(element.state),
+          children: atom(convertedChildren),
+        });
       }
       break;
     }
 
     case "MOVE": {
-      // Para REDO de MOVE: aplicar el estado final (shapes)
       if (!action.prevShapes) break;
 
-      // Primero remover de posiciones anteriores usando prevShapes
-      removeShapesFromCurrentPositions(get, set, action.prevShapes);
+      // REDO: Ir del estado anterior (prevShapes) al estado nuevo (shapes)
+      for (let i = 0; i < action.shapes.length; i++) {
+        const currentShape = action.shapes[i];
+        const prevShape = action.prevShapes[i];
 
-      // Luego restaurar en nuevas posiciones usando shapes
-      restoreShapesToOriginalPositions(get, set, action.shapes);
+        if (!currentShape || !prevShape) continue;
+
+        // 1. Remover de la posición actual (donde está según prevShapes)
+        removeShapeCompletely(get, set, currentShape.id);
+
+        // 2. Agregar en la nueva posición (según shapes)
+        addShapeToContainer(
+          get,
+          set,
+          currentShape,
+          currentShape.state.parentId
+        );
+      }
       break;
     }
 
@@ -300,7 +402,7 @@ export const REDO_ATOM = atom(null, (get, set) => {
   set(COUNT_UNDO_REDO, count + 1);
 });
 
-// ========== UNDO ==========
+// ===== UNDO actualizado =====
 export const UNDO_ATOM = atom(null, (get, set) => {
   const count = get(COUNT_UNDO_REDO);
   if (count <= 0) return;
@@ -308,63 +410,19 @@ export const UNDO_ATOM = atom(null, (get, set) => {
   const action = get(LIST_UNDO_REDO)[count - 1];
   if (!action) return;
 
-  const currentShapes = get(PLANE_SHAPES_ATOM);
-
   switch (action.type) {
     case "CREATE": {
-      const idsToDelete = action.shapes.map((s) => s.id);
-      set(
-        ALL_SHAPES_ATOM,
-        currentShapes.filter((s) => !idsToDelete.includes(s.id))
-      );
+      // Eliminar las shapes creadas
+      for (const shape of action.shapes) {
+        removeShapeCompletely(get, set, shape.id);
+      }
       break;
     }
 
     case "DELETE": {
+      // Restaurar las shapes eliminadas
       for (const element of action.shapes) {
-        if (element.state.parentId) {
-          const FIND_SHAPE = currentShapes.find(
-            (w) => w.id === element.state.parentId
-          );
-          if (!FIND_SHAPE) continue;
-
-          const result = element.state.children.map(
-            convertUndoShapeToAllShapes
-          );
-
-          const payload: IShape = {
-            ...element.state,
-            children: atom(result),
-          };
-
-          set(FIND_SHAPE.state, {
-            ...get(FIND_SHAPE.state),
-            children: atom([
-              ...get(get(FIND_SHAPE.state).children),
-              {
-                ...element,
-                state: atom(payload),
-              },
-            ]),
-          });
-        } else {
-          const result = element.state.children.map(
-            convertUndoShapeToAllShapes
-          );
-
-          const payload: IShape = {
-            ...element.state,
-            children: atom(result),
-          };
-
-          set(ALL_SHAPES_ATOM, [
-            ...get(ALL_SHAPES_ATOM),
-            {
-              ...element,
-              state: atom(payload),
-            },
-          ]);
-        }
+        addShapeToContainer(get, set, element, element.state.parentId);
       }
       break;
     }
@@ -373,64 +431,37 @@ export const UNDO_ATOM = atom(null, (get, set) => {
       const currentShapes = get(PLANE_SHAPES_ATOM);
 
       for (const element of action.shapes) {
-        if (element.state.parentId) {
-          const FIND_SHAPE = currentShapes.find(
-            (w) => w.id === element.state.parentId
-          );
-          if (!FIND_SHAPE) continue;
+        const existingShape = currentShapes.find((s) => s.id === element.id);
+        if (!existingShape) continue;
 
-          const result = element.state.children.map(
-            convertUndoShapeToAllShapes
-          );
+        const convertedChildren = element.state.children.map(
+          convertUndoShapeToAllShapes
+        );
 
-          const payload: IShape = {
-            ...element.state,
-            children: atom(result),
-          };
-
-          set(FIND_SHAPE.state, {
-            ...cloneDeep(element.state),
-            children: atom(
-              get(get(FIND_SHAPE.state).children).map((w) => {
-                if (w.id === payload.id) {
-                  return {
-                    ...w,
-                    state: atom(payload),
-                  };
-                }
-                return w;
-              })
-            ),
-          });
-        } else {
-          const FIND_SHAPE = currentShapes.find(
-            (w) => w.id === element.state.id
-          );
-
-          if (!FIND_SHAPE) continue;
-
-          const result = element.state.children.map(
-            convertUndoShapeToAllShapes
-          );
-
-          set(FIND_SHAPE.state, {
-            ...cloneDeep(element.state),
-            children: atom(result),
-          });
-        }
+        set(existingShape.state, {
+          ...cloneDeep(element.state),
+          children: atom(convertedChildren),
+        });
       }
       break;
     }
 
     case "MOVE": {
-      // Para UNDO de MOVE: restaurar el estado anterior (prevShapes)
       if (!action.prevShapes) break;
 
-      // Primero remover de posiciones actuales usando shapes
-      removeShapesFromCurrentPositions(get, set, action.shapes);
+      // UNDO: Ir del estado actual (shapes) al estado anterior (prevShapes)
+      for (let i = 0; i < action.shapes.length; i++) {
+        const currentShape = action.shapes[i];
+        const prevShape = action.prevShapes[i];
 
-      // Luego restaurar en posiciones originales usando prevShapes
-      restoreShapesToOriginalPositions(get, set, action.prevShapes);
+        if (!currentShape || !prevShape) continue;
+
+        // 1. Remover de la posición actual
+        removeShapeCompletely(get, set, currentShape.id);
+
+        // 2. Restaurar en la posición anterior
+        addShapeToContainer(get, set, prevShape, prevShape.state.parentId);
+      }
       break;
     }
 
