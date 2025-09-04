@@ -8,9 +8,7 @@ import ALL_SHAPES_ATOM, { ALL_SHAPES, PLANE_SHAPES_ATOM } from "./shapes";
 
 // ===== TYPES =====
 export type UndoShape = Omit<ALL_SHAPES, "state" | "children"> & {
-  state: Omit<IShape, "children"> & {
-    children: UndoShape[];
-  };
+  state: Omit<IShape, "children"> & { children: UndoShape[] };
 };
 
 export type ActionType =
@@ -39,11 +37,21 @@ export type MoveOperation = {
   newParentId?: string;
 };
 
-// ===== PURE FUNCTIONS =====
+// ===== PURE HELPERS =====
+const findShapeById = (
+  shapes: ALL_SHAPES[],
+  id: string
+): ALL_SHAPES | undefined => shapes.find((shape) => shape.id === id);
 
-/**
- * Clona recursivamente una shape para el sistema undo/redo
- */
+const filterShapesExcluding = (
+  shapes: ALL_SHAPES[],
+  excludeIds: string[]
+): ALL_SHAPES[] => shapes.filter((shape) => !excludeIds.includes(shape.id));
+
+const truncateListAtIndex = <T>(list: T[], index: number): T[] =>
+  list.slice(0, index);
+
+// ===== SHAPE CONVERSIONS =====
 const cloneShapeRecursive =
   (get: Getter) =>
   (shape: ALL_SHAPES): UndoShape => {
@@ -57,9 +65,6 @@ const cloneShapeRecursive =
     };
   };
 
-/**
- * Convierte UndoShape a ALL_SHAPES de forma recursiva
- */
 const convertUndoShapeToAllShapes = (undoShape: UndoShape): ALL_SHAPES => {
   const convertChildren = (children: UndoShape[]): ALL_SHAPES[] =>
     children.map(convertUndoShapeToAllShapes);
@@ -75,43 +80,6 @@ const convertUndoShapeToAllShapes = (undoShape: UndoShape): ALL_SHAPES => {
   } as ALL_SHAPES;
 };
 
-/**
- * Encuentra una shape por ID
- */
-const findShapeById = (
-  shapes: ALL_SHAPES[],
-  id: string
-): ALL_SHAPES | undefined => shapes.find((shape) => shape.id === id);
-
-/**
- * Filtra shapes excluyendo IDs específicos
- */
-const filterShapesExcluding = (
-  shapes: ALL_SHAPES[],
-  excludeIds: string[]
-): ALL_SHAPES[] => shapes.filter((shape) => !excludeIds.includes(shape.id));
-
-/**
- * Crea una nueva lista truncada hasta un índice específico
- */
-const truncateListAtIndex = <T>(list: T[], index: number): T[] =>
-  list.slice(0, index);
-
-/**
- * Crea un nuevo objeto UndoRedoAction
- */
-const createUndoRedoAction =
-  (get: Getter) =>
-  (args: UndoShapeValues): UndoRedoAction => ({
-    id: uuidv4(),
-    type: args.type,
-    shapes: args.shapes.map(cloneShapeRecursive(get)),
-    prevShapes: args.prevShapes?.map(cloneShapeRecursive(get)),
-  });
-
-/**
- * Captura el estado actual de shapes específicas
- */
 const captureShapesState =
   (get: Getter) =>
   (shapeIds: string[]): UndoShape[] => {
@@ -124,21 +92,24 @@ const captureShapesState =
       .map(cloner);
   };
 
-// ===== SHAPE MANIPULATION HELPERS =====
+const createUndoRedoAction =
+  (get: Getter) =>
+  (args: UndoShapeValues): UndoRedoAction => ({
+    id: uuidv4(),
+    type: args.type,
+    shapes: args.shapes.map(cloneShapeRecursive(get)),
+    prevShapes: args.prevShapes?.map(cloneShapeRecursive(get)),
+  });
 
-/**
- * Remueve una shape completamente del árbol
- */
+// ===== SHAPE MANIPULATION =====
 const removeShapeCompletely =
   (get: Getter, set: Setter) =>
   (shapeId: string): boolean => {
     const currentShapes = get(PLANE_SHAPES_ATOM);
     const shapeToRemove = findShapeById(currentShapes, shapeId);
-
     if (!shapeToRemove) return false;
 
     const currentParentId = get(shapeToRemove.state).parentId;
-
     if (currentParentId) {
       const parent = findShapeById(currentShapes, currentParentId);
       if (!parent) return false;
@@ -159,19 +130,13 @@ const removeShapeCompletely =
       ]);
       set(ALL_SHAPES_ATOM, filteredRootShapes);
     }
-
     return true;
   };
 
-/**
- * Agrega una shape a un contenedor específico
- */
 const addShapeToContainer =
   (get: Getter, set: Setter) =>
   (shape: UndoShape, targetParentId: string | null): void => {
     const convertedShape = convertUndoShapeToAllShapes(shape);
-
-    // Crear nueva instancia con parentId actualizado
     set(convertedShape.state, {
       ...get(convertedShape.state),
       parentId: targetParentId,
@@ -193,16 +158,12 @@ const addShapeToContainer =
     }
   };
 
-/**
- * Actualiza el estado de una shape existente
- */
 const updateExistingShape =
   (get: Getter, set: Setter) =>
   (existingShape: ALL_SHAPES, newState: UndoShape): void => {
     const convertedChildren = newState.state.children.map(
       convertUndoShapeToAllShapes
     );
-
     set(existingShape.state, {
       ...cloneDeep(newState.state),
       children: atom(convertedChildren),
@@ -210,10 +171,6 @@ const updateExistingShape =
   };
 
 // ===== ACTION HANDLERS =====
-
-/**
- * Maneja la operación CREATE en REDO
- */
 const handleRedoCreate =
   (get: Getter, set: Setter) =>
   (shapes: UndoShape[]): void => {
@@ -222,9 +179,6 @@ const handleRedoCreate =
     set(ALL_SHAPES_ATOM, [...currentShapes, ...newShapes]);
   };
 
-/**
- * Maneja la operación DELETE en REDO
- */
 const handleRedoDelete =
   (get: Getter, set: Setter) =>
   (shapes: UndoShape[]): void => {
@@ -232,46 +186,32 @@ const handleRedoDelete =
     shapes.forEach((shape) => remover(shape.id));
   };
 
-/**
- * Maneja la operación UPDATE en REDO
- */
 const handleRedoUpdate =
   (get: Getter, set: Setter) =>
   (shapes: UndoShape[]): void => {
     const currentShapes = get(PLANE_SHAPES_ATOM);
     const updater = updateExistingShape(get, set);
-
     shapes.forEach((element) => {
       const existingShape = findShapeById(currentShapes, element.id);
-      if (existingShape) {
-        updater(existingShape, element);
-      }
+      if (existingShape) updater(existingShape, element);
     });
   };
 
-/**
- * Maneja la operación MOVE en REDO
- */
 const handleRedoMove =
   (get: Getter, set: Setter) =>
   (shapes: UndoShape[], prevShapes?: UndoShape[]): void => {
     if (!prevShapes) return;
-
     const remover = removeShapeCompletely(get, set);
     const adder = addShapeToContainer(get, set);
 
     shapes.forEach((currentShape, index) => {
       const prevShape = prevShapes[index];
       if (!currentShape || !prevShape) return;
-
       remover(currentShape.id);
       adder(currentShape, currentShape.state.parentId ?? null);
     });
   };
 
-/**
- * Maneja la operación CREATE en UNDO
- */
 const handleUndoCreate =
   (get: Getter, set: Setter) =>
   (shapes: UndoShape[]): void => {
@@ -279,9 +219,6 @@ const handleUndoCreate =
     shapes.forEach((shape) => remover(shape.id));
   };
 
-/**
- * Maneja la operación DELETE en UNDO
- */
 const handleUndoDelete =
   (get: Getter, set: Setter) =>
   (shapes: UndoShape[]): void => {
@@ -291,28 +228,22 @@ const handleUndoDelete =
     });
   };
 
-/**
- * Maneja la operación MOVE en UNDO
- */
 const handleUndoMove =
   (get: Getter, set: Setter) =>
   (shapes: UndoShape[], prevShapes?: UndoShape[]): void => {
     if (!prevShapes) return;
-
     const remover = removeShapeCompletely(get, set);
     const adder = addShapeToContainer(get, set);
 
     shapes.forEach((currentShape, index) => {
       const prevShape = prevShapes[index];
       if (!currentShape || !prevShape) return;
-
       remover(currentShape.id);
       adder(prevShape, prevShape.state.parentId ?? null);
     });
   };
 
 // ===== ATOMS =====
-
 export const COUNT_UNDO_REDO = atom(
   (get) => get(get(CURRENT_PAGE).UNDOREDO.COUNT_UNDO_REDO),
   (get, set, count: number) =>
@@ -340,15 +271,10 @@ export const NEW_UNDO_REDO = atom(null, (get, set, args: UndoShapeValues) => {
 export const UPDATE_UNDO_REDO = atom(null, (get, set) => {
   const shapeIds = get(SHAPE_IDS_ATOM);
   const allShapes = get(PLANE_SHAPES_ATOM);
-
   const selectedShapes = allShapes.filter((shape) =>
     shapeIds.some((selectedId) => selectedId.id === shape.id)
   );
-
-  set(NEW_UNDO_REDO, {
-    type: "UPDATE",
-    shapes: selectedShapes,
-  });
+  set(NEW_UNDO_REDO, { type: "UPDATE", shapes: selectedShapes });
 });
 
 export const CAPTURE_MOVE_STATE = atom(null, (get, set, shapeIds: string[]) =>
@@ -358,7 +284,6 @@ export const CAPTURE_MOVE_STATE = atom(null, (get, set, shapeIds: string[]) =>
 export const REDO_ATOM = atom(null, (get, set) => {
   const count = get(COUNT_UNDO_REDO);
   const list = get(LIST_UNDO_REDO);
-
   if (count >= list.length) return;
 
   const action = list[count];
@@ -380,7 +305,6 @@ export const REDO_ATOM = atom(null, (get, set) => {
   } else {
     (handler as any)(action.shapes);
   }
-
   set(COUNT_UNDO_REDO, count + 1);
 });
 
@@ -390,10 +314,11 @@ export const UNDO_ATOM = atom(null, (get, set) => {
 
   const action = get(LIST_UNDO_REDO)[count - 1];
   if (!action) return;
+
   const actionHandlers = {
     CREATE: handleUndoCreate(get, set),
     DELETE: handleUndoDelete(get, set),
-    UPDATE: handleRedoUpdate(get, set), // UPDATE es simétrico
+    UPDATE: handleRedoUpdate(get, set), // simétrico
     MOVE: (shapes: UndoShape[], prevShapes?: UndoShape[]) =>
       handleUndoMove(get, set)(shapes, prevShapes),
     INITIAL: () => {},
@@ -406,6 +331,5 @@ export const UNDO_ATOM = atom(null, (get, set) => {
   } else {
     handler(action.shapes);
   }
-
   set(COUNT_UNDO_REDO, count - 1);
 });
