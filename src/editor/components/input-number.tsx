@@ -94,7 +94,7 @@ export const InputNumber = ({
           alignItems: "center",
           justifyContent: "center",
           alignContent: "center",
-          height: 30,
+          flex: 1,
         })}
       >
         <div
