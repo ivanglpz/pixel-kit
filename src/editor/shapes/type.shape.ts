@@ -38,45 +38,72 @@ export type Effect = {
 };
 
 export type IShape = {
+  // Identity
   id: string;
+  label: string;
   tool: IKeyMethods;
+  parentId: string | null;
+
+  // Position & Transform
   x: number;
   y: number;
-  parentId: string | null;
   rotation: number;
+  width: number;
+  height: number;
+  points: number[];
+
+  // Visibility & Lock
+  visible: boolean;
   isLocked: boolean;
-  label: string;
+  opacity: number;
+
+  // Fill & Stroke
   fills: Fill[];
   strokes: Stroke[];
   strokeWidth: number;
-  effects: Effect[];
-  bordersRadius: number[];
-  width: number;
-  height: number;
-  text?: string;
-  visible: boolean;
-  points?: number[];
-  lineCap?: LineCap;
-  lineJoin?: LineJoin;
+  lineCap: LineCap;
+  lineJoin: LineJoin;
   dash: number;
-  opacity: number;
-  backgroundColor?: string;
-  align: "left" | "center" | "right" | "justify";
-  verticalAlign: "top" | "middle" | "bottom";
-  fontSize?: number;
-  fontStyle?: string;
-  fontFamily?: string;
-  textDecoration?: string;
-  fontWeight?: "bold" | "normal" | "lighter" | "bolder" | "100" | "900";
-  borderRadius?: number;
-  isAllBorderRadius?: boolean;
+
+  // Effects
+  effects: Effect[];
+  shadowBlur: number;
   shadowOffsetX: number;
   shadowOffsetY: number;
   shadowOpacity: number;
-  shadowBlur: number;
+
+  // Typography
+  text: string;
+  fontFamily: string;
+  fontSize: number;
+  fontStyle: string;
+  fontWeight: "bold" | "normal" | "lighter" | "bolder" | "100" | "900";
+  textDecoration?: string;
+  align: "left" | "center" | "right" | "justify";
+  verticalAlign: "top" | "middle" | "bottom";
+
+  // Layout
   layouts: Omit<LayoutFlexProps, "children" | "width" | "height" | "display">[];
   fillContainerWidth: boolean;
   fillContainerHeight: boolean;
+  minWidth: number;
+  maxWidth: number;
+  minHeight: number;
+  maxHeight: number;
+  paddingTop: number;
+  paddingRight: number;
+  paddingBottom: number;
+  paddingLeft: number;
+
+  // Border Radius
+  borderRadius: number;
+  isAllBorderRadius: boolean;
+  borderTopLeftRadius: number;
+  borderTopRightRadius: number;
+  borderBottomRightRadius: number;
+  borderBottomLeftRadius: number;
+
+  // Children
   children: PrimitiveAtom<ALL_SHAPES[]> & WithInitialValue<ALL_SHAPES[]>;
 };
 

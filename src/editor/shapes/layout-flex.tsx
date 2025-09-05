@@ -26,7 +26,6 @@ export type LayoutFlexProps = {
   id: string;
   visible: boolean;
   gap: number;
-  padding: number;
   children: React.ReactElement[];
 };
 
@@ -314,7 +313,6 @@ export const LayoutFlex: React.FC<LayoutFlexProps> = ({
   alignItems = "flex-start",
   flexWrap = "nowrap",
   gap = 10,
-  padding = 0,
   children,
 }) => {
   const [, applyLayout] = useAtom(flexLayoutAtom);
@@ -331,7 +329,7 @@ export const LayoutFlex: React.FC<LayoutFlexProps> = ({
         containerWidth: width,
         containerHeight: height,
         gap,
-        padding,
+        padding: 0,
       });
     }
   }, [
@@ -343,7 +341,6 @@ export const LayoutFlex: React.FC<LayoutFlexProps> = ({
     width,
     height,
     gap,
-    padding,
     display,
     applyLayout,
   ]);
