@@ -83,7 +83,10 @@ export type IShape = {
   verticalAlign: "top" | "middle" | "bottom";
 
   // Layout
-  layouts: Omit<LayoutFlexProps, "children" | "width" | "height" | "display">[];
+  layouts: Omit<
+    LayoutFlexProps,
+    "children" | "width" | "height" | "display" | "shape"
+  >[];
   fillContainerWidth: boolean;
   fillContainerHeight: boolean;
 

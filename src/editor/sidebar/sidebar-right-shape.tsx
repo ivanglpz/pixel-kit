@@ -526,6 +526,7 @@ export const LayoutShapeConfig = () => {
           alignItems: "flex-start",
           flexWrap: "nowrap",
           gap: 10,
+
           // padding: 10,
         },
       ],

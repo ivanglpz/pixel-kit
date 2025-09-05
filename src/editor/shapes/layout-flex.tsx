@@ -27,6 +27,7 @@ export type LayoutFlexProps = {
   visible: boolean;
   gap: number;
   children: React.ReactElement[];
+  shape: IShape; // contenedor padre
 };
 
 const flexLayoutAtom = atom(
@@ -40,24 +41,48 @@ const flexLayoutAtom = atom(
       justifyContent,
       alignItems,
       flexWrap,
-      containerWidth,
-      containerHeight,
+      width: containerWidth,
+      height: containerHeight,
       gap,
-      padding,
-    }: {
-      children: React.ReactElement[];
-      flexDirection: FlexDirection;
-      justifyContent: JustifyContent;
-      alignItems: AlignItems;
-      flexWrap: FlexWrap;
-      containerWidth: number;
-      containerHeight: number;
-      gap: number;
-      padding: number;
-    }
+      shape, // el shape padre con nuevas props
+    }: Pick<
+      LayoutFlexProps,
+      | "children"
+      | "flexDirection"
+      | "justifyContent"
+      | "alignItems"
+      | "flexWrap"
+      | "width"
+      | "height"
+      | "gap"
+      | "shape"
+    >
+    // {
+    //   children: React.ReactElement[];
+    //   flexDirection: FlexDirection;
+    //   justifyContent: JustifyContent;
+    //   alignItems: AlignItems;
+    //   flexWrap: FlexWrap;
+    //   containerWidth: number;
+    //   containerHeight: number;
+    //   gap: number;
+    //   shape: IShape; // contenedor padre
+    // }
   ) => {
-    const effectiveWidth = containerWidth - padding * 2;
-    const effectiveHeight = containerHeight - padding * 2;
+    // Calcular padding del contenedor
+    const paddingTop = shape.isAllPadding ? shape.paddingTop : shape.paddingTop;
+    const paddingRight = shape.isAllPadding
+      ? shape.paddingRight
+      : shape.paddingRight;
+    const paddingBottom = shape.isAllPadding
+      ? shape.paddingBottom
+      : shape.paddingBottom;
+    const paddingLeft = shape.isAllPadding
+      ? shape.paddingLeft
+      : shape.paddingLeft;
+
+    const effectiveWidth = containerWidth - paddingLeft - paddingRight;
+    const effectiveHeight = containerHeight - paddingTop - paddingBottom;
 
     const childrenStates = children.map((child) => {
       const state = get(
@@ -76,7 +101,6 @@ const flexLayoutAtom = atom(
       gap
     );
 
-    // Para flex-wrap, necesitamos calcular el espacio total usado por todas las líneas
     let totalCrossSize = 0;
     lines.forEach((line, index) => {
       const maxCrossSize = Math.max(
@@ -87,7 +111,6 @@ const flexLayoutAtom = atom(
       totalCrossSize += maxCrossSize + (index > 0 ? gap : 0);
     });
 
-    // Calcular el offset inicial para align-items cuando hay múltiples líneas
     let initialCrossOffset = 0;
     if (flexWrap === "wrap" && lines.length > 1) {
       const availableCrossSpace =
@@ -103,7 +126,6 @@ const flexLayoutAtom = atom(
       }
     }
 
-    // Posicionar cada línea considerando el cross axis
     let crossOffset = initialCrossOffset;
 
     lines.forEach((line, lineIndex) => {
@@ -116,7 +138,6 @@ const flexLayoutAtom = atom(
         gap
       );
 
-      // Calcular la altura/anchura máxima de esta línea para el cross axis
       const maxCrossSize = Math.max(
         ...line.map((child) =>
           flexDirection === "row" ? child.height : child.width
@@ -129,7 +150,7 @@ const flexLayoutAtom = atom(
         const cross =
           flexWrap === "wrap" && lines.length > 1
             ? computeCross(
-                "flex-start", // Usar flex-start para elementos individuales cuando hay wrap
+                "flex-start",
                 flexDirection,
                 effectiveWidth,
                 effectiveHeight,
@@ -143,27 +164,37 @@ const flexLayoutAtom = atom(
                 childState
               );
 
-        const newWidth = childState.fillContainerWidth
+        // Ajustar width y height con min/max de los hijos
+        let newWidth = childState.fillContainerWidth
           ? flexDirection === "row"
             ? (effectiveWidth - gap * (line.length - 1)) / line.length
             : effectiveWidth
           : childState.width;
 
-        const newHeight = childState.fillContainerHeight
+        let newHeight = childState.fillContainerHeight
           ? flexDirection === "column"
             ? (effectiveHeight - gap * (line.length - 1)) / line.length
             : effectiveHeight
           : childState.height;
 
+        if (childState.minWidth > 0)
+          newWidth = Math.max(newWidth, childState.minWidth);
+        if (childState.maxWidth > 0)
+          newWidth = Math.min(newWidth, childState.maxWidth);
+        if (childState.minHeight > 0)
+          newHeight = Math.max(newHeight, childState.minHeight);
+        if (childState.maxHeight > 0)
+          newHeight = Math.min(newHeight, childState.maxHeight);
+
         const x =
           flexDirection === "row"
-            ? accumulatedMain + padding
-            : cross + crossOffset + padding;
+            ? accumulatedMain + paddingLeft
+            : cross + crossOffset + paddingLeft;
 
         const y =
           flexDirection === "row"
-            ? cross + crossOffset + padding
-            : accumulatedMain + padding;
+            ? cross + crossOffset + paddingTop
+            : accumulatedMain + paddingTop;
 
         const childAtom = childrenStates.find(
           ({ state }) => state.id === childState.id
@@ -183,7 +214,6 @@ const flexLayoutAtom = atom(
           (flexDirection === "row" ? newWidth : newHeight) + spacing;
       });
 
-      // Actualizar el offset para la siguiente línea
       crossOffset += maxCrossSize + (lineIndex < lines.length - 1 ? gap : 0);
     });
   }
@@ -314,6 +344,7 @@ export const LayoutFlex: React.FC<LayoutFlexProps> = ({
   flexWrap = "nowrap",
   gap = 10,
   children,
+  shape,
 }) => {
   const [, applyLayout] = useAtom(flexLayoutAtom);
 
@@ -326,10 +357,10 @@ export const LayoutFlex: React.FC<LayoutFlexProps> = ({
         justifyContent,
         alignItems,
         flexWrap,
-        containerWidth: width,
-        containerHeight: height,
+        width,
+        height,
         gap,
-        padding: 0,
+        shape,
       });
     }
   }, [
@@ -343,6 +374,7 @@ export const LayoutFlex: React.FC<LayoutFlexProps> = ({
     gap,
     display,
     applyLayout,
+    shape,
   ]);
 
   // Si no es flex, retornar children sin modificar
