@@ -58,33 +58,33 @@ export const commonStyles = {
     fontWeight: "bold",
     fontSize: "sm",
   }),
-
   labelText: css({
     color: "text",
     fontWeight: "600",
     fontSize: "x-small",
     height: "15px",
   }),
-
   twoColumnGrid: css({
     display: "grid",
     gridTemplateColumns: "2",
     gap: "md",
   }),
-
   two2ColumnGrid: css({
     display: "grid",
     gridTemplateColumns: "1fr 35px",
     gap: "md",
   }),
-
   threeColumnGrid: css({
     display: "grid",
     gridTemplateColumns: "1fr 33.5px 33.5px",
     alignItems: "end",
     gap: "md",
   }),
-
+  fourColumnGrid: css({
+    display: "grid",
+    gridTemplateColumns: "1fr 1fr 1fr 1fr",
+    gap: "md",
+  }),
   iconButton: css({
     backgroundColor: "transparent",
     border: "none",
@@ -94,7 +94,6 @@ export const commonStyles = {
     justifyContent: "center",
     height: "29px",
   }),
-
   addButton: css({
     color: "white",
     border: "none",
@@ -102,7 +101,6 @@ export const commonStyles = {
     cursor: "pointer",
     borderRadius: "md",
   }),
-
   sectionHeader: css({
     display: "flex",
     flexDirection: "row",
@@ -121,6 +119,7 @@ const Separator = () => (
     })}
   />
 );
+
 interface LayoutGridProps {
   flexDirection: "row" | "column";
   justifyContent: JustifyContent;
@@ -130,6 +129,7 @@ interface LayoutGridProps {
     alignItems: AlignItems
   ) => void;
 }
+
 const LayoutGrid: React.FC<LayoutGridProps> = ({
   flexDirection,
   justifyContent,
@@ -208,7 +208,6 @@ const LayoutGrid: React.FC<LayoutGridProps> = ({
       {Array.from({ length: 9 }, (_, index) => {
         const row = Math.floor(index / 3);
         const col = index % 3;
-
         return (
           <button
             key={`grid-${row}-${col}`}
@@ -279,7 +278,6 @@ export const LayoutShapeConfig = () => {
   const inputRef = useRef<HTMLInputElement>(null);
   const shapeUpdate = useSetAtom(SHAPE_UPDATE_ATOM);
   const setUpdateUndoRedo = useSetAtom(UPDATE_UNDO_REDO);
-
   const { execute, isRunning } = useDelayedExecutor({
     callback: () => {
       setUpdateUndoRedo();
@@ -310,7 +308,6 @@ export const LayoutShapeConfig = () => {
     img.onload = function () {
       const canvas = document.createElement("canvas");
       const ctx = canvas?.getContext?.("2d");
-
       canvas.width = img.width;
       canvas.height = img.height;
       ctx?.drawImage(img, 0, 0);
@@ -337,7 +334,6 @@ export const LayoutShapeConfig = () => {
       });
       execute(); // Ejecutar después del cambio
     };
-
     const dataImage =
       "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svgString);
     img.src = dataImage;
@@ -360,6 +356,7 @@ export const LayoutShapeConfig = () => {
         );
         const newWidth: number = image.width * scale;
         const newHeight: number = image.height * scale;
+
         shapeUpdate({
           width: newWidth,
           height: newHeight,
@@ -526,7 +523,6 @@ export const LayoutShapeConfig = () => {
           alignItems: "flex-start",
           flexWrap: "nowrap",
           gap: 10,
-
           // padding: 10,
         },
       ],
@@ -578,7 +574,11 @@ export const LayoutShapeConfig = () => {
 
   return (
     <div
-      className={`${css({ display: "flex", flexDirection: "column", gap: "lg" })} scrollbar_container`}
+      className={`${css({
+        display: "flex",
+        flexDirection: "column",
+        gap: "lg",
+      })} scrollbar_container`}
     >
       {showIcons ? (
         <Dialog onClose={() => setshowIcons(false)}>
@@ -591,6 +591,7 @@ export const LayoutShapeConfig = () => {
           />
         </Dialog>
       ) : null}
+
       {/* SECCIÓN: SHAPE - Información general */}
       <section className={commonStyles.container}>
         <div
@@ -611,6 +612,7 @@ export const LayoutShapeConfig = () => {
             </div>
           ) : null}
         </div>
+
         {/* Posición */}
         <p className={commonStyles.labelText}>Position</p>
         <div className={commonStyles.twoColumnGrid}>
@@ -632,6 +634,7 @@ export const LayoutShapeConfig = () => {
             }}
           />
         </div>
+
         <p className={commonStyles.labelText}>Rotation</p>
         <div className={commonStyles.twoColumnGrid}>
           <InputNumber
@@ -647,7 +650,9 @@ export const LayoutShapeConfig = () => {
           />
         </div>
       </section>
+
       <Separator />
+
       {/* SECCIÓN: LAYOUT - Dimensiones */}
       <section className={commonStyles.container}>
         <p className={commonStyles.sectionTitle}>Dimensions</p>
@@ -729,6 +734,7 @@ export const LayoutShapeConfig = () => {
             </div>
           </>
         ) : null}
+
         {!Boolean(shape.parentId) ? (
           <div className={commonStyles.twoColumnGrid}>
             <InputNumber
@@ -751,59 +757,181 @@ export const LayoutShapeConfig = () => {
           </div>
         ) : null}
 
-        {/* <div className={commonStyles.twoColumnGrid}>
-          <button
-            onClick={() => {
-              shapeUpdate({ fillContainerWidth: !shape.fillContainerWidth });
-              execute(); // Ejecutar después del cambio
+        {/* NEW: Min/Max Dimensions Section */}
+        <p className={commonStyles.labelText}>Min/Max Dimensions</p>
+        <div
+          className={css({
+            display: "flex",
+            flexDirection: "column",
+            gap: "lg",
+          })}
+        >
+          <InputNumber
+            iconType="width"
+            labelText="Min W"
+            min={0}
+            max={9999}
+            step={1}
+            value={shape.minWidth || 0}
+            onChange={(v) => {
+              shapeUpdate({ minWidth: v });
+              execute();
             }}
-            className={css({
-              background: "bg.muted",
-              borderRadius: "6px",
-              padding: "sm",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              height: "33.5px",
-            })}
-          >
-            <ArrowLeftRight
-              size={14}
-              color={
-                shape.fillContainerWidth
-                  ? constants.theme.colors.primary
-                  : constants.theme.colors["gray.200"]
-              }
-            />
-          </button>
-          <button
-            onClick={() => {
-              shapeUpdate({ fillContainerHeight: !shape.fillContainerHeight });
-              execute(); // Ejecutar después del cambio
+          />
+          <InputNumber
+            iconType="height"
+            labelText="Min H"
+            min={0}
+            max={9999}
+            step={1}
+            value={shape.minHeight || 0}
+            onChange={(v) => {
+              shapeUpdate({ minHeight: v });
+              execute();
             }}
-            className={css({
-              background: "bg.muted",
+          />
+          <InputNumber
+            iconType="width"
+            labelText="Max W"
+            min={0}
+            max={9999}
+            step={1}
+            value={shape.maxWidth || 0}
+            onChange={(v) => {
+              shapeUpdate({ maxWidth: v });
+              execute();
+            }}
+          />
+          <InputNumber
+            iconType="height"
+            labelText="Max H"
+            min={0}
+            max={9999}
+            step={1}
+            value={shape.maxHeight || 0}
+            onChange={(v) => {
+              shapeUpdate({ maxHeight: v });
+              execute();
+            }}
+          />
+        </div>
 
-              borderRadius: "6px",
-              padding: "sm",
+        {/* NEW: Padding Section */}
+        <div
+          className={css({
+            display: "grid",
+            gridTemplateColumns: "1fr 33.5px",
+            alignItems: "end",
+            gap: "md",
+          })}
+        >
+          <div className={commonStyles.twoColumnGrid}>
+            <InputNumber
+              iconType="square"
+              labelText="Padding"
+              min={0}
+              max={9999}
+              step={1}
+              type={shape.isAllPadding ? "text" : "number"}
+              value={shape.isAllPadding ? "Mixed" : shape.paddingTop || 0}
+              onChange={(e) => {
+                if (!shape.isAllPadding) {
+                  shapeUpdate({
+                    paddingTop: e,
+                    paddingRight: e,
+                    paddingBottom: e,
+                    paddingLeft: e,
+                  });
+                  execute();
+                }
+              }}
+            />
+          </div>
+          {/* Botón toggle para padding individual */}
+          <button
+            className={css({
+              backgroundColor: shape.isAllPadding ? "gray.800" : "transparent",
+              border: "none",
+              cursor: "pointer",
+              height: 30,
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              height: "33.5px",
+            })}
+            onClick={() => {
+              shapeUpdate({
+                isAllPadding: !shape.isAllPadding,
+              });
+              execute();
+            }}
+          >
+            <Scan size={14} />
+          </button>
+        </div>
+
+        {/* Individual Padding Controls */}
+        {shape.isAllPadding && (
+          <div
+            className={css({
+              display: "flex",
+              flexDirection: "column",
+              gap: "lg",
             })}
           >
-            <ArrowUpDown
-              size={14}
-              color={
-                shape.fillContainerHeight
-                  ? constants.theme.colors.primary
-                  : constants.theme.colors["gray.200"]
-              }
+            <InputNumber
+              iconType="square"
+              labelText="Top"
+              min={0}
+              max={9999}
+              step={1}
+              value={shape.paddingTop || 0}
+              onChange={(e) => {
+                shapeUpdate({ paddingTop: e });
+                execute();
+              }}
             />
-          </button>
-        </div> */}
+            <InputNumber
+              iconType="square"
+              labelText="Right"
+              min={0}
+              max={9999}
+              step={1}
+              value={shape.paddingRight || 0}
+              onChange={(e) => {
+                shapeUpdate({ paddingRight: e });
+                execute();
+              }}
+            />
+            <InputNumber
+              iconType="square"
+              labelText="Bottom"
+              min={0}
+              max={9999}
+              step={1}
+              value={shape.paddingBottom || 0}
+              onChange={(e) => {
+                shapeUpdate({ paddingBottom: e });
+                execute();
+              }}
+            />
+            <InputNumber
+              iconType="square"
+              labelText="Left"
+              min={0}
+              max={9999}
+              step={1}
+              value={shape.paddingLeft || 0}
+              onChange={(e) => {
+                shapeUpdate({ paddingLeft: e });
+                execute();
+              }}
+            />
+          </div>
+        )}
       </section>
+
       <Separator />
+
       {shape?.tool === "GROUP" ? (
         <>
           <section className={commonStyles.container}>
@@ -858,7 +986,6 @@ export const LayoutShapeConfig = () => {
                             <EyeOff size={18} />
                           )}
                         </button>
-
                         {/* Botón remove */}
                         <button
                           onClick={() => handleLayoutRemove(index)}
@@ -873,7 +1000,6 @@ export const LayoutShapeConfig = () => {
                     {layout.visible && (
                       <>
                         {/* Flex Direction y Flex Wrap */}
-
                         {/* NUEVO: Layout Grid Visual */}
                         <div className={commonStyles.twoColumnGrid}>
                           <LayoutGrid
@@ -929,7 +1055,6 @@ export const LayoutShapeConfig = () => {
                                 }
                                 className={`${commonStyles.iconButton} ${css({
                                   padding: "md",
-
                                   backgroundColor:
                                     layout.flexDirection === "row"
                                       ? "gray.500"
@@ -950,7 +1075,6 @@ export const LayoutShapeConfig = () => {
                                 }
                                 className={`${commonStyles.iconButton} ${css({
                                   padding: "md",
-
                                   backgroundColor:
                                     layout.flexWrap === "wrap"
                                       ? "gray.500"
@@ -983,21 +1107,6 @@ export const LayoutShapeConfig = () => {
                                   )
                                 }
                               />
-                              {/* <InputNumber
-                                iconType="square"
-                                labelText="Padding"
-                                min={0}
-                                max={100}
-                                step={1}
-                                value={layout.padding}
-                                onChange={(value) =>
-                                  handleLayoutPropertyChange(
-                                    index,
-                                    "padding",
-                                    value
-                                  )
-                                }
-                              /> */}
                             </div>
                           </section>
                         </div>
@@ -1053,7 +1162,6 @@ export const LayoutShapeConfig = () => {
               }}
             />
           </div>
-
           {/* Botón toggle para border radius individual */}
           <button
             className={css({
@@ -1118,12 +1226,13 @@ export const LayoutShapeConfig = () => {
           </div>
         )}
       </section>
+
       <Separator />
+
       <Valid isValid={shape.tool === "TEXT"}>
         {/* SECCIÓN: TYPOGRAPHY - Tipografía */}
         <section className={commonStyles.container}>
           <SectionHeader title="Typography" />
-
           <div
             className={css({
               display: "grid",
@@ -1143,7 +1252,6 @@ export const LayoutShapeConfig = () => {
                 options={fontFamilyOptions}
               />
             </div>
-
             {/* Font Weight */}
             <InputSelect
               labelText=""
@@ -1154,7 +1262,6 @@ export const LayoutShapeConfig = () => {
               }}
               options={fontWeightOptions}
             />
-
             {/* Font Size */}
             <InputNumber
               iconType="font"
@@ -1168,7 +1275,6 @@ export const LayoutShapeConfig = () => {
               }}
               value={shape.fontSize || 0}
             />
-
             {/* Text Content */}
             <div className={css({ gridColumn: 2, gridRow: 3 })}>
               <InputTextArea
@@ -1182,9 +1288,9 @@ export const LayoutShapeConfig = () => {
             </div>
           </div>
         </section>
-
         <Separator />
       </Valid>
+
       {/* SECCIÓN: FILL - Rellenos */}
       <section className={commonStyles.container}>
         <SectionHeader
@@ -1261,7 +1367,6 @@ export const LayoutShapeConfig = () => {
                     </p>
                   </div>
                 )}
-
                 {/* Botón visibility toggle */}
                 <button
                   onClick={() => handleFillVisibilityToggle(index)}
@@ -1269,7 +1374,6 @@ export const LayoutShapeConfig = () => {
                 >
                   {fill.visible ? <Eye size={14} /> : <EyeOff size={14} />}
                 </button>
-
                 {/* Botón remove */}
                 <button
                   onClick={() => handleFillRemove(index)}
@@ -1281,7 +1385,9 @@ export const LayoutShapeConfig = () => {
             ))
           : null}
       </section>
+
       <Separator />
+
       {/* SECCIÓN: STROKE - Bordes */}
       <section className={commonStyles.container}>
         <SectionHeader title="Stroke" onAdd={handleAddStroke} />
@@ -1300,7 +1406,6 @@ export const LayoutShapeConfig = () => {
                   color={stroke.color}
                   onChangeColor={(e) => handleStrokeColorChange(index, e)}
                 />
-
                 {/* Botón visibility toggle */}
                 <button
                   onClick={() => handleStrokeVisibilityToggle(index)}
@@ -1308,7 +1413,6 @@ export const LayoutShapeConfig = () => {
                 >
                   {stroke.visible ? <Eye size={14} /> : <EyeOff size={14} />}
                 </button>
-
                 {/* Botón remove */}
                 <button
                   onClick={() => handleStrokeRemove(index)}
@@ -1334,7 +1438,6 @@ export const LayoutShapeConfig = () => {
                   execute(); // Ejecutar después del cambio
                 }}
               />
-
               {/* Line Style Buttons */}
               <div
                 className={css({
@@ -1360,7 +1463,6 @@ export const LayoutShapeConfig = () => {
                 >
                   <Brush size={14} />
                 </button>
-
                 <button
                   onClick={() => handleLineStyleChange("miter", "round")}
                   className={css({
@@ -1376,14 +1478,13 @@ export const LayoutShapeConfig = () => {
                     height: "33.5px",
                   })}
                 >
-                  <Ruler size={14} />
+                  <PenTool size={14} />
                 </button>
-
                 <button
-                  onClick={() => handleLineStyleChange("bevel", "square")}
+                  onClick={() => handleLineStyleChange("miter", "butt")}
                   className={css({
                     background:
-                      shape.lineJoin === "bevel" && shape.lineCap === "square"
+                      shape.lineJoin === "miter" && shape.lineCap === "butt"
                         ? "bg.muted"
                         : "transparent",
                     borderRadius: "6px",
@@ -1394,137 +1495,60 @@ export const LayoutShapeConfig = () => {
                     height: "33.5px",
                   })}
                 >
-                  <PenTool size={14} />
+                  <Ruler size={14} />
                 </button>
               </div>
             </div>
-
-            {/* Dash */}
-            <InputNumber
-              iconType="dashed"
-              labelText="Dash"
-              min={0}
-              max={100}
-              step={5}
-              onChange={(e) => {
-                shapeUpdate({ dash: e });
-                execute(); // Ejecutar después del cambio
-              }}
-              value={shape.dash || 0}
-            />
           </>
         ) : null}
       </section>
+
       <Separator />
-      {/* Input oculto para archivos */}
-      <input
-        ref={inputRef}
-        type="file"
-        color="white"
-        accept="image/*"
-        onChange={handleFiles}
-        className={css({
-          backgroundColor: "red",
-          width: 0,
-          height: 0,
-          opacity: 0,
-          display: "none",
-          position: "absolute",
-        })}
-      />
+
       {/* SECCIÓN: EFFECTS - Efectos */}
       <section className={commonStyles.container}>
         <SectionHeader title="Effects" onAdd={handleAddEffect} />
 
-        {/* Lista de efectos */}
-        {shape.effects?.map?.((effect, index) => (
-          <section
-            key={`pixel-kit-shape-effect-${shape.id}-${shape.tool}-${index}`}
-            className={css({
-              display: "flex",
-              flexDirection: "column",
-              gap: "lg",
-            })}
-          >
-            {/* Controles principales del efecto */}
-            <div className={commonStyles.threeColumnGrid}>
-              <InputColor
-                keyInput={`pixel-kit-shape-effect-${shape.id}-${shape.tool}-${index}`}
-                labelText=""
-                color={effect.color}
-                onChangeColor={(e) => handleEffectColorChange(index, e)}
-              />
-
-              {/* Botón visibility toggle */}
-              <button
-                onClick={() => handleEffectVisibilityToggle(index)}
-                className={commonStyles.iconButton}
+        {/* Lista de effects */}
+        {shape.effects?.length
+          ? shape.effects.map((effect, index) => (
+              <div
+                key={`pixel-kit-shape-effect-${shape.id}-${shape.tool}-${index}`}
+                className={commonStyles.threeColumnGrid}
               >
-                {effect.visible ? <Eye size={18} /> : <EyeOff size={18} />}
-              </button>
-
-              {/* Botón remove */}
-              <button
-                onClick={() => handleEffectRemove(index)}
-                className={commonStyles.iconButton}
-              >
-                <Minus size={18} />
-              </button>
-            </div>
-          </section>
-        ))}
-        {/* Controles detallados del efecto */}
-        <Valid isValid={shape.effects.length > 0}>
-          <p className={commonStyles.labelText}>Position</p>
-          <div className={commonStyles.twoColumnGrid}>
-            <InputNumber
-              iconType="x"
-              min={0}
-              max={100}
-              onChange={(e) => {
-                shapeUpdate({ shadowOffsetX: e });
-                execute(); // Ejecutar después del cambio
-              }}
-              value={shape.shadowOffsetX}
-            />
-            <InputNumber
-              iconType="y"
-              min={0}
-              max={100}
-              onChange={(e) => {
-                shapeUpdate({ shadowOffsetY: e });
-                execute(); // Ejecutar después del cambio
-              }}
-              value={shape.shadowOffsetY}
-            />
-          </div>
-          <div className={commonStyles.twoColumnGrid}>
-            <InputNumber
-              iconType="square"
-              labelText="blur"
-              min={0}
-              max={100}
-              onChange={(e) => {
-                shapeUpdate({ shadowBlur: e });
-                execute(); // Ejecutar después del cambio
-              }}
-              value={shape.shadowBlur}
-            />
-            <InputNumber
-              iconType="opacity"
-              labelText="opacity"
-              min={0}
-              max={1}
-              step={0.1}
-              onChange={(e) => {
-                shapeUpdate({ shadowOpacity: e });
-                execute(); // Ejecutar después del cambio
-              }}
-              value={shape.shadowOpacity}
-            />
-          </div>
-        </Valid>
+                <InputColor
+                  keyInput={`pixel-kit-shape-effect-${shape.id}-${shape.tool}-${index}`}
+                  labelText=""
+                  color={effect.color}
+                  onChangeColor={(e) => handleEffectColorChange(index, e)}
+                />
+                {/* Botón visibility toggle */}
+                <button
+                  onClick={() => handleEffectVisibilityToggle(index)}
+                  className={commonStyles.iconButton}
+                >
+                  {effect.visible ? <Eye size={14} /> : <EyeOff size={14} />}
+                </button>
+                {/* Botón remove */}
+                <button
+                  onClick={() => handleEffectRemove(index)}
+                  className={commonStyles.iconButton}
+                >
+                  <Minus size={14} />
+                </button>
+              </div>
+            ))
+          : null}
       </section>
+
+      {/* Input file oculto para subir imágenes */}
+      <input
+        ref={inputRef}
+        type="file"
+        accept="image/*"
+        style={{ display: "none" }}
+        onChange={handleFiles}
+      />
     </div>
   );
 };
