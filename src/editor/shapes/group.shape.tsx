@@ -57,7 +57,13 @@ export const ShapeGroup = ({
         }}
       >
         {layout ? (
-          <LayoutFlex width={width} height={height} display="flex" {...layout}>
+          <LayoutFlex
+            width={width}
+            height={height}
+            display="flex"
+            {...layout}
+            shape={box}
+          >
             {children}
           </LayoutFlex>
         ) : (
