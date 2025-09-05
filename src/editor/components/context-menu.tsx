@@ -1,6 +1,6 @@
 // components/ContextMenu.tsx
 import { css } from "@stylespixelkit/css";
-import React, { MouseEvent, ReactNode, useEffect, useRef } from "react";
+import React, { ReactNode, useEffect, useRef } from "react";
 
 export interface ContextMenuOption {
   icon: ReactNode;
@@ -40,16 +40,16 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({ options, id }) => {
   const { open, close, isOpen, position } = useContextMenu();
   const menuRef = useRef<HTMLDivElement | null>(null);
 
-  const handleClickOutside = (e: MouseEvent<Document>) => {
+  const handleClickOutside = (e: MouseEvent) => {
     if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
       close();
     }
   };
 
   useEffect(() => {
-    document.addEventListener("click", handleClickOutside as any);
+    document.addEventListener("click", (e) => handleClickOutside(e));
     return () => {
-      document.removeEventListener("click", handleClickOutside as any);
+      document.removeEventListener("click", (e) => handleClickOutside(e));
     };
   }, []);
 
@@ -65,7 +65,7 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({ options, id }) => {
           ref={menuRef}
           style={{
             position: "absolute",
-            top: position.y - 20,
+            top: position.y - 40,
             left: position.x,
             zIndex: 1000,
           }}
