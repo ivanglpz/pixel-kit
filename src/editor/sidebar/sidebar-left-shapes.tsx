@@ -1,5 +1,8 @@
 import { Nodes } from "@/editor/components/Nodes";
-import ALL_SHAPES_ATOM, { MOVE_SHAPES_TO_ROOT } from "@/editor/states/shapes";
+import ALL_SHAPES_ATOM, {
+  DELETE_ALL_SHAPES_ATOM,
+  MOVE_SHAPES_TO_ROOT,
+} from "@/editor/states/shapes";
 import { UPDATE_UNDO_REDO } from "@/editor/states/undo-redo";
 import { css } from "@stylespixelkit/css";
 import { Reorder, useDragControls } from "framer-motion";
@@ -40,6 +43,7 @@ export const SidebarLeftShapes = () => {
     SET_ALL_SHAPES(newOrder);
     setUpdateUndoRedo();
   };
+  const clearAll = useSetAtom(DELETE_ALL_SHAPES_ATOM);
 
   const { open } = useContextMenu();
 
@@ -67,7 +71,7 @@ export const SidebarLeftShapes = () => {
           {
             label: "Clear All",
             icon: <Trash size={14} />,
-            onClick: () => alert("AFUERA"),
+            onClick: clearAll,
             isEnabled: true,
           },
         ]}

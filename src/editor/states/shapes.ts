@@ -73,6 +73,39 @@ export const DELETE_SHAPES_ATOM = atom(null, (get, set) => {
     shapes: selected,
   });
 });
+export const DELETE_ALL_SHAPES_ATOM = atom(null, (get, set) => {
+  const currentShapes = get(PLANE_SHAPES_ATOM);
+
+  for (const element of currentShapes) {
+    if (get(element.state).parentId) {
+      const FIND_SHAPE = currentShapes.find(
+        (w) => w.id === get(element.state).parentId
+      );
+
+      if (!FIND_SHAPE) continue;
+      set(FIND_SHAPE.state, {
+        ...get(FIND_SHAPE.state),
+        children: atom(
+          get(get(FIND_SHAPE.state).children).filter((e) => e.id !== element.id)
+        ),
+      });
+    } else {
+      set(
+        ALL_SHAPES_ATOM,
+        get(ALL_SHAPES_ATOM).filter((e) => e.id !== element.id)
+      );
+    }
+  }
+
+  // registrar acción de tipo UPDATE
+  const SHAPE_IDS_ = get(CURRENT_PAGE).SHAPES.ID;
+
+  set(SHAPE_IDS_, []);
+  set(NEW_UNDO_REDO, {
+    type: "DELETE",
+    shapes: currentShapes,
+  });
+});
 
 // ===== Funciones de movimiento actualizadas =====
 
