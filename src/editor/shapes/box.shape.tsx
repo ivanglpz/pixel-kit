@@ -56,7 +56,14 @@ const ShapeBox = ({ shape: item }: IShapeWithEvents) => {
         dash={[dash, dash, dash, dash]}
         dashEnabled={box?.dash > 0}
         cornerRadius={
-          box?.isAllBorderRadius ? box.bordersRadius : box.borderRadius
+          box?.isAllBorderRadius
+            ? [
+                box.borderTopLeftRadius,
+                box.borderTopRightRadius,
+                box.borderBottomLeftRadius,
+                box.borderBottomRightRadius,
+              ]
+            : box.borderRadius
         }
         // 5. Sombras
         shadowColor={shadow?.color}
