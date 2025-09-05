@@ -301,9 +301,9 @@ export const REDO_ATOM = atom(null, (get, set) => {
 
   const handler = actionHandlers[action.type];
   if (action.type === "MOVE") {
-    (handler as any)(action.shapes, action.prevShapes);
+    handler(action.shapes, action.prevShapes);
   } else {
-    (handler as any)(action.shapes);
+    handler(action.shapes);
   }
   set(COUNT_UNDO_REDO, count + 1);
 });
