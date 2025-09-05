@@ -504,15 +504,6 @@ export const LayoutShapeConfig = () => {
     execute(); // Ejecutar después del cambio
   };
 
-  // Manejador para border radius individual
-  const handleBorderRadiusChange = (index: number, value: number) => {
-    const currentRadii = shape.bordersRadius || [0, 0, 0, 0];
-    const newRadii = [...currentRadii];
-    newRadii[index] = value || 0;
-    shapeUpdate({ bordersRadius: newRadii });
-    execute(); // Ejecutar después del cambio
-  };
-
   // Manejadores para line styles
   const handleLineStyleChange = (
     lineJoin: IShape["lineJoin"],
@@ -535,7 +526,7 @@ export const LayoutShapeConfig = () => {
           alignItems: "flex-start",
           flexWrap: "nowrap",
           gap: 10,
-          padding: 10,
+          // padding: 10,
         },
       ],
     });
@@ -991,7 +982,7 @@ export const LayoutShapeConfig = () => {
                                   )
                                 }
                               />
-                              <InputNumber
+                              {/* <InputNumber
                                 iconType="square"
                                 labelText="Padding"
                                 min={0}
@@ -1005,7 +996,7 @@ export const LayoutShapeConfig = () => {
                                     value
                                   )
                                 }
-                              />
+                              /> */}
                             </div>
                           </section>
                         </div>
@@ -1090,26 +1081,38 @@ export const LayoutShapeConfig = () => {
             <InputNumber
               iconType="br"
               labelText="T.Left"
-              value={shape.bordersRadius?.[0] || 0}
-              onChange={(e) => handleBorderRadiusChange(0, e)}
+              value={shape.borderTopLeftRadius || 0}
+              onChange={(e) => {
+                shapeUpdate({ borderTopLeftRadius: e });
+                execute(); // Ejecutar después del cambio
+              }}
             />
             <InputNumber
               iconType="br"
               labelText="T.Right"
-              value={shape.bordersRadius?.[1] || 0}
-              onChange={(e) => handleBorderRadiusChange(1, e)}
+              value={shape.borderTopRightRadius || 0}
+              onChange={(e) => {
+                shapeUpdate({ borderTopRightRadius: e });
+                execute(); // Ejecutar después del cambio
+              }}
             />
             <InputNumber
               iconType="br"
               labelText="B.Left"
-              value={shape.bordersRadius?.[3] || 0}
-              onChange={(e) => handleBorderRadiusChange(3, e)}
+              value={shape.borderBottomLeftRadius || 0}
+              onChange={(e) => {
+                shapeUpdate({ borderBottomLeftRadius: e });
+                execute(); // Ejecutar después del cambio
+              }}
             />
             <InputNumber
               iconType="br"
               labelText="B.Right"
-              value={shape.bordersRadius?.[2] || 0}
-              onChange={(e) => handleBorderRadiusChange(2, e)}
+              value={shape.borderBottomRightRadius || 0}
+              onChange={(e) => {
+                shapeUpdate({ borderBottomRightRadius: e });
+                execute(); // Ejecutar después del cambio
+              }}
             />
           </div>
         )}

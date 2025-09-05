@@ -86,14 +86,6 @@ export type IShape = {
   layouts: Omit<LayoutFlexProps, "children" | "width" | "height" | "display">[];
   fillContainerWidth: boolean;
   fillContainerHeight: boolean;
-  minWidth: number;
-  maxWidth: number;
-  minHeight: number;
-  maxHeight: number;
-  paddingTop: number;
-  paddingRight: number;
-  paddingBottom: number;
-  paddingLeft: number;
 
   // Border Radius
   borderRadius: number;
@@ -102,7 +94,15 @@ export type IShape = {
   borderTopRightRadius: number;
   borderBottomRightRadius: number;
   borderBottomLeftRadius: number;
-
+  minWidth: number;
+  minHeight: number;
+  maxWidth: number;
+  maxHeight: number;
+  isAllPadding: boolean;
+  paddingTop: number;
+  paddingRight: number;
+  paddingBottom: number;
+  paddingLeft: number;
   // Children
   children: PrimitiveAtom<ALL_SHAPES[]> & WithInitialValue<ALL_SHAPES[]>;
 };
