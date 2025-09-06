@@ -65,7 +65,7 @@ const IconContainer = ({ children }: { children: ReactNode }) => {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        backgroundColor: "gray.600",
+        backgroundColor: "gray.700",
         borderRadius: "4px",
       })}
     >
