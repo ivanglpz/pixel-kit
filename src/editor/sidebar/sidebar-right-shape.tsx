@@ -18,7 +18,11 @@ import {
   ArrowUpDown,
   Brush,
   Columns,
+  CornerDownLeft,
+  CornerDownRight,
   CornerRightDown,
+  CornerUpLeft,
+  CornerUpRight,
   Expand,
   Eye,
   EyeOff,
@@ -27,7 +31,6 @@ import {
   PenTool,
   Plus,
   Ruler,
-  Scan,
   Sliders,
   Smile,
 } from "lucide-react";
@@ -1146,85 +1149,162 @@ export const LayoutShapeConfig = () => {
                 execute(); // Ejecutar después del cambio
               }}
             />
-            <InputNumber
-              iconType="br"
-              labelText="Corner Radius"
-              min={0}
-              max={9999}
-              step={1}
-              type={shape.isAllBorderRadius ? "text" : "number"}
-              value={
-                shape.isAllBorderRadius ? "Mixed" : shape.borderRadius || 0
-              }
-              onChange={(e) => {
-                shapeUpdate({ borderRadius: e });
-                execute(); // Ejecutar después del cambio
-              }}
-            />
           </div>
           {/* Botón toggle para border radius individual */}
-          <button
-            className={css({
-              backgroundColor: shape.isAllBorderRadius
-                ? "gray.800"
-                : "transparent",
-              border: "none",
-              cursor: "pointer",
-              height: 30,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            })}
-            onClick={() => {
-              shapeUpdate({ isAllBorderRadius: !shape.isAllBorderRadius });
-              execute(); // Ejecutar después del cambio
-            }}
-          >
-            <Scan size={14} />
-          </button>
         </div>
-
-        {/* Border Radius Individual */}
-        {shape.isAllBorderRadius && (
-          <div className={commonStyles.twoColumnGrid}>
-            <InputNumber
-              iconType="br"
-              labelText="T.Left"
-              value={shape.borderTopLeftRadius || 0}
-              onChange={(e) => {
-                shapeUpdate({ borderTopLeftRadius: e });
+        <div
+          className={css({
+            display: "flex",
+            flexDir: "column",
+            gap: "md",
+          })}
+        >
+          <Input.Label text="Corner Radius" />
+          <div
+            className={css({
+              display: "grid",
+              gridTemplateColumns: "1fr 30px",
+              gap: "md",
+            })}
+          >
+            <Input.Container>
+              <Input.Grid>
+                <Input.IconContainer>
+                  <Expand size={constants.icon.size} />
+                </Input.IconContainer>
+                {shape.isAllBorderRadius ? (
+                  <Input.Number
+                    min={0}
+                    max={9999}
+                    step={1}
+                    value={shape.borderRadius}
+                    onChange={(e) => {
+                      shapeUpdate({
+                        borderRadius: e,
+                      });
+                      execute();
+                    }}
+                  />
+                ) : null}
+                {!shape.isAllBorderRadius ? <Input.Label text="Mixed" /> : null}
+              </Input.Grid>
+            </Input.Container>
+            <button
+              className={css({
+                cursor: "pointer",
+                width: 30,
+                height: 30,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                borderWidth: "1px",
+                borderStyle: "solid",
+                borderRadius: "md",
+              })}
+              onClick={() => {
+                shapeUpdate({ isAllBorderRadius: !shape.isAllBorderRadius });
                 execute(); // Ejecutar después del cambio
               }}
-            />
-            <InputNumber
-              iconType="br"
-              labelText="T.Right"
-              value={shape.borderTopRightRadius || 0}
-              onChange={(e) => {
-                shapeUpdate({ borderTopRightRadius: e });
-                execute(); // Ejecutar después del cambio
+              style={{
+                backgroundColor: !shape.isAllBorderRadius
+                  ? constants.theme.colors.background
+                  : "transparent",
+                borderColor: !shape.isAllBorderRadius
+                  ? constants.theme.colors.primary
+                  : "transparent", // ← usa el semantic token
               }}
-            />
-            <InputNumber
-              iconType="br"
-              labelText="B.Left"
-              value={shape.borderBottomLeftRadius || 0}
-              onChange={(e) => {
-                shapeUpdate({ borderBottomLeftRadius: e });
-                execute(); // Ejecutar después del cambio
-              }}
-            />
-            <InputNumber
-              iconType="br"
-              labelText="B.Right"
-              value={shape.borderBottomRightRadius || 0}
-              onChange={(e) => {
-                shapeUpdate({ borderBottomRightRadius: e });
-                execute(); // Ejecutar después del cambio
-              }}
-            />
+            >
+              <Sliders
+                size={constants.icon.size}
+                strokeWidth={constants.icon.strokeWidth}
+                color={
+                  !shape.isAllBorderRadius
+                    ? constants.theme.colors.primary
+                    : constants.theme.colors.white
+                }
+              />
+            </button>
           </div>
-        )}
+        </div>
+        {!shape.isAllBorderRadius ? (
+          <div
+            className={css({
+              display: "grid",
+              flexDirection: "column",
+              gap: "md",
+              gridTemplateColumns: "2",
+            })}
+          >
+            <Input.Container>
+              <Input.Grid>
+                <Input.IconContainer>
+                  <CornerUpLeft size={constants.icon.size} />
+                </Input.IconContainer>
+                <Input.Number
+                  min={0}
+                  max={9999}
+                  step={1}
+                  value={shape.borderTopLeftRadius || 0}
+                  onChange={(e) => {
+                    shapeUpdate({ borderTopLeftRadius: e });
+                    execute();
+                  }}
+                />
+              </Input.Grid>
+            </Input.Container>
+            <Input.Container>
+              <Input.Grid>
+                <Input.IconContainer>
+                  <CornerUpRight size={constants.icon.size} />
+                </Input.IconContainer>
+                <Input.Number
+                  min={0}
+                  max={9999}
+                  step={1}
+                  value={shape.borderTopRightRadius || 0}
+                  onChange={(e) => {
+                    shapeUpdate({ borderTopRightRadius: e });
+                    execute();
+                  }}
+                />
+              </Input.Grid>
+            </Input.Container>
+            <Input.Container>
+              <Input.Grid>
+                <Input.IconContainer>
+                  <CornerDownLeft size={constants.icon.size} />
+                </Input.IconContainer>
+                <Input.Number
+                  min={0}
+                  max={9999}
+                  step={1}
+                  value={shape.borderBottomLeftRadius || 0}
+                  onChange={(e) => {
+                    shapeUpdate({ borderBottomLeftRadius: e });
+                    execute();
+                  }}
+                />
+              </Input.Grid>
+            </Input.Container>
+            <Input.Container>
+              <Input.Grid>
+                <Input.IconContainer>
+                  <CornerDownRight size={constants.icon.size} />
+                </Input.IconContainer>
+                <Input.Number
+                  min={0}
+                  max={9999}
+                  step={1}
+                  value={shape.borderBottomRightRadius || 0}
+                  onChange={(e) => {
+                    shapeUpdate({ borderBottomRightRadius: e });
+                    execute();
+                  }}
+                />
+              </Input.Grid>
+            </Input.Container>
+          </div>
+        ) : null}
       </section>
 
       <Separator />

@@ -56,12 +56,12 @@ const ShapeBox = ({ shape: item }: IShapeWithEvents) => {
         dash={[dash, dash, dash, dash]}
         dashEnabled={box?.dash > 0}
         cornerRadius={
-          box?.isAllBorderRadius
+          !box?.isAllBorderRadius
             ? [
                 box.borderTopLeftRadius,
                 box.borderTopRightRadius,
-                box.borderBottomLeftRadius,
                 box.borderBottomRightRadius,
+                box.borderBottomLeftRadius,
               ]
             : box.borderRadius
         }
