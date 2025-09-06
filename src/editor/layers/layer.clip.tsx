@@ -130,6 +130,7 @@ export const LayerClip = () => {
     paddingRight: 10,
     maxHeight: 0,
     maxWidth: 0,
+    padding: 10,
     minHeight: 0,
     minWidth: 0,
     effects: [],

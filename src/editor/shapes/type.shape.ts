@@ -106,6 +106,7 @@ export type IShape = {
   paddingRight: number;
   paddingBottom: number;
   paddingLeft: number;
+  padding: number;
   // Children
   children: PrimitiveAtom<ALL_SHAPES[]> & WithInitialValue<ALL_SHAPES[]>;
 };

@@ -63,6 +63,7 @@ export const LayerImage = () => {
     borderTopRightRadius: 0,
     paddingLeft: 10,
     paddingRight: 10,
+    padding: 10,
     maxHeight: 0,
     maxWidth: 0,
     minHeight: 0,

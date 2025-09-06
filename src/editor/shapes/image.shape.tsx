@@ -140,14 +140,14 @@ export const ShapeImage = (props: IShapeWithEvents) => {
         // 6. Crop (object-fit: cover)
         crop={cropConfig}
         cornerRadius={
-          box?.isAllBorderRadius
-            ? [
+          !box?.isAllBorderRadius
+            ? box.borderRadius
+            : [
                 box.borderTopLeftRadius,
                 box.borderTopRightRadius,
                 box.borderBottomLeftRadius,
                 box.borderBottomRightRadius,
               ]
-            : box.borderRadius
         }
         // 7. Sombras
         shadowColor={shadow?.color}
