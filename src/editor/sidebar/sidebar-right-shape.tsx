@@ -1,7 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 /* eslint-disable jsx-a11y/alt-text */
 import { Valid } from "@/components/valid";
-import InputColor from "@/editor/components/input-color";
 import { InputSelect } from "@/editor/components/input-select";
 import { InputTextArea } from "@/editor/components/input-textarea";
 import { IShape } from "@/editor/shapes/type.shape";
@@ -35,6 +34,7 @@ import {
   Sliders,
   Smile,
   Square,
+  SquareDashed,
 } from "lucide-react";
 import React, { ChangeEvent, useRef, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
@@ -565,7 +565,6 @@ export const LayoutShapeConfig = () => {
         </div>
 
         {/* Posición */}
-        <p className={commonStyles.labelText}>Position</p>
         <div className={commonStyles.twoColumnGrid}>
           <Input.Container>
             <Input.Grid>
@@ -615,8 +614,6 @@ export const LayoutShapeConfig = () => {
           </Input.Container>
         </div>
       </section>
-
-      <Separator />
 
       {/* SECCIÓN: LAYOUT - Dimensiones */}
       <section className={commonStyles.container}>
@@ -1540,12 +1537,23 @@ export const LayoutShapeConfig = () => {
                 className={commonStyles.threeColumnGrid}
               >
                 {fill.type === "fill" ? (
-                  <InputColor
-                    keyInput={`pixel-kit-shape-fill-${shape.id}-${shape.tool}-${index}`}
-                    labelText=""
-                    color={fill.color}
-                    onChangeColor={(e) => handleFillColorChange(index, e)}
-                  />
+                  <Input.Container
+                    id={`pixel-kit-shape-fill-${shape.id}-${shape.tool}-${index}`}
+                  >
+                    <Input.Grid>
+                      <Input.IconContainer>
+                        <Input.Color
+                          id={`pixel-kit-shape-fill-${shape.id}-${shape.tool}-${index}`}
+                          value={fill.color}
+                          onChange={(e) => handleFillColorChange(index, e)}
+                        />
+                        {/* <Scaling size={constants.icon.size} /> */}
+                      </Input.IconContainer>
+                      <Input.Label
+                        text={`#${fill.color?.replace(/#/, "") ?? "ffffff"}`}
+                      />
+                    </Input.Grid>
+                  </Input.Container>
                 ) : (
                   <div
                     className={css({
@@ -1626,13 +1634,24 @@ export const LayoutShapeConfig = () => {
                 key={`pixel-kit-shape-stroke-${shape.id}-${shape.tool}-${index}`}
                 className={commonStyles.threeColumnGrid}
               >
-                <InputColor
-                  keyInput={`pixel-kit-shape-stroke-${shape.id}-${shape.tool}-${index}`}
-                  labelText=""
-                  color={stroke.color}
-                  onChangeColor={(e) => handleStrokeColorChange(index, e)}
-                />
-                {/* Botón visibility toggle */}
+                <Input.Container
+                  id={`pixel-kit-shape-stroke-${shape.id}-${shape.tool}-${index}`}
+                >
+                  <Input.Grid>
+                    <Input.IconContainer>
+                      <Input.Color
+                        id={`pixel-kit-shape-stroke-${shape.id}-${shape.tool}-${index}`}
+                        value={stroke.color}
+                        onChange={(e) => handleStrokeColorChange(index, e)}
+                      />
+                      {/* <Scaling size={constants.icon.size} /> */}
+                    </Input.IconContainer>
+                    <Input.Label
+                      text={`#${stroke.color?.replace(/#/, "") ?? "ffffff"}`}
+                    />
+                  </Input.Grid>
+                </Input.Container>
+
                 <button
                   onClick={() => handleStrokeVisibilityToggle(index)}
                   className={commonStyles.iconButton}
@@ -1788,6 +1807,38 @@ export const LayoutShapeConfig = () => {
                 </button>
               </div>
             </div>
+
+            <Input.Container>
+              <Input.Grid>
+                <Input.IconContainer>
+                  <SquareDashed size={constants.icon.size} />
+                </Input.IconContainer>
+                <Input.Number
+                  min={0}
+                  step={1}
+                  onChange={(e) => {
+                    shapeUpdate({ dash: e });
+                    execute(); // Ejecutar después del cambio
+                  }}
+                  value={shape.dash || 0}
+                />
+              </Input.Grid>
+            </Input.Container>
+            {/* <InputNumber
+              iconType="dashed"
+              labelText="Dash"
+              min={0}
+              max={100}
+              step={5}
+              onChange={(e) =>
+                setShape({
+                  ...shape,
+
+                  dash: e,
+                })
+              }
+              value={shape.dash || 0}
+            /> */}
           </>
         ) : null}
       </section>
@@ -1805,13 +1856,24 @@ export const LayoutShapeConfig = () => {
                 key={`pixel-kit-shape-effect-${shape.id}-${shape.tool}-${index}`}
                 className={commonStyles.threeColumnGrid}
               >
-                <InputColor
-                  keyInput={`pixel-kit-shape-effect-${shape.id}-${shape.tool}-${index}`}
-                  labelText=""
-                  color={effect.color}
-                  onChangeColor={(e) => handleEffectColorChange(index, e)}
-                />
-                {/* Botón visibility toggle */}
+                <Input.Container
+                  id={`pixel-kit-shape-effect-${shape.id}-${shape.tool}-${index}`}
+                >
+                  <Input.Grid>
+                    <Input.IconContainer>
+                      <Input.Color
+                        id={`pixel-kit-shape-effect-${shape.id}-${shape.tool}-${index}`}
+                        value={effect.color}
+                        onChange={(e) => handleEffectColorChange(index, e)}
+                      />
+                      {/* <Scaling size={constants.icon.size} /> */}
+                    </Input.IconContainer>
+                    <Input.Label
+                      text={`#${effect.color?.replace(/#/, "") ?? "ffffff"}`}
+                    />
+                  </Input.Grid>
+                </Input.Container>
+
                 <button
                   onClick={() => handleEffectVisibilityToggle(index)}
                   className={commonStyles.iconButton}
