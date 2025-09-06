@@ -888,7 +888,6 @@ export const LayoutShapeConfig = () => {
             >
               <Sliders
                 size={constants.icon.size}
-                strokeWidth={2.5}
                 color={
                   shape.isAllPadding
                     ? constants.theme.colors.primary
