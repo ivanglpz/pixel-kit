@@ -707,62 +707,110 @@ export const LayoutShapeConfig = () => {
         ) : null}
 
         {/* NEW: Min/Max Dimensions Section */}
-        <p className={commonStyles.labelText}>Min/Max Dimensions</p>
-        <div
-          className={css({
-            display: "flex",
-            flexDirection: "column",
-            gap: "lg",
-          })}
-        >
-          <InputNumber
-            iconType="width"
-            labelText="Min W"
-            min={0}
-            max={9999}
-            step={1}
-            value={shape.minWidth || 0}
-            onChange={(v) => {
-              shapeUpdate({ minWidth: v });
-              execute();
-            }}
-          />
-          <InputNumber
-            iconType="height"
-            labelText="Min H"
-            min={0}
-            max={9999}
-            step={1}
-            value={shape.minHeight || 0}
-            onChange={(v) => {
-              shapeUpdate({ minHeight: v });
-              execute();
-            }}
-          />
-          <InputNumber
-            iconType="width"
-            labelText="Max W"
-            min={0}
-            max={9999}
-            step={1}
-            value={shape.maxWidth || 0}
-            onChange={(v) => {
-              shapeUpdate({ maxWidth: v });
-              execute();
-            }}
-          />
-          <InputNumber
-            iconType="height"
-            labelText="Max H"
-            min={0}
-            max={9999}
-            step={1}
-            value={shape.maxHeight || 0}
-            onChange={(v) => {
-              shapeUpdate({ maxHeight: v });
-              execute();
-            }}
-          />
+        {/* <p className={commonStyles.labelText}>Min/Max Dimensions</p> */}
+        <Input.Label text="Min" />
+
+        <div className={commonStyles.twoColumnGrid}>
+          <Input.Container>
+            <Input.Grid>
+              <Input.IconContainer>
+                <p
+                  className={css({
+                    fontWeight: 600,
+                    fontSize: "x-small",
+                  })}
+                >
+                  W
+                </p>
+                {/* <MoveHorizontal size={constants.icon.size} /> */}
+              </Input.IconContainer>
+              <Input.Number
+                min={0}
+                max={9999}
+                step={1}
+                value={shape.minWidth}
+                onChange={(e) => {
+                  shapeUpdate({ minWidth: e });
+                  execute();
+                }}
+              />
+            </Input.Grid>
+          </Input.Container>
+          <Input.Container>
+            <Input.Grid>
+              <Input.IconContainer>
+                <p
+                  className={css({
+                    fontWeight: 600,
+                    fontSize: "x-small",
+                  })}
+                >
+                  H
+                </p>
+              </Input.IconContainer>
+              <Input.Number
+                min={0}
+                max={9999}
+                step={1}
+                value={shape.minHeight || 0}
+                onChange={(v) => {
+                  shapeUpdate({ minHeight: v });
+                  execute();
+                }}
+              />
+            </Input.Grid>
+          </Input.Container>
+        </div>
+        <Input.Label text="Max" />
+        <div className={commonStyles.twoColumnGrid}>
+          <Input.Container>
+            <Input.Grid>
+              <Input.IconContainer>
+                <p
+                  className={css({
+                    fontWeight: 600,
+                    fontSize: "x-small",
+                  })}
+                >
+                  W
+                </p>
+              </Input.IconContainer>
+              <Input.Number
+                min={0}
+                max={9999}
+                step={1}
+                value={shape.maxWidth || 0}
+                onChange={(v) => {
+                  shapeUpdate({ maxWidth: v });
+                  execute();
+                }}
+              />
+            </Input.Grid>
+          </Input.Container>
+          <Input.Container>
+            <Input.Grid>
+              <Input.IconContainer>
+                <p
+                  className={css({
+                    fontWeight: 600,
+                    fontSize: "x-small",
+                  })}
+                >
+                  H
+                </p>
+              </Input.IconContainer>
+              <Input.Number
+                min={0}
+                max={9999}
+                step={1}
+                value={shape.maxHeight || 0}
+                onChange={(v) => {
+                  shapeUpdate({ maxHeight: v });
+                  execute();
+                }}
+              />
+            </Input.Grid>
+          </Input.Container>
         </div>
       </section>
 
