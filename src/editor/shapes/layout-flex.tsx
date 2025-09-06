@@ -57,29 +57,16 @@ const flexLayoutAtom = atom(
       | "gap"
       | "shape"
     >
-    // {
-    //   children: React.ReactElement[];
-    //   flexDirection: FlexDirection;
-    //   justifyContent: JustifyContent;
-    //   alignItems: AlignItems;
-    //   flexWrap: FlexWrap;
-    //   containerWidth: number;
-    //   containerHeight: number;
-    //   gap: number;
-    //   shape: IShape; // contenedor padre
-    // }
   ) => {
     // Calcular padding del contenedor
-    const paddingTop = shape.isAllPadding ? shape.paddingTop : shape.paddingTop;
+    const paddingTop = shape.isAllPadding ? shape.padding : shape.paddingTop;
     const paddingRight = shape.isAllPadding
-      ? shape.paddingRight
+      ? shape.padding
       : shape.paddingRight;
     const paddingBottom = shape.isAllPadding
-      ? shape.paddingBottom
+      ? shape.padding
       : shape.paddingBottom;
-    const paddingLeft = shape.isAllPadding
-      ? shape.paddingLeft
-      : shape.paddingLeft;
+    const paddingLeft = shape.isAllPadding ? shape.padding : shape.paddingLeft;
 
     const effectiveWidth = containerWidth - paddingLeft - paddingRight;
     const effectiveHeight = containerHeight - paddingTop - paddingBottom;

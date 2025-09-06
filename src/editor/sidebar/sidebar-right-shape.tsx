@@ -11,11 +11,14 @@ import { css } from "@stylespixelkit/css";
 import { useAtomValue, useSetAtom } from "jotai";
 import {
   ArrowDown,
+  ArrowLeft,
   ArrowLeftRight,
   ArrowRight,
+  ArrowUp,
   ArrowUpDown,
   Brush,
   CornerRightDown,
+  Expand,
   Eye,
   EyeOff,
   ImageIcon,
@@ -29,6 +32,7 @@ import {
 import React, { ChangeEvent, useRef, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { Dialog } from "../components/dialog";
+import { Input } from "../components/input";
 import { ListIcons } from "../components/list-icons";
 import { constants } from "../constants/color";
 import { useDelayedExecutor } from "../hooks/useDelayExecutor";
@@ -819,113 +823,159 @@ export const LayoutShapeConfig = () => {
         {/* NEW: Padding Section */}
         <div
           className={css({
-            display: "grid",
-            gridTemplateColumns: "1fr 33.5px",
-            alignItems: "end",
+            display: "flex",
+            flexDir: "column",
             gap: "md",
           })}
         >
-          <div className={commonStyles.twoColumnGrid}>
-            <InputNumber
-              iconType="square"
-              labelText="Padding"
-              min={0}
-              max={9999}
-              step={1}
-              type={shape.isAllPadding ? "text" : "number"}
-              value={shape.isAllPadding ? "Mixed" : shape.paddingTop || 0}
-              onChange={(e) => {
-                if (!shape.isAllPadding) {
-                  shapeUpdate({
-                    paddingTop: e,
-                    paddingRight: e,
-                    paddingBottom: e,
-                    paddingLeft: e,
-                  });
-                  execute();
-                }
+          <Input.Label text="Padding" />
+          <div
+            className={css({
+              display: "grid",
+              gridTemplateColumns: "1fr 30px",
+              gap: "md",
+            })}
+          >
+            <Input.Container>
+              <Input.Grid>
+                <Input.IconContainer>
+                  <Expand size={constants.icon.size} />
+                </Input.IconContainer>
+                {shape.isAllPadding ? (
+                  <Input.Number
+                    min={0}
+                    max={9999}
+                    step={1}
+                    value={shape.padding}
+                    onChange={(e) => {
+                      shapeUpdate({
+                        padding: e,
+                      });
+                      execute();
+                    }}
+                  />
+                ) : null}
+                {!shape.isAllPadding ? <Input.Label text="Mixed" /> : null}
+              </Input.Grid>
+            </Input.Container>
+            <button
+              className={css({
+                cursor: "pointer",
+                width: 30,
+                height: 30,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                borderWidth: "1px",
+                borderStyle: "solid",
+                borderRadius: "md",
+              })}
+              onClick={() => {
+                shapeUpdate({
+                  isAllPadding: !shape.isAllPadding,
+                });
+                execute();
               }}
-            />
+              style={{
+                backgroundColor: shape.isAllPadding
+                  ? constants.theme.colors.background
+                  : "transparent",
+                borderColor: shape.isAllPadding
+                  ? constants.theme.colors.primary
+                  : "transparent", // ← usa el semantic token
+              }}
+            >
+              <Scan
+                size={constants.icon.size}
+                color={
+                  shape.isAllPadding
+                    ? constants.theme.colors.primary
+                    : constants.theme.colors.white
+                }
+              />
+            </button>
           </div>
           {/* Botón toggle para padding individual */}
-          <button
-            className={css({
-              backgroundColor: shape.isAllPadding ? "gray.800" : "transparent",
-              border: "none",
-              cursor: "pointer",
-              height: 30,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            })}
-            onClick={() => {
-              shapeUpdate({
-                isAllPadding: !shape.isAllPadding,
-              });
-              execute();
-            }}
-          >
-            <Scan size={14} />
-          </button>
         </div>
 
         {/* Individual Padding Controls */}
-        {shape.isAllPadding && (
+        {!shape.isAllPadding && (
           <div
             className={css({
-              display: "flex",
+              display: "grid",
               flexDirection: "column",
-              gap: "lg",
+              gap: "md",
+              gridTemplateColumns: "2",
             })}
           >
-            <InputNumber
-              iconType="square"
-              labelText="Top"
-              min={0}
-              max={9999}
-              step={1}
-              value={shape.paddingTop || 0}
-              onChange={(e) => {
-                shapeUpdate({ paddingTop: e });
-                execute();
-              }}
-            />
-            <InputNumber
-              iconType="square"
-              labelText="Right"
-              min={0}
-              max={9999}
-              step={1}
-              value={shape.paddingRight || 0}
-              onChange={(e) => {
-                shapeUpdate({ paddingRight: e });
-                execute();
-              }}
-            />
-            <InputNumber
-              iconType="square"
-              labelText="Bottom"
-              min={0}
-              max={9999}
-              step={1}
-              value={shape.paddingBottom || 0}
-              onChange={(e) => {
-                shapeUpdate({ paddingBottom: e });
-                execute();
-              }}
-            />
-            <InputNumber
-              iconType="square"
-              labelText="Left"
-              min={0}
-              max={9999}
-              step={1}
-              value={shape.paddingLeft || 0}
-              onChange={(e) => {
-                shapeUpdate({ paddingLeft: e });
-                execute();
-              }}
-            />
+            <Input.Container>
+              <Input.Grid>
+                <Input.IconContainer>
+                  <ArrowUp size={constants.icon.size} />
+                </Input.IconContainer>
+                <Input.Number
+                  min={0}
+                  max={9999}
+                  step={1}
+                  value={shape.paddingTop || 0}
+                  onChange={(e) => {
+                    shapeUpdate({ paddingTop: e });
+                    execute();
+                  }}
+                />
+              </Input.Grid>
+            </Input.Container>
+            <Input.Container>
+              <Input.Grid>
+                <Input.IconContainer>
+                  <ArrowRight size={constants.icon.size} />
+                </Input.IconContainer>
+                <Input.Number
+                  min={0}
+                  max={9999}
+                  step={1}
+                  value={shape.paddingRight || 0}
+                  onChange={(e) => {
+                    shapeUpdate({ paddingRight: e });
+                    execute();
+                  }}
+                />
+              </Input.Grid>
+            </Input.Container>
+            <Input.Container>
+              <Input.Grid>
+                <Input.IconContainer>
+                  <ArrowDown size={constants.icon.size} />
+                </Input.IconContainer>
+                <Input.Number
+                  min={0}
+                  max={9999}
+                  step={1}
+                  value={shape.paddingBottom || 0}
+                  onChange={(e) => {
+                    shapeUpdate({ paddingBottom: e });
+                    execute();
+                  }}
+                />
+              </Input.Grid>
+            </Input.Container>
+            <Input.Container>
+              <Input.Grid>
+                <Input.IconContainer>
+                  <ArrowLeft size={constants.icon.size} />
+                </Input.IconContainer>
+                <Input.Number
+                  min={0}
+                  max={9999}
+                  step={1}
+                  value={shape.paddingLeft || 0}
+                  onChange={(e) => {
+                    shapeUpdate({ paddingLeft: e });
+                    execute();
+                  }}
+                />
+              </Input.Grid>
+            </Input.Container>
           </div>
         )}
       </section>
