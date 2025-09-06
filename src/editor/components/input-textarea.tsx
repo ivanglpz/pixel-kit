@@ -1,4 +1,3 @@
-import { Valid } from "@/components/valid";
 import { css } from "@stylespixelkit/css";
 import { useSetAtom } from "jotai";
 import { PAUSE_MODE_ATOM } from "../states/tool";
@@ -21,23 +20,20 @@ export const InputTextArea = ({
   return (
     <div
       className={css({
+        width: "100%",
+        color: "text",
+        fontSize: "sm",
+        backgroundColor: "gray.900", // Fondo más claro para el selector
+        borderRadius: "md",
+        padding: "sm",
+        borderWidth: "1px",
+        borderStyle: "solid",
+        borderColor: "gray.700", // ← usa el semantic token
+        gap: "md",
         display: "flex",
         flexDirection: "column",
-        gap: "md",
       })}
     >
-      <Valid isValid={Boolean(labelText?.length)}>
-        <p
-          className={css({
-            fontSize: "sm",
-            color: "text",
-            fontWeight: "normal",
-            opacity: 0.7,
-          })}
-        >
-          {labelText}
-        </p>
-      </Valid>
       <textarea
         value={value}
         onChange={(event) => onChange(event.target.value)}
@@ -47,7 +43,6 @@ export const InputTextArea = ({
         className={css({
           width: "100%",
           minHeight: "80px",
-          border: "container",
           backgroundColor: "transparent",
           color: "text",
           padding: "sm",
