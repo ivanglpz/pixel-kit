@@ -878,18 +878,19 @@ export const LayoutShapeConfig = () => {
                 execute();
               }}
               style={{
-                backgroundColor: shape.isAllPadding
+                backgroundColor: !shape.isAllPadding
                   ? constants.theme.colors.background
                   : "transparent",
-                borderColor: shape.isAllPadding
+                borderColor: !shape.isAllPadding
                   ? constants.theme.colors.primary
                   : "transparent", // ← usa el semantic token
               }}
             >
               <Sliders
                 size={constants.icon.size}
+                strokeWidth={2.5}
                 color={
-                  shape.isAllPadding
+                  !shape.isAllPadding
                     ? constants.theme.colors.primary
                     : constants.theme.colors.white
                 }
