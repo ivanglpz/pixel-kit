@@ -1620,7 +1620,57 @@ export const LayoutShapeConfig = () => {
             ))
           : null}
       </section>
-
+      {/* Controles detallados del efecto */}
+      <Valid isValid={shape.effects.length > 0}>
+        <p className={commonStyles.labelText}>Position</p>
+        <div className={commonStyles.twoColumnGrid}>
+          <InputNumber
+            iconType="x"
+            min={0}
+            max={100}
+            onChange={(e) => {
+              shapeUpdate({ shadowOffsetX: e });
+              execute(); // Ejecutar después del cambio
+            }}
+            value={shape.shadowOffsetX}
+          />
+          <InputNumber
+            iconType="y"
+            min={0}
+            max={100}
+            onChange={(e) => {
+              shapeUpdate({ shadowOffsetY: e });
+              execute(); // Ejecutar después del cambio
+            }}
+            value={shape.shadowOffsetY}
+          />
+        </div>
+        <div className={commonStyles.twoColumnGrid}>
+          <InputNumber
+            iconType="square"
+            labelText="blur"
+            min={0}
+            max={100}
+            onChange={(e) => {
+              shapeUpdate({ shadowBlur: e });
+              execute(); // Ejecutar después del cambio
+            }}
+            value={shape.shadowBlur}
+          />
+          <InputNumber
+            iconType="opacity"
+            labelText="opacity"
+            min={0}
+            max={1}
+            step={0.1}
+            onChange={(e) => {
+              shapeUpdate({ shadowOpacity: e });
+              execute(); // Ejecutar después del cambio
+            }}
+            value={shape.shadowOpacity}
+          />
+        </div>
+      </Valid>
       {/* Input file oculto para subir imágenes */}
       <input
         ref={inputRef}
