@@ -10,5 +10,6 @@ export const constants = {
   },
   icon: {
     size: 12,
+    strokeWidth: 2.2,
   },
 };
