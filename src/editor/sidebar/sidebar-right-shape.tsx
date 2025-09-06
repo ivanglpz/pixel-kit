@@ -1450,26 +1450,15 @@ export const LayoutShapeConfig = () => {
         {/* SECCIÓN: TYPOGRAPHY - Tipografía */}
         <section className={commonStyles.container}>
           <SectionHeader title="Typography" />
-          <div
-            className={css({
-              display: "grid",
-              gridTemplateColumns: "2",
-              gap: "lg",
-              gridTemplateRows: "auto auto auto",
-            })}
-          >
-            {/* Font Family */}
-            <div className={css({ gridColumn: "2" })}>
-              <InputSelect
-                value={shape.fontFamily ?? "Roboto"}
-                onChange={(e) => {
-                  shapeUpdate({ fontFamily: e as IShape["fontFamily"] });
-                  execute(); // Ejecutar después del cambio
-                }}
-                options={fontFamilyOptions}
-              />
-            </div>
-            {/* Font Weight */}
+          <InputSelect
+            value={shape.fontFamily ?? "Roboto"}
+            onChange={(e) => {
+              shapeUpdate({ fontFamily: e as IShape["fontFamily"] });
+              execute(); // Ejecutar después del cambio
+            }}
+            options={fontFamilyOptions}
+          />
+          <div className={commonStyles.twoColumnGrid}>
             <InputSelect
               labelText=""
               value={shape.fontWeight ?? "normal"}
@@ -1499,16 +1488,16 @@ export const LayoutShapeConfig = () => {
             </Input.Container>
 
             {/* Text Content */}
-            <div className={css({ gridColumn: 2, gridRow: 3 })}>
-              <InputTextArea
-                labelText=""
-                onChange={(e) => {
-                  shapeUpdate({ text: e });
-                  execute(); // Ejecutar después del cambio
-                }}
-                value={shape.text || ""}
-              />
-            </div>
+          </div>
+          <div className={css({ gridColumn: 2, gridRow: 3 })}>
+            <InputTextArea
+              labelText=""
+              onChange={(e) => {
+                shapeUpdate({ text: e });
+                execute(); // Ejecutar después del cambio
+              }}
+              value={shape.text || ""}
+            />
           </div>
         </section>
         <Separator />
