@@ -23,8 +23,8 @@ export type LayoutFlexProps = {
   justifyContent: JustifyContent;
   alignItems: AlignItems;
   flexWrap: FlexWrap;
-  id: string;
-  visible: boolean;
+  // id: string;
+  // visible: boolean;
   gap: number;
   children: React.ReactElement[];
   shape: IShape; // contenedor padre

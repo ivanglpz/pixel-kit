@@ -74,7 +74,12 @@ export const LayerImage = () => {
     fillContainerHeight: false,
     fillContainerWidth: false,
     opacity: 1,
-    layouts: [],
+    isLayout: false,
+    alignItems: "flex-start",
+    flexDirection: "row",
+    flexWrap: "nowrap",
+    justifyContent: "flex-start",
+    gap: 10,
     strokes: [
       {
         id: "559c1735-4e62-4c43-aa4c-246ec594ca06",

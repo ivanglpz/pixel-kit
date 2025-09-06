@@ -3,7 +3,12 @@ import { LineCap, LineJoin } from "konva/lib/Shape";
 import { FC } from "react";
 import { ALL_SHAPES } from "../states/shapes";
 import { IKeyMethods } from "../states/tool";
-import { LayoutFlexProps } from "./layout-flex";
+import {
+  AlignItems,
+  FlexDirection,
+  FlexWrap,
+  JustifyContent,
+} from "./layout-flex";
 
 export type WithInitialValue<Value> = {
   init: Value;
@@ -83,10 +88,13 @@ export type IShape = {
   verticalAlign: "top" | "middle" | "bottom";
 
   // Layout
-  layouts: Omit<
-    LayoutFlexProps,
-    "children" | "width" | "height" | "display" | "shape"
-  >[];
+  isLayout: boolean;
+  flexDirection: FlexDirection;
+  justifyContent: JustifyContent;
+  alignItems: AlignItems;
+  flexWrap: FlexWrap;
+  // visible: boolean;
+  gap: number;
   fillContainerWidth: boolean;
   fillContainerHeight: boolean;
 

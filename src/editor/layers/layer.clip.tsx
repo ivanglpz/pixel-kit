@@ -99,7 +99,12 @@ export const LayerClip = () => {
     isLocked: true,
     dash: 0,
     rotation: 0,
-    layouts: [],
+    isLayout: false,
+    alignItems: "flex-start",
+    flexDirection: "row",
+    flexWrap: "nowrap",
+    justifyContent: "flex-start",
+    gap: 10,
     fillContainerHeight: false,
     fillContainerWidth: false,
     fills: [

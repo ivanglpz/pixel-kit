@@ -24,8 +24,6 @@ export const ShapeGroup = ({
   const childrens = useAtomValue(box.children);
   if (!box.visible) return null;
 
-  const layout = box.layouts?.at(0);
-
   const children = childrens?.map((item) => {
     const Component = Shapes?.[item?.tool] as FCShapeWEvents;
     return (
@@ -56,12 +54,16 @@ export const ShapeGroup = ({
           height: height,
         }}
       >
-        {layout ? (
+        {box.isLayout ? (
           <LayoutFlex
             width={width}
             height={height}
             display="flex"
-            {...layout}
+            alignItems={box.alignItems}
+            flexDirection={box.flexDirection}
+            flexWrap={box.flexWrap}
+            gap={box.gap}
+            justifyContent={box.justifyContent}
             shape={box}
           >
             {children}
