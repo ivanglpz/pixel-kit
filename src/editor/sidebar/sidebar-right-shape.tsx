@@ -14,6 +14,7 @@ import {
   ArrowLeft,
   ArrowRight,
   ArrowUp,
+  Blend,
   Brush,
   Columns,
   CornerDownLeft,
@@ -1293,32 +1294,26 @@ export const LayoutShapeConfig = () => {
       {/* SECCIÓN: APPEARANCE - Apariencia */}
       <section className={commonStyles.container}>
         <p className={commonStyles.sectionTitle}>Appearance</p>
-
-        {/* Opacidad y Border Radius */}
-        <div
-          className={css({
-            display: "grid",
-            gridTemplateColumns: "1fr 33.5px",
-            alignItems: "end",
-            gap: "md",
-          })}
-        >
-          <div className={commonStyles.twoColumnGrid}>
-            <InputNumber
-              iconType="opacity"
-              labelText="Opacity"
-              min={0}
-              max={1}
-              step={0.1}
-              value={shape.opacity}
-              onChange={(e) => {
-                shapeUpdate({ opacity: e });
-                execute(); // Ejecutar después del cambio
-              }}
-            />
-          </div>
-          {/* Botón toggle para border radius individual */}
+        <div className={commonStyles.twoColumnGrid}>
+          <Input.Container>
+            <Input.Grid>
+              <Input.IconContainer>
+                <Blend size={constants.icon.size} />
+              </Input.IconContainer>
+              <Input.Number
+                min={0}
+                max={1}
+                step={0.1}
+                value={shape.opacity}
+                onChange={(e) => {
+                  shapeUpdate({ opacity: e });
+                  execute(); // Ejecutar después del cambio
+                }}
+              />
+            </Input.Grid>
+          </Input.Container>
         </div>
+
         <div
           className={css({
             display: "flex",
