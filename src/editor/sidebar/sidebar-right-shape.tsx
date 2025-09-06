@@ -516,66 +516,6 @@ export const LayoutShapeConfig = () => {
   };
 
   // Manejadores para layouts (agregar con los demás manejadores)
-  const handleAddLayout = () => {
-    shapeUpdate({
-      layouts: [
-        ...(shape.layouts || []),
-        {
-          id: uuidv4(),
-          visible: true,
-          flexDirection: "row",
-          justifyContent: "flex-start",
-          alignItems: "flex-start",
-          flexWrap: "nowrap",
-          gap: 10,
-          // padding: 10,
-        },
-      ],
-    });
-    execute(); // Ejecutar después del cambio
-  };
-
-  const handleLayoutVisibilityToggle = (index: number) => {
-    const newLayouts = [...(shape.layouts || [])];
-    newLayouts[index].visible = !newLayouts[index].visible;
-    shapeUpdate({ layouts: newLayouts });
-    execute(); // Ejecutar después del cambio
-  };
-
-  const handleLayoutRemove = (index: number) => {
-    const newLayouts = [...(shape.layouts || [])];
-    newLayouts.splice(index, 1);
-    shapeUpdate({ layouts: newLayouts });
-    execute(); // Ejecutar después del cambio
-  };
-
-  const handleLayoutPropertyChangelAYD = (
-    index: number,
-    values: {
-      justifyContent: JustifyContent;
-      alignItems: AlignItems;
-    }
-  ) => {
-    const newLayouts = [...(shape.layouts || [])];
-    newLayouts[index] = {
-      ...newLayouts[index],
-      justifyContent: values.justifyContent,
-      alignItems: values.alignItems,
-    };
-    shapeUpdate({ layouts: newLayouts });
-    execute(); // Ejecutar después del cambio
-  };
-
-  const handleLayoutPropertyChange = (
-    index: number,
-    property: string,
-    value: string | number
-  ) => {
-    const newLayouts = [...(shape.layouts || [])];
-    newLayouts[index] = { ...newLayouts[index], [property]: value };
-    shapeUpdate({ layouts: newLayouts });
-    execute(); // Ejecutar después del cambio
-  };
 
   return (
     <div
@@ -987,186 +927,141 @@ export const LayoutShapeConfig = () => {
       {shape?.tool === "GROUP" ? (
         <>
           <section className={commonStyles.container}>
-            <SectionHeader title="Layouts" onAdd={handleAddLayout} />
+            <SectionHeader
+              title="Layouts"
+              onAdd={() => {
+                shapeUpdate({ isLayout: !shape.isLayout });
+                execute();
+              }}
+            />
 
             {/* Lista de layouts */}
-            {shape.layouts?.length
-              ? shape.layouts.map((layout, index) => (
-                  <div
-                    key={`pixel-kit-shape-layout-${shape.id}-${shape.tool}-${index}`}
-                    className={css({
-                      display: "flex",
-                      flexDirection: "column",
-                      gap: "md",
-                    })}
-                  >
-                    {/* Header del layout con visibility y remove */}
-                    <div
+            {shape.isLayout ? (
+              <>
+                <div
+                  className={css({
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "md",
+                  })}
+                >
+                  {/* Controles del layout - solo si está visible */}
+                  {/* Flex Direction y Flex Wrap */}
+                  {/* NUEVO: Layout Grid Visual */}
+                  <div className={commonStyles.twoColumnGrid}>
+                    <LayoutGrid
+                      flexDirection={shape.flexDirection}
+                      justifyContent={shape.justifyContent}
+                      alignItems={shape.alignItems}
+                      onLayoutChange={(justifyContent, alignItems) => {
+                        shapeUpdate({ justifyContent, alignItems });
+                        execute();
+                        // handleLayoutPropertyChangelAYD(index, {
+                        //   alignItems,
+                        //   justifyContent,
+                        // });
+                      }}
+                    />
+                    <section
                       className={css({
                         display: "flex",
-                        justifyContent: "space-between",
-                        alignItems: "center",
+                        flexDirection: "column",
+                        gap: "lg",
                       })}
                     >
                       <div
                         className={css({
                           display: "flex",
-                          alignItems: "center",
+                          flexDirection: "row",
                           gap: "sm",
-                          color: "text",
-                          fontSize: "sm",
-                          fontWeight: "500",
                         })}
                       >
-                        Layout {index + 1}
+                        <button
+                          onClick={() => {
+                            shapeUpdate({
+                              flexDirection: "column",
+                            });
+                            execute();
+                          }}
+                          className={`${commonStyles.iconButton} ${css({
+                            padding: "md",
+                            backgroundColor:
+                              shape.flexDirection === "column"
+                                ? "gray.500"
+                                : "transparent",
+                          })}`}
+                        >
+                          <ArrowDown size={14} />
+                        </button>
+                        <button
+                          onClick={() => {
+                            shapeUpdate({
+                              flexDirection: "row",
+                            });
+                            execute();
+                          }}
+                          className={`${commonStyles.iconButton} ${css({
+                            padding: "md",
+                            backgroundColor:
+                              shape.flexDirection === "row"
+                                ? "gray.500"
+                                : "transparent",
+                          })}`}
+                        >
+                          <ArrowRight size={14} />
+                        </button>
+                        <button
+                          onClick={() => {
+                            shapeUpdate({
+                              flexWrap:
+                                shape.flexWrap === "wrap" ? "nowrap" : "wrap",
+                            });
+                            execute();
+                            // handleLayoutPropertyChange(
+                            //   index,
+                            //   "flexWrap",
+                            //   layout.flexWrap === "wrap" ? "nowrap" : "wrap"
+                            // )
+                          }}
+                          className={`${commonStyles.iconButton} ${css({
+                            padding: "md",
+                            backgroundColor:
+                              shape.flexWrap === "wrap"
+                                ? "gray.500"
+                                : "transparent",
+                          })}`}
+                        >
+                          <CornerRightDown size={14} />
+                        </button>
                       </div>
+                      {/* Gap y Padding */}
                       <div
                         className={css({
                           display: "flex",
-                          flexDirection: "row",
                           gap: "lg",
+                          flexDirection: "column",
                         })}
                       >
-                        {/* Botón visibility toggle */}
-                        <button
-                          onClick={() => handleLayoutVisibilityToggle(index)}
-                          className={commonStyles.iconButton}
-                        >
-                          {layout.visible ? (
-                            <Eye size={18} />
-                          ) : (
-                            <EyeOff size={18} />
-                          )}
-                        </button>
-                        {/* Botón remove */}
-                        <button
-                          onClick={() => handleLayoutRemove(index)}
-                          className={commonStyles.iconButton}
-                        >
-                          <Minus size={18} />
-                        </button>
+                        <InputNumber
+                          iconType="square"
+                          labelText="Gap"
+                          min={0}
+                          max={100}
+                          step={1}
+                          value={shape.gap}
+                          onChange={(value) => {
+                            shapeUpdate({
+                              gap: value,
+                            });
+                            execute();
+                          }}
+                        />
                       </div>
-                    </div>
-
-                    {/* Controles del layout - solo si está visible */}
-                    {layout.visible && (
-                      <>
-                        {/* Flex Direction y Flex Wrap */}
-                        {/* NUEVO: Layout Grid Visual */}
-                        <div className={commonStyles.twoColumnGrid}>
-                          <LayoutGrid
-                            flexDirection={layout.flexDirection}
-                            justifyContent={layout.justifyContent}
-                            alignItems={layout.alignItems}
-                            onLayoutChange={(justifyContent, alignItems) => {
-                              handleLayoutPropertyChangelAYD(index, {
-                                alignItems,
-                                justifyContent,
-                              });
-                            }}
-                          />
-                          <section
-                            className={css({
-                              display: "flex",
-                              flexDirection: "column",
-                              gap: "lg",
-                            })}
-                          >
-                            <div
-                              className={css({
-                                display: "flex",
-                                flexDirection: "row",
-                                gap: "sm",
-                              })}
-                            >
-                              <button
-                                onClick={() =>
-                                  handleLayoutPropertyChange(
-                                    index,
-                                    "flexDirection",
-                                    "column"
-                                  )
-                                }
-                                className={`${commonStyles.iconButton} ${css({
-                                  padding: "md",
-                                  backgroundColor:
-                                    layout.flexDirection === "column"
-                                      ? "gray.500"
-                                      : "transparent",
-                                })}`}
-                              >
-                                <ArrowDown size={14} />
-                              </button>
-                              <button
-                                onClick={() =>
-                                  handleLayoutPropertyChange(
-                                    index,
-                                    "flexDirection",
-                                    "row"
-                                  )
-                                }
-                                className={`${commonStyles.iconButton} ${css({
-                                  padding: "md",
-                                  backgroundColor:
-                                    layout.flexDirection === "row"
-                                      ? "gray.500"
-                                      : "transparent",
-                                })}`}
-                              >
-                                <ArrowRight size={14} />
-                              </button>
-                              <button
-                                onClick={() =>
-                                  handleLayoutPropertyChange(
-                                    index,
-                                    "flexWrap",
-                                    layout.flexWrap === "wrap"
-                                      ? "nowrap"
-                                      : "wrap"
-                                  )
-                                }
-                                className={`${commonStyles.iconButton} ${css({
-                                  padding: "md",
-                                  backgroundColor:
-                                    layout.flexWrap === "wrap"
-                                      ? "gray.500"
-                                      : "transparent",
-                                })}`}
-                              >
-                                <CornerRightDown size={14} />
-                              </button>
-                            </div>
-                            {/* Gap y Padding */}
-                            <div
-                              className={css({
-                                display: "flex",
-                                gap: "lg",
-                                flexDirection: "column",
-                              })}
-                            >
-                              <InputNumber
-                                iconType="square"
-                                labelText="Gap"
-                                min={0}
-                                max={100}
-                                step={1}
-                                value={layout.gap}
-                                onChange={(value) =>
-                                  handleLayoutPropertyChange(
-                                    index,
-                                    "gap",
-                                    value
-                                  )
-                                }
-                              />
-                            </div>
-                          </section>
-                        </div>
-                      </>
-                    )}
+                    </section>
                   </div>
-                ))
-              : null}
+                </div>
+              </>
+            ) : null}
           </section>
           <Separator />
         </>
