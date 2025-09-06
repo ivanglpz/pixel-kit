@@ -27,6 +27,7 @@ import {
   Plus,
   Ruler,
   Scan,
+  Sliders,
   Smile,
 } from "lucide-react";
 import React, { ChangeEvent, useRef, useState } from "react";
@@ -885,8 +886,9 @@ export const LayoutShapeConfig = () => {
                   : "transparent", // ← usa el semantic token
               }}
             >
-              <Scan
+              <Sliders
                 size={constants.icon.size}
+                strokeWidth={2.5}
                 color={
                   shape.isAllPadding
                     ? constants.theme.colors.primary
