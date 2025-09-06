@@ -2,7 +2,6 @@
 /* eslint-disable jsx-a11y/alt-text */
 import { Valid } from "@/components/valid";
 import InputColor from "@/editor/components/input-color";
-import { InputNumber } from "@/editor/components/input-number";
 import { InputSelect } from "@/editor/components/input-select";
 import { InputTextArea } from "@/editor/components/input-textarea";
 import { IShape } from "@/editor/shapes/type.shape";
@@ -35,6 +34,7 @@ import {
   Scaling,
   Sliders,
   Smile,
+  Square,
 } from "lucide-react";
 import React, { ChangeEvent, useRef, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
@@ -1831,53 +1831,94 @@ export const LayoutShapeConfig = () => {
       </section>
       {/* Controles detallados del efecto */}
       <Valid isValid={shape.effects.length > 0}>
-        <p className={commonStyles.labelText}>Position</p>
-        <div className={commonStyles.twoColumnGrid}>
-          <InputNumber
-            iconType="x"
-            min={0}
-            max={100}
-            onChange={(e) => {
-              shapeUpdate({ shadowOffsetX: e });
-              execute(); // Ejecutar después del cambio
-            }}
-            value={shape.shadowOffsetX}
-          />
-          <InputNumber
-            iconType="y"
-            min={0}
-            max={100}
-            onChange={(e) => {
-              shapeUpdate({ shadowOffsetY: e });
-              execute(); // Ejecutar después del cambio
-            }}
-            value={shape.shadowOffsetY}
-          />
-        </div>
-        <div className={commonStyles.twoColumnGrid}>
-          <InputNumber
-            iconType="square"
-            labelText="blur"
-            min={0}
-            max={100}
-            onChange={(e) => {
-              shapeUpdate({ shadowBlur: e });
-              execute(); // Ejecutar después del cambio
-            }}
-            value={shape.shadowBlur}
-          />
-          <InputNumber
-            iconType="opacity"
-            labelText="opacity"
-            min={0}
-            max={1}
-            step={0.1}
-            onChange={(e) => {
-              shapeUpdate({ shadowOpacity: e });
-              execute(); // Ejecutar después del cambio
-            }}
-            value={shape.shadowOpacity}
-          />
+        <div
+          className={css({
+            display: "grid",
+            flexDirection: "column",
+            gap: "md",
+            gridTemplateColumns: "2",
+          })}
+        >
+          <Input.Container>
+            <Input.Grid>
+              <Input.IconContainer>
+                <p
+                  className={css({
+                    fontWeight: 600,
+                    fontSize: "x-small",
+                  })}
+                >
+                  X
+                </p>
+              </Input.IconContainer>
+              <Input.Number
+                step={1}
+                value={shape.shadowOffsetX || 0}
+                onChange={(v) => {
+                  shapeUpdate({ shadowOffsetX: v });
+                  execute(); // Ejecutar después del cambio
+                }}
+              />
+            </Input.Grid>
+          </Input.Container>
+          <Input.Container>
+            <Input.Grid>
+              <Input.IconContainer>
+                <p
+                  className={css({
+                    fontWeight: 600,
+                    fontSize: "x-small",
+                  })}
+                >
+                  Y
+                </p>
+              </Input.IconContainer>
+              <Input.Number
+                step={1}
+                value={shape.shadowOffsetY}
+                onChange={(e) => {
+                  shapeUpdate({ shadowOffsetY: e });
+                  execute(); // Ejecutar después del cambio
+                }}
+              />
+            </Input.Grid>
+          </Input.Container>
+          <Input.Container>
+            <Input.Grid>
+              <Input.IconContainer>
+                <Square
+                  size={constants.icon.size}
+                  strokeWidth={constants.icon.strokeWidth}
+                />
+              </Input.IconContainer>
+              <Input.Number
+                step={1}
+                onChange={(e) => {
+                  shapeUpdate({ shadowBlur: e });
+                  execute(); // Ejecutar después del cambio
+                }}
+                value={shape.shadowBlur}
+              />
+            </Input.Grid>
+          </Input.Container>
+          <Input.Container>
+            <Input.Grid>
+              <Input.IconContainer>
+                <Blend
+                  size={constants.icon.size}
+                  strokeWidth={constants.icon.strokeWidth}
+                />
+              </Input.IconContainer>
+              <Input.Number
+                step={1}
+                onChange={(e) => {
+                  shapeUpdate({ shadowOpacity: e });
+                  execute(); // Ejecutar después del cambio
+                }}
+                value={shape.shadowOpacity}
+              />
+            </Input.Grid>
+          </Input.Container>
         </div>
       </Valid>
       {/* Input file oculto para subir imágenes */}
