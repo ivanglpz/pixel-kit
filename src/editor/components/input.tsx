@@ -47,7 +47,7 @@ const Container = ({ children, id }: { children: ReactNode; id?: string }) => {
         padding: "sm",
         borderWidth: "1px",
         borderStyle: "solid",
-        borderColor: "gray.800", // ← usa el semantic token
+        borderColor: "gray.700", // ← usa el semantic token
         gap: "md",
         height: 30,
       })}
