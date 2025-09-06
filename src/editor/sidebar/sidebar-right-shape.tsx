@@ -12,10 +12,8 @@ import { useAtomValue, useSetAtom } from "jotai";
 import {
   ArrowDown,
   ArrowLeft,
-  ArrowLeftRight,
   ArrowRight,
   ArrowUp,
-  ArrowUpDown,
   Brush,
   Columns,
   CornerDownLeft,
@@ -28,6 +26,8 @@ import {
   EyeOff,
   ImageIcon,
   Minus,
+  MoveHorizontal,
+  MoveVertical,
   PenTool,
   Plus,
   Ruler,
@@ -565,25 +565,54 @@ export const LayoutShapeConfig = () => {
         {/* Posición */}
         <p className={commonStyles.labelText}>Position</p>
         <div className={commonStyles.twoColumnGrid}>
-          <InputNumber
-            iconType="x"
-            value={shape.x}
-            onChange={(v) => {
-              shapeUpdate({ x: v });
-              execute(); // Ejecutar después del cambio
-            }}
-          />
-          <InputNumber
-            iconType="y"
-            labelText=""
-            value={shape.y}
-            onChange={(v) => {
-              shapeUpdate({ y: v });
-              execute(); // Ejecutar después del cambio
-            }}
-          />
+          <Input.Container>
+            <Input.Grid>
+              <Input.IconContainer>
+                <p
+                  className={css({
+                    fontWeight: 600,
+                    fontSize: "x-small",
+                  })}
+                >
+                  X
+                </p>
+                {/* <MoveHorizontal size={constants.icon.size} /> */}
+              </Input.IconContainer>
+              <Input.Number
+                step={1}
+                value={shape.x}
+                onChange={(v) => {
+                  shapeUpdate({ x: v });
+                  execute(); // Ejecutar después del cambio
+                }}
+              />
+            </Input.Grid>
+          </Input.Container>
+          <Input.Container>
+            <Input.Grid>
+              <Input.IconContainer>
+                <p
+                  className={css({
+                    fontWeight: 600,
+                    fontSize: "x-small",
+                  })}
+                >
+                  Y
+                </p>
+                {/* <MoveHorizontal size={constants.icon.size} /> */}
+              </Input.IconContainer>
+              <Input.Number
+                step={1}
+                value={shape.y}
+                onChange={(v) => {
+                  shapeUpdate({ y: v });
+                  execute(); // Ejecutar después del cambio
+                }}
+              />
+            </Input.Grid>
+          </Input.Container>
         </div>
-
+        {/*
         <p className={commonStyles.labelText}>Rotation</p>
         <div className={commonStyles.twoColumnGrid}>
           <InputNumber
@@ -597,7 +626,7 @@ export const LayoutShapeConfig = () => {
               execute(); // Ejecutar después del cambio
             }}
           />
-        </div>
+        </div> */}
       </section>
 
       <Separator />
@@ -609,14 +638,30 @@ export const LayoutShapeConfig = () => {
         {Boolean(shape.parentId) ? (
           <>
             <div className={commonStyles.two2ColumnGrid}>
-              <InputNumber
-                iconType="width"
-                value={Number(shape.width) || 0}
-                onChange={(v) => {
-                  shapeUpdate({ width: v });
-                  execute(); // Ejecutar después del cambio
-                }}
-              />
+              <Input.Container>
+                <Input.Grid>
+                  <Input.IconContainer>
+                    <p
+                      className={css({
+                        fontWeight: 600,
+                        fontSize: "x-small",
+                      })}
+                    >
+                      W
+                    </p>
+                    {/* <MoveHorizontal size={constants.icon.size} /> */}
+                  </Input.IconContainer>
+                  <Input.Number
+                    step={1}
+                    value={Number(shape.width) || 0}
+                    onChange={(v) => {
+                      shapeUpdate({ width: v });
+                      execute(); // Ejecutar después del cambio
+                    }}
+                  />
+                </Input.Grid>
+              </Input.Container>
+
               <button
                 onClick={() => {
                   shapeUpdate({
@@ -625,27 +670,61 @@ export const LayoutShapeConfig = () => {
                   execute(); // Ejecutar después del cambio
                 }}
                 className={css({
-                  background: "bg.muted",
-                  borderRadius: "6px",
-                  padding: "6px",
+                  cursor: "pointer",
+                  width: 30,
+                  height: 30,
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
+                  borderWidth: "1px",
+                  borderStyle: "solid",
+                  borderRadius: "md",
                 })}
+                style={{
+                  backgroundColor: shape.fillContainerWidth
+                    ? constants.theme.colors.background
+                    : "transparent",
+                  borderColor: shape.fillContainerWidth
+                    ? constants.theme.colors.primary
+                    : "transparent", // ← usa el semantic token
+                }}
               >
-                <ArrowLeftRight
-                  size={14}
+                <MoveHorizontal
+                  size={constants.icon.size}
                   color={
                     shape.fillContainerWidth
                       ? constants.theme.colors.primary
-                      : constants.theme.colors["gray.200"]
+                      : constants.theme.colors.white
                   }
-                  strokeWidth={2.5}
+                  strokeWidth={constants.icon.strokeWidth}
                 />
               </button>
             </div>
             <div className={commonStyles.two2ColumnGrid}>
-              <InputNumber
+              <Input.Container>
+                <Input.Grid>
+                  <Input.IconContainer>
+                    <p
+                      className={css({
+                        fontWeight: 600,
+                        fontSize: "x-small",
+                      })}
+                    >
+                      H
+                    </p>
+                    {/* <MoveHorizontal size={constants.icon.size} /> */}
+                  </Input.IconContainer>
+                  <Input.Number
+                    step={1}
+                    value={Number(shape.height) || 0}
+                    onChange={(v) => {
+                      shapeUpdate({ height: v });
+                      execute(); // Ejecutar después del cambio
+                    }}
+                  />
+                </Input.Grid>
+              </Input.Container>
+              {/* <InputNumber
                 iconType="height"
                 labelText=""
                 value={Number(shape.height) || 0}
@@ -653,7 +732,7 @@ export const LayoutShapeConfig = () => {
                   shapeUpdate({ height: v });
                   execute(); // Ejecutar después del cambio
                 }}
-              />
+              /> */}
               <button
                 onClick={() => {
                   shapeUpdate({
@@ -662,22 +741,33 @@ export const LayoutShapeConfig = () => {
                   execute(); // Ejecutar después del cambio
                 }}
                 className={css({
-                  background: "bg.muted",
-                  borderRadius: "6px",
-                  padding: "6px",
+                  cursor: "pointer",
+                  width: 30,
+                  height: 30,
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
+                  borderWidth: "1px",
+                  borderStyle: "solid",
+                  borderRadius: "md",
                 })}
+                style={{
+                  backgroundColor: shape.fillContainerHeight
+                    ? constants.theme.colors.background
+                    : "transparent",
+                  borderColor: shape.fillContainerHeight
+                    ? constants.theme.colors.primary
+                    : "transparent", // ← usa el semantic token
+                }}
               >
-                <ArrowUpDown
-                  size={14}
-                  strokeWidth={2.5}
+                <MoveVertical
+                  size={constants.icon.size}
                   color={
                     shape.fillContainerHeight
                       ? constants.theme.colors.primary
-                      : constants.theme.colors["gray.200"]
+                      : constants.theme.colors.white
                   }
+                  strokeWidth={constants.icon.strokeWidth}
                 />
               </button>
             </div>
@@ -686,23 +776,52 @@ export const LayoutShapeConfig = () => {
 
         {!Boolean(shape.parentId) ? (
           <div className={commonStyles.twoColumnGrid}>
-            <InputNumber
-              iconType="width"
-              value={Number(shape.width) || 0}
-              onChange={(v) => {
-                shapeUpdate({ width: v });
-                execute(); // Ejecutar después del cambio
-              }}
-            />
-            <InputNumber
-              iconType="height"
-              labelText=""
-              value={Number(shape.height) || 0}
-              onChange={(v) => {
-                shapeUpdate({ height: v });
-                execute(); // Ejecutar después del cambio
-              }}
-            />
+            <Input.Container>
+              <Input.Grid>
+                <Input.IconContainer>
+                  <p
+                    className={css({
+                      fontWeight: 600,
+                      fontSize: "x-small",
+                    })}
+                  >
+                    W
+                  </p>
+                  {/* <MoveHorizontal size={constants.icon.size} /> */}
+                </Input.IconContainer>
+                <Input.Number
+                  step={1}
+                  value={Number(shape.width) || 0}
+                  onChange={(v) => {
+                    shapeUpdate({ width: v });
+                    execute(); // Ejecutar después del cambio
+                  }}
+                />
+              </Input.Grid>
+            </Input.Container>
+            <Input.Container>
+              <Input.Grid>
+                <Input.IconContainer>
+                  <p
+                    className={css({
+                      fontWeight: 600,
+                      fontSize: "x-small",
+                    })}
+                  >
+                    H
+                  </p>
+                  {/* <MoveHorizontal size={constants.icon.size} /> */}
+                </Input.IconContainer>
+                <Input.Number
+                  step={1}
+                  value={Number(shape.height) || 0}
+                  onChange={(v) => {
+                    shapeUpdate({ height: v });
+                    execute(); // Ejecutar después del cambio
+                  }}
+                />
+              </Input.Grid>
+            </Input.Container>
           </div>
         ) : null}
 
