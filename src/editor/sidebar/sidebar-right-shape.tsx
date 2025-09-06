@@ -32,6 +32,7 @@ import {
   PenTool,
   Plus,
   Ruler,
+  Scaling,
   Sliders,
   Smile,
 } from "lucide-react";
@@ -613,21 +614,6 @@ export const LayoutShapeConfig = () => {
             </Input.Grid>
           </Input.Container>
         </div>
-        {/*
-        <p className={commonStyles.labelText}>Rotation</p>
-        <div className={commonStyles.twoColumnGrid}>
-          <InputNumber
-            iconType="rotate"
-            min={0}
-            max={360}
-            step={1}
-            value={shape.rotation}
-            onChange={(v) => {
-              shapeUpdate({ rotation: v });
-              execute(); // Ejecutar después del cambio
-            }}
-          />
-        </div> */}
       </section>
 
       <Separator />
@@ -725,15 +711,7 @@ export const LayoutShapeConfig = () => {
                   />
                 </Input.Grid>
               </Input.Container>
-              {/* <InputNumber
-                iconType="height"
-                labelText=""
-                value={Number(shape.height) || 0}
-                onChange={(v) => {
-                  shapeUpdate({ height: v });
-                  execute(); // Ejecutar después del cambio
-                }}
-              /> */}
+
               <button
                 onClick={() => {
                   shapeUpdate({
@@ -1505,18 +1483,24 @@ export const LayoutShapeConfig = () => {
               options={fontWeightOptions}
             />
             {/* Font Size */}
-            <InputNumber
-              iconType="font"
-              labelText=""
-              min={4}
-              max={180}
-              step={4}
-              onChange={(e) => {
-                shapeUpdate({ fontSize: e });
-                execute(); // Ejecutar después del cambio
-              }}
-              value={shape.fontSize || 0}
-            />
+            <Input.Container>
+              <Input.Grid>
+                <Input.IconContainer>
+                  <Scaling size={constants.icon.size} />
+                </Input.IconContainer>
+                <Input.Number
+                  min={4}
+                  max={180}
+                  step={4}
+                  onChange={(e) => {
+                    shapeUpdate({ fontSize: e });
+                    execute(); // Ejecutar después del cambio
+                  }}
+                  value={shape.fontSize || 0}
+                />
+              </Input.Grid>
+            </Input.Container>
+
             {/* Text Content */}
             <div className={css({ gridColumn: 2, gridRow: 3 })}>
               <InputTextArea
@@ -1668,18 +1652,30 @@ export const LayoutShapeConfig = () => {
             {/* Configuraciones de stroke */}
             <div className={commonStyles.twoColumnGrid}>
               {/* Stroke Weight */}
-              <InputNumber
-                iconType="width"
-                min={0}
-                max={9999}
-                step={1}
-                labelText="Weight"
-                value={shape.strokeWidth || 0}
-                onChange={(v) => {
-                  shapeUpdate({ strokeWidth: v });
-                  execute(); // Ejecutar después del cambio
-                }}
-              />
+              <Input.Container>
+                <Input.Grid>
+                  <Input.IconContainer>
+                    <p
+                      className={css({
+                        fontWeight: 600,
+                        fontSize: "x-small",
+                      })}
+                    >
+                      W
+                    </p>
+                  </Input.IconContainer>
+                  <Input.Number
+                    min={0}
+                    max={9999}
+                    step={1}
+                    value={shape.strokeWidth || 0}
+                    onChange={(v) => {
+                      shapeUpdate({ strokeWidth: v });
+                      execute(); // Ejecutar después del cambio
+                    }}
+                  />
+                </Input.Grid>
+              </Input.Container>
               {/* Line Style Buttons */}
               <div
                 className={css({
@@ -1691,53 +1687,104 @@ export const LayoutShapeConfig = () => {
                 <button
                   onClick={() => handleLineStyleChange("round", "round")}
                   className={css({
-                    background:
-                      shape.lineJoin === "round" && shape.lineCap === "round"
-                        ? "bg.muted"
-                        : "transparent",
-                    borderRadius: "6px",
-                    padding: "sm",
+                    cursor: "pointer",
+                    width: 30,
+                    height: 30,
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
-                    height: "33.5px",
+                    borderWidth: "1px",
+                    borderStyle: "solid",
+                    borderRadius: "md",
                   })}
+                  style={{
+                    backgroundColor:
+                      shape.lineJoin === "round" && shape.lineCap === "round"
+                        ? constants.theme.colors.background
+                        : "transparent",
+                    borderColor:
+                      shape.lineJoin === "round" && shape.lineCap === "round"
+                        ? constants.theme.colors.primary
+                        : "transparent", // ← usa el semantic token
+                  }}
                 >
-                  <Brush size={14} />
+                  <Brush
+                    size={constants.icon.size}
+                    strokeWidth={constants.icon.strokeWidth}
+                    color={
+                      shape.lineJoin === "round" && shape.lineCap === "round"
+                        ? constants.theme.colors.primary
+                        : constants.theme.colors.white
+                    }
+                  />
                 </button>
                 <button
                   onClick={() => handleLineStyleChange("miter", "round")}
                   className={css({
-                    background:
-                      shape.lineJoin === "miter" && shape.lineCap === "round"
-                        ? "bg.muted"
-                        : "transparent",
-                    borderRadius: "6px",
-                    padding: "6px",
+                    cursor: "pointer",
+                    width: 30,
+                    height: 30,
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
-                    height: "33.5px",
+                    borderWidth: "1px",
+                    borderStyle: "solid",
+                    borderRadius: "md",
                   })}
+                  style={{
+                    backgroundColor:
+                      shape.lineJoin === "miter" && shape.lineCap === "round"
+                        ? constants.theme.colors.background
+                        : "transparent",
+                    borderColor:
+                      shape.lineJoin === "miter" && shape.lineCap === "round"
+                        ? constants.theme.colors.primary
+                        : "transparent", // ← usa el semantic token
+                  }}
                 >
-                  <PenTool size={14} />
+                  <PenTool
+                    size={constants.icon.size}
+                    strokeWidth={constants.icon.strokeWidth}
+                    color={
+                      shape.lineJoin === "miter" && shape.lineCap === "round"
+                        ? constants.theme.colors.primary
+                        : constants.theme.colors.white
+                    }
+                  />
                 </button>
                 <button
                   onClick={() => handleLineStyleChange("miter", "butt")}
                   className={css({
-                    background:
-                      shape.lineJoin === "miter" && shape.lineCap === "butt"
-                        ? "bg.muted"
-                        : "transparent",
-                    borderRadius: "6px",
-                    padding: "6px",
+                    cursor: "pointer",
+                    width: 30,
+                    height: 30,
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
-                    height: "33.5px",
+                    borderWidth: "1px",
+                    borderStyle: "solid",
+                    borderRadius: "md",
                   })}
+                  style={{
+                    backgroundColor:
+                      shape.lineJoin === "miter" && shape.lineCap === "butt"
+                        ? constants.theme.colors.background
+                        : "transparent",
+                    borderColor:
+                      shape.lineJoin === "miter" && shape.lineCap === "butt"
+                        ? constants.theme.colors.primary
+                        : "transparent", // ← usa el semantic token
+                  }}
                 >
-                  <Ruler size={14} />
+                  <Ruler
+                    size={constants.icon.size}
+                    strokeWidth={constants.icon.strokeWidth}
+                    color={
+                      shape.lineJoin === "miter" && shape.lineCap === "butt"
+                        ? constants.theme.colors.primary
+                        : constants.theme.colors.white
+                    }
+                  />
                 </button>
               </div>
             </div>
