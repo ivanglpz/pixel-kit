@@ -515,13 +515,13 @@ export default defineConfig({
           },
         },
         gray: {
-          "50": { value: "hsl(0, 0%, 97%)" },
-          "100": { value: "hsl(0, 0%, 95%)" },
-          "200": { value: "hsl(0, 0%, 70.63%)" },
-          "300": { value: "hsl(0, 0%, 51.07%)" },
-          "400": { value: "hsl(0, 0%, 36.42%)" },
-          "500": { value: "hsl(0, 0%, 26%)" },
-          "600": { value: "hsl(0, 0%, 18.26%)" },
+          "50": { value: "#f7f7f7ff" },
+          "100": { value: "#f2f2f2ff" },
+          "200": { value: "#b4b4b4ff" },
+          "300": { value: "#828282ff" },
+          "400": { value: "#5d5d5dff" },
+          "500": { value: "#424242ff" },
+          "600": { value: "#2f2f2fff" },
           "700": { value: "hsl(0, 0%, 12.32%)" },
           "800": { value: "hsl(0, 0%, 7.65%)" },
           "900": { value: "hsl(0, 0%, 3.94%)" },
@@ -606,7 +606,7 @@ export default defineConfig({
         // Primary & Secondary Variants
         primary: {
           DEFAULT: {
-            value: { base: "#4B5EFC", _dark: "#4B5EFC" },
+            value: { base: "#4bacfcff", _dark: "#4bacfcff" },
           },
           hover: {
             value: { base: "rgb(0, 130, 220)", _dark: "rgb(0, 180, 220)" },

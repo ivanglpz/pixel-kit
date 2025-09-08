@@ -5,30 +5,44 @@ import Konva from "konva";
 import { Shape, ShapeConfig } from "konva/lib/Shape";
 import { MutableRefObject, useEffect, useMemo, useRef } from "react";
 import { Group, Layer, Line, Rect, Transformer } from "react-konva";
-import { useImageRender } from "../hooks/useImageRender";
 import { useReference } from "../hooks/useReference";
 import { ShapeImage } from "../shapes/image.shape";
 import { IShape } from "../shapes/type.shape";
-import { boxClipAtom, showClipAtom } from "../states/clipImage";
+import {
+  CLIP_DIMENSION_ATOM,
+  ICLIP_DIMENSION,
+  SHOW_CLIP_ATOM,
+} from "../states/clipImage";
 import { STAGE_DIMENSION_ATOM } from "../states/dimension";
+import { IMAGE_RENDER_ATOM } from "../states/image";
+import { ALL_SHAPES } from "../states/shapes";
 
 export const LayerClip = () => {
-  const { img } = useImageRender();
+  // const { img } = useImageRender();
+  const image = useAtomValue(IMAGE_RENDER_ATOM);
   const { height, width } = useAtomValue(STAGE_DIMENSION_ATOM);
-  const showClip = useAtomValue(showClipAtom);
-  const [box, setBox] = useAtom(boxClipAtom);
+  const showClip = useAtomValue(SHOW_CLIP_ATOM);
+  const [box, setBox] = useAtom(CLIP_DIMENSION_ATOM);
   const dimension = useMemo(
-    () => calculateDimension(width, height, img?.width, img?.height),
-    [width, height, img?.width, img?.height]
+    () => calculateDimension(width, height, image?.width, image?.height),
+    [width, height, image?.width, image?.height]
   );
   const trRef = useRef<Konva.Transformer>(null);
   const shapeRef = useRef<Konva.Rect>(null);
   const gshRef = useRef<Konva.Group>(null);
 
-  useReference({
+  const { handleSetRef } = useReference({
     type: "CLIP",
     ref: gshRef,
   });
+  useEffect(() => {
+    if (gshRef?.current) {
+      handleSetRef({
+        type: "CLIP",
+        ref: gshRef,
+      });
+    }
+  }, [gshRef]);
 
   useEffect(() => {
     setBox({
@@ -46,7 +60,7 @@ export const LayerClip = () => {
     }
   }, [showClip, trRef.current, shapeRef.current]);
 
-  const position = (payload: Partial<IShape>) => {
+  const position = (payload: ICLIP_DIMENSION): ICLIP_DIMENSION => {
     if (Number(payload?.x) < Number(dimension?.x)) {
       payload.x = dimension.x;
     }
@@ -77,6 +91,89 @@ export const LayerClip = () => {
 
   if (!showClip) return null;
 
+  const shape: IShape = {
+    ...dimension,
+    align: "center",
+    tool: "IMAGE",
+    visible: true,
+    isLocked: true,
+    dash: 0,
+    rotation: 0,
+    isLayout: false,
+    alignItems: "flex-start",
+    flexDirection: "row",
+    flexWrap: "nowrap",
+    justifyContent: "flex-start",
+    gap: 10,
+    fillContainerHeight: false,
+    fillContainerWidth: false,
+    fills: [
+      {
+        color: "#fff",
+        id: "107183aa-dbb0-4986-9d17-066e30e88996",
+        image: {
+          src: image?.base64,
+          height: image.height,
+          width: image.width,
+          name: "preview-edit-image",
+        },
+        opacity: 1,
+        type: "image",
+        visible: true,
+      },
+    ],
+    id: "main-image-render-stage",
+    verticalAlign: "top",
+    paddingBottom: 10,
+    paddingTop: 10,
+    borderBottomLeftRadius: 0,
+    isAllPadding: false,
+    borderBottomRightRadius: 0,
+    borderTopLeftRadius: 0,
+    borderTopRightRadius: 0,
+    paddingLeft: 10,
+    paddingRight: 10,
+    maxHeight: 0,
+    maxWidth: 0,
+    padding: 10,
+    minHeight: 0,
+    minWidth: 0,
+    effects: [],
+    label: "DRAW",
+    parentId: null,
+    opacity: 1,
+    strokes: [
+      {
+        id: "559c1735-4e62-4c43-aa4c-246ec594ca06",
+        visible: true,
+        color: "#fff",
+      },
+    ],
+    points: [],
+    strokeWidth: 1,
+    lineCap: "round",
+    lineJoin: "round",
+    shadowBlur: 0,
+    shadowOffsetY: 5,
+    shadowOffsetX: 5,
+    shadowOpacity: 1,
+    isAllBorderRadius: false,
+    borderRadius: 0,
+    fontStyle: "Roboto",
+    textDecoration: "none",
+    fontWeight: "normal",
+    fontFamily: "Roboto",
+    fontSize: 24,
+    text: "",
+    children: atom([] as ALL_SHAPES[]),
+  };
+  const state: ALL_SHAPES = {
+    id: "1c46a759-c0f4-4978-8781-5f10ca8cfe8d",
+    pageId: "f860ad7b-27ac-491a-ba77-1a81f004dac1",
+    state: atom(shape),
+    tool: "IMAGE",
+  };
+
   return (
     <Layer id="layer-clip-image-preview">
       <Rect
@@ -93,43 +190,7 @@ export const LayerClip = () => {
         clipX={box.x}
         clipY={box.y}
       >
-        <ShapeImage
-          SHAPES={[]}
-          item={{
-            id: "1c024656-106b-4d70-bc5c-845637d3344a",
-            pageId: "main-image-render-stage",
-            parentId: null,
-            state: atom<IShape>({
-              ...dimension,
-              id: "main-image-render-stage",
-              isBlocked: true,
-              tool: "IMAGE",
-              visible: true,
-              // fillEnabled: true,
-              dash: 0,
-              // isWritingNow: false,
-              // strokeEnabled: false,
-              // shadowEnabled: false,
-              // dashEnabled: false,
-              fills: [
-                {
-                  color: "#fff",
-                  id: "1c024656-106b-4d70-bc5c-845637d3344a",
-                  image: {
-                    src: img?.base64,
-                    height: img.height,
-                    width: img.width,
-                    name: "preview-edit-image",
-                  },
-                  opacity: 1,
-                  type: "image",
-                  visible: true,
-                },
-              ],
-            } as IShape),
-            tool: "IMAGE",
-          }}
-        />
+        <ShapeImage layoutShapes={[]} shape={state} />
       </Group>
       <Rect
         ref={shapeRef as MutableRefObject<Konva.Rect>}
@@ -178,11 +239,7 @@ export const LayerClip = () => {
             x: Number(payload.x),
             y: Number(payload.y),
           });
-          setBox((prev) => ({
-            ...prev,
-            rotate: prev.rotate,
-            ...payload,
-          }));
+          setBox(payload);
         }}
         onTransformEnd={(e) => {
           const scaleX = e.target.scaleX();
@@ -210,11 +267,7 @@ export const LayerClip = () => {
             x: Number(payload.x),
             y: Number(payload.y),
           });
-          setBox((prev) => ({
-            ...prev,
-            rotate: prev.rotate,
-            ...payload,
-          }));
+          setBox(payload);
         }}
       />
       {showClip && (

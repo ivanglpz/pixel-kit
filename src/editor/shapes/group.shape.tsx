@@ -1,7 +1,7 @@
-import { PrimitiveAtom, useAtom } from "jotai";
-import { memo } from "react";
+import { PrimitiveAtom, useAtomValue } from "jotai";
 import { Group } from "react-konva";
 import ShapeBox from "./box.shape";
+import { LayoutFlex } from "./layout-flex";
 import { Shapes } from "./shapes";
 import {
   FCShapeWEvents,
@@ -11,36 +11,67 @@ import {
 } from "./type.shape";
 
 // eslint-disable-next-line react/display-name
-export const ShapeGroup = memo(({ item, SHAPES }: IShapeWithEvents) => {
-  const [box, setBox] = useAtom(
+export const ShapeGroup = ({
+  shape: item,
+  layoutShapes: SHAPES,
+}: IShapeWithEvents) => {
+  const box = useAtomValue(
     item.state as PrimitiveAtom<IShape> & WithInitialValue<IShape>
   );
 
-  const {
-    x,
-    y,
+  const { x, y, height, width, rotation } = box;
 
-    height,
-    width,
-  } = box;
+  const childrens = useAtomValue(box.children);
+  if (!box.visible) return null;
 
-  const childrens = SHAPES?.filter((e) => e?.parentId === box?.id);
+  const children = childrens?.map((item) => {
+    const Component = Shapes?.[item?.tool] as FCShapeWEvents;
+    return (
+      <Component
+        layoutShapes={SHAPES}
+        shape={item}
+        key={`pixel-group-shapes-${item?.id}-${item.tool}`}
+      />
+    );
+  });
   return (
     <>
-      <ShapeBox item={item} SHAPES={[]} />
+      <ShapeBox shape={item} layoutShapes={[]} />
 
-      <Group x={x} y={y} width={width} height={height}>
-        {childrens?.map((item) => {
-          const Component = Shapes?.[item?.tool] as FCShapeWEvents;
-          return (
-            <Component
-              SHAPES={SHAPES}
-              item={item}
-              key={`pixel-group-shapes-${item?.id}-${item.tool}`}
-            />
-          );
-        })}
+      <Group
+        id={box?.id}
+        parentId={box?.parentId}
+        x={x}
+        y={y}
+        width={width}
+        height={height}
+        listening={!box.isLocked}
+        rotation={rotation}
+        clip={{
+          x: 0,
+          y: 0,
+          width: width,
+          height: height,
+        }}
+      >
+        {box.isLayout ? (
+          <LayoutFlex
+            width={width}
+            height={height}
+            display="flex"
+            alignItems={box.alignItems}
+            flexDirection={box.flexDirection}
+            flexWrap={box.flexWrap}
+            gap={box.gap}
+            justifyContent={box.justifyContent}
+            shape={box}
+          >
+            {children}
+          </LayoutFlex>
+        ) : (
+          children
+        )}
       </Group>
     </>
   );
-});
+};

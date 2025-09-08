@@ -1,7 +1,5 @@
-import {
-  optionsEnviroments,
-  useConfiguration,
-} from "../hooks/useConfiguration";
+import { useConfiguration } from "../hooks/useConfiguration";
+import { OPTIONS_CONFIG } from "../states/mode";
 import { InputSelect } from "./input-select";
 
 export const StageMode = () => {
@@ -11,7 +9,7 @@ export const StageMode = () => {
     <InputSelect
       labelText="Mode"
       onChange={(value) => change(value)}
-      options={optionsEnviroments}
+      options={OPTIONS_CONFIG}
       value={config?.export_mode ?? "EDIT_IMAGE"}
     />
   );

@@ -1,54 +1,46 @@
 /* eslint-disable react/display-name */
 import { PrimitiveAtom, useAtom, useAtomValue } from "jotai";
-import Konva from "konva";
-import { memo, MutableRefObject, useEffect, useRef } from "react";
 import { STAGE_DIMENSION_ATOM } from "../states/dimension";
-import { SHAPE_ID_ATOM } from "../states/shape";
-import { ShapeEventDragStart } from "./events.shape";
-import { Transform } from "./transformer";
+import { SHAPE_IDS_ATOM } from "../states/shape";
+import { coordinatesShapeMove } from "./events.shape";
 import { IShape, IShapeWithEvents, WithInitialValue } from "./type.shape";
 
 import { Rect } from "react-konva";
-import {
-  shapeEventDragMove,
-  shapeEventDragStop,
-  shapeTransformEnd,
-} from "./events.shape";
-export const ShapeCircle = memo(({ item }: IShapeWithEvents) => {
+import { shapeEventDragMove } from "./events.shape";
+export const ShapeCircle = ({ shape: item }: IShapeWithEvents) => {
   const [box, setBox] = useAtom(
     item.state as PrimitiveAtom<IShape> & WithInitialValue<IShape>
   );
 
-  const { width, height, rotate, x, y, strokeWidth, dash } = box;
+  const { width, height, x, y, strokeWidth, dash, rotation } = box;
 
-  const shapeRef = useRef<Konva.Rect>();
-  const trRef = useRef<Konva.Transformer>();
-  const stageDimensions = useAtomValue(STAGE_DIMENSION_ATOM);
-  const [shapeId, setShapeId] = useAtom(SHAPE_ID_ATOM);
-  const isSelected = shapeId === box?.id;
+  const stage = useAtomValue(STAGE_DIMENSION_ATOM);
+  const [shapeId, setShapeId] = useAtom(SHAPE_IDS_ATOM);
+  const isSelected = shapeId.some((w) => w.id === box.id);
 
-  useEffect(() => {
-    if (isSelected) {
-      if (trRef.current && shapeRef.current) {
-        trRef.current.nodes([shapeRef.current]);
-        trRef.current?.getLayer()?.batchDraw();
-      }
-    }
-  }, [isSelected, trRef, shapeRef]);
+  const shadow = box?.effects
+    ?.filter((e) => e?.visible && e?.type === "shadow")
+    .at(0);
+
+  // Calcular la posición ajustada para la rotación
+
+  if (!box.visible) return null;
 
   return (
     <>
       <Rect
         // 1. Identificación y referencia
         id={box?.id}
-        ref={shapeRef as MutableRefObject<Konva.Rect>}
+        parentId={box?.parentId}
         // 2. Posición y tamaño
         x={x}
         y={y}
         width={width}
         height={height}
+        rotation={rotation}
+        listening={!box.isLocked}
         // 3. Rotación
-        rotationDeg={rotate}
+        // rotationDeg={rotate}
         // 4. Relleno y color
         // fillEnabled={box?.fills?.filter((e) => e?.visible)?.length > 0}
         fillEnabled
@@ -63,57 +55,57 @@ export const ShapeCircle = memo(({ item }: IShapeWithEvents) => {
         dash={[dash, dash, dash, dash]}
         dashEnabled={box?.dash > 0}
         cornerRadius={
-          box?.isAllBorderRadius ? box.bordersRadius : box.borderRadius
+          !box?.isAllBorderRadius
+            ? [
+                box.borderTopLeftRadius,
+                box.borderTopRightRadius,
+                box.borderBottomRightRadius,
+                box.borderBottomLeftRadius,
+              ]
+            : box.borderRadius
         }
         // 6. Sombras
-        shadowColor={
-          box?.effects?.filter((e) => e?.visible && e?.type === "shadow").at(0)
-            ?.color
-        }
-        shadowOpacity={
-          box?.effects?.filter((e) => e?.visible && e?.type === "shadow").at(0)
-            ?.opacity
-        }
-        shadowOffsetX={
-          box?.effects?.filter((e) => e?.visible && e?.type === "shadow").at(0)
-            ?.x
-        }
-        shadowOffsetY={
-          box?.effects?.filter((e) => e?.visible && e?.type === "shadow").at(0)
-            ?.y
-        }
-        shadowBlur={
-          box?.effects?.filter((e) => e?.visible && e?.type === "shadow").at(0)
-            ?.blur
-        }
-        shadowEnabled={
-          Number(
-            box?.effects?.filter((e) => e?.visible && e?.type === "shadow")
-              ?.length
-          ) > 0
-        }
+        shadowColor={shadow?.color}
+        shadowOpacity={box.shadowOpacity}
+        shadowOffsetX={box?.shadowOffsetX}
+        shadowOffsetY={box?.shadowOffsetY}
+        shadowBlur={box?.shadowBlur}
+        shadowEnabled={Boolean(shadow)}
         // 7. Apariencia y opacidad
         opacity={box?.opacity ?? 1}
         // 8. Interactividad y arrastre
-        draggable={shapeId === box?.id}
+        draggable={isSelected}
         // 9. Eventos
-        onTap={() => setShapeId(box?.id)}
-        onClick={() => setShapeId(box?.id)}
-        onDragStart={(e) => setBox(ShapeEventDragStart(e))}
+
+        onClick={() =>
+          setShapeId({
+            id: box?.id,
+            parentId: box.parentId,
+          })
+        }
         onDragMove={(e) =>
-          setBox(
-            shapeEventDragMove(e, stageDimensions.width, stageDimensions.height)
-          )
+          setBox(shapeEventDragMove(e, stage.width, stage.height))
         }
-        onDragEnd={(e) => setBox(shapeEventDragStop(e))}
-        onTransform={(e) =>
-          setBox(
-            shapeEventDragMove(e, stageDimensions.width, stageDimensions.height)
-          )
-        }
-        onTransformEnd={(e) => setBox(shapeTransformEnd(e))}
+        onTransform={(e) => {
+          const scaleX = e.target.scaleX();
+          const scaleY = e.target.scaleY();
+          e.target.scaleX(1);
+          e.target.scaleY(1);
+          const payload = coordinatesShapeMove(
+            box,
+            stage.width,
+            stage.height,
+            e
+          );
+
+          setBox({
+            ...payload,
+            rotation: e.target.rotation(),
+            width: Math.max(5, e.target.width() * scaleX),
+            height: Math.max(e.target.height() * scaleY),
+          });
+        }}
       />
-      <Transform isSelected={isSelected} ref={trRef} />
     </>
   );
-});
+};

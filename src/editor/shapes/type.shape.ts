@@ -1,7 +1,14 @@
+import { PrimitiveAtom } from "jotai";
 import { LineCap, LineJoin } from "konva/lib/Shape";
 import { FC } from "react";
-import { SHAPES_NODES } from "../states/shapes";
+import { ALL_SHAPES } from "../states/shapes";
 import { IKeyMethods } from "../states/tool";
+import {
+  AlignItems,
+  FlexDirection,
+  FlexWrap,
+  JustifyContent,
+} from "./layout-flex";
 
 export type WithInitialValue<Value> = {
   init: Value;
@@ -32,54 +39,89 @@ export type Effect = {
   id: string;
   type: "shadow" | "blur" | "glow";
   visible: boolean;
-  x: number;
-  y: number;
   color: string;
-  opacity: number;
-  blur: number;
 };
 
 export type IShape = {
+  // Identity
   id: string;
+  label: string;
   tool: IKeyMethods;
+  parentId: string | null;
+
+  // Position & Transform
   x: number;
   y: number;
-  parentId: string | null;
   rotation: number;
+  width: number;
+  height: number;
+  points: number[];
+
+  // Visibility & Lock
+  visible: boolean;
   isLocked: boolean;
-  label: string;
+  opacity: number;
+
+  // Fill & Stroke
   fills: Fill[];
   strokes: Stroke[];
   strokeWidth: number;
-  effects: Effect[];
-  bordersRadius: number[];
-  width?: number;
-  height?: number;
-  text?: string;
-  visible: boolean;
-  isBlocked: boolean;
-  points?: number[];
-  rotate?: number;
-  lineCap?: LineCap;
-  lineJoin?: LineJoin;
+  lineCap: LineCap;
+  lineJoin: LineJoin;
   dash: number;
-  opacity: number;
-  backgroundColor?: string;
+
+  // Effects
+  effects: Effect[];
+  shadowBlur: number;
+  shadowOffsetX: number;
+  shadowOffsetY: number;
+  shadowOpacity: number;
+
+  // Typography
+  text: string;
+  fontFamily: string;
+  fontSize: number;
+  fontStyle: string;
+  fontWeight: "bold" | "normal" | "lighter" | "bolder" | "100" | "900";
+  textDecoration?: string;
   align: "left" | "center" | "right" | "justify";
   verticalAlign: "top" | "middle" | "bottom";
-  fontSize?: number;
-  fontStyle?: string;
-  fontFamily?: string;
-  textDecoration?: string;
-  fontWeight?: "bold" | "normal" | "lighter" | "bolder" | "100" | "900";
-  borderRadius?: number;
-  isAllBorderRadius?: boolean;
-  zIndex?: number;
+
+  // Layout
+  isLayout: boolean;
+  flexDirection: FlexDirection;
+  justifyContent: JustifyContent;
+  alignItems: AlignItems;
+  flexWrap: FlexWrap;
+  // visible: boolean;
+  gap: number;
+  fillContainerWidth: boolean;
+  fillContainerHeight: boolean;
+
+  // Border Radius
+  borderRadius: number;
+  isAllBorderRadius: boolean;
+  borderTopLeftRadius: number;
+  borderTopRightRadius: number;
+  borderBottomRightRadius: number;
+  borderBottomLeftRadius: number;
+  minWidth: number;
+  minHeight: number;
+  maxWidth: number;
+  maxHeight: number;
+  isAllPadding: boolean;
+  paddingTop: number;
+  paddingRight: number;
+  paddingBottom: number;
+  paddingLeft: number;
+  padding: number;
+  // Children
+  children: PrimitiveAtom<ALL_SHAPES[]> & WithInitialValue<ALL_SHAPES[]>;
 };
 
 export type IShapeWithEvents = {
-  item: SHAPES_NODES;
-  SHAPES: SHAPES_NODES[];
+  shape: ALL_SHAPES;
+  layoutShapes: ALL_SHAPES[];
 };
 
 export type FCShapeWEvents = FC<IShapeWithEvents>;

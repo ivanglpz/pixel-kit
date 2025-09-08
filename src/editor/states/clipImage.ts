@@ -1,11 +1,24 @@
 import { atom } from "jotai";
-import { IShape } from "../shapes/type.shape";
+import { PROJECT_ATOM } from "./projects";
 
-export const showClipAtom = atom(false);
+export const SHOW_CLIP_ATOM = atom(
+  (get) => get(get(PROJECT_ATOM).CLIP.SHOW),
+  (_get, _set, newTool: boolean) => {
+    const toolAtom = _get(PROJECT_ATOM).CLIP.SHOW;
+    _set(toolAtom, newTool);
+  }
+);
 
-export const boxClipAtom = atom({
-  x: 0,
-  y: 0,
-  width: 0,
-  height: 0,
-} as Partial<IShape>);
+export type ICLIP_DIMENSION = {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+};
+export const CLIP_DIMENSION_ATOM = atom(
+  (get) => get(get(PROJECT_ATOM).CLIP.DIMENSION),
+  (_get, _set, newTool: ICLIP_DIMENSION) => {
+    const toolAtom = _get(PROJECT_ATOM).CLIP.DIMENSION;
+    _set(toolAtom, newTool);
+  }
+);

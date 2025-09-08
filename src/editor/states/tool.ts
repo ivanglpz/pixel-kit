@@ -1,4 +1,5 @@
 import { atom } from "jotai";
+import { PROJECT_ATOM } from "./projects";
 
 export type IKeyTool =
   | "MOVE"
@@ -20,6 +21,18 @@ export type IKeyMethods = Exclude<
   "MOVE" | "FRAME" | "WRITING" | "CLIP"
 >;
 
-const TOOL_ATOM = atom("MOVE" as IKeyTool);
-export const PAUSE_MODE_ATOM = atom<boolean>(false);
+const TOOL_ATOM = atom(
+  (get) => get(get(PROJECT_ATOM).TOOL),
+  (_get, _set, newTool: IKeyTool) => {
+    const toolAtom = _get(PROJECT_ATOM).TOOL;
+    _set(toolAtom, newTool);
+  }
+);
+export const PAUSE_MODE_ATOM = atom(
+  (get) => get(get(PROJECT_ATOM).PAUSE_MODE),
+  (_get, _set, newTool: boolean) => {
+    const toolAtom = _get(PROJECT_ATOM).PAUSE_MODE;
+    _set(toolAtom, newTool);
+  }
+);
 export default TOOL_ATOM;

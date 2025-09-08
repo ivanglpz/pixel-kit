@@ -1,8 +1,6 @@
 import { KonvaEventObject } from "konva/lib/Node";
 import { IShape } from "./type.shape";
 
-type Drag = (shape: IShape) => void;
-
 export const ShapeEventDragStart =
   (evt: KonvaEventObject<DragEvent>) => (prev: IShape) => {
     const payload = {
@@ -13,7 +11,7 @@ export const ShapeEventDragStart =
     return payload;
   };
 
-const coordinatesShapeMove = (
+export const coordinatesShapeMove = (
   prev: IShape,
   stageWidth: number,
   stageHeight: number,
@@ -88,7 +86,7 @@ export const shapeTransformEnd =
       ...prev,
       x: evt.target.x(),
       y: evt.target.y(),
-      rotate: prev.rotate,
+      rotate: evt.target.rotation(),
       width: Math.max(5, evt.target.width() * scaleX),
       height: Math.max(evt.target.height() * scaleY),
     };
