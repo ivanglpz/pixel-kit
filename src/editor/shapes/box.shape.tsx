@@ -17,7 +17,7 @@ const ShapeBox = ({ shape: item }: IShapeWithEvents) => {
   });
 
   const stage = useAtomValue(STAGE_DIMENSION_ATOM);
-  const [shapeId] = useAtom(SHAPE_IDS_ATOM);
+  const [shapeId, setShapeId] = useAtom(SHAPE_IDS_ATOM);
   const isSelected = shapeId.some((w) => w.id === box.id);
 
   if (!box.visible) return null;
@@ -47,6 +47,12 @@ const ShapeBox = ({ shape: item }: IShapeWithEvents) => {
     <>
       <div
         id={box?.id}
+        onClick={() =>
+          setShapeId({
+            id: box?.id,
+            parentId: box.parentId,
+          })
+        }
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
