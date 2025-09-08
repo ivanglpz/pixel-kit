@@ -10,8 +10,7 @@ export const LayerBackground = () => {
     <>
       {/* <Layer id="layer-background-color"> */}
       <div
-        // width={width}
-        // height={height}
+        id="layer-background-color"
         style={{
           position: "absolute",
           top: 0,

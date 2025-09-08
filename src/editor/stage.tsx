@@ -31,7 +31,9 @@ const PxStage: FC<Props> = ({ children }) => {
   //   ref: stageRef,
   // });
 
-  const handleClear = () => {
+  const handleClear = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (e.target.id !== "layer-background-color") return; // no crear encima de otro box
+
     // if (["DRAW", "LINE", "CLIP"].includes(tool)) return;
     // const targetId = e?.target?.attrs?.id;
     // if (
@@ -39,8 +41,8 @@ const PxStage: FC<Props> = ({ children }) => {
     //     targetId
     //   )
     // ) {
-    //   resetShapesIds();
-    //   setTool("MOVE");
+    resetShapesIds();
+    setTool("MOVE");
     // }
   };
 
