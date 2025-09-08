@@ -6,11 +6,13 @@ import Konva from "konva";
 import { KonvaEventObject } from "konva/lib/Node";
 import { FC, ReactNode, useEffect, useRef, useState } from "react";
 import { Stage } from "react-konva";
-import { useEventStage, useTool } from "./hooks";
 import { useConfiguration } from "./hooks/useConfiguration";
+import { useEventStage } from "./hooks/useEventStage";
 import { useReference } from "./hooks/useReference";
+import { Tools } from "./sidebar/Tools";
 import { STAGE_DIMENSION_ATOM } from "./states/dimension";
-import { SHAPE_ID_ATOM } from "./states/shape";
+import { RESET_SHAPES_IDS_ATOM } from "./states/shape";
+import TOOL_ATOM from "./states/tool";
 
 type Props = {
   children: ReactNode;
@@ -21,12 +23,12 @@ const PxStage: FC<Props> = ({ children }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const stageRef = useRef<Konva.Stage>(null);
   const [show, setShow] = useState(true);
+  const [tool, setTool] = useAtom(TOOL_ATOM);
 
   const { config } = useConfiguration(); // ✅ Ahora usamos config.expand2K
 
-  const setShapeId = useSetAtom(SHAPE_ID_ATOM);
+  const resetShapesIds = useSetAtom(RESET_SHAPES_IDS_ATOM);
   const { handleMouseDown, handleMouseUp, handleMouseMove } = useEventStage();
-  const { tool, setTool } = useTool();
 
   const { handleSetRef } = useReference({
     type: "STAGE",
@@ -42,7 +44,7 @@ const PxStage: FC<Props> = ({ children }) => {
         targetId
       )
     ) {
-      setShapeId(null);
+      resetShapesIds();
       setTool("MOVE");
     }
   };
@@ -94,7 +96,7 @@ const PxStage: FC<Props> = ({ children }) => {
   const stageWidth = config.expand_stage ? Number(rstage?.width) : width; // 4K horizontal
   const stageHeight = config.expand_stage ? Number(rstage?.height) : height; // 4K vertical
 
-  const MAX_SCALE = 5; // Máximo zoom permitido
+  const MAX_SCALE = 10; // Máximo zoom permitido
   const MIN_SCALE = 1; // Mínimo zoom permitido
 
   const handleWheel = (e: Konva.KonvaEventObject<WheelEvent>) => {
@@ -213,14 +215,15 @@ const PxStage: FC<Props> = ({ children }) => {
   }, [stageHeight, stageWidth, stageRef, config.expand_stage]);
 
   return (
-    <main
+    <div
       ref={containerRef}
       className={`CursorDefault ${css({
         display: "flex",
         flexDirection: "column",
-        alignItems: "flex-start",
-        justifyContent: "flex-start",
+        alignItems: "center",
+        justifyContent: "center",
         maxWidth: "100%",
+        position: "relative",
       })}`}
       style={{
         overflow: config.expand_stage ? "scroll" : "hidden",
@@ -236,20 +239,35 @@ const PxStage: FC<Props> = ({ children }) => {
           onMousemove={handleMouseMove}
           onWheel={handleWheel} // 👈 Zoom real en HD
           onMouseup={handleMouseUp}
-          onTouchStart={(e) =>
-            handleMouseDown(e as unknown as KonvaEventObject<MouseEvent>)
-          }
-          onTouchMove={(e) =>
-            handleMouseMove(e as unknown as KonvaEventObject<MouseEvent>)
-          }
-          onTouchEnd={handleMouseUp}
           onClick={handleClear}
-          onTap={handleClear}
+          style={{
+            width: "100%",
+            height: "100%",
+          }}
         >
           {children}
         </Stage>
       </Valid>
-    </main>
+      <section
+        className={css({
+          display: "flex",
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "center",
+          position: "fixed",
+          gap: "md",
+          bottom: 15,
+          backgroundColor: "bg",
+          padding: "md",
+          borderRadius: "lg",
+          borderWidth: "1.5px",
+          borderStyle: "solid",
+          borderColor: "border", // ← usa el semantic token
+        })}
+      >
+        <Tools />
+      </section>
+    </div>
   );
 };
 

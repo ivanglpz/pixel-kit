@@ -6,7 +6,6 @@ type Props = {
   color: string | undefined;
   onChangeColor: (value: string) => void;
   labelText: string;
-  primaryColors?: boolean;
 };
 
 const InputColor: FC<Props> = ({
@@ -14,7 +13,6 @@ const InputColor: FC<Props> = ({
   onChangeColor,
   keyInput,
   labelText,
-  primaryColors = false,
 }) => {
   return (
     <div
@@ -38,19 +36,19 @@ const InputColor: FC<Props> = ({
         htmlFor={keyInput}
         className={css({
           width: "100%",
-          flex: 1,
           color: "text",
           fontSize: "sm",
           backgroundColor: "bg.muted", // Fondo más claro para el selector
           borderRadius: "md",
-          padding: "md",
+          padding: "sm",
           borderWidth: "1px",
           borderStyle: "solid",
           borderColor: "border.muted", // ← usa el semantic token
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "start",
           gap: "md",
+          display: "grid",
+          gridTemplateColumns: "20px 1fr",
+          alignItems: "center",
+          height: 30,
         })}
       >
         <div

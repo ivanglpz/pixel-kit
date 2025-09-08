@@ -3,9 +3,8 @@ import { Button } from "@/editor/components/button";
 import { InputSelect } from "@/editor/components/input-select";
 import { InputText } from "@/editor/components/input-text";
 import { useConfiguration } from "@/editor/hooks/useConfiguration";
-import { useImageRender } from "@/editor/hooks/useImageRender";
 import { useReference } from "@/editor/hooks/useReference";
-import { showClipAtom } from "@/editor/states/clipImage";
+import { SHOW_CLIP_ATOM } from "@/editor/states/clipImage";
 import { calculateDimension } from "@/editor/utils/calculateDimension";
 import { css } from "@stylespixelkit/css";
 import { useAtom, useAtomValue } from "jotai";
@@ -21,8 +20,9 @@ import { v4 as uuidv4 } from "uuid";
 import { AllLayers } from "../layers/root.layers";
 import { STAGE_DIMENSION_ATOM } from "../states/dimension";
 import { typeExportAtom } from "../states/export";
+import { IMAGE_RENDER_ATOM } from "../states/image";
 import ALL_SHAPES_ATOM from "../states/shapes";
-import { ImageConfiguration } from "./imageConfig";
+import { ImageConfiguration } from "./image-config";
 
 const formats = {
   LOW: 0.8,
@@ -103,13 +103,14 @@ const destroyTransforms = (
 export const ExportStage = () => {
   const { ref } = useReference({ type: "STAGE" });
   const { config } = useConfiguration();
-  const { img } = useImageRender();
+  const imageRender = useAtomValue(IMAGE_RENDER_ATOM);
+
   const [loading, setloading] = useState(false);
   const { height, width } = useAtomValue(STAGE_DIMENSION_ATOM);
   const ALL_SHAPES = useAtomValue(ALL_SHAPES_ATOM);
   const [format, setformat] = useAtom(typeExportAtom);
   const [showExport, setShowExport] = useState(false);
-  const [showClip, setshowClip] = useAtom(showClipAtom);
+  const [showClip, setshowClip] = useAtom(SHOW_CLIP_ATOM);
   const handleExport = async () => {
     toast.success("Thank you very much for using pixel kit!", {
       description: (
@@ -177,18 +178,23 @@ export const ExportStage = () => {
           const base64String = ref?.current?.toDataURL({
             quality: 1,
             pixelRatio: formats[format as keyof typeof formats],
-            ...calculateDimension(width, height, img?.width, img?.height),
+            ...calculateDimension(
+              width,
+              height,
+              imageRender?.width,
+              imageRender?.height
+            ),
           });
           if (!base64String) return;
 
           const canvas = document.createElement("canvas");
           const ctx = canvas.getContext("2d");
-          canvas.width = img.width;
-          canvas.height = img.height;
+          canvas.width = imageRender.width;
+          canvas.height = imageRender.height;
 
           const image = new Image();
           image.onload = () => {
-            ctx?.drawImage(image, 0, 0, img.width, img.height);
+            ctx?.drawImage(image, 0, 0, imageRender.width, imageRender.height);
 
             downloadBase64Image(canvas.toDataURL("image/png", 1));
             setloading(false);
@@ -361,7 +367,7 @@ export const ExportStage = () => {
                     <Valid isValid={config?.export_mode === "EDIT_IMAGE"}>
                       <InputText
                         labelText="Resolution"
-                        value={`${img.width}x${img?.height}`}
+                        value={`${imageRender.width}x${imageRender?.height}`}
                         onChange={() => {}}
                         disable
                       />

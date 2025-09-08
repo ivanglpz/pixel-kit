@@ -7,6 +7,7 @@ import {
   Scan,
   Square,
   SquareDashed,
+  TriangleRight,
   X,
 } from "lucide-react";
 import { HTMLInputTypeAttribute } from "react";
@@ -23,6 +24,7 @@ const typeIcon = {
   font: <Scaling size={14} />,
   dashed: <SquareDashed size={14} />,
   square: <Square size={14} />,
+  rotate: <TriangleRight size={14} />,
 };
 type Props = {
   value: number | string;
@@ -49,7 +51,6 @@ export const InputNumber = ({
 
   const handleNumberChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = Number(event.target.value);
-    setPause(true);
     if (!isNaN(newValue)) {
       onChange(newValue);
     }
@@ -83,32 +84,35 @@ export const InputNumber = ({
           fontSize: "sm",
           backgroundColor: "bg.muted", // Fondo más claro para el selector
           borderRadius: "md",
-          padding: "md",
+          padding: "sm",
           borderWidth: "1px",
           borderStyle: "solid",
           borderColor: "border.muted", // ← usa el semantic token
           gap: "md",
           display: "grid",
-          gridTemplateColumns: "17px 1fr",
+          gridTemplateColumns: "20px 1fr",
           alignItems: "center",
-          height: "33.5px",
+          justifyContent: "center",
+          alignContent: "center",
+          flex: 1,
         })}
       >
         <div
           className={css({
-            width: "17px",
-            height: "17px",
+            width: "20px",
+            height: "20px",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
+            backgroundColor: "gray.500",
+            borderRadius: "4px",
           })}
         >
-          {}
           {typeof typeIcon[iconType] === "string" ? (
             <p
               className={css({
                 fontWeight: 600,
-                fontSize: "10px",
+                fontSize: "x-small",
               })}
             >
               {typeIcon[iconType]}
@@ -126,12 +130,10 @@ export const InputNumber = ({
             step={step}
             value={value}
             onChange={handleNumberChange}
-            onClick={() => setPause(true)}
-            onBlur={() => setPause(false)}
-            onMouseLeave={() => setPause(false)}
+            onFocus={() => setPause(true)} // Inicia pausa al entrar en el input
+            onBlur={() => setPause(false)} // Quita pausa al salir del input
             className={css({
               color: "text",
-              fontSize: "sm",
               backgroundColor: "transparent",
               flex: 1,
               outline: "none",
@@ -140,15 +142,16 @@ export const InputNumber = ({
               textOverflow: "ellipsis", // Añade los puntos suspensivos
               width: "100%",
               padding: "0 4px",
+              fontSize: "x-small",
             })}
           />
         ) : (
           <p
             className={css({
               color: "text",
-              fontSize: "sm",
               backgroundColor: "transparent",
-              flex: 1,
+              fontSize: "x-small",
+              paddingTop: "3",
             })}
           >
             {value}

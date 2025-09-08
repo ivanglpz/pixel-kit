@@ -1,19 +1,31 @@
-import InputColor from "@/editor/components/input-color";
-import { useTool } from "@/editor/hooks";
+import { Valid } from "@/components/valid";
 import { css } from "@stylespixelkit/css";
-import { useAtom } from "jotai";
-import { Brush, Eye, EyeOff, Minus, PenTool, Ruler } from "lucide-react";
+import { useAtom, useAtomValue } from "jotai";
+import {
+  Blend,
+  Brush,
+  Eye,
+  EyeOff,
+  Minus,
+  PenTool,
+  Ruler,
+  Square,
+  SquareDashed,
+} from "lucide-react";
 import { v4 as uuidv4 } from "uuid";
-import { InputNumber } from "../components/input-number";
+import { Input } from "../components/input";
+import { constants } from "../constants/color";
 import { IShape } from "../shapes/type.shape";
-import { DrawingBeforeStartAtom } from "../states/drawing";
-import { commonStyles, SectionHeader } from "./right/shape-config";
+import { DRAW_START_CONFIG_ATOM } from "../states/drawing";
+import TOOL_ATOM from "../states/tool";
+import { commonStyles, SectionHeader } from "./sidebar-right-shape";
 
 export const Drawing = () => {
-  const { isDrawing, tool } = useTool();
-  const [shape, setShape] = useAtom(DrawingBeforeStartAtom);
+  const tool = useAtomValue(TOOL_ATOM);
 
-  if (!isDrawing && tool !== "LINE") return null;
+  const [shape, setShape] = useAtom(DRAW_START_CONFIG_ATOM);
+
+  if (!["DRAW", "LINE"].includes(tool)) return null;
 
   // Manejadores para strokes
   const handleAddStroke = () => {
@@ -67,11 +79,7 @@ export const Drawing = () => {
         {
           type: "shadow",
           visible: true,
-          blur: 0,
           color: "#000",
-          opacity: 1,
-          x: 5,
-          y: 5,
           id: uuidv4(),
         },
       ],
@@ -101,21 +109,6 @@ export const Drawing = () => {
   const handleEffectRemove = (index: number) => {
     const newEffects = [...(shape.effects ?? [])];
     newEffects.splice(index, 1);
-    setShape({
-      ...shape,
-
-      effects: newEffects,
-    });
-  };
-
-  // Manejadores específicos para propiedades de effects
-  const handleEffectPropertyChange = (
-    index: number,
-    property: "x" | "y" | "blur" | "opacity",
-    value: number
-  ) => {
-    const newEffects = [...(shape.effects ?? [])];
-    newEffects[index][property] = value;
     setShape({
       ...shape,
 
@@ -154,12 +147,29 @@ export const Drawing = () => {
               key={`pixel-kit-shape-stroke-${shape.id}-${shape.tool}-${index}`}
               className={commonStyles.threeColumnGrid}
             >
-              <InputColor
+              <Input.Container
+                id={`pixel-kit-shape-stroke-${shape.id}-${shape.tool}-${index}`}
+              >
+                <Input.Grid>
+                  <Input.IconContainer>
+                    <Input.Color
+                      id={`pixel-kit-shape-stroke-${shape.id}-${shape.tool}-${index}`}
+                      value={stroke.color}
+                      onChange={(e) => handleStrokeColorChange(index, e)}
+                    />
+                    {/* <Scaling size={constants.icon.size} /> */}
+                  </Input.IconContainer>
+                  <Input.Label
+                    text={`#${stroke.color?.replace(/#/, "") ?? "ffffff"}`}
+                  />
+                </Input.Grid>
+              </Input.Container>
+              {/* <InputColor
                 keyInput={`pixel-kit-shape-stroke-${shape.id}-${shape.tool}-${index}`}
                 labelText=""
                 color={stroke.color}
                 onChangeColor={(e) => handleStrokeColorChange(index, e)}
-              />
+              /> */}
 
               {/* Botón visibility toggle */}
               <button
@@ -182,7 +192,7 @@ export const Drawing = () => {
           {/* Configuraciones de stroke */}
           <div className={commonStyles.twoColumnGrid}>
             {/* Stroke Weight */}
-            <InputNumber
+            {/* <InputNumber
               iconType="width"
               min={0}
               max={9999}
@@ -196,8 +206,35 @@ export const Drawing = () => {
                   strokeWidth: v,
                 })
               }
-            />
+            /> */}
 
+            <Input.Container>
+              <Input.Grid>
+                <Input.IconContainer>
+                  <p
+                    className={css({
+                      fontWeight: 600,
+                      fontSize: "x-small",
+                    })}
+                  >
+                    W
+                  </p>
+                </Input.IconContainer>
+                <Input.Number
+                  min={0}
+                  max={9999}
+                  step={1}
+                  value={shape.strokeWidth || 0}
+                  onChange={(v) =>
+                    setShape({
+                      ...shape,
+
+                      strokeWidth: v,
+                    })
+                  }
+                />
+              </Input.Grid>
+            </Input.Container>
             {/* Line Style Buttons */}
             <div
               className={css({
@@ -209,74 +246,126 @@ export const Drawing = () => {
               <button
                 onClick={() => handleLineStyleChange("round", "round")}
                 className={css({
-                  background:
-                    shape.lineJoin === "round" && shape.lineCap === "round"
-                      ? "bg.muted"
-                      : "transparent",
-                  borderRadius: "6px",
-                  padding: "sm",
+                  cursor: "pointer",
+                  width: 30,
+                  height: 30,
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  height: "33.5px",
+                  borderWidth: "1px",
+                  borderStyle: "solid",
+                  borderRadius: "md",
                 })}
+                style={{
+                  backgroundColor:
+                    shape.lineJoin === "round" && shape.lineCap === "round"
+                      ? constants.theme.colors.background
+                      : "transparent",
+                  borderColor:
+                    shape.lineJoin === "round" && shape.lineCap === "round"
+                      ? constants.theme.colors.primary
+                      : "transparent", // ← usa el semantic token
+                }}
               >
-                <Brush size={16} />
+                <Brush
+                  size={constants.icon.size}
+                  strokeWidth={constants.icon.strokeWidth}
+                  color={
+                    shape.lineJoin === "round" && shape.lineCap === "round"
+                      ? constants.theme.colors.primary
+                      : constants.theme.colors.white
+                  }
+                />
               </button>
-
               <button
                 onClick={() => handleLineStyleChange("miter", "round")}
                 className={css({
-                  background:
+                  cursor: "pointer",
+                  width: 30,
+                  height: 30,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  borderWidth: "1px",
+                  borderStyle: "solid",
+                  borderRadius: "md",
+                })}
+                style={{
+                  backgroundColor:
                     shape.lineJoin === "miter" && shape.lineCap === "round"
-                      ? "bg.muted"
+                      ? constants.theme.colors.background
                       : "transparent",
-                  borderRadius: "6px",
-                  padding: "6px",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  height: "33.5px",
-                })}
+                  borderColor:
+                    shape.lineJoin === "miter" && shape.lineCap === "round"
+                      ? constants.theme.colors.primary
+                      : "transparent", // ← usa el semantic token
+                }}
               >
-                <Ruler size={16} />
+                <PenTool
+                  size={constants.icon.size}
+                  strokeWidth={constants.icon.strokeWidth}
+                  color={
+                    shape.lineJoin === "miter" && shape.lineCap === "round"
+                      ? constants.theme.colors.primary
+                      : constants.theme.colors.white
+                  }
+                />
               </button>
-
               <button
-                onClick={() => handleLineStyleChange("bevel", "square")}
+                onClick={() => handleLineStyleChange("miter", "butt")}
                 className={css({
-                  background:
-                    shape.lineJoin === "bevel" && shape.lineCap === "square"
-                      ? "bg.muted"
-                      : "transparent",
-                  borderRadius: "6px",
-                  padding: "6px",
+                  cursor: "pointer",
+                  width: 30,
+                  height: 30,
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  height: "33.5px",
+                  borderWidth: "1px",
+                  borderStyle: "solid",
+                  borderRadius: "md",
                 })}
+                style={{
+                  backgroundColor:
+                    shape.lineJoin === "miter" && shape.lineCap === "butt"
+                      ? constants.theme.colors.background
+                      : "transparent",
+                  borderColor:
+                    shape.lineJoin === "miter" && shape.lineCap === "butt"
+                      ? constants.theme.colors.primary
+                      : "transparent", // ← usa el semantic token
+                }}
               >
-                <PenTool size={16} />
+                <Ruler
+                  size={constants.icon.size}
+                  strokeWidth={constants.icon.strokeWidth}
+                  color={
+                    shape.lineJoin === "miter" && shape.lineCap === "butt"
+                      ? constants.theme.colors.primary
+                      : constants.theme.colors.white
+                  }
+                />
               </button>
             </div>
           </div>
+          <Input.Container>
+            <Input.Grid>
+              <Input.IconContainer>
+                <SquareDashed size={constants.icon.size} />
+              </Input.IconContainer>
+              <Input.Number
+                min={0}
+                step={1}
+                onChange={(e) =>
+                  setShape({
+                    ...shape,
 
-          {/* Dash */}
-          <InputNumber
-            iconType="dashed"
-            labelText="Dash"
-            min={0}
-            max={100}
-            onChange={(e) =>
-              setShape({
-                ...shape,
-
-                dash: e,
-              })
-            }
-            value={shape.dash || 0}
-          />
+                    dash: e,
+                  })
+                }
+                value={shape.dash || 0}
+              />
+            </Input.Grid>
+          </Input.Container>
         </>
       ) : null}
       {/* SECCIÓN: EFFECTS - Efectos */}
@@ -293,12 +382,29 @@ export const Drawing = () => {
         >
           {/* Controles principales del efecto */}
           <div className={commonStyles.threeColumnGrid}>
-            <InputColor
+            <Input.Container
+              id={`pixel-kit-shape-effect-${shape.id}-${shape.tool}-${index}`}
+            >
+              <Input.Grid>
+                <Input.IconContainer>
+                  <Input.Color
+                    id={`pixel-kit-shape-effect-${shape.id}-${shape.tool}-${index}`}
+                    value={effect.color}
+                    onChange={(e) => handleEffectColorChange(index, e)}
+                  />
+                  {/* <Scaling size={constants.icon.size} /> */}
+                </Input.IconContainer>
+                <Input.Label
+                  text={`#${effect.color?.replace(/#/, "") ?? "ffffff"}`}
+                />
+              </Input.Grid>
+            </Input.Container>
+            {/* <InputColor
               keyInput={`pixel-kit-shape-effect-${shape.id}-${shape.tool}-${index}`}
               labelText=""
               color={effect.color}
               onChangeColor={(e) => handleEffectColorChange(index, e)}
-            />
+            /> */}
 
             {/* Botón visibility toggle */}
             <button
@@ -316,53 +422,96 @@ export const Drawing = () => {
               <Minus size={18} />
             </button>
           </div>
-
-          {/* Controles detallados del efecto */}
-          <div
-            className={css({
-              display: "grid",
-              gridTemplateColumns: 2,
-              gridTemplateRows: 2,
-              gap: "lg",
-            })}
-          >
-            {/* TODO: Corregir los manejadores - actualmente todos actualizan 'dash' */}
-            <InputNumber
-              iconType="x"
-              min={0}
-              labelText="x"
-              max={100}
-              onChange={(e) => handleEffectPropertyChange(index, "x", e)} // FIXME: debería actualizar effect.x
-              value={effect.x}
-            />
-            <InputNumber
-              iconType="y"
-              labelText="y"
-              min={0}
-              max={100}
-              onChange={(e) => handleEffectPropertyChange(index, "y", e)} // FIXME: debería actualizar effect.y
-              value={effect.y}
-            />
-            <InputNumber
-              iconType="square"
-              labelText="blur"
-              min={0}
-              max={100}
-              onChange={(e) => handleEffectPropertyChange(index, "blur", e)} // FIXME: debería actualizar effect.blur
-              value={effect.blur}
-            />
-            <InputNumber
-              iconType="opacity"
-              labelText="opacity"
-              min={0}
-              max={1}
-              step={0.1}
-              onChange={(e) => handleEffectPropertyChange(index, "opacity", e)} // FIXME: debería actualizar effect.opacity
-              value={effect.opacity}
-            />
-          </div>
         </section>
       ))}
+      {/* Controles detallados del efecto */}
+      <Valid isValid={shape.effects.length > 0}>
+        <div
+          className={css({
+            display: "grid",
+            flexDirection: "column",
+            gap: "md",
+            gridTemplateColumns: "2",
+          })}
+        >
+          <Input.Container>
+            <Input.Grid>
+              <Input.IconContainer>
+                <p
+                  className={css({
+                    fontWeight: 600,
+                    fontSize: "x-small",
+                  })}
+                >
+                  X
+                </p>
+              </Input.IconContainer>
+              <Input.Number
+                step={1}
+                value={shape.shadowOffsetX || 0}
+                onChange={(v) => {
+                  setShape({ ...shape, shadowOffsetX: v });
+                }}
+              />
+            </Input.Grid>
+          </Input.Container>
+          <Input.Container>
+            <Input.Grid>
+              <Input.IconContainer>
+                <p
+                  className={css({
+                    fontWeight: 600,
+                    fontSize: "x-small",
+                  })}
+                >
+                  Y
+                </p>
+              </Input.IconContainer>
+              <Input.Number
+                step={1}
+                value={shape.shadowOffsetY}
+                onChange={(e) => {
+                  setShape({ ...shape, shadowOffsetY: e });
+                }}
+              />
+            </Input.Grid>
+          </Input.Container>
+          <Input.Container>
+            <Input.Grid>
+              <Input.IconContainer>
+                <Square
+                  size={constants.icon.size}
+                  strokeWidth={constants.icon.strokeWidth}
+                />
+              </Input.IconContainer>
+              <Input.Number
+                step={1}
+                onChange={(e) => {
+                  setShape({ ...shape, shadowBlur: e });
+                }}
+                value={shape.shadowBlur}
+              />
+            </Input.Grid>
+          </Input.Container>
+          <Input.Container>
+            <Input.Grid>
+              <Input.IconContainer>
+                <Blend
+                  size={constants.icon.size}
+                  strokeWidth={constants.icon.strokeWidth}
+                />
+              </Input.IconContainer>
+              <Input.Number
+                step={1}
+                onChange={(e) => {
+                  setShape({ ...shape, shadowOpacity: e });
+                }}
+                value={shape.shadowOpacity}
+              />
+            </Input.Grid>
+          </Input.Container>
+        </div>
+      </Valid>
     </div>
   );
 };

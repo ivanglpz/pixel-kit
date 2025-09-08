@@ -40,8 +40,8 @@ body {
 
 /* ✅ Scroll siempre con espacio, pero invisible por defecto */
 *::-webkit-scrollbar {
-  width: 4px;
-  height: 4px;
+  width: 3px;
+  height: 3px;
   background: transparent; /* invisible pero mantiene espacio */
 }
 
@@ -80,7 +80,7 @@ body {
 :root {
   --bg: #ffffff;
   --text: #000000;
-  --bar: #4b5efc;
+  --bar: #4bacfcff;
   --bar-bg: #e2e2e2;
 }
 @media (prefers-color-scheme: dark) {

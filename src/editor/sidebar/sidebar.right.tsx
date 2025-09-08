@@ -4,18 +4,18 @@ import { css } from "@stylespixelkit/css";
 import { useAtomValue } from "jotai";
 import { FC } from "react";
 import { StageMode } from "../components/ChangeEnv";
-import { SHAPE_ID_ATOM } from "../states/shape";
+import { SHAPE_IDS_ATOM } from "../states/shape";
 import TOOL_ATOM from "../states/tool";
 import { StageCanvasColor } from "./canvas";
 import { Clip } from "./clip";
 import { Drawing } from "./drawing";
 import { ExportStage } from "./export";
-import { LayoutShapeConfig } from "./right/shape-config";
+import { LayoutShapeConfig } from "./sidebar-right-shape";
 
 const SidebarRight: FC = () => {
   const { config } = useConfiguration();
 
-  const shapeId = useAtomValue(SHAPE_ID_ATOM);
+  const shapeIds = useAtomValue(SHAPE_IDS_ATOM);
   const tool = useAtomValue(TOOL_ATOM);
 
   return (
@@ -34,7 +34,7 @@ const SidebarRight: FC = () => {
       })}
     >
       <Valid isValid={tool === "MOVE"}>
-        <Valid isValid={!shapeId}>
+        <Valid isValid={!shapeIds.length}>
           <StageMode />
           <Valid isValid={config?.show_canvas_config}>
             <StageCanvasColor />
@@ -46,7 +46,11 @@ const SidebarRight: FC = () => {
       </Valid>
       <Drawing />
       <LayoutShapeConfig />
-      <ExportStage />
+      <Valid isValid={tool === "MOVE"}>
+        <Valid isValid={!shapeIds.length}>
+          <ExportStage />
+        </Valid>
+      </Valid>
     </aside>
   );
 };

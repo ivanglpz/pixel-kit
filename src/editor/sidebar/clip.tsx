@@ -1,17 +1,19 @@
-import { useTool } from "@/editor/hooks";
-import { useImageRender } from "@/editor/hooks/useImageRender";
 import { useReference } from "@/editor/hooks/useReference";
-import { boxClipAtom, showClipAtom } from "@/editor/states/clipImage";
+import { CLIP_DIMENSION_ATOM, SHOW_CLIP_ATOM } from "@/editor/states/clipImage";
 import { css } from "@stylespixelkit/css";
-import { useAtom, useAtomValue } from "jotai";
+import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { InputNumber } from "../components/input-number";
+import { IMAGE_RENDER_ATOM, RESTORE_ORIGINAL_RENDER } from "../states/image";
+import TOOL_ATOM from "../states/tool";
 
 export const Clip = () => {
-  const { setTool } = useTool();
-  const [showClip, setshowClip] = useAtom(showClipAtom);
-  const { handleResetImage, handleSetClipImage } = useImageRender();
   const { ref } = useReference({ type: "CLIP" });
-  const box = useAtomValue(boxClipAtom);
+  const setTool = useSetAtom(TOOL_ATOM);
+  const [showClip, setshowClip] = useAtom(SHOW_CLIP_ATOM);
+  const reset = useSetAtom(RESTORE_ORIGINAL_RENDER);
+  const setClipImage = useSetAtom(IMAGE_RENDER_ATOM);
+  const box = useAtomValue(CLIP_DIMENSION_ATOM);
+
   if (!showClip) return null;
   return (
     <div
@@ -31,6 +33,16 @@ export const Clip = () => {
       >
         Layout
       </p>
+      <p
+        className={css({
+          color: "text",
+          fontWeight: "600",
+          fontSize: "x-small",
+          height: "15px",
+        })}
+      >
+        Dimensions
+      </p>
       <div
         className={css({
           display: "grid",
@@ -40,7 +52,6 @@ export const Clip = () => {
       >
         <InputNumber
           iconType="width"
-          labelText="Dimensions"
           value={Number(box.width)}
           onChange={() => {}}
         />
@@ -72,7 +83,8 @@ export const Clip = () => {
             height: "35px",
           })}
           onClick={() => {
-            handleResetImage();
+            reset();
+            setshowClip(false);
           }}
         >
           <p
@@ -98,16 +110,18 @@ export const Clip = () => {
             setTool("MOVE");
             const base64 = ref?.current?.toDataURL({
               quality: 1,
-              //   pixelRatio: 3,
               x: box.x,
               y: box.y,
               width: box.width,
               height: box.height,
             });
+            if (!base64) {
+              throw new Error("Clip base 64 is require");
+            }
             const image = new Image();
             image.onload = () => {
-              handleSetClipImage({
-                base64: base64 ?? "",
+              setClipImage({
+                base64: base64,
                 name: "cliped",
                 height: image.height,
                 width: image.width,
@@ -116,7 +130,7 @@ export const Clip = () => {
               });
               setshowClip(false);
             };
-            image.src = base64 ?? "";
+            image.src = base64;
           }}
         >
           <p

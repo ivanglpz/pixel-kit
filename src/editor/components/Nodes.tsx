@@ -1,75 +1,198 @@
 import { iconsWithTools } from "@/assets";
 import { css } from "@stylespixelkit/css";
+import { DragControls, Reorder, useDragControls } from "framer-motion";
 import { useAtom, useSetAtom } from "jotai";
-import { ChevronDown, ChevronRight } from "lucide-react";
-import { useState } from "react";
 import {
-  CHANGE_PARENTID_NODE_ATOM,
-  CHANGE_SHAPE_NODE_ATOM,
-} from "../states/nodes";
-import { SHAPE_ID_ATOM } from "../states/shape";
-import { SHAPES_NODES } from "../states/shapes";
-import { PAUSE_MODE_ATOM } from "../states/tool";
+  ChevronDown,
+  ChevronRight,
+  DotIcon,
+  Eye,
+  EyeClosed,
+  FolderCog,
+  GripVertical,
+  Group,
+  Lock,
+  Trash,
+  Unlock,
+} from "lucide-react";
+import { useCallback, useState } from "react";
+import { constants } from "../constants/color";
+import { SHAPE_IDS_ATOM } from "../states/shape";
+import { ALL_SHAPES, MOVE_SHAPES_BY_ID } from "../states/shapes";
+import TOOL_ATOM, { PAUSE_MODE_ATOM } from "../states/tool";
+import { UPDATE_UNDO_REDO } from "../states/undo-redo";
+import { ContextMenu, useContextMenu } from "./context-menu";
+
+type NodeProps = {
+  shape: ALL_SHAPES;
+  options?: {
+    isLockedByParent?: boolean;
+    isHiddenByParent?: boolean;
+  };
+  dragControls: DragControls;
+};
+
+type DraggableNodeItemProps = {
+  childItem: ALL_SHAPES;
+  childOptions: {
+    isLockedByParent?: boolean;
+    isHiddenByParent?: boolean;
+  };
+};
+
+export const DraggableNodeItem = ({
+  childItem,
+  childOptions,
+}: DraggableNodeItemProps) => {
+  const childDragControls = useDragControls();
+
+  return (
+    <Reorder.Item
+      key={childItem.id}
+      value={childItem}
+      dragListener={false} // Deshabilitamos el listener automático
+      dragControls={childDragControls} // Usamos controles manuales
+      style={{
+        borderRadius: "6px",
+        userSelect: "none",
+      }}
+      whileDrag={{
+        scale: 1.02,
+        boxShadow: "0px 3px 10px rgba(0,0,0,0.15)",
+        zIndex: 1000,
+        cursor: "grabbing",
+      }}
+    >
+      <Nodes
+        shape={childItem}
+        options={childOptions}
+        dragControls={childDragControls} // ✅ Pasamos los controles específicos
+      />
+    </Reorder.Item>
+  );
+};
 
 export const Nodes = ({
-  item,
-  SHAPES,
-}: {
-  item: SHAPES_NODES;
-  SHAPES: SHAPES_NODES[];
-}) => {
-  const [value, setShape] = useAtom(item.state);
-  const SET_CHANGE = useSetAtom(CHANGE_SHAPE_NODE_ATOM);
-  const SET_PARENT_CHANGE = useSetAtom(CHANGE_PARENTID_NODE_ATOM);
-  const setShapeId = useSetAtom(SHAPE_ID_ATOM);
+  shape: item,
+  options = {},
+  dragControls: externalDragControls, // ✅ Recibimos controles externos
+}: NodeProps) => {
+  const [shape, setShape] = useAtom(item.state);
+  const [shapeId, setShapeId] = useAtom(SHAPE_IDS_ATOM);
   const [show, setShow] = useState(false);
   const setPause = useSetAtom(PAUSE_MODE_ATOM);
-
+  const setTool = useSetAtom(TOOL_ATOM);
   const [isExpanded, setIsExpanded] = useState(true);
+  const [isHovered, setIsHovered] = useState(false);
+  const setUpdateUndoRedo = useSetAtom(UPDATE_UNDO_REDO);
 
-  const handleDragStart = (e: React.DragEvent) => {
-    setShapeId(item?.id);
-  };
-  const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault();
-  };
+  const setMove = useSetAtom(MOVE_SHAPES_BY_ID);
 
-  const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation(); // ✅ Detiene la propagación hacia el ul contenedor
+  const { open } = useContextMenu();
+  // ✅ Usar controles externos si están disponibles, sino crear propios
+  const dragControls = externalDragControls;
 
-    SET_CHANGE({ endId: item.id });
-  };
-  const handleDropOutside = (e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation(); // ✅ Detiene la propagación hacia el ul contenedor
-    SET_PARENT_CHANGE({ endId: item?.id });
-    // CLEAR_PARENT({ endId: null }); // <- Esto quitará el parentId
+  // Determinar si este elemento está bloqueado por herencia
+  const isLockedByParent = options.isLockedByParent || false;
+  const isHiddenByParent = options.isHiddenByParent || false;
+
+  // Para los hijos, determinar qué propiedades heredar
+  const childOptions = {
+    isLockedByParent: isLockedByParent || shape.isLocked,
+    isHiddenByParent: isHiddenByParent || !shape.visible,
   };
 
-  const childrens =
-    item?.tool === "GROUP"
-      ? SHAPES?.filter((e) => e?.parentId === item?.id)
-      : [];
+  const [children, setChildren] = useAtom(shape.children);
+
+  const handleReorder = useCallback(
+    (newOrder: typeof children) => {
+      setChildren(newOrder);
+      setUpdateUndoRedo();
+    },
+    [setChildren, setUpdateUndoRedo]
+  );
+
+  // Función para manejar el toggle de isLocked
+  const handleLockToggle = (e: React.MouseEvent) => {
+    e.stopPropagation(); // ✅ Prevenir propagación
+    if (!isLockedByParent) {
+      setShape({
+        ...shape,
+        isLocked: !shape.isLocked,
+      });
+    }
+  };
+
+  // Función para manejar el toggle de visible
+  const handleVisibilityToggle = (e: React.MouseEvent) => {
+    e.stopPropagation(); // ✅ Prevenir propagación
+    if (!isHiddenByParent) {
+      setShape({
+        ...shape,
+        visible: !shape.visible,
+      });
+    }
+  };
+
+  // ✅ Handler mejorado para el drag
+  const handleDragStart = (e: React.PointerEvent) => {
+    e.stopPropagation(); // Prevenir que el evento se propague al padre
+    dragControls.start(e);
+  };
+
   return (
     <>
-      <li
-        id={value.id + ` ${value.tool}`}
-        draggable
-        onDragStart={handleDragStart}
-        onDragOver={handleDragOver}
-        onDrop={handleDrop}
-        // onDrop={handleDrop}
+      <ContextMenu
+        id={shape.id}
+        options={[
+          {
+            label: "Move to Group",
+            icon: <Group size={14} />,
+            onClick: () => setMove(shape.id),
+            isEnabled:
+              shape.tool === "GROUP" &&
+              shapeId.filter((shp) => shp.id !== shape.id)?.length > 0,
+          },
+          {
+            label: "Rename",
+            icon: <FolderCog size={14} />,
+
+            onClick: () => setShow(true),
+            isEnabled: true,
+          },
+          {
+            label: "Delete",
+            icon: <Trash size={14} />,
+
+            onClick: () => alert("Option 3 clicked"),
+            isEnabled: true,
+          },
+        ]}
+      />
+      <div
+        id={shape.id + ` ${shape.tool}`}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+        onContextMenu={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          open(shape.id, e.clientX, e.clientY);
+        }}
         className={css({
           color: "text",
-          padding: "sm",
+          height: 30,
           fontSize: "sm",
           listStyle: "none",
           display: "grid",
-          gridTemplateColumns: "15px 15px 150px",
+          padding: "md",
+          gridTemplateColumns: "15px 15px 15px 120px 50px",
+          gap: "4",
           flexDirection: "row",
           alignItems: "center",
-          gap: "8px",
+          borderRadius: "4",
+          backgroundColor: shapeId.some((w) => w.id === shape.id)
+            ? "gray.800"
+            : "transparent",
           _hover: {
             backgroundColor: "gray.100",
             _dark: {
@@ -77,27 +200,47 @@ export const Nodes = ({
             },
           },
           cursor: "pointer",
-          // width: "100%", // ← importante para que crezca según los hijos
-          minWidth: 200,
+          userSelect: "none",
+          width: 240,
         })}
-        onClick={() => setShapeId(value?.id)}
+        onClick={(e) => {
+          e.preventDefault(); // puedes dejar esto si quieres
+          e.stopPropagation();
+          setTool("MOVE");
+          setShapeId({
+            id: shape?.id,
+            parentId: shape.parentId,
+          });
+        }}
       >
-        {value.tool === "GROUP" && childrens.length > 0 ? (
+        {/* ✅ Drag Handle mejorado */}
+        <div
+          className={css({
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            cursor: "grab",
+            _active: {
+              cursor: "grabbing",
+            },
+          })}
+          onPointerDown={handleDragStart} // ✅ Usar el handler mejorado
+        >
+          <GripVertical size={14} opacity={isHovered ? 1 : 0.3} />
+        </div>
+
+        {shape.tool === "GROUP" && children.length > 0 ? (
           <button
             onClick={(e) => {
               e.stopPropagation();
               setIsExpanded((prev) => !prev);
             }}
             className={css({
-              marginLeft: "auto",
               border: "none",
               color: "white",
               cursor: "pointer",
               fontSize: "sm",
-              _hover: {
-                backgroundColor: "primary",
-              },
-              backgroundColor: "primary",
+              borderRadius: "2px",
             })}
           >
             {isExpanded ? (
@@ -109,64 +252,146 @@ export const Nodes = ({
         ) : (
           <div></div>
         )}
-        {iconsWithTools[value.tool]}
+
+        {iconsWithTools[shape.tool]}
+
         <div
           onDoubleClick={() => {
             setShow(true);
-            setPause(true);
           }}
           onBlur={() => {
-            setShow(false);
             setPause(false);
-          }}
-          // quiero que si el cursor se salga entonces lo ponga en show false
-          onMouseLeave={() => {
             setShow(false);
-            setPause(false);
           }}
-          //  onClick={onClick}
         >
           {show ? (
             <input
               type="text"
-              value={value?.label}
-              onChange={(e) => setShape({ ...value, label: e.target.value })}
+              value={shape?.label}
+              onChange={(e) => setShape({ ...shape, label: e.target.value })}
               className={css({
                 backgroundColor: "transparent",
-                fontSize: "11px",
-                border: "none",
+                fontSize: "x-small",
               })}
+              onFocus={() => setPause(true)}
+              onBlur={() => setPause(false)}
             />
           ) : (
             <p
               className={css({
                 textTransform: "capitalize",
-                fontSize: "11px",
+                fontSize: "x-small",
+                lineClamp: 1,
               })}
             >
-              {value.label}
+              {shape.label}
             </p>
           )}
         </div>
-      </li>
 
-      {childrens?.length > 0 && isExpanded && (
-        <ul
+        <div
           className={css({
-            marginLeft: "10px",
+            display: "grid",
+            gridTemplateColumns: "2",
+            justifyContent: "center",
+            alignItems: "center",
+          })}
+        >
+          {/* Lock/Unlock Section */}
+          <div
+            className={css({
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            })}
+          >
+            {isLockedByParent ? (
+              <DotIcon
+                strokeWidth={8}
+                size={14}
+                color={constants.theme.colors.primary}
+              />
+            ) : (
+              <>
+                {!isHovered && shape.isLocked ? (
+                  <Lock size={14} color={constants.theme.colors.primary} />
+                ) : null}
+
+                {isHovered ? (
+                  <button onClick={handleLockToggle}>
+                    {shape.isLocked ? (
+                      <Lock size={14} color={constants.theme.colors.primary} />
+                    ) : (
+                      <Unlock size={14} />
+                    )}
+                  </button>
+                ) : null}
+              </>
+            )}
+          </div>
+
+          {/* Visibility Section */}
+          <div
+            className={css({
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            })}
+          >
+            {isHiddenByParent ? (
+              <DotIcon
+                strokeWidth={8}
+                size={14}
+                color={constants.theme.colors.primary}
+              />
+            ) : (
+              <>
+                {!isHovered && !shape.visible ? (
+                  <EyeClosed size={14} color={constants.theme.colors.primary} />
+                ) : null}
+
+                {isHovered ? (
+                  <button onClick={handleVisibilityToggle}>
+                    {shape.visible ? (
+                      <Eye size={14} />
+                    ) : (
+                      <EyeClosed
+                        size={14}
+                        color={constants.theme.colors.primary}
+                      />
+                    )}
+                  </button>
+                ) : null}
+              </>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* ✅ Sección de children mejorada */}
+      {children?.length > 0 && isExpanded && (
+        <Reorder.Group
+          axis="y"
+          values={children}
+          onReorder={handleReorder}
+          style={{
             display: "flex",
             flexDirection: "column",
-            gap: "lg",
-            borderLeftColor: "primary",
-            borderLeftWidth: 2,
-          })}
-          onDragOver={(e) => e.preventDefault()}
-          onDrop={handleDropOutside}
+            listStyle: "none",
+            margin: 0,
+            marginLeft: "20px",
+            padding: 0,
+          }}
+          layoutScroll={false}
         >
-          {childrens.map((child) => (
-            <Nodes key={`child-${child.id}`} SHAPES={SHAPES} item={child} />
+          {children.map((childItem) => (
+            <DraggableNodeItem
+              key={childItem.id + shape.id + String(shape.parentId)}
+              childItem={childItem}
+              childOptions={childOptions}
+            />
           ))}
-        </ul>
+        </Reorder.Group>
       )}
     </>
   );
