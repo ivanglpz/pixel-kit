@@ -100,10 +100,41 @@ export default function App() {
             left: box.x,
             width: box.width,
             height: box.height,
-            backgroundColor: "skyblue",
+            backgroundColor: "red",
             cursor: "move",
+            overflowY: "scroll",
+            overflowX: "hidden",
+            padding: 20,
+            display: "flex",
+            flexDirection: "column",
           }}
-        />
+        >
+          <p>
+            Lorem, ipsum dolor sit amet consectetur adipisicing elit. Eius
+            mollitia libero ratione? Labore, libero obcaecati mollitia eos at
+            cumque error eum quaerat velit fugit. Eaque sapiente voluptates
+            recusandae repellat similique?
+          </p>
+          <p>
+            Lorem, ipsum dolor sit amet consectetur adipisicing elit. Eius
+            mollitia libero ratione? Labore, libero obcaecati mollitia eos at
+            cumque error eum quaerat velit fugit. Eaque sapiente voluptates
+            recusandae repellat similique?
+          </p>
+          <p>
+            Lorem, ipsum dolor sit amet consectetur adipisicing elit. Eius
+            mollitia libero ratione? Labore, libero obcaecati mollitia eos at
+            cumque error eum quaerat velit fugit. Eaque sapiente voluptates
+            recusandae repellat similique?
+          </p>
+          <p>
+            Lorem, ipsum dolor sit amet consectetur adipisicing elit. Eius
+            mollitia libero ratione? Labore, libero obcaecati mollitia eos at
+            cumque error eum quaerat velit fugit. Eaque sapiente voluptates
+            recusandae repellat similique?
+          </p>
+          <input type="text" style={{}} />
+        </div>
       ))}
       {creatingBox && (
         <div
