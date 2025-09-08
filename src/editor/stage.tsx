@@ -16,7 +16,6 @@ type Props = {
 const PxStage: FC<Props> = ({ children }) => {
   const [{ height, width }, setDimension] = useAtom(STAGE_DIMENSION_ATOM);
   const containerRef = useRef<HTMLDivElement>(null);
-  // const stageRef = useRef<Konva.Stage>(null);
   const [show, setShow] = useState(true);
   const [tool, setTool] = useAtom(TOOL_ATOM);
 

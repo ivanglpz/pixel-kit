@@ -1,12 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { calculateDimension } from "@/editor/utils/calculateDimension";
 import { atom, useAtom, useAtomValue } from "jotai";
-import Konva from "konva";
-import { Shape, ShapeConfig } from "konva/lib/Shape";
-import { MutableRefObject, useEffect, useMemo, useRef } from "react";
-import { Group, Layer, Line, Rect, Transformer } from "react-konva";
-import { useReference } from "../hooks/useReference";
-import { ShapeImage } from "../shapes/image.shape";
+import { useMemo } from "react";
 import { IShape } from "../shapes/type.shape";
 import {
   CLIP_DIMENSION_ATOM,
@@ -27,38 +22,35 @@ export const LayerClip = () => {
     () => calculateDimension(width, height, image?.width, image?.height),
     [width, height, image?.width, image?.height]
   );
-  const trRef = useRef<Konva.Transformer>(null);
-  const shapeRef = useRef<Konva.Rect>(null);
-  const gshRef = useRef<Konva.Group>(null);
 
-  const { handleSetRef } = useReference({
-    type: "CLIP",
-    ref: gshRef,
-  });
-  useEffect(() => {
-    if (gshRef?.current) {
-      handleSetRef({
-        type: "CLIP",
-        ref: gshRef,
-      });
-    }
-  }, [gshRef]);
+  // const { handleSetRef } = useReference({
+  //   type: "CLIP",
+  //   ref: gshRef,
+  // });
+  // useEffect(() => {
+  //   if (gshRef?.current) {
+  //     handleSetRef({
+  //       type: "CLIP",
+  //       ref: gshRef,
+  //     });
+  //   }
+  // }, [gshRef]);
 
-  useEffect(() => {
-    setBox({
-      x: dimension.x,
-      y: dimension.y,
-      width: dimension.width,
-      height: dimension.height,
-    });
-  }, [dimension.x, dimension.x, dimension.width, dimension.height]);
+  // useEffect(() => {
+  //   setBox({
+  //     x: dimension.x,
+  //     y: dimension.y,
+  //     width: dimension.width,
+  //     height: dimension.height,
+  //   });
+  // }, [dimension.x, dimension.x, dimension.width, dimension.height]);
 
-  useEffect(() => {
-    if (showClip && trRef.current && shapeRef.current) {
-      trRef.current.nodes([shapeRef.current]);
-      trRef.current.getLayer?.()?.batchDraw();
-    }
-  }, [showClip, trRef.current, shapeRef.current]);
+  // useEffect(() => {
+  //   if (showClip && trRef.current && shapeRef.current) {
+  //     trRef.current.nodes([shapeRef.current]);
+  //     trRef.current.getLayer?.()?.batchDraw();
+  //   }
+  // }, [showClip, trRef.current, shapeRef.current]);
 
   const position = (payload: ICLIP_DIMENSION): ICLIP_DIMENSION => {
     if (Number(payload?.x) < Number(dimension?.x)) {
@@ -151,8 +143,8 @@ export const LayerClip = () => {
     ],
     points: [],
     strokeWidth: 1,
-    lineCap: "round",
-    lineJoin: "round",
+    // lineCap: "round",
+    // lineJoin: "round",
     shadowBlur: 0,
     shadowOffsetY: 5,
     shadowOffsetX: 5,
@@ -174,190 +166,191 @@ export const LayerClip = () => {
     tool: "IMAGE",
   };
 
-  return (
-    <Layer id="layer-clip-image-preview">
-      <Rect
-        x={dimension?.x}
-        y={dimension?.y}
-        width={dimension?.width}
-        height={dimension?.height}
-        fill="rgba(0,0,0,0.6)"
-      />
-      <Group
-        ref={gshRef}
-        clipWidth={box.width}
-        clipHeight={box.height}
-        clipX={box.x}
-        clipY={box.y}
-      >
-        <ShapeImage layoutShapes={[]} shape={state} />
-      </Group>
-      <Rect
-        ref={shapeRef as MutableRefObject<Konva.Rect>}
-        x={box?.x}
-        y={box?.y}
-        width={box?.width}
-        height={box?.height}
-        draggable
-        onDragMove={(e) => {
-          let payload = position({
-            x: e.target.x(),
-            y: e.target.y(),
-            width: box.width,
-            height: box.height,
-          });
-          e.target.setAbsolutePosition({
-            x: Number(payload.x),
-            y: Number(payload.y),
-          });
-          setBox(payload);
-        }}
-        onDragEnd={(e) => {}}
-        onTransform={(e) => {
-          const scaleX = e.target.scaleX();
-          const scaleY = e.target.scaleY();
-          e.target.scaleX(1);
-          e.target.scaleY(1);
-          let newWidth = Math.max(5, e.target.width() * scaleX);
+  return null;
+  // return (
+  //   <Layer id="layer-clip-image-preview">
+  //     <Rect
+  //       x={dimension?.x}
+  //       y={dimension?.y}
+  //       width={dimension?.width}
+  //       height={dimension?.height}
+  //       fill="rgba(0,0,0,0.6)"
+  //     />
+  //     <Group
+  //       ref={gshRef}
+  //       clipWidth={box.width}
+  //       clipHeight={box.height}
+  //       clipX={box.x}
+  //       clipY={box.y}
+  //     >
+  //       <ShapeImage layoutShapes={[]} shape={state} />
+  //     </Group>
+  //     <Rect
+  //       ref={shapeRef }
+  //       x={box?.x}
+  //       y={box?.y}
+  //       width={box?.width}
+  //       height={box?.height}
+  //       draggable
+  //       onDragMove={(e) => {
+  //         let payload = position({
+  //           x: e.target.x(),
+  //           y: e.target.y(),
+  //           width: box.width,
+  //           height: box.height,
+  //         });
+  //         e.target.setAbsolutePosition({
+  //           x: Number(payload.x),
+  //           y: Number(payload.y),
+  //         });
+  //         setBox(payload);
+  //       }}
+  //       onDragEnd={(e) => {}}
+  //       onTransform={(e) => {
+  //         const scaleX = e.target.scaleX();
+  //         const scaleY = e.target.scaleY();
+  //         e.target.scaleX(1);
+  //         e.target.scaleY(1);
+  //         let newWidth = Math.max(5, e.target.width() * scaleX);
 
-          if (newWidth > dimension.width) {
-            newWidth = dimension.width;
-          }
+  //         if (newWidth > dimension.width) {
+  //           newWidth = dimension.width;
+  //         }
 
-          let newHeight = Math.max(e.target.height() * scaleY);
+  //         let newHeight = Math.max(e.target.height() * scaleY);
 
-          if (newHeight > dimension.height) {
-            newHeight = dimension.height;
-          }
-          let payload = position({
-            x: e.target.x(),
-            y: e.target.y(),
-            width: newWidth,
-            height: newHeight,
-          });
-          e.target.setAbsolutePosition({
-            x: Number(payload.x),
-            y: Number(payload.y),
-          });
-          setBox(payload);
-        }}
-        onTransformEnd={(e) => {
-          const scaleX = e.target.scaleX();
-          const scaleY = e.target.scaleY();
-          e.target.scaleX(1);
-          e.target.scaleY(1);
-          let newWidth = Math.max(5, e.target.width() * scaleX);
+  //         if (newHeight > dimension.height) {
+  //           newHeight = dimension.height;
+  //         }
+  //         let payload = position({
+  //           x: e.target.x(),
+  //           y: e.target.y(),
+  //           width: newWidth,
+  //           height: newHeight,
+  //         });
+  //         e.target.setAbsolutePosition({
+  //           x: Number(payload.x),
+  //           y: Number(payload.y),
+  //         });
+  //         setBox(payload);
+  //       }}
+  //       onTransformEnd={(e) => {
+  //         const scaleX = e.target.scaleX();
+  //         const scaleY = e.target.scaleY();
+  //         e.target.scaleX(1);
+  //         e.target.scaleY(1);
+  //         let newWidth = Math.max(5, e.target.width() * scaleX);
 
-          if (newWidth > dimension.width) {
-            newWidth = dimension.width;
-          }
+  //         if (newWidth > dimension.width) {
+  //           newWidth = dimension.width;
+  //         }
 
-          let newHeight = Math.max(e.target.height() * scaleY);
+  //         let newHeight = Math.max(e.target.height() * scaleY);
 
-          if (newHeight > dimension.height) {
-            newHeight = dimension.height;
-          }
-          let payload = position({
-            x: e.target.x(),
-            y: e.target.y(),
-            width: newWidth,
-            height: newHeight,
-          });
-          e.target.setAbsolutePosition({
-            x: Number(payload.x),
-            y: Number(payload.y),
-          });
-          setBox(payload);
-        }}
-      />
-      {showClip && (
-        <>
-          {/* Líneas verticales */}
-          {[1, 2].map((i) => {
-            const x = Number(box?.x ?? 0);
-            const y = Number(box?.y ?? 0);
-            const width = Number(box?.width ?? 0);
-            const height = Number(box?.height ?? 0);
+  //         if (newHeight > dimension.height) {
+  //           newHeight = dimension.height;
+  //         }
+  //         let payload = position({
+  //           x: e.target.x(),
+  //           y: e.target.y(),
+  //           width: newWidth,
+  //           height: newHeight,
+  //         });
+  //         e.target.setAbsolutePosition({
+  //           x: Number(payload.x),
+  //           y: Number(payload.y),
+  //         });
+  //         setBox(payload);
+  //       }}
+  //     />
+  //     {showClip && (
+  //       <>
+  //         {/* Líneas verticales */}
+  //         {[1, 2].map((i) => {
+  //           const x = Number(box?.x ?? 0);
+  //           const y = Number(box?.y ?? 0);
+  //           const width = Number(box?.width ?? 0);
+  //           const height = Number(box?.height ?? 0);
 
-            return (
-              <Line
-                key={`v-${i}`}
-                points={[
-                  x + (width / 3) * i,
-                  y,
-                  x + (width / 3) * i,
-                  y + height,
-                ]}
-                stroke="white"
-                opacity={0.6}
-                strokeWidth={1}
-              />
-            );
-          })}
+  //           return (
+  //             <Line
+  //               key={`v-${i}`}
+  //               points={[
+  //                 x + (width / 3) * i,
+  //                 y,
+  //                 x + (width / 3) * i,
+  //                 y + height,
+  //               ]}
+  //               stroke="white"
+  //               opacity={0.6}
+  //               strokeWidth={1}
+  //             />
+  //           );
+  //         })}
 
-          {/* Líneas horizontales */}
-          {[1, 2].map((i) => {
-            const x = Number(box?.x ?? 0);
-            const y = Number(box?.y ?? 0);
-            const width = Number(box?.width ?? 0);
-            const height = Number(box?.height ?? 0);
+  //         {/* Líneas horizontales */}
+  //         {[1, 2].map((i) => {
+  //           const x = Number(box?.x ?? 0);
+  //           const y = Number(box?.y ?? 0);
+  //           const width = Number(box?.width ?? 0);
+  //           const height = Number(box?.height ?? 0);
 
-            return (
-              <Line
-                key={`h-${i}`}
-                points={[
-                  x,
-                  y + (height / 3) * i,
-                  x + width,
-                  y + (height / 3) * i,
-                ]}
-                stroke="white"
-                opacity={0.6}
-                strokeWidth={1}
-              />
-            );
-          })}
-        </>
-      )}
-      <Transformer
-        id="transformer-editable"
-        ref={trRef}
-        flipEnabled={false}
-        keepRatio={false}
-        rotateEnabled={false}
-        anchorStrokeWidth={2}
-        anchorStyleFunc={(configAnchor) => {
-          const anchor = configAnchor as Shape<ShapeConfig> & {
-            cornerRadius: (v: number) => void;
-          };
-          if (anchor.hasName("top-center") || anchor.hasName("bottom-center")) {
-            anchor.cornerRadius(20);
-            anchor.height(10);
-            anchor.offsetY(5);
-            anchor.width(30);
-            anchor.offsetX(15);
-          }
-          if (anchor.hasName("middle-left") || anchor.hasName("middle-right")) {
-            anchor.cornerRadius(20);
-            anchor.height(30);
-            anchor.offsetY(15);
-            anchor.width(10);
-            anchor.offsetX(5);
-          }
-        }}
-        anchorSize={15}
-        borderStroke="white"
-        borderStrokeWidth={2}
-        anchorCornerRadius={2}
-        anchorStroke="gray"
-        boundBoxFunc={(oldBox, newBox) => {
-          // limit resize
-          if (Math.abs(newBox.width) < 5 || Math.abs(newBox.height) < 5) {
-            return oldBox;
-          }
-          return newBox;
-        }}
-      />
-    </Layer>
-  );
+  //           return (
+  //             <Line
+  //               key={`h-${i}`}
+  //               points={[
+  //                 x,
+  //                 y + (height / 3) * i,
+  //                 x + width,
+  //                 y + (height / 3) * i,
+  //               ]}
+  //               stroke="white"
+  //               opacity={0.6}
+  //               strokeWidth={1}
+  //             />
+  //           );
+  //         })}
+  //       </>
+  //     )}
+  //     <Transformer
+  //       id="transformer-editable"
+  //       ref={trRef}
+  //       flipEnabled={false}
+  //       keepRatio={false}
+  //       rotateEnabled={false}
+  //       anchorStrokeWidth={2}
+  //       anchorStyleFunc={(configAnchor) => {
+  //         const anchor = configAnchor as Shape<ShapeConfig> & {
+  //           cornerRadius: (v: number) => void;
+  //         };
+  //         if (anchor.hasName("top-center") || anchor.hasName("bottom-center")) {
+  //           anchor.cornerRadius(20);
+  //           anchor.height(10);
+  //           anchor.offsetY(5);
+  //           anchor.width(30);
+  //           anchor.offsetX(15);
+  //         }
+  //         if (anchor.hasName("middle-left") || anchor.hasName("middle-right")) {
+  //           anchor.cornerRadius(20);
+  //           anchor.height(30);
+  //           anchor.offsetY(15);
+  //           anchor.width(10);
+  //           anchor.offsetX(5);
+  //         }
+  //       }}
+  //       anchorSize={15}
+  //       borderStroke="white"
+  //       borderStrokeWidth={2}
+  //       anchorCornerRadius={2}
+  //       anchorStroke="gray"
+  //       boundBoxFunc={(oldBox, newBox) => {
+  //         // limit resize
+  //         if (Math.abs(newBox.width) < 5 || Math.abs(newBox.height) < 5) {
+  //           return oldBox;
+  //         }
+  //         return newBox;
+  //       }}
+  //     />
+  //   </Layer>
+  // );
 };

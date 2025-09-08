@@ -2,7 +2,6 @@ import { IKeyTool } from "../states/tool";
 import ShapeBox from "./box.shape";
 import { ShapeCircle } from "./circle.shape";
 import { ShapeDraw } from "./drawn.shape";
-import { ShapeGroup } from "./group.shape";
 import { ShapeImage } from "./image.shape";
 import { ShapeLine } from "./line.shape";
 import { ShapeText } from "./text.shape";
@@ -19,5 +18,5 @@ export const Shapes: IMapperElements = {
   LINE: ShapeLine,
   IMAGE: ShapeImage,
   DRAW: ShapeDraw,
-  GROUP: ShapeGroup,
+  GROUP: ShapeBox,
 };

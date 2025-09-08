@@ -1,8 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { calculateDimension } from "@/editor/utils/calculateDimension";
 import { atom, useAtomValue } from "jotai";
-import { Layer } from "react-konva";
-import { ShapeImage } from "../shapes/image.shape";
 
 import { IShape } from "../shapes/type.shape";
 import { STAGE_DIMENSION_ATOM } from "../states/dimension";
@@ -89,8 +87,8 @@ export const LayerImage = () => {
     ],
     points: [],
     strokeWidth: 1,
-    lineCap: "round",
-    lineJoin: "round",
+    // lineCap: "round",
+    // lineJoin: "round",
     shadowBlur: 0,
     shadowOffsetY: 5,
     shadowOffsetX: 5,
@@ -111,10 +109,10 @@ export const LayerImage = () => {
     state: atom(shape),
     tool: "IMAGE",
   };
-
-  return (
-    <Layer id="layer-image-preview" listening={false}>
-      <ShapeImage layoutShapes={[]} shape={state} />
-    </Layer>
-  );
+  return null;
+  // return (
+  //   <Layer id="layer-image-preview" listening={false}>
+  //     <ShapeImage layoutShapes={[]} shape={state} />
+  //   </Layer>
+  // );
 };

@@ -3,7 +3,6 @@ import { IShape } from "@/editor/shapes/type.shape";
 import { SHOW_CLIP_ATOM } from "@/editor/states/clipImage";
 import TOOL_ATOM, { IKeyTool, PAUSE_MODE_ATOM } from "@/editor/states/tool";
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
-import Konva from "konva";
 import { useEffect } from "react";
 import { v4 as uuidv4 } from "uuid";
 import {
@@ -123,33 +122,32 @@ export const useEventStage = () => {
       const childrens = Stage?.current?.getStage?.()?.children;
 
       if (!childrens) return;
-      const layer = childrens?.find((e) => e?.attrs?.id === "layer-shapes");
-      const nodes = layer?.children?.filter?.(
-        (child) =>
-          child?.attrs?.id !== "transformer-editable" && child?.attrs?.listening
-      );
-      if (!nodes) return;
-      const selected = nodes.filter((shape) =>
-        Konva.Util.haveIntersection(selection, shape.getClientRect())
-      );
+      // const layer = childrens?.find((e) => e?.attrs?.id === "layer-shapes");
+      // const nodes = layer?.children?.filter?.(
+      //   (child) =>
+      //     child?.attrs?.id !== "transformer-editable" && child?.attrs?.listening
+      // );
+      // if (!nodes) return;
+      // const selected = nodes.filter((shape) =>
+      // );
 
-      setTimeout(() => {
-        SET_UPDATE_SHAPES_IDS(
-          selected
-            ?.map((e) => ({
-              id: e?.attrs?.id,
-              parentId: e?.attrs?.parentId,
-            }))
-            ?.filter((e) => typeof e?.id === "string")
-        );
-        setSelection({
-          x: 0,
-          y: 0,
-          width: 0,
-          height: 0,
-          visible: false,
-        });
-      }, 10);
+      // setTimeout(() => {
+      //   SET_UPDATE_SHAPES_IDS(
+      //     selected
+      //       ?.map((e) => ({
+      //         id: e?.attrs?.id,
+      //         parentId: e?.attrs?.parentId,
+      //       }))
+      //       ?.filter((e) => typeof e?.id === "string")
+      //   );
+      //   setSelection({
+      //     x: 0,
+      //     y: 0,
+      //     width: 0,
+      //     height: 0,
+      //     visible: false,
+      //   });
+      // }, 10);
     }
 
     if (EVENT_STAGE === "CREATING") {

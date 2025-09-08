@@ -1,6 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { atom, useAtom } from "jotai";
-import Konva from "konva";
 import { RefObject, useEffect } from "react";
 
 type IKType = "STAGE" | "CONTAINER" | "CLIP" | "RECTANGLE_SELECTION";
@@ -11,10 +10,10 @@ type IGPayload<T extends IKType, R> = {
 };
 
 type IListItems =
-  | IGPayload<"STAGE", Konva.Stage>
-  | IGPayload<"CONTAINER", Konva.Stage>
-  | IGPayload<"CLIP", Konva.Group>
-  | IGPayload<"RECTANGLE_SELECTION", Konva.Transformer>;
+  | IGPayload<"STAGE", any>
+  | IGPayload<"CONTAINER", any>
+  | IGPayload<"CLIP", any>
+  | IGPayload<"RECTANGLE_SELECTION", any>;
 
 type IPayload = IListItems;
 

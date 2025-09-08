@@ -1,21 +1,10 @@
 import { Valid } from "@/components/valid";
 import { css } from "@stylespixelkit/css";
 import { useAtom, useAtomValue } from "jotai";
-import {
-  Blend,
-  Brush,
-  Eye,
-  EyeOff,
-  Minus,
-  PenTool,
-  Ruler,
-  Square,
-  SquareDashed,
-} from "lucide-react";
+import { Blend, Eye, EyeOff, Minus, Square, SquareDashed } from "lucide-react";
 import { v4 as uuidv4 } from "uuid";
 import { Input } from "../components/input";
 import { constants } from "../constants/color";
-import { IShape } from "../shapes/type.shape";
 import { DRAW_START_CONFIG_ATOM } from "../states/drawing";
 import TOOL_ATOM from "../states/tool";
 import { commonStyles, SectionHeader } from "./sidebar-right-shape";
@@ -117,17 +106,17 @@ export const Drawing = () => {
   };
 
   // Manejadores para line styles
-  const handleLineStyleChange = (
-    lineJoin: IShape["lineJoin"],
-    lineCap: IShape["lineCap"]
-  ) => {
-    setShape({
-      ...shape,
+  // const handleLineStyleChange = (
+  //   lineJoin: IShape["lineJoin"],
+  //   lineCap: IShape["lineCap"]
+  // ) => {
+  //   setShape({
+  //     ...shape,
 
-      lineJoin,
-      lineCap,
-    });
-  };
+  //     lineJoin,
+  //     lineCap,
+  //   });
+  // };
   return (
     <div
       className={`${css({
@@ -236,7 +225,7 @@ export const Drawing = () => {
               </Input.Grid>
             </Input.Container>
             {/* Line Style Buttons */}
-            <div
+            {/* <div
               className={css({
                 alignItems: "flex-end",
                 display: "grid",
@@ -345,7 +334,7 @@ export const Drawing = () => {
                   }
                 />
               </button>
-            </div>
+            </div> */}
           </div>
           <Input.Container>
             <Input.Grid>

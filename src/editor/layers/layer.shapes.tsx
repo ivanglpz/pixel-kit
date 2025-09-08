@@ -1,23 +1,10 @@
 import { useAtomValue } from "jotai";
-import Konva from "konva";
 import { Shapes } from "../shapes/shapes";
 import { FCShapeWEvents } from "../shapes/type.shape";
 import ALL_SHAPES_ATOM from "../states/shapes";
 
-const getAllShapes = (node: Konva.Layer | Konva.Group): Konva.Shape[] => {
-  const children = Array.from(node.getChildren());
-  return children.flatMap((child) => {
-    if (child.getClassName() === "Group") {
-      return getAllShapes(child as Konva.Group);
-    }
-    return [child as Konva.Shape];
-  });
-};
-
 export const LayerShapes = () => {
   const ALL_SHAPES = useAtomValue(ALL_SHAPES_ATOM);
-  // const trRef = useRef<Konva.Transformer>(null);
-  // const lyRef = useRef<Konva.Layer>(null);
   // const selectedIds = useAtomValue(SHAPE_IDS_ATOM);
   // const selection = useAtomValue(RECTANGLE_SELECTION_ATOM);
   // const setUpdateUndoRedo = useSetAtom(UPDATE_UNDO_REDO);

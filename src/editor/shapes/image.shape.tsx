@@ -10,13 +10,11 @@ import { STAGE_DIMENSION_ATOM } from "../states/dimension";
 import { SHAPE_IDS_ATOM } from "../states/shape";
 
 // Konva
-import { Image as KonvaImage } from "react-konva";
 
 // Tipos
 import { IShape, IShapeWithEvents, WithInitialValue } from "./type.shape";
 
 // Eventos de shape
-import { coordinatesShapeMove, shapeEventDragMove } from "./events.shape";
 
 // Transformer
 
@@ -107,90 +105,91 @@ export const ShapeImage = (props: IShapeWithEvents) => {
   // =========================
   // Renderizado
   // =========================
-  return (
-    <>
-      <KonvaImage
-        // 1. Identificación y referencia
-        id={box?.id}
-        parentId={box?.parentId}
-        // 2. Posición y tamaño
-        x={x}
-        y={y}
-        width={box?.width}
-        height={box?.height}
-        points={box.points ?? []}
-        globalCompositeOperation="source-over"
-        image={Imagee}
-        // 3. Rotación
-        rotation={rotation}
-        // rotationDeg={rotate}
-        listening={!box.isLocked}
-        // 4. Relleno
-        fillEnabled
-        fill={
-          box?.fills?.filter((e) => e?.type === "fill" && e?.visible)?.at(0)
-            ?.color
-        }
-        // 5. Bordes y trazos
-        stroke={box?.strokes?.filter((e) => e?.visible)?.at(0)?.color}
-        strokeWidth={strokeWidth}
-        strokeEnabled={box.strokeWidth > 0}
-        dash={[dash, dash, dash, dash]}
-        dashEnabled={box?.dash > 0}
-        // 6. Crop (object-fit: cover)
-        crop={cropConfig}
-        cornerRadius={
-          !box?.isAllBorderRadius
-            ? [
-                box.borderTopLeftRadius,
-                box.borderTopRightRadius,
-                box.borderBottomRightRadius,
-                box.borderBottomLeftRadius,
-              ]
-            : box.borderRadius
-        }
-        // 7. Sombras
-        shadowColor={shadow?.color}
-        shadowOpacity={box.shadowOpacity}
-        shadowOffsetX={box?.shadowOffsetX}
-        shadowOffsetY={box?.shadowOffsetY}
-        shadowBlur={box?.shadowBlur}
-        shadowEnabled={Boolean(shadow)}
-        // 8. Apariencia
-        opacity={box?.opacity ?? 1}
-        // 9. Interactividad
-        draggable={isSelected}
-        // 10. Eventos
+  return null;
+  // return (
+  //   <>
+  //     <KonvaImage
+  //       // 1. Identificación y referencia
+  //       id={box?.id}
+  //       parentId={box?.parentId}
+  //       // 2. Posición y tamaño
+  //       x={x}
+  //       y={y}
+  //       width={box?.width}
+  //       height={box?.height}
+  //       points={box.points ?? []}
+  //       globalCompositeOperation="source-over"
+  //       image={Imagee}
+  //       // 3. Rotación
+  //       rotation={rotation}
+  //       // rotationDeg={rotate}
+  //       listening={!box.isLocked}
+  //       // 4. Relleno
+  //       fillEnabled
+  //       fill={
+  //         box?.fills?.filter((e) => e?.type === "fill" && e?.visible)?.at(0)
+  //           ?.color
+  //       }
+  //       // 5. Bordes y trazos
+  //       stroke={box?.strokes?.filter((e) => e?.visible)?.at(0)?.color}
+  //       strokeWidth={strokeWidth}
+  //       strokeEnabled={box.strokeWidth > 0}
+  //       dash={[dash, dash, dash, dash]}
+  //       dashEnabled={box?.dash > 0}
+  //       // 6. Crop (object-fit: cover)
+  //       crop={cropConfig}
+  //       cornerRadius={
+  //         !box?.isAllBorderRadius
+  //           ? [
+  //               box.borderTopLeftRadius,
+  //               box.borderTopRightRadius,
+  //               box.borderBottomRightRadius,
+  //               box.borderBottomLeftRadius,
+  //             ]
+  //           : box.borderRadius
+  //       }
+  //       // 7. Sombras
+  //       shadowColor={shadow?.color}
+  //       shadowOpacity={box.shadowOpacity}
+  //       shadowOffsetX={box?.shadowOffsetX}
+  //       shadowOffsetY={box?.shadowOffsetY}
+  //       shadowBlur={box?.shadowBlur}
+  //       shadowEnabled={Boolean(shadow)}
+  //       // 8. Apariencia
+  //       opacity={box?.opacity ?? 1}
+  //       // 9. Interactividad
+  //       draggable={isSelected}
+  //       // 10. Eventos
 
-        onClick={() =>
-          setShapeId({
-            id: box?.id,
-            parentId: box.parentId,
-          })
-        }
-        onDragMove={(e) =>
-          setBox(shapeEventDragMove(e, stage.width, stage.height))
-        }
-        onTransform={(e) => {
-          const scaleX = e.target.scaleX();
-          const scaleY = e.target.scaleY();
-          e.target.scaleX(1);
-          e.target.scaleY(1);
-          const payload = coordinatesShapeMove(
-            box,
-            stage.width,
-            stage.height,
-            e
-          );
+  //       onClick={() =>
+  //         setShapeId({
+  //           id: box?.id,
+  //           parentId: box.parentId,
+  //         })
+  //       }
+  //       onDragMove={(e) =>
+  //         setBox(shapeEventDragMove(e, stage.width, stage.height))
+  //       }
+  //       onTransform={(e) => {
+  //         const scaleX = e.target.scaleX();
+  //         const scaleY = e.target.scaleY();
+  //         e.target.scaleX(1);
+  //         e.target.scaleY(1);
+  //         const payload = coordinatesShapeMove(
+  //           box,
+  //           stage.width,
+  //           stage.height,
+  //           e
+  //         );
 
-          setBox({
-            ...payload,
-            rotation: e.target.rotation(),
-            width: Math.max(5, e.target.width() * scaleX),
-            height: Math.max(e.target.height() * scaleY),
-          });
-        }}
-      />
-    </>
-  );
+  //         setBox({
+  //           ...payload,
+  //           rotation: e.target.rotation(),
+  //           width: Math.max(5, e.target.width() * scaleX),
+  //           height: Math.max(e.target.height() * scaleY),
+  //         });
+  //       }}
+  //     />
+  //   </>
+  // );
 };

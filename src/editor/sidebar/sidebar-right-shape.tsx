@@ -13,7 +13,6 @@ import {
   ArrowRight,
   ArrowUp,
   Blend,
-  Brush,
   Columns,
   CornerDownLeft,
   CornerDownRight,
@@ -27,9 +26,7 @@ import {
   Minus,
   MoveHorizontal,
   MoveVertical,
-  PenTool,
   Plus,
-  Ruler,
   Scaling,
   Sliders,
   Smile,
@@ -542,13 +539,13 @@ export const LayoutShapeConfig = () => {
   };
 
   // Manejadores para line styles
-  const handleLineStyleChange = (
-    lineJoin: IShape["lineJoin"],
-    lineCap: IShape["lineCap"]
-  ) => {
-    shapeUpdate({ lineJoin, lineCap });
-    execute(); // Ejecutar después del cambio
-  };
+  // const handleLineStyleChange = (
+  //   lineJoin: IShape["lineJoin"],
+  //   lineCap: IShape["lineCap"]
+  // ) => {
+  //   shapeUpdate({ lineJoin, lineCap });
+  //   execute(); // Ejecutar después del cambio
+  // };
 
   // Manejadores para layouts (agregar con los demás manejadores)
 
@@ -1714,7 +1711,7 @@ export const LayoutShapeConfig = () => {
                 </Input.Grid>
               </Input.Container>
               {/* Line Style Buttons */}
-              <div
+              {/* <div
                 className={css({
                   alignItems: "flex-end",
                   display: "grid",
@@ -1823,7 +1820,7 @@ export const LayoutShapeConfig = () => {
                     }
                   />
                 </button>
-              </div>
+              </div> */}
             </div>
 
             <Input.Container>

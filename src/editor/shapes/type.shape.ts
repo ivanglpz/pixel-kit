@@ -1,5 +1,4 @@
 import { PrimitiveAtom } from "jotai";
-import { LineCap, LineJoin } from "konva/lib/Shape";
 import { FC } from "react";
 import { ALL_SHAPES } from "../states/shapes";
 import { IKeyMethods } from "../states/tool";
@@ -66,8 +65,8 @@ export type IShape = {
   fills: Fill[];
   strokes: Stroke[];
   strokeWidth: number;
-  lineCap: LineCap;
-  lineJoin: LineJoin;
+  // lineCap: LineCap;
+  // lineJoin: LineJoin;
   dash: number;
 
   // Effects
