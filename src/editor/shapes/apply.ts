@@ -24,6 +24,17 @@ export const apply = {
       borderBottomLeftRadius: shape.borderBottomLeftRadius,
     };
   },
+  strokeDash: (shape: IShape) => {
+    if (shape.dash > 0) {
+      return {
+        borderStyle: "dashed",
+        // border-width: 2px;
+        // border-style: dashed;
+        // border-color: black;
+      };
+    }
+    return {};
+  },
   stroke: (shape: IShape) => {
     if (
       shape.strokeWidth > 0 &&
