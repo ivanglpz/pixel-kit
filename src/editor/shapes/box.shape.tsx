@@ -27,6 +27,7 @@ const ShapeBox = ({ shape: item, layoutShapes, options }: IShapeWithEvents) => {
   const isSelected = shapeId.some((w) => w.id === box.id);
 
   const handleMouseDown = (e: React.MouseEvent) => {
+    if (!isSelected) return;
     e.stopPropagation();
     setDragging(true);
     setOffset({
@@ -36,6 +37,8 @@ const ShapeBox = ({ shape: item, layoutShapes, options }: IShapeWithEvents) => {
   };
 
   const handleMouseMove = (e: React.MouseEvent) => {
+    if (!isSelected) return;
+
     e.stopPropagation();
     if (!dragging) return;
     setBox({
@@ -46,6 +49,8 @@ const ShapeBox = ({ shape: item, layoutShapes, options }: IShapeWithEvents) => {
   };
 
   const handleMouseUp = () => {
+    if (!isSelected) return;
+
     setDragging(false);
   };
   const childrens = useAtomValue(box.children);
