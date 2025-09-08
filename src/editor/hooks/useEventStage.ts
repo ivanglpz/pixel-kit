@@ -4,10 +4,8 @@ import { SHOW_CLIP_ATOM } from "@/editor/states/clipImage";
 import TOOL_ATOM, { IKeyTool, PAUSE_MODE_ATOM } from "@/editor/states/tool";
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import Konva from "konva";
-import { KonvaEventObject } from "konva/lib/Node";
 import { useEffect } from "react";
 import { v4 as uuidv4 } from "uuid";
-import stageAbsolutePosition from "../helpers/position";
 import {
   CreateShapeSchema,
   UpdateShapeDimension,
@@ -63,26 +61,31 @@ export const useEventStage = () => {
   const { ref: Stage } = useReference({ type: "STAGE" });
 
   // ===== MOUSE EVENT HANDLERS =====
-  const handleMouseDown = (event: KonvaEventObject<MouseEvent>) => {
-    const { x, y } = stageAbsolutePosition(event);
+  const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
+    // if (e.target !== e.currentTarget) return; // no crear encima de otro box
 
-    if (
-      EVENT_STAGE === "IDLE" &&
-      [null, undefined, "main-image-render-stage", "pixel-kit-stage"].includes(
-        event.target?.attrs?.id
-      ) &&
-      tool === "MOVE" &&
-      shapeId?.length === 0
-    ) {
-      setSelection({
-        x,
-        y,
-        width: 0,
-        height: 0,
-        visible: true,
-      });
-    }
+    // const { x, y } = stageAbsolutePosition(event);
 
+    const rect = e.currentTarget.getBoundingClientRect();
+
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    // if (
+    //   EVENT_STAGE === "IDLE" &&
+    //   [null, undefined, "main-image-render-stage", "pixel-kit-stage"].includes(
+    //     event.target?.attrs?.id
+    //   ) &&
+    //   tool === "MOVE" &&
+    //   shapeId?.length === 0
+    // ) {
+    //   setSelection({
+    //     x,
+    //     y,
+    //     width: 0,
+    //     height: 0,
+    //     visible: true,
+    //   });
+    // }
     if (EVENT_STAGE === "CREATE") {
       handleCreateMode(x, y);
     }
@@ -91,9 +94,11 @@ export const useEventStage = () => {
     }
   };
 
-  const handleMouseMove = (event: KonvaEventObject<MouseEvent>) => {
-    const { x, y } = stageAbsolutePosition(event);
-
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    // const { x, y } = stageAbsolutePosition(event);
+    const rect = e.currentTarget.getBoundingClientRect();
+    const currentX = e.clientX - rect.left;
+    const currentY = e.clientY - rect.top;
     if (
       selection.visible &&
       EVENT_STAGE === "IDLE" &&
@@ -101,16 +106,15 @@ export const useEventStage = () => {
       shapeId?.length === 0
     ) {
       setSelection({
-        x: Math.min(selection.x, x),
-        y: Math.min(selection.y, y),
-        width: Math.abs(x - selection.x),
-        height: Math.abs(y - selection.y),
+        x: Math.min(selection.x, currentX),
+        y: Math.min(selection.y, currentY),
+        width: Math.abs(currentX - selection.x),
+        height: Math.abs(currentY - selection.y),
         visible: true,
       });
     }
-
     if (EVENT_STAGE === "CREATING") {
-      handleCreatingMode(x, y);
+      handleCreatingMode(currentX, currentY);
     }
   };
 

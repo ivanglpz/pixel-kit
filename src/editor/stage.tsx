@@ -1,14 +1,10 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { Valid } from "@/components/valid";
 import { css } from "@stylespixelkit/css";
 import { useAtom, useSetAtom } from "jotai";
 import Konva from "konva";
-import { KonvaEventObject } from "konva/lib/Node";
-import { FC, ReactNode, useEffect, useRef, useState } from "react";
-import { Stage } from "react-konva";
+import { FC, ReactNode, useRef, useState } from "react";
 import { useConfiguration } from "./hooks/useConfiguration";
 import { useEventStage } from "./hooks/useEventStage";
-import { useReference } from "./hooks/useReference";
 import { Tools } from "./sidebar/Tools";
 import { STAGE_DIMENSION_ATOM } from "./states/dimension";
 import { RESET_SHAPES_IDS_ATOM } from "./states/shape";
@@ -30,64 +26,63 @@ const PxStage: FC<Props> = ({ children }) => {
   const resetShapesIds = useSetAtom(RESET_SHAPES_IDS_ATOM);
   const { handleMouseDown, handleMouseUp, handleMouseMove } = useEventStage();
 
-  const { handleSetRef } = useReference({
-    type: "STAGE",
-    ref: stageRef,
-  });
+  // const { handleSetRef } = useReference({
+  //   type: "STAGE",
+  //   ref: stageRef,
+  // });
 
-  const handleClear = (e: KonvaEventObject<MouseEvent>) => {
-    if (["DRAW", "LINE", "CLIP"].includes(tool)) return;
-
-    const targetId = e?.target?.attrs?.id;
-    if (
-      [null, undefined, "main-image-render-stage", "pixel-kit-stage"].includes(
-        targetId
-      )
-    ) {
-      resetShapesIds();
-      setTool("MOVE");
-    }
+  const handleClear = () => {
+    // if (["DRAW", "LINE", "CLIP"].includes(tool)) return;
+    // const targetId = e?.target?.attrs?.id;
+    // if (
+    //   [null, undefined, "main-image-render-stage", "pixel-kit-stage"].includes(
+    //     targetId
+    //   )
+    // ) {
+    //   resetShapesIds();
+    //   setTool("MOVE");
+    // }
   };
 
-  const updateSize = () => {
-    if (!containerRef.current) return;
+  // const updateSize = () => {
+  //   if (!containerRef.current) return;
 
-    setShow(false); // 🔄 Oculta el Stage mientras actualiza
+  //   setShow(false); // 🔄 Oculta el Stage mientras actualiza
 
-    const { width, height } = containerRef.current.getBoundingClientRect();
+  //   const { width, height } = containerRef.current.getBoundingClientRect();
 
-    if (!config.expand_stage) {
-      setDimension({ width, height });
-    }
-    if (config.expand_stage && config.expand_stage_resolution) {
-      setDimension(config.expand_stage_resolution);
-    }
+  //   if (!config.expand_stage) {
+  //     setDimension({ width, height });
+  //   }
+  //   if (config.expand_stage && config.expand_stage_resolution) {
+  //     setDimension(config.expand_stage_resolution);
+  //   }
 
-    requestAnimationFrame(() => {
-      setShow(true);
-    });
-  };
+  //   requestAnimationFrame(() => {
+  //     setShow(true);
+  //   });
+  // };
 
-  useEffect(() => {
-    const timeout = requestAnimationFrame(updateSize);
+  // useEffect(() => {
+  //   const timeout = requestAnimationFrame(updateSize);
 
-    return () => cancelAnimationFrame(timeout);
-  }, []);
+  //   return () => cancelAnimationFrame(timeout);
+  // }, []);
 
-  useEffect(() => {
-    if (!containerRef.current) return;
+  // useEffect(() => {
+  //   if (!containerRef.current) return;
 
-    const resizeObserver = new ResizeObserver(updateSize);
-    resizeObserver.observe(containerRef.current);
+  //   const resizeObserver = new ResizeObserver(updateSize);
+  //   resizeObserver.observe(containerRef.current);
 
-    window.addEventListener("resize", updateSize);
-    updateSize();
+  //   window.addEventListener("resize", updateSize);
+  //   updateSize();
 
-    return () => {
-      if (containerRef.current) resizeObserver.unobserve(containerRef.current);
-      window.removeEventListener("resize", updateSize);
-    };
-  }, [config.expand_stage]);
+  //   return () => {
+  //     if (containerRef.current) resizeObserver.unobserve(containerRef.current);
+  //     window.removeEventListener("resize", updateSize);
+  //   };
+  // }, [config.expand_stage]);
 
   // ✅ Definimos el tamaño final del Stage
   // ✅ Versión 4K
@@ -99,155 +94,130 @@ const PxStage: FC<Props> = ({ children }) => {
   const MAX_SCALE = 10; // Máximo zoom permitido
   const MIN_SCALE = 1; // Mínimo zoom permitido
 
-  const handleWheel = (e: Konva.KonvaEventObject<WheelEvent>) => {
-    const stage = stageRef.current;
-    if (!stage) return;
-
-    // ✅ 1. ZOOM con CTRL o META
-    if (e.evt.ctrlKey || e.evt.metaKey) {
-      e.evt.preventDefault();
-
-      const scaleBy = 1.05;
-      const oldScale = stage.scaleX();
-      let newScale = e.evt.deltaY > 0 ? oldScale / scaleBy : oldScale * scaleBy;
-
-      // Limitar zoom
-      newScale = Math.max(MIN_SCALE, Math.min(MAX_SCALE, newScale));
-
-      const pointer = stage.getPointerPosition();
-      if (!pointer) return;
-
-      const mousePointTo = {
-        x: (pointer.x - stage.x()) / oldScale,
-        y: (pointer.y - stage.y()) / oldScale,
-      };
-
-      stage.scale({ x: newScale, y: newScale });
-
-      let newX = pointer.x - mousePointTo.x * newScale;
-      let newY = pointer.y - mousePointTo.y * newScale;
-
-      const scaledWidth = stageWidth * newScale;
-      const scaledHeight = stageHeight * newScale;
-
-      const containerWidth = stage.width();
-      const containerHeight = stage.height();
-
-      // Limitar horizontalmente
-      if (scaledWidth <= containerWidth) {
-        newX = (containerWidth - scaledWidth) / 2;
-      } else {
-        const minX = containerWidth - scaledWidth;
-        const maxX = 0;
-        newX = Math.max(minX, Math.min(maxX, newX));
-      }
-
-      // Limitar verticalmente
-      if (scaledHeight <= containerHeight) {
-        newY = (containerHeight - scaledHeight) / 2;
-      } else {
-        const minY = containerHeight - scaledHeight;
-        const maxY = 0;
-        newY = Math.max(minY, Math.min(maxY, newY));
-      }
-
-      stage.position({ x: newX, y: newY });
-      stage.batchDraw();
-
-      return; // ✅ Evita seguir al scroll
-    }
-
-    // ✅ 2. SCROLL (solo si scrollInsideStage es true)
-    if (config.scrollInsideStage) {
-      e.evt.preventDefault();
-
-      const currentPos = stage.position();
-      const currentScale = stage.scaleX();
-
-      const scaledWidth = stageWidth * currentScale;
-      const scaledHeight = stageHeight * currentScale;
-
-      const containerWidth = stage.width();
-      const containerHeight = stage.height();
-
-      let newX = currentPos.x;
-      let newY = currentPos.y;
-
-      if (e.evt.shiftKey) {
-        // ✅ Shift = scroll horizontal (usar deltaX si lo hay, sino deltaY)
-        const delta = e.evt.deltaX !== 0 ? e.evt.deltaX : e.evt.deltaY;
-        newX -= delta;
-      } else {
-        // ✅ Scroll vertical
-        newY -= e.evt.deltaY;
-      }
-
-      // 🔒 Limitar horizontalmente
-      if (scaledWidth <= containerWidth) {
-        newX = (containerWidth - scaledWidth) / 2;
-      } else {
-        const minX = containerWidth - scaledWidth;
-        const maxX = 0;
-        newX = Math.max(minX, Math.min(maxX, newX));
-      }
-
-      // 🔒 Limitar verticalmente
-      if (scaledHeight <= containerHeight) {
-        newY = (containerHeight - scaledHeight) / 2;
-      } else {
-        const minY = containerHeight - scaledHeight;
-        const maxY = 0;
-        newY = Math.max(minY, Math.min(maxY, newY));
-      }
-
-      stage.position({ x: newX, y: newY });
-      stage.batchDraw();
-    }
+  const handleWheel = () => {
+    // const stage = stageRef.current;
+    // if (!stage) return;
+    // // ✅ 1. ZOOM con CTRL o META
+    // if (e.evt.ctrlKey || e.evt.metaKey) {
+    //   e.evt.preventDefault();
+    //   const scaleBy = 1.05;
+    //   const oldScale = stage.scaleX();
+    //   let newScale = e.evt.deltaY > 0 ? oldScale / scaleBy : oldScale * scaleBy;
+    //   // Limitar zoom
+    //   newScale = Math.max(MIN_SCALE, Math.min(MAX_SCALE, newScale));
+    //   const pointer = stage.getPointerPosition();
+    //   if (!pointer) return;
+    //   const mousePointTo = {
+    //     x: (pointer.x - stage.x()) / oldScale,
+    //     y: (pointer.y - stage.y()) / oldScale,
+    //   };
+    //   stage.scale({ x: newScale, y: newScale });
+    //   let newX = pointer.x - mousePointTo.x * newScale;
+    //   let newY = pointer.y - mousePointTo.y * newScale;
+    //   const scaledWidth = stageWidth * newScale;
+    //   const scaledHeight = stageHeight * newScale;
+    //   const containerWidth = stage.width();
+    //   const containerHeight = stage.height();
+    //   // Limitar horizontalmente
+    //   if (scaledWidth <= containerWidth) {
+    //     newX = (containerWidth - scaledWidth) / 2;
+    //   } else {
+    //     const minX = containerWidth - scaledWidth;
+    //     const maxX = 0;
+    //     newX = Math.max(minX, Math.min(maxX, newX));
+    //   }
+    //   // Limitar verticalmente
+    //   if (scaledHeight <= containerHeight) {
+    //     newY = (containerHeight - scaledHeight) / 2;
+    //   } else {
+    //     const minY = containerHeight - scaledHeight;
+    //     const maxY = 0;
+    //     newY = Math.max(minY, Math.min(maxY, newY));
+    //   }
+    //   stage.position({ x: newX, y: newY });
+    //   stage.batchDraw();
+    //   return; // ✅ Evita seguir al scroll
+    // }
+    // // ✅ 2. SCROLL (solo si scrollInsideStage es true)
+    // if (config.scrollInsideStage) {
+    //   e.evt.preventDefault();
+    //   const currentPos = stage.position();
+    //   const currentScale = stage.scaleX();
+    //   const scaledWidth = stageWidth * currentScale;
+    //   const scaledHeight = stageHeight * currentScale;
+    //   const containerWidth = stage.width();
+    //   const containerHeight = stage.height();
+    //   let newX = currentPos.x;
+    //   let newY = currentPos.y;
+    //   if (e.evt.shiftKey) {
+    //     // ✅ Shift = scroll horizontal (usar deltaX si lo hay, sino deltaY)
+    //     const delta = e.evt.deltaX !== 0 ? e.evt.deltaX : e.evt.deltaY;
+    //     newX -= delta;
+    //   } else {
+    //     // ✅ Scroll vertical
+    //     newY -= e.evt.deltaY;
+    //   }
+    //   // 🔒 Limitar horizontalmente
+    //   if (scaledWidth <= containerWidth) {
+    //     newX = (containerWidth - scaledWidth) / 2;
+    //   } else {
+    //     const minX = containerWidth - scaledWidth;
+    //     const maxX = 0;
+    //     newX = Math.max(minX, Math.min(maxX, newX));
+    //   }
+    //   // 🔒 Limitar verticalmente
+    //   if (scaledHeight <= containerHeight) {
+    //     newY = (containerHeight - scaledHeight) / 2;
+    //   } else {
+    //     const minY = containerHeight - scaledHeight;
+    //     const maxY = 0;
+    //     newY = Math.max(minY, Math.min(maxY, newY));
+    //   }
+    //   stage.position({ x: newX, y: newY });
+    //   stage.batchDraw();
+    // }
   };
 
-  useEffect(() => {
-    if (stageRef?.current) {
-      handleSetRef({
-        type: "STAGE",
-        ref: stageRef,
-      });
-    }
-  }, [stageHeight, stageWidth, stageRef, config.expand_stage]);
+  // useEffect(() => {
+  //   if (stageRef?.current) {
+  //     handleSetRef({
+  //       type: "STAGE",
+  //       ref: stageRef,
+  //     });
+  //   }
+  // }, [stageHeight, stageWidth, stageRef, config.expand_stage]);
 
   return (
     <div
       ref={containerRef}
       className={`CursorDefault ${css({
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
         maxWidth: "100%",
         position: "relative",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "flex-start",
+        justifyContent: "flex-start",
       })}`}
       style={{
         overflow: config.expand_stage ? "scroll" : "hidden",
       }}
     >
-      <Valid isValid={show}>
-        <Stage
-          id="pixel-kit-stage"
-          ref={stageRef}
-          width={stageWidth}
-          height={stageHeight}
-          onMouseDown={handleMouseDown}
-          onMousemove={handleMouseMove}
-          onWheel={handleWheel} // 👈 Zoom real en HD
-          onMouseup={handleMouseUp}
-          onClick={handleClear}
-          style={{
-            width: "100%",
-            height: "100%",
-          }}
-        >
-          {children}
-        </Stage>
-      </Valid>
+      <main
+        id="pixel-kit-stage"
+        // ref={stageRef}
+        onMouseDown={handleMouseDown}
+        onMouseMove={handleMouseMove}
+        onWheel={handleWheel} // 👈 Zoom real en HD
+        onMouseUp={handleMouseUp}
+        onClick={handleClear}
+        style={{
+          width: stageWidth,
+          height: stageHeight,
+          position: "relative",
+        }}
+      >
+        {children}
+      </main>
       <section
         className={css({
           display: "flex",

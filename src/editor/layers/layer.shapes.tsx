@@ -1,14 +1,8 @@
-import { useAtomValue, useSetAtom } from "jotai";
+import { useAtomValue } from "jotai";
 import Konva from "konva";
-import { useEffect, useRef } from "react";
-import { Layer, Rect, Transformer } from "react-konva";
-import { constants } from "../constants/color";
 import { Shapes } from "../shapes/shapes";
 import { FCShapeWEvents } from "../shapes/type.shape";
-import { RECTANGLE_SELECTION_ATOM } from "../states/rectangle-selection";
-import { SHAPE_IDS_ATOM } from "../states/shape";
 import ALL_SHAPES_ATOM from "../states/shapes";
-import { UPDATE_UNDO_REDO } from "../states/undo-redo";
 
 const getAllShapes = (node: Konva.Layer | Konva.Group): Konva.Shape[] => {
   const children = Array.from(node.getChildren());
@@ -22,40 +16,40 @@ const getAllShapes = (node: Konva.Layer | Konva.Group): Konva.Shape[] => {
 
 export const LayerShapes = () => {
   const ALL_SHAPES = useAtomValue(ALL_SHAPES_ATOM);
-  const trRef = useRef<Konva.Transformer>(null);
-  const lyRef = useRef<Konva.Layer>(null);
-  const selectedIds = useAtomValue(SHAPE_IDS_ATOM);
-  const selection = useAtomValue(RECTANGLE_SELECTION_ATOM);
-  const setUpdateUndoRedo = useSetAtom(UPDATE_UNDO_REDO);
+  // const trRef = useRef<Konva.Transformer>(null);
+  // const lyRef = useRef<Konva.Layer>(null);
+  // const selectedIds = useAtomValue(SHAPE_IDS_ATOM);
+  // const selection = useAtomValue(RECTANGLE_SELECTION_ATOM);
+  // const setUpdateUndoRedo = useSetAtom(UPDATE_UNDO_REDO);
 
-  useEffect(() => {
-    const allShapes = lyRef.current ? getAllShapes(lyRef.current) : [];
-    const nodes = allShapes?.filter?.(
-      (child) => child?.attrs?.id !== "transformer-editable"
-    );
+  // useEffect(() => {
+  //   const allShapes = lyRef.current ? getAllShapes(lyRef.current) : [];
+  //   const nodes = allShapes?.filter?.(
+  //     (child) => child?.attrs?.id !== "transformer-editable"
+  //   );
 
-    const selected = nodes?.filter((e) =>
-      selectedIds?.some((w) => w.id === e.attrs?.id)
-    );
-    trRef.current?.nodes(selected);
-    trRef.current?.getLayer()?.batchDraw();
-  }, [selectedIds, ALL_SHAPES]);
+  //   const selected = nodes?.filter((e) =>
+  //     selectedIds?.some((w) => w.id === e.attrs?.id)
+  //   );
+  //   trRef.current?.nodes(selected);
+  //   trRef.current?.getLayer()?.batchDraw();
+  // }, [selectedIds, ALL_SHAPES]);
 
   return (
     <>
-      <Layer id="layer-shapes" ref={lyRef}>
-        {ALL_SHAPES?.map((item) => {
-          const Component = Shapes?.[item?.tool] as FCShapeWEvents;
-          return (
-            <Component
-              layoutShapes={ALL_SHAPES}
-              shape={item}
-              key={`pixel-kit-shapes-${item?.id}`}
-            />
-          );
-        })}
-        {/* Transformer */}
-        <Transformer
+      {/* <Layer id="layer-shapes" ref={lyRef}> */}
+      {ALL_SHAPES?.map((item) => {
+        const Component = Shapes?.[item?.tool] as FCShapeWEvents;
+        return (
+          <Component
+            layoutShapes={ALL_SHAPES}
+            shape={item}
+            key={`pixel-kit-shapes-${item?.id}`}
+          />
+        );
+      })}
+      {/* Transformer */}
+      {/* <Transformer
           id="transformer-editable"
           ref={trRef}
           anchorSize={10}
@@ -77,9 +71,9 @@ export const LayerShapes = () => {
             }
             return newBox;
           }}
-        />
-        {/* Rectángulo de selección */}
-        {selection && selection.visible && (
+        /> */}
+      {/* Rectángulo de selección */}
+      {/* {selection && selection.visible && (
           <Rect
             x={selection.x}
             y={selection.y}
@@ -89,8 +83,8 @@ export const LayerShapes = () => {
             stroke={constants.theme.colors.primary}
             strokeWidth={1.5}
           />
-        )}
-      </Layer>
+        )} */}
+      {/* </Layer> */}
     </>
   );
 };
