@@ -1,3 +1,4 @@
+import { parseColorToRgba } from "../utils/parseColorToRgba";
 import { IShape } from "./type.shape";
 
 export const apply = {
@@ -31,6 +32,36 @@ export const apply = {
       return {
         borderWidth: shape.strokeWidth,
         borderColor: shape?.strokes?.filter((e) => e?.visible)?.at(0)?.color,
+      };
+    }
+    return {};
+  },
+  shadow: (shape: IShape) => {
+    const shadows = shape.effects.filter(
+      (e) => e.visible && e.type === "shadow"
+    );
+    const shadow = shadows.at(0);
+    if (shadow) {
+      const { shadowOffsetX, shadowOffsetY, shadowBlur, shadowOpacity } = shape;
+      const boxShadow = `${shadowOffsetX}px ${shadowOffsetY}px ${shadowBlur}px ${parseColorToRgba(
+        shadow.color,
+        shadowOpacity
+      )}`;
+      return {
+        boxShadow,
+      };
+    }
+    return {};
+  },
+  flex: (shape: IShape) => {
+    if (shape.isLayout) {
+      return {
+        display: "flex",
+        alignItems: shape.alignItems,
+        justifyContent: shape.justifyContent,
+        flexDirection: shape.flexDirection,
+        flexWrap: shape.flexWrap,
+        gap: shape.gap,
       };
     }
     return {};

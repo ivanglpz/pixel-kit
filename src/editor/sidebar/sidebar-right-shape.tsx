@@ -940,360 +940,360 @@ export const LayoutShapeConfig = () => {
 
       <Separator />
 
-      {shape?.tool === "GROUP" ? (
-        <>
-          <section className={commonStyles.container}>
-            <SectionHeader
-              title="Layouts"
-              onAdd={() => {
-                shapeUpdate({ isLayout: !shape.isLayout });
-                execute();
-              }}
-            />
+      {/* {shape?.tool === "GROUP" ? ( */}
+      <>
+        <section className={commonStyles.container}>
+          <SectionHeader
+            title="Layouts"
+            onAdd={() => {
+              shapeUpdate({ isLayout: !shape.isLayout });
+              execute();
+            }}
+          />
 
-            {/* Lista de layouts */}
-            {shape.isLayout ? (
-              <>
+          {/* Lista de layouts */}
+          {shape.isLayout ? (
+            <>
+              <div
+                className={css({
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "md",
+                })}
+              >
+                <div className={commonStyles.twoColumnGrid}>
+                  <LayoutGrid
+                    flexDirection={shape.flexDirection}
+                    justifyContent={shape.justifyContent}
+                    alignItems={shape.alignItems}
+                    onLayoutChange={(justifyContent, alignItems) => {
+                      shapeUpdate({ justifyContent, alignItems });
+                      execute();
+                    }}
+                  />
+                  <section
+                    className={css({
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: "lg",
+                    })}
+                  >
+                    <div
+                      className={css({
+                        display: "flex",
+                        flexDirection: "row",
+                        gap: "sm",
+                      })}
+                    >
+                      <button
+                        onClick={() => {
+                          shapeUpdate({
+                            flexDirection: "column",
+                          });
+                          execute();
+                        }}
+                        className={css({
+                          cursor: "pointer",
+                          width: 30,
+                          height: 30,
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          borderWidth: "1px",
+                          borderStyle: "solid",
+                          borderRadius: "md",
+                        })}
+                        style={{
+                          backgroundColor:
+                            shape.flexDirection === "column"
+                              ? constants.theme.colors.background
+                              : "transparent",
+                          borderColor:
+                            shape.flexDirection === "column"
+                              ? constants.theme.colors.primary
+                              : "transparent", // ← usa el semantic token
+                        }}
+                      >
+                        <ArrowDown
+                          size={constants.icon.size}
+                          strokeWidth={constants.icon.strokeWidth}
+                          color={
+                            shape.flexDirection === "column"
+                              ? constants.theme.colors.primary
+                              : constants.theme.colors.white
+                          }
+                        />
+                      </button>
+                      <button
+                        onClick={() => {
+                          shapeUpdate({
+                            flexDirection: "row",
+                          });
+                          execute();
+                        }}
+                        className={css({
+                          cursor: "pointer",
+                          width: 30,
+                          height: 30,
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          borderWidth: "1px",
+                          borderStyle: "solid",
+                          borderRadius: "md",
+                        })}
+                        style={{
+                          backgroundColor:
+                            shape.flexDirection === "row"
+                              ? constants.theme.colors.background
+                              : "transparent",
+                          borderColor:
+                            shape.flexDirection === "row"
+                              ? constants.theme.colors.primary
+                              : "transparent", // ← usa el semantic token
+                        }}
+                      >
+                        <ArrowRight
+                          size={constants.icon.size}
+                          strokeWidth={constants.icon.strokeWidth}
+                          color={
+                            shape.flexDirection === "row"
+                              ? constants.theme.colors.primary
+                              : constants.theme.colors.white
+                          }
+                        />
+                      </button>
+                      <button
+                        onClick={() => {
+                          shapeUpdate({
+                            flexWrap:
+                              shape.flexWrap === "wrap" ? "nowrap" : "wrap",
+                          });
+                          execute();
+                        }}
+                        className={css({
+                          cursor: "pointer",
+                          width: 30,
+                          height: 30,
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          borderWidth: "1px",
+                          borderStyle: "solid",
+                          borderRadius: "md",
+                        })}
+                        style={{
+                          backgroundColor:
+                            shape.flexWrap === "wrap"
+                              ? constants.theme.colors.background
+                              : "transparent",
+                          borderColor:
+                            shape.flexWrap === "wrap"
+                              ? constants.theme.colors.primary
+                              : "transparent", // ← usa el semantic token
+                        }}
+                      >
+                        <CornerRightDown
+                          size={constants.icon.size}
+                          strokeWidth={constants.icon.strokeWidth}
+                          color={
+                            shape.flexWrap === "wrap"
+                              ? constants.theme.colors.primary
+                              : constants.theme.colors.white
+                          }
+                        />
+                      </button>
+                    </div>
+
+                    <Input.Container>
+                      <Input.Grid>
+                        <Input.IconContainer>
+                          <Columns size={constants.icon.size} />
+                        </Input.IconContainer>
+                        <Input.Number
+                          min={0}
+                          max={9999}
+                          step={1}
+                          value={shape.gap}
+                          onChange={(e) => {
+                            shapeUpdate({
+                              gap: e,
+                            });
+                            execute();
+                          }}
+                        />
+                      </Input.Grid>
+                    </Input.Container>
+                  </section>
+                </div>
+              </div>
+              {/* NEW: Padding Section */}
+              <div
+                className={css({
+                  display: "flex",
+                  flexDir: "column",
+                  gap: "md",
+                })}
+              >
+                <Input.Label text="Padding" />
                 <div
                   className={css({
-                    display: "flex",
+                    display: "grid",
+                    gridTemplateColumns: "1fr 30px",
+                    gap: "md",
+                  })}
+                >
+                  <Input.Container>
+                    <Input.Grid>
+                      <Input.IconContainer>
+                        <Expand size={constants.icon.size} />
+                      </Input.IconContainer>
+                      {shape.isAllPadding ? (
+                        <Input.Number
+                          min={0}
+                          max={9999}
+                          step={1}
+                          value={shape.padding}
+                          onChange={(e) => {
+                            shapeUpdate({
+                              padding: e,
+                            });
+                            execute();
+                          }}
+                        />
+                      ) : null}
+                      {!shape.isAllPadding ? (
+                        <Input.Label text="Mixed" />
+                      ) : null}
+                    </Input.Grid>
+                  </Input.Container>
+                  <button
+                    className={css({
+                      cursor: "pointer",
+                      width: 30,
+                      height: 30,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      borderWidth: "1px",
+                      borderStyle: "solid",
+                      borderRadius: "md",
+                    })}
+                    onClick={() => {
+                      shapeUpdate({
+                        isAllPadding: !shape.isAllPadding,
+                      });
+                      execute();
+                    }}
+                    style={{
+                      backgroundColor: !shape.isAllPadding
+                        ? constants.theme.colors.background
+                        : "transparent",
+                      borderColor: !shape.isAllPadding
+                        ? constants.theme.colors.primary
+                        : "transparent", // ← usa el semantic token
+                    }}
+                  >
+                    <Sliders
+                      size={constants.icon.size}
+                      strokeWidth={constants.icon.strokeWidth}
+                      color={
+                        !shape.isAllPadding
+                          ? constants.theme.colors.primary
+                          : constants.theme.colors.white
+                      }
+                    />
+                  </button>
+                </div>
+                {/* Botón toggle para padding individual */}
+              </div>
+
+              {/* Individual Padding Controls */}
+              {!shape.isAllPadding && (
+                <div
+                  className={css({
+                    display: "grid",
                     flexDirection: "column",
                     gap: "md",
+                    gridTemplateColumns: "2",
                   })}
                 >
-                  <div className={commonStyles.twoColumnGrid}>
-                    <LayoutGrid
-                      flexDirection={shape.flexDirection}
-                      justifyContent={shape.justifyContent}
-                      alignItems={shape.alignItems}
-                      onLayoutChange={(justifyContent, alignItems) => {
-                        shapeUpdate({ justifyContent, alignItems });
-                        execute();
-                      }}
-                    />
-                    <section
-                      className={css({
-                        display: "flex",
-                        flexDirection: "column",
-                        gap: "lg",
-                      })}
-                    >
-                      <div
-                        className={css({
-                          display: "flex",
-                          flexDirection: "row",
-                          gap: "sm",
-                        })}
-                      >
-                        <button
-                          onClick={() => {
-                            shapeUpdate({
-                              flexDirection: "column",
-                            });
-                            execute();
-                          }}
-                          className={css({
-                            cursor: "pointer",
-                            width: 30,
-                            height: 30,
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            borderWidth: "1px",
-                            borderStyle: "solid",
-                            borderRadius: "md",
-                          })}
-                          style={{
-                            backgroundColor:
-                              shape.flexDirection === "column"
-                                ? constants.theme.colors.background
-                                : "transparent",
-                            borderColor:
-                              shape.flexDirection === "column"
-                                ? constants.theme.colors.primary
-                                : "transparent", // ← usa el semantic token
-                          }}
-                        >
-                          <ArrowDown
-                            size={constants.icon.size}
-                            strokeWidth={constants.icon.strokeWidth}
-                            color={
-                              shape.flexDirection === "column"
-                                ? constants.theme.colors.primary
-                                : constants.theme.colors.white
-                            }
-                          />
-                        </button>
-                        <button
-                          onClick={() => {
-                            shapeUpdate({
-                              flexDirection: "row",
-                            });
-                            execute();
-                          }}
-                          className={css({
-                            cursor: "pointer",
-                            width: 30,
-                            height: 30,
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            borderWidth: "1px",
-                            borderStyle: "solid",
-                            borderRadius: "md",
-                          })}
-                          style={{
-                            backgroundColor:
-                              shape.flexDirection === "row"
-                                ? constants.theme.colors.background
-                                : "transparent",
-                            borderColor:
-                              shape.flexDirection === "row"
-                                ? constants.theme.colors.primary
-                                : "transparent", // ← usa el semantic token
-                          }}
-                        >
-                          <ArrowRight
-                            size={constants.icon.size}
-                            strokeWidth={constants.icon.strokeWidth}
-                            color={
-                              shape.flexDirection === "row"
-                                ? constants.theme.colors.primary
-                                : constants.theme.colors.white
-                            }
-                          />
-                        </button>
-                        <button
-                          onClick={() => {
-                            shapeUpdate({
-                              flexWrap:
-                                shape.flexWrap === "wrap" ? "nowrap" : "wrap",
-                            });
-                            execute();
-                          }}
-                          className={css({
-                            cursor: "pointer",
-                            width: 30,
-                            height: 30,
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            borderWidth: "1px",
-                            borderStyle: "solid",
-                            borderRadius: "md",
-                          })}
-                          style={{
-                            backgroundColor:
-                              shape.flexWrap === "wrap"
-                                ? constants.theme.colors.background
-                                : "transparent",
-                            borderColor:
-                              shape.flexWrap === "wrap"
-                                ? constants.theme.colors.primary
-                                : "transparent", // ← usa el semantic token
-                          }}
-                        >
-                          <CornerRightDown
-                            size={constants.icon.size}
-                            strokeWidth={constants.icon.strokeWidth}
-                            color={
-                              shape.flexWrap === "wrap"
-                                ? constants.theme.colors.primary
-                                : constants.theme.colors.white
-                            }
-                          />
-                        </button>
-                      </div>
-
-                      <Input.Container>
-                        <Input.Grid>
-                          <Input.IconContainer>
-                            <Columns size={constants.icon.size} />
-                          </Input.IconContainer>
-                          <Input.Number
-                            min={0}
-                            max={9999}
-                            step={1}
-                            value={shape.gap}
-                            onChange={(e) => {
-                              shapeUpdate({
-                                gap: e,
-                              });
-                              execute();
-                            }}
-                          />
-                        </Input.Grid>
-                      </Input.Container>
-                    </section>
-                  </div>
-                </div>
-                {/* NEW: Padding Section */}
-                <div
-                  className={css({
-                    display: "flex",
-                    flexDir: "column",
-                    gap: "md",
-                  })}
-                >
-                  <Input.Label text="Padding" />
-                  <div
-                    className={css({
-                      display: "grid",
-                      gridTemplateColumns: "1fr 30px",
-                      gap: "md",
-                    })}
-                  >
-                    <Input.Container>
-                      <Input.Grid>
-                        <Input.IconContainer>
-                          <Expand size={constants.icon.size} />
-                        </Input.IconContainer>
-                        {shape.isAllPadding ? (
-                          <Input.Number
-                            min={0}
-                            max={9999}
-                            step={1}
-                            value={shape.padding}
-                            onChange={(e) => {
-                              shapeUpdate({
-                                padding: e,
-                              });
-                              execute();
-                            }}
-                          />
-                        ) : null}
-                        {!shape.isAllPadding ? (
-                          <Input.Label text="Mixed" />
-                        ) : null}
-                      </Input.Grid>
-                    </Input.Container>
-                    <button
-                      className={css({
-                        cursor: "pointer",
-                        width: 30,
-                        height: 30,
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        borderWidth: "1px",
-                        borderStyle: "solid",
-                        borderRadius: "md",
-                      })}
-                      onClick={() => {
-                        shapeUpdate({
-                          isAllPadding: !shape.isAllPadding,
-                        });
-                        execute();
-                      }}
-                      style={{
-                        backgroundColor: !shape.isAllPadding
-                          ? constants.theme.colors.background
-                          : "transparent",
-                        borderColor: !shape.isAllPadding
-                          ? constants.theme.colors.primary
-                          : "transparent", // ← usa el semantic token
-                      }}
-                    >
-                      <Sliders
-                        size={constants.icon.size}
-                        strokeWidth={constants.icon.strokeWidth}
-                        color={
-                          !shape.isAllPadding
-                            ? constants.theme.colors.primary
-                            : constants.theme.colors.white
-                        }
+                  <Input.Container>
+                    <Input.Grid>
+                      <Input.IconContainer>
+                        <ArrowUp size={constants.icon.size} />
+                      </Input.IconContainer>
+                      <Input.Number
+                        min={0}
+                        max={9999}
+                        step={1}
+                        value={shape.paddingTop || 0}
+                        onChange={(e) => {
+                          shapeUpdate({ paddingTop: e });
+                          execute();
+                        }}
                       />
-                    </button>
-                  </div>
-                  {/* Botón toggle para padding individual */}
+                    </Input.Grid>
+                  </Input.Container>
+                  <Input.Container>
+                    <Input.Grid>
+                      <Input.IconContainer>
+                        <ArrowRight size={constants.icon.size} />
+                      </Input.IconContainer>
+                      <Input.Number
+                        min={0}
+                        max={9999}
+                        step={1}
+                        value={shape.paddingRight || 0}
+                        onChange={(e) => {
+                          shapeUpdate({ paddingRight: e });
+                          execute();
+                        }}
+                      />
+                    </Input.Grid>
+                  </Input.Container>
+                  <Input.Container>
+                    <Input.Grid>
+                      <Input.IconContainer>
+                        <ArrowDown size={constants.icon.size} />
+                      </Input.IconContainer>
+                      <Input.Number
+                        min={0}
+                        max={9999}
+                        step={1}
+                        value={shape.paddingBottom || 0}
+                        onChange={(e) => {
+                          shapeUpdate({ paddingBottom: e });
+                          execute();
+                        }}
+                      />
+                    </Input.Grid>
+                  </Input.Container>
+                  <Input.Container>
+                    <Input.Grid>
+                      <Input.IconContainer>
+                        <ArrowLeft size={constants.icon.size} />
+                      </Input.IconContainer>
+                      <Input.Number
+                        min={0}
+                        max={9999}
+                        step={1}
+                        value={shape.paddingLeft || 0}
+                        onChange={(e) => {
+                          shapeUpdate({ paddingLeft: e });
+                          execute();
+                        }}
+                      />
+                    </Input.Grid>
+                  </Input.Container>
                 </div>
-
-                {/* Individual Padding Controls */}
-                {!shape.isAllPadding && (
-                  <div
-                    className={css({
-                      display: "grid",
-                      flexDirection: "column",
-                      gap: "md",
-                      gridTemplateColumns: "2",
-                    })}
-                  >
-                    <Input.Container>
-                      <Input.Grid>
-                        <Input.IconContainer>
-                          <ArrowUp size={constants.icon.size} />
-                        </Input.IconContainer>
-                        <Input.Number
-                          min={0}
-                          max={9999}
-                          step={1}
-                          value={shape.paddingTop || 0}
-                          onChange={(e) => {
-                            shapeUpdate({ paddingTop: e });
-                            execute();
-                          }}
-                        />
-                      </Input.Grid>
-                    </Input.Container>
-                    <Input.Container>
-                      <Input.Grid>
-                        <Input.IconContainer>
-                          <ArrowRight size={constants.icon.size} />
-                        </Input.IconContainer>
-                        <Input.Number
-                          min={0}
-                          max={9999}
-                          step={1}
-                          value={shape.paddingRight || 0}
-                          onChange={(e) => {
-                            shapeUpdate({ paddingRight: e });
-                            execute();
-                          }}
-                        />
-                      </Input.Grid>
-                    </Input.Container>
-                    <Input.Container>
-                      <Input.Grid>
-                        <Input.IconContainer>
-                          <ArrowDown size={constants.icon.size} />
-                        </Input.IconContainer>
-                        <Input.Number
-                          min={0}
-                          max={9999}
-                          step={1}
-                          value={shape.paddingBottom || 0}
-                          onChange={(e) => {
-                            shapeUpdate({ paddingBottom: e });
-                            execute();
-                          }}
-                        />
-                      </Input.Grid>
-                    </Input.Container>
-                    <Input.Container>
-                      <Input.Grid>
-                        <Input.IconContainer>
-                          <ArrowLeft size={constants.icon.size} />
-                        </Input.IconContainer>
-                        <Input.Number
-                          min={0}
-                          max={9999}
-                          step={1}
-                          value={shape.paddingLeft || 0}
-                          onChange={(e) => {
-                            shapeUpdate({ paddingLeft: e });
-                            execute();
-                          }}
-                        />
-                      </Input.Grid>
-                    </Input.Container>
-                  </div>
-                )}
-              </>
-            ) : null}
-          </section>
-          <Separator />
-        </>
-      ) : null}
+              )}
+            </>
+          ) : null}
+        </section>
+        <Separator />
+      </>
+      {/* ) : null} */}
 
       {/* SECCIÓN: APPEARANCE - Apariencia */}
       <section className={commonStyles.container}>

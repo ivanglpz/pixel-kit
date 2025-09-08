@@ -122,6 +122,7 @@ export type IShape = {
 export type IShapeWithEvents = {
   shape: ALL_SHAPES;
   layoutShapes: ALL_SHAPES[];
+  options?: Partial<Exclude<IShape, "children">>;
 };
 
 export type FCShapeWEvents = FC<IShapeWithEvents>;

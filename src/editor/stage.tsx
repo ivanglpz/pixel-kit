@@ -1,7 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { css } from "@stylespixelkit/css";
 import { useAtom, useSetAtom } from "jotai";
-import Konva from "konva";
 import { FC, ReactNode, useRef, useState } from "react";
 import { useConfiguration } from "./hooks/useConfiguration";
 import { useEventStage } from "./hooks/useEventStage";
@@ -17,7 +16,7 @@ type Props = {
 const PxStage: FC<Props> = ({ children }) => {
   const [{ height, width }, setDimension] = useAtom(STAGE_DIMENSION_ATOM);
   const containerRef = useRef<HTMLDivElement>(null);
-  const stageRef = useRef<Konva.Stage>(null);
+  // const stageRef = useRef<Konva.Stage>(null);
   const [show, setShow] = useState(true);
   const [tool, setTool] = useAtom(TOOL_ATOM);
 
@@ -32,7 +31,8 @@ const PxStage: FC<Props> = ({ children }) => {
   // });
 
   const handleClear = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (e.target.id !== "layer-background-color") return; // no crear encima de otro box
+    const target = e.target as unknown as { id: string };
+    if (target.id !== "layer-background-color") return; // no crear encima de otro box
 
     // if (["DRAW", "LINE", "CLIP"].includes(tool)) return;
     // const targetId = e?.target?.attrs?.id;

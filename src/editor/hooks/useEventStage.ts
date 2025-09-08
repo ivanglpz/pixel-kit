@@ -62,7 +62,7 @@ export const useEventStage = () => {
 
   // ===== MOUSE EVENT HANDLERS =====
   const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (e.target !== e.currentTarget) return; // no crear encima de otro box
+    // if (e.target !== e.currentTarget) return; // no crear encima de otro box
 
     // const { x, y } = stageAbsolutePosition(event);
 
