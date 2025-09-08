@@ -94,6 +94,8 @@ const ShapeBox = ({ shape: item, layoutShapes, options }: IShapeWithEvents) => {
           ...apply.stroke(box),
           ...apply.shadow(box),
           ...apply.flex(box),
+          ...apply.padding(box),
+
           // overflowY: "scroll",
           // overflowX: "hidden",
           // padding: 20,

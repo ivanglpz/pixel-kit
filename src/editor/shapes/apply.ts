@@ -66,4 +66,17 @@ export const apply = {
     }
     return {};
   },
+  padding: (shape: IShape) => {
+    if (shape.isAllPadding) {
+      return {
+        padding: shape.padding,
+      };
+    }
+    return {
+      paddingTop: shape.paddingTop,
+      paddingBottom: shape.paddingBottom,
+      paddingLeft: shape.paddingLeft,
+      paddingRight: shape.paddingRight,
+    };
+  },
 };
