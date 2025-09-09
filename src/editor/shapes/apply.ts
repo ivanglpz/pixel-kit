@@ -11,6 +11,7 @@ export const apply = {
       backgroundColor: bg,
     };
   },
+
   color: (shape: IShape) => {
     const bg = shape.fills
       ?.filter((e) => e?.type === "fill" && e?.visible)

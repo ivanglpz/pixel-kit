@@ -7,7 +7,8 @@ import { useEventStage } from "./hooks/useEventStage";
 import { Tools } from "./sidebar/Tools";
 import { STAGE_DIMENSION_ATOM } from "./states/dimension";
 import { RESET_SHAPES_IDS_ATOM } from "./states/shape";
-import TOOL_ATOM from "./states/tool";
+import { TEXT_WRITING_IDS } from "./states/text";
+import TOOL_ATOM, { PAUSE_MODE_ATOM } from "./states/tool";
 
 type Props = {
   children: ReactNode;
@@ -20,10 +21,10 @@ const PxStage: FC<Props> = ({ children }) => {
   const [tool, setTool] = useAtom(TOOL_ATOM);
 
   const { config } = useConfiguration(); // ✅ Ahora usamos config.expand2K
-
+  const clearTextIds = useSetAtom(TEXT_WRITING_IDS);
   const resetShapesIds = useSetAtom(RESET_SHAPES_IDS_ATOM);
   const { handleMouseDown, handleMouseUp, handleMouseMove } = useEventStage();
-
+  const setPause = useSetAtom(PAUSE_MODE_ATOM);
   // const { handleSetRef } = useReference({
   //   type: "STAGE",
   //   ref: stageRef,
@@ -42,6 +43,8 @@ const PxStage: FC<Props> = ({ children }) => {
     // ) {
     resetShapesIds();
     setTool("MOVE");
+    clearTextIds([]);
+    setPause(false);
     // }
   };
 

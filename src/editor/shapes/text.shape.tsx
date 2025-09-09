@@ -1,12 +1,15 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react/display-name */
-import { PrimitiveAtom, useAtom } from "jotai";
+import { PrimitiveAtom, useAtom, useSetAtom } from "jotai";
 import { IShape, IShapeWithEvents, WithInitialValue } from "./type.shape";
 /* eslint-disable react/display-name */
 import { useAtomValue } from "jotai";
 import { useState } from "react";
+import { constants } from "../constants/color";
 import { STAGE_DIMENSION_ATOM } from "../states/dimension";
 import { SHAPE_IDS_ATOM } from "../states/shape";
+import { TEXT_WRITING_IDS } from "../states/text";
+import { PAUSE_MODE_ATOM } from "../states/tool";
 import { apply } from "./apply";
 
 export const ShapeText = ({ shape: item, options }: IShapeWithEvents) => {
@@ -22,7 +25,8 @@ export const ShapeText = ({ shape: item, options }: IShapeWithEvents) => {
   const stage = useAtomValue(STAGE_DIMENSION_ATOM);
   const [shapeId, setShapeId] = useAtom(SHAPE_IDS_ATOM);
   const isSelected = shapeId.some((w) => w.id === box.id);
-
+  const [textIds, setTextIds] = useAtom(TEXT_WRITING_IDS);
+  const setPause = useSetAtom(PAUSE_MODE_ATOM);
   const handleMouseDown = (e: React.MouseEvent) => {
     if (!isSelected) return;
     e.stopPropagation();
@@ -68,38 +72,68 @@ export const ShapeText = ({ shape: item, options }: IShapeWithEvents) => {
       onMouseUp={handleMouseUp}
       onMouseLeave={handleMouseUp}
       style={{
+        outline: isSelected
+          ? `2px solid ${constants.theme.colors.primary}`
+          : "2px solid transparent",
         position: options?.isLayout ? "static" : "absolute",
         top: box.y,
         left: box.x,
         width: box.width,
         height: box.height,
-        opacity: box.opacity,
+        display: "flex",
+        flexDirection: "column",
         fontSize: box.fontSize,
-        // minWidth: box.minWidth,
-        // maxWidth: box.maxWidth,
-        // minHeight: box.minHeight,
-        // maxHeight: box.maxHeight,
         overflow: "hidden",
-        ...apply.borderRadius(box),
-        ...apply.flex(box),
-        ...apply.padding(box),
       }}
     >
-      <p
-        style={{
-          width: box.width,
-          height: box.height,
-          opacity: box.opacity,
-          fontSize: box.fontSize,
-          wordBreak: "break-all",
-          margin: 0,
-          padding: 0,
-          ...apply.color(box),
-          ...apply.textShadow(box),
-        }}
-      >
-        {box.text}
-      </p>
+      {textIds?.includes(box.id) ? (
+        <textarea
+          style={{
+            opacity: box.opacity,
+            fontSize: box.fontSize,
+            wordBreak: "break-all",
+            lineHeight: "normal",
+            margin: 0,
+            padding: 0,
+            ...apply.color(box),
+            ...apply.textShadow(box),
+            fontWeight: box.fontWeight,
+            fontFamily: box.fontFamily,
+            width: "100%",
+            height: "100%",
+            backgroundColor: "transparent",
+          }}
+          value={box.text}
+          onChange={(e) => {
+            setBox({ ...box, text: e.target.value });
+          }}
+        >
+          {box.text}
+        </textarea>
+      ) : (
+        <p
+          style={{
+            opacity: box.opacity,
+            fontSize: box.fontSize,
+            wordBreak: "break-all",
+            lineHeight: "normal",
+            margin: 0,
+            padding: 0,
+            ...apply.color(box),
+            ...apply.textShadow(box),
+            fontWeight: box.fontWeight,
+            fontFamily: box.fontFamily,
+            width: "100%",
+            height: "100%",
+          }}
+          onDoubleClick={() => {
+            setTextIds([...textIds, box.id]);
+            setPause(true);
+          }}
+        >
+          {box.text}
+        </p>
+      )}
     </div>
   );
 };
