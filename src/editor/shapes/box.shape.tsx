@@ -1,5 +1,6 @@
 import { PrimitiveAtom, useAtom, useAtomValue } from "jotai";
 import { useState } from "react";
+import { constants } from "../constants/color";
 import { STAGE_DIMENSION_ATOM } from "../states/dimension";
 import { SHAPE_IDS_ATOM } from "../states/shape";
 import { apply } from "./apply";
@@ -72,7 +73,7 @@ const ShapeBox = ({ shape: item, layoutShapes, options }: IShapeWithEvents) => {
 
   return (
     <>
-      <div
+      <section
         id={box?.id}
         onClick={(e) => {
           e.stopPropagation();
@@ -87,33 +88,34 @@ const ShapeBox = ({ shape: item, layoutShapes, options }: IShapeWithEvents) => {
         onMouseUp={handleMouseUp}
         onMouseLeave={handleMouseUp}
         style={{
+          outline: isSelected
+            ? `2px solid ${constants.theme.colors.primary}`
+            : "2px solid transparent",
           position: options?.isLayout ? "static" : "absolute",
           top: box.y,
           left: box.x,
           width: box.width,
           height: box.height,
-          opacity: box.opacity,
-          // minWidth: box.minWidth,
-          // maxWidth: box.maxWidth,
-          // minHeight: box.minHeight,
-          // maxHeight: box.maxHeight,
-          ...apply.backgroundColor(box),
-          ...apply.borderRadius(box),
-          ...apply.stroke(box),
-          ...apply.strokeDash(box),
-          ...apply.shadow(box),
-          ...apply.flex(box),
-          ...apply.padding(box),
-
-          // overflowY: "scroll",
-          // overflowX: "hidden",
-          // padding: 20,
-          // display: "flex",
-          // flexDirection: "column",
+          display: "flex",
         }}
       >
-        {children}
-      </div>
+        <div
+          style={{
+            width: "100%",
+            height: "100%",
+            opacity: box.opacity,
+            ...apply.backgroundColor(box),
+            ...apply.borderRadius(box),
+            ...apply.stroke(box),
+            ...apply.strokeDash(box),
+            ...apply.shadow(box),
+            ...apply.flex(box),
+            ...apply.padding(box),
+          }}
+        >
+          {children}
+        </div>
+      </section>
     </>
   );
 };
