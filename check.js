@@ -1,8 +1,8 @@
 import { readFileSync, writeFileSync } from "fs";
 
 const MALICIOUS_PACKAGES = {
-  "backslash": ["0.2.1"],
-  "chalk": ["5.6.1"],
+  backslash: ["0.2.1"],
+  chalk: ["5.6.1"],
   "chalk-template": ["1.1.1"],
   "color-convert": ["3.1.1"],
   "color-name": ["2.0.1"],
@@ -19,17 +19,31 @@ const MALICIOUS_PACKAGES = {
   "ansi-styles": ["6.2.2"],
   "supports-color": ["10.2.1"],
   "proto-tinker-wc": ["1.8.7"],
-  "debug": ["4.4.2"],
-  next:["13.3.0"]
+  debug: ["4.4.2"],
 };
 
+import fs from "fs";
+const packageJson = JSON.parse(fs.readFileSync("package.json", "utf-8"));
+const dependencies = packageJson.dependencies || {};
+const devDependencies = packageJson.devDependencies || {};
+const allDependencies = Object.entries(dependencies).map(([key, value]) => ({
+  name: key,
+  version: value,
+  type: "dependencies",
+}));
+const allDevDependencies = Object.entries(devDependencies).map(
+  ([key, value]) => ({ name: key, version: value, type: "devDependencies" })
+);
+const all = allDependencies.concat(allDevDependencies);
 // Utility functions
 const readPackageJson = (filePath) => {
   try {
     const content = readFileSync(filePath, "utf-8");
     return JSON.parse(content);
   } catch (error) {
-    throw new Error(`Failed to read package.json at ${filePath}: ${error.message}`);
+    throw new Error(
+      `Failed to read package.json at ${filePath}: ${error.message}`
+    );
   }
 };
 
@@ -62,7 +76,9 @@ const getRepositoryUrl = (repository) => {
 
 const checkForMaliciousVersions = (packageName, availableVersions) => {
   const maliciousVersions = MALICIOUS_PACKAGES[packageName] || [];
-  return maliciousVersions.filter(version => availableVersions.includes(version));
+  return maliciousVersions.filter((version) =>
+    availableVersions.includes(version)
+  );
 };
 
 const getLatestVersion = (versions) => {
@@ -80,7 +96,7 @@ const analyzeRootDependencies = (packageJsonPath) => {
     name: packageData.name || "root-project",
     dependencies,
     devDependencies,
-    allDependencies: [...dependencies, ...devDependencies]
+    allDependencies: [...dependencies, ...devDependencies],
   };
 };
 
@@ -93,9 +109,14 @@ const analyzeSingleDependency = async (packageName) => {
     const latestPackageData = packageInfo.versions[latestVersion];
 
     const dependencies = Object.keys(latestPackageData.dependencies || {});
-    const devDependencies = Object.keys(latestPackageData.devDependencies || {});
+    const devDependencies = Object.keys(
+      latestPackageData.devDependencies || {}
+    );
     const availableVersions = Object.keys(packageInfo.versions);
-    const maliciousVersionsFound = checkForMaliciousVersions(packageName, availableVersions);
+    const maliciousVersionsFound = checkForMaliciousVersions(
+      packageName,
+      availableVersions
+    );
     const repositoryUrl = getRepositoryUrl(packageInfo.repository);
 
     return {
@@ -109,7 +130,7 @@ const analyzeSingleDependency = async (packageName) => {
       devDependencyCount: devDependencies.length,
       totalDependencies: dependencies.length + devDependencies.length,
       repositoryUrl,
-      error: null
+      error: null,
     };
   } catch (error) {
     console.error(`Error analyzing ${packageName}: ${error.message}`);
@@ -124,7 +145,7 @@ const analyzeSingleDependency = async (packageName) => {
       devDependencyCount: 0,
       totalDependencies: 0,
       repositoryUrl: null,
-      error: error.message
+      error: error.message,
     };
   }
 };
@@ -137,7 +158,7 @@ const analyzeAllDependencies = async (dependencyNames) => {
     results.push(analysis);
 
     // Add a small delay to avoid overwhelming the npm registry
-    await new Promise(resolve => setTimeout(resolve, 100));
+    await new Promise((resolve) => setTimeout(resolve, 100));
   }
 
   return results;
@@ -146,18 +167,20 @@ const analyzeAllDependencies = async (dependencyNames) => {
 // Report generation functions
 const generateSummary = (analyses) => {
   const totalDependencies = analyses.length;
-  const maliciousDependencies = analyses.filter(analysis => analysis.isMalicious);
-  const failedAnalyses = analyses.filter(analysis => analysis.error);
+  const maliciousDependencies = analyses.filter(
+    (analysis) => analysis.isMalicious
+  );
+  const failedAnalyses = analyses.filter((analysis) => analysis.error);
 
   return {
     totalDependencies,
     maliciousCount: maliciousDependencies.length,
     failedCount: failedAnalyses.length,
     successfulCount: totalDependencies - failedAnalyses.length,
-    maliciousDependencies: maliciousDependencies.map(dep => ({
+    maliciousDependencies: maliciousDependencies.map((dep) => ({
       name: dep.name,
-      versions: dep.maliciousVersions
-    }))
+      versions: dep.maliciousVersions,
+    })),
   };
 };
 
@@ -180,7 +203,9 @@ const formatDependencyAnalysis = (analysis) => {
   sections.push(`Malicious: ${analysis.isMalicious ? "YES ⚠️" : "NO"}`);
 
   if (analysis.isMalicious) {
-    sections.push(`Malicious Versions: ${analysis.maliciousVersions.join(", ")}`);
+    sections.push(
+      `Malicious Versions: ${analysis.maliciousVersions.join(", ")}`
+    );
   }
 
   sections.push(`Total Dependencies: ${analysis.totalDependencies}`);
@@ -192,7 +217,9 @@ const formatDependencyAnalysis = (analysis) => {
   }
 
   if (analysis.devDependencies.length > 0) {
-    sections.push(`Dev Dependencies List: ${analysis.devDependencies.join(", ")}`);
+    sections.push(
+      `Dev Dependencies List: ${analysis.devDependencies.join(", ")}`
+    );
   }
 
   if (analysis.repositoryUrl) {
@@ -218,35 +245,49 @@ const generateFullReport = (rootInfo, analyses, summary) => {
     `Successful Analyses: ${summary.successfulCount}`,
     `Failed Analyses: ${summary.failedCount}`,
     `Malicious Dependencies Found: ${summary.maliciousCount}`,
-    ""
+    "",
   ];
 
   if (summary.maliciousCount > 0) {
     summaryContent.push("⚠️  MALICIOUS DEPENDENCIES DETECTED:");
-    summary.maliciousDependencies.forEach(dep => {
-      summaryContent.push(`  - ${dep.name} (versions: ${dep.versions.join(", ")})`);
+    summary.maliciousDependencies.forEach((dep) => {
+      summaryContent.push(
+        `  - ${dep.name} (versions: ${dep.versions.join(", ")})`
+      );
     });
   } else {
     summaryContent.push("✅ No malicious dependencies detected.");
   }
 
-  report += formatReportSection("Executive Summary", summaryContent.join("\n"), 2);
+  report += formatReportSection(
+    "Executive Summary",
+    summaryContent.join("\n"),
+    2
+  );
 
   // Root project dependencies
   const rootContent = [
     `Dependencies (${rootInfo.dependencies.length}):`,
-    rootInfo.dependencies.length > 0 ? `  ${rootInfo.dependencies.join(", ")}` : "  None",
+    rootInfo.dependencies.length > 0
+      ? `  ${rootInfo.dependencies.join(", ")}`
+      : "  None",
     "",
     `Dev Dependencies (${rootInfo.devDependencies.length}):`,
-    rootInfo.devDependencies.length > 0 ? `  ${rootInfo.devDependencies.join(", ")}` : "  None"
+    rootInfo.devDependencies.length > 0
+      ? `  ${rootInfo.devDependencies.join(", ")}`
+      : "  None",
   ];
 
-  report += formatReportSection("Root Project Dependencies", rootContent.join("\n"), 2);
+  report += formatReportSection(
+    "Root Project Dependencies",
+    rootContent.join("\n"),
+    2
+  );
 
   // Detailed analysis
   report += formatReportSection("Detailed Dependency Analysis", "", 2);
 
-  analyses.forEach(analysis => {
+  analyses.forEach((analysis) => {
     report += formatDependencyAnalysis(analysis);
   });
 
@@ -270,7 +311,9 @@ const main = async () => {
     // Analyze root dependencies
     console.log("📋 Reading root package.json...");
     const rootInfo = analyzeRootDependencies("package.json");
-    console.log(`Found ${rootInfo.allDependencies.length} dependencies to analyze\n`);
+    console.log(
+      `Found ${rootInfo.allDependencies.length} dependencies to analyze\n`
+    );
 
     // Analyze each dependency
     console.log("🔎 Analyzing individual dependencies...");
@@ -294,13 +337,12 @@ const main = async () => {
 
     if (summary.maliciousCount > 0) {
       console.log("\n⚠️  WARNING: Malicious dependencies detected!");
-      summary.maliciousDependencies.forEach(dep => {
+      summary.maliciousDependencies.forEach((dep) => {
         console.log(`  - ${dep.name} (versions: ${dep.versions.join(", ")})`);
       });
     } else {
       console.log("\n✅ No malicious dependencies detected.");
     }
-
   } catch (error) {
     console.error(`❌ Fatal error: ${error.message}`);
     process.exit(1);

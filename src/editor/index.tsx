@@ -2,7 +2,6 @@
 import { TabsProjects } from "@/components/tabs";
 import { css } from "@stylespixelkit/css";
 import dynamic from "next/dynamic";
-import useBrowser from "./hooks/useBrowser";
 import useStopZoom from "./hooks/useStopZoom";
 import { AllLayers } from "./layers/root.layers";
 import { SidebarLeft } from "./sidebar/sidebar.left";
@@ -11,7 +10,6 @@ import PxStage from "./stage";
 
 const PixelEditor = () => {
   useStopZoom();
-  useBrowser();
 
   return (
     <div
