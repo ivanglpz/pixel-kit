@@ -1,8 +1,9 @@
+/* eslint-disable @next/next/no-img-element */
 /* eslint-disable react/display-name */
 /* eslint-disable jsx-a11y/alt-text */
 
 // React
-import { useMemo } from "react";
+import { useState } from "react";
 
 // Estado global (jotai)
 import { PrimitiveAtom, useAtom, useAtomValue } from "jotai";
@@ -12,6 +13,7 @@ import { SHAPE_IDS_ATOM } from "../states/shape";
 // Konva
 
 // Tipos
+import { apply } from "./apply";
 import { IShape, IShapeWithEvents, WithInitialValue } from "./type.shape";
 
 // Eventos de shape
@@ -54,39 +56,43 @@ function calculateCoverCrop(
 // Componente ShapeImage
 // =========================
 
-export const ShapeImage = (props: IShapeWithEvents) => {
+export const ShapeImage = ({ options, shape }: IShapeWithEvents) => {
   // Estado local vinculado al átomo
   const [box, setBox] = useAtom(
-    props?.shape.state as PrimitiveAtom<IShape> & WithInitialValue<IShape>
+    shape.state as PrimitiveAtom<IShape> & WithInitialValue<IShape>
   );
-
+  const [dragging, setDragging] = useState(false);
+  const [offset, setOffset] = useState<{ x: number; y: number }>({
+    x: 0,
+    y: 0,
+  });
   // Extraer relleno de tipo imagen
   const fill = box.fills
     ?.filter((e) => e?.visible && e?.type === "image")
     .at(0);
-  const { width, height, x, y, strokeWidth, dash, rotation } = box;
+  // const { width, height, x, y, strokeWidth, dash, rotation } = box;
 
   // Memoización de la imagen base
-  const Imagee = useMemo(() => {
-    const img = new Image();
-    if (!fill) return img;
-    img.src = fill?.image?.src;
-    img.width = fill?.image?.width;
-    img.height = fill?.image?.height;
-    return img;
-  }, [fill]);
+  // const Imagee = useMemo(() => {
+  //   const img = new Image();
+  //   if (!fill) return img;
+  //   img.src = fill?.image?.src;
+  //   img.width = fill?.image?.width;
+  //   img.height = fill?.image?.height;
+  //   return img;
+  // }, [fill]);
 
   // Configuración de crop para object-fit cover
-  const cropConfig = useMemo(
-    () =>
-      calculateCoverCrop(
-        fill?.image?.width || 0,
-        fill?.image?.height || 0,
-        Number(box.width),
-        Number(box.height)
-      ),
-    [fill, box]
-  );
+  // const cropConfig = useMemo(
+  //   () =>
+  //     calculateCoverCrop(
+  //       fill?.image?.width || 0,
+  //       fill?.image?.height || 0,
+  //       Number(box.width),
+  //       Number(box.height)
+  //     ),
+  //   [fill, box]
+  // );
 
   // Refs para shape y transformer
 
@@ -95,17 +101,88 @@ export const ShapeImage = (props: IShapeWithEvents) => {
   const [shapeId, setShapeId] = useAtom(SHAPE_IDS_ATOM);
   const isSelected = shapeId.some((w) => w.id === box.id);
 
+  const handleMouseDown = (e: React.MouseEvent) => {
+    if (!isSelected) return;
+    e.stopPropagation();
+    setDragging(true);
+    setOffset({
+      x: e.clientX - box.x,
+      y: e.clientY - box.y,
+    });
+  };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!isSelected) return;
+
+    e.stopPropagation();
+    if (!dragging) return;
+    setBox({
+      ...box,
+      x: e.clientX - offset.x,
+      y: e.clientY - offset.y,
+    });
+  };
+
+  const handleMouseUp = () => {
+    if (!isSelected) return;
+
+    setDragging(false);
+  };
   // Sombra
-  const shadow = box?.effects
-    ?.filter((e) => e?.visible && e?.type === "shadow")
-    .at(0);
 
   if (!box.visible) return null;
 
   // =========================
   // Renderizado
   // =========================
-  return null;
+  return (
+    <div
+      onClick={(e) => {
+        e.stopPropagation();
+
+        setShapeId({
+          id: box?.id,
+          parentId: box.parentId,
+        });
+      }}
+      onMouseDown={handleMouseDown}
+      onMouseMove={handleMouseMove}
+      onMouseUp={handleMouseUp}
+      onMouseLeave={handleMouseUp}
+      style={{
+        position: options?.isLayout ? "static" : "absolute",
+        top: box.y,
+        left: box.x,
+        width: box.width,
+        height: box.height,
+        // minWidth: box.minWidth,
+        // maxWidth: box.maxWidth,
+        // minHeight: box.minHeight,
+        // maxHeight: box.maxHeight,
+        cursor: "move",
+      }}
+    >
+      <img
+        src={fill?.image?.src}
+        alt="test"
+        style={{
+          width: box.width,
+          height: box.height,
+          opacity: box.opacity,
+          // minWidth: box.minWidth,
+          // maxWidth: box.maxWidth,
+          // minHeight: box.minHeight,
+          // maxHeight: box.maxHeight,
+          ...apply.backgroundColor(box),
+          ...apply.borderRadius(box),
+          ...apply.stroke(box),
+          ...apply.strokeDash(box),
+          ...apply.shadow(box),
+          pointerEvents: "none",
+        }}
+      />
+    </div>
+  );
   // return (
   //   <>
   //     <KonvaImage

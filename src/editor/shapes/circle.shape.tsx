@@ -6,7 +6,7 @@ import { SHAPE_IDS_ATOM } from "../states/shape";
 import { apply } from "./apply";
 import { IShape, IShapeWithEvents, WithInitialValue } from "./type.shape";
 
-export const ShapeCircle = ({ shape: item }: IShapeWithEvents) => {
+export const ShapeCircle = ({ shape: item, options }: IShapeWithEvents) => {
   const [box, setBox] = useAtom(
     item.state as PrimitiveAtom<IShape> & WithInitialValue<IShape>
   );
@@ -47,28 +47,38 @@ export const ShapeCircle = ({ shape: item }: IShapeWithEvents) => {
     <>
       <div
         id={box?.id}
-        onClick={() =>
+        onClick={(e) => {
+          e.stopPropagation();
+
           setShapeId({
             id: box?.id,
             parentId: box.parentId,
-          })
-        }
+          });
+        }}
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
         onMouseLeave={handleMouseUp}
         style={{
-          position: "absolute",
+          position: options?.isLayout ? "static" : "absolute",
           top: box.y,
           left: box.x,
           width: box.width,
           height: box.height,
+          opacity: box.opacity,
+          // minWidth: box.minWidth,
+          // maxWidth: box.maxWidth,
+          // minHeight: box.minHeight,
+          // maxHeight: box.maxHeight,
+          cursor: "move",
           ...apply.backgroundColor(box),
           ...apply.borderRadius(box),
           ...apply.stroke(box),
+          ...apply.strokeDash(box),
           ...apply.shadow(box),
-          opacity: box.opacity,
-          cursor: "move",
+          ...apply.flex(box),
+          ...apply.padding(box),
+
           // overflowY: "scroll",
           // overflowX: "hidden",
           // padding: 20,

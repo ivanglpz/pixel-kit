@@ -13,32 +13,32 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@vercel/analytics": "^1.5.0",
-    "axios": "^1.11.0",
+    "@vercel/analytics": "1.5.0",
+    "axios": "1.11.0",
     "canvas": "3.1.0",
     "eslint": "8.38.0",
     "eslint-config-next": "13.3.0",
-    "framer-motion": "^11.18.2",
-    "jotai": "^2.12.4",
-    "lucide-react": "^0.525.0",
-    "lucide-static": "^0.541.0",
+    "framer-motion": "11.18.2",
+    "jotai": "2.12.4",
+    "lucide-react": "0.525.0",
+    "lucide-static": "0.541.0",
     "next": "13.3.0",
-    "next-themes": "^0.4.6",
-    "openai": "^5.12.2",
+    "next-themes": "0.4.6",
+    "openai": "5.12.2",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "react-hook-form": "^7.56.3",
+    "react-hook-form": "7.56.3",
     "sonner": "1.2.4",
-    "tsx": "^4.19.4",
+    "tsx": "4.19.4",
     "typescript": "5.0.4",
-    "uuid": "^9.0.1"
+    "uuid": "9.0.1"
   },
   "devDependencies": {
     "@pandacss/dev": "0.32.1",
     "@types/node": "18.15.11",
     "@types/react": "18.0.35",
     "@types/react-dom": "18.0.11",
-    "@types/uuid": "^9.0.8",
-    "prettier": "^3.5.3"
+    "@types/uuid": "9.0.8",
+    "prettier": "3.5.3"
   }
 }

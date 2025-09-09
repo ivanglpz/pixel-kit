@@ -11,6 +11,15 @@ export const apply = {
       backgroundColor: bg,
     };
   },
+  color: (shape: IShape) => {
+    const bg = shape.fills
+      ?.filter((e) => e?.type === "fill" && e?.visible)
+      ?.at(0)?.color;
+    if (!bg) return {};
+    return {
+      color: bg,
+    };
+  },
   borderRadius: (shape: IShape) => {
     if (shape.isAllBorderRadius) {
       return {
@@ -41,8 +50,9 @@ export const apply = {
       shape?.strokes?.filter((e) => e?.visible)?.at(0)
     ) {
       return {
-        borderWidth: shape.strokeWidth,
-        borderColor: shape?.strokes?.filter((e) => e?.visible)?.at(0)?.color,
+        border: `${shape.strokeWidth}px solid ${shape?.strokes?.filter((e) => e?.visible)?.at(0)?.color}`,
+        // borderWidth: shape.strokeWidth,
+        // borderColor: shape?.strokes?.filter((e) => e?.visible)?.at(0)?.color,
       };
     }
     return {};

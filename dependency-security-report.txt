@@ -1,0 +1,257 @@
+
+============================================================
+DEPENDENCY SECURITY ANALYSIS REPORT
+============================================================
+Generated on: 2025-09-09T17:13:06.817Z
+Project: pixel-kit
+
+========================================
+EXECUTIVE SUMMARY
+========================================
+Total Dependencies Analyzed: 25
+Successful Analyses: 25
+Failed Analyses: 0
+Malicious Dependencies Found: 1
+
+⚠️  MALICIOUS DEPENDENCIES DETECTED:
+  - next (versions: 13.3.0)
+
+========================================
+ROOT PROJECT DEPENDENCIES
+========================================
+Dependencies (19):
+  @vercel/analytics, axios, canvas, eslint, eslint-config-next, framer-motion, jotai, lucide-react, lucide-static, next, next-themes, openai, react, react-dom, react-hook-form, sonner, tsx, typescript, uuid
+
+Dev Dependencies (6):
+  @pandacss/dev, @types/node, @types/react, @types/react-dom, @types/uuid, prettier
+
+========================================
+DETAILED DEPENDENCY ANALYSIS
+========================================
+
+Package: @vercel/analytics
+Version: 1.5.0
+Malicious: NO
+Total Dependencies: 12
+  - Dependencies: 0
+  - Dev Dependencies: 12
+Dev Dependencies List: vue, tsup, svelte, vitest, @swc/core, vue-router, @types/node, server-only, @types/react, @vercel/eslint-config, @testing-library/react, @testing-library/jest-dom
+Repository package.json: https://github.com/vercel/analytics/blob/main/package.json
+--------------------------------------------------
+Package: axios
+Version: 0.30.1
+Malicious: NO
+Total Dependencies: 50
+  - Dependencies: 3
+  - Dev Dependencies: 47
+Dependencies List: follow-redirects, form-data, proxy-from-env
+Dev Dependencies List: @rollup/plugin-babel, @rollup/plugin-commonjs, @rollup/plugin-json, @rollup/plugin-multi-entry, @rollup/plugin-node-resolve, abortcontroller-polyfill, body-parser, coveralls, cross-env, dtslint, es6-promise, express, formidable, grunt, grunt-banner, grunt-cli, grunt-contrib-clean, grunt-contrib-watch, grunt-eslint, grunt-karma, grunt-mocha-test, grunt-shell, grunt-webpack, istanbul-instrumenter-loader, jasmine-core, karma, karma-chrome-launcher, karma-firefox-launcher, karma-jasmine, karma-jasmine-ajax, karma-safari-launcher, karma-sauce-launcher, karma-sinon, karma-sourcemap-loader, karma-webpack, load-grunt-tasks, minimist, mocha, multer, rollup, rollup-plugin-terser, sinon, terser-webpack-plugin, typescript, url-search-params, webpack, webpack-dev-server
+Repository package.json: https://github.com/axios/axios/blob/main/package.json
+--------------------------------------------------
+Package: canvas
+Version: 3.2.0
+Malicious: NO
+Total Dependencies: 11
+  - Dependencies: 2
+  - Dev Dependencies: 9
+Dependencies List: node-addon-api, prebuild-install
+Dev Dependencies List: @types/node, assert-rejects, express, js-yaml, mocha, pixelmatch, standard, tsd, typescript
+Repository package.json: https://github.com/Automattic/node-canvas/blob/main/package.json
+--------------------------------------------------
+Package: eslint
+Version: 9.35.0
+Malicious: NO
+Total Dependencies: 96
+  - Dependencies: 35
+  - Dev Dependencies: 61
+Dependencies List: @eslint-community/eslint-utils, @eslint-community/regexpp, @eslint/config-array, @eslint/config-helpers, @eslint/core, @eslint/eslintrc, @eslint/js, @eslint/plugin-kit, @humanfs/node, @humanwhocodes/module-importer, @humanwhocodes/retry, @types/estree, @types/json-schema, ajv, chalk, cross-spawn, debug, escape-string-regexp, eslint-scope, eslint-visitor-keys, espree, esquery, esutils, fast-deep-equal, file-entry-cache, find-up, glob-parent, ignore, imurmurhash, is-glob, json-stable-stringify-without-jsonify, lodash.merge, minimatch, natural-compare, optionator
+Dev Dependencies List: @arethetypeswrong/cli, @babel/core, @babel/preset-env, @cypress/webpack-preprocessor, @eslint/json, @trunkio/launcher, @types/esquery, @types/node, @typescript-eslint/parser, babel-loader, c8, chai, cheerio, common-tags, core-js, cypress, ejs, eslint, eslint-config-eslint, eslint-plugin-eslint-plugin, eslint-plugin-expect-type, eslint-plugin-yml, eslint-release, eslint-rule-composer, eslump, esprima, fast-glob, fs-teardown, glob, globals, got, gray-matter, jiti, jiti-v2.0, jiti-v2.1, knip, lint-staged, markdown-it, markdown-it-container, marked, metascraper, metascraper-description, metascraper-image, metascraper-logo, metascraper-logo-favicon, metascraper-title, mocha, node-polyfill-webpack-plugin, npm-license, pirates, progress, proxyquire, recast, regenerator-runtime, semver, shelljs, sinon, typescript, webpack, webpack-cli, yorkie
+Repository package.json: https://github.com/eslint/eslint/blob/main/package.json
+--------------------------------------------------
+Package: eslint-config-next
+Version: 15.5.1-canary.35
+Malicious: NO
+Total Dependencies: 10
+  - Dependencies: 10
+  - Dev Dependencies: 0
+Dependencies List: @next/eslint-plugin-next, @rushstack/eslint-patch, @typescript-eslint/eslint-plugin, @typescript-eslint/parser, eslint-import-resolver-node, eslint-import-resolver-typescript, eslint-plugin-import, eslint-plugin-jsx-a11y, eslint-plugin-react, eslint-plugin-react-hooks
+Repository package.json: https://github.com/vercel/next/blob/main/package.json
+--------------------------------------------------
+Package: framer-motion
+Version: 13.0.0-alpha.0
+Malicious: NO
+Total Dependencies: 6
+  - Dependencies: 3
+  - Dev Dependencies: 3
+Dependencies List: tslib, motion-dom, motion-utils
+Dev Dependencies List: three, @types/three, @thednp/dommatrix
+Repository package.json: https://github.com/motiondivision/motion/blob/main/package.json
+--------------------------------------------------
+Package: jotai
+Version: 2.14.0
+Malicious: NO
+Total Dependencies: 0
+  - Dependencies: 0
+  - Dev Dependencies: 0
+Repository package.json: https://github.com/pmndrs/jotai/blob/main/package.json
+--------------------------------------------------
+Package: lucide-react
+Version: 0.543.0
+Malicious: NO
+Total Dependencies: 16
+  - Dependencies: 0
+  - Dev Dependencies: 16
+Dev Dependencies List: @testing-library/jest-dom, @testing-library/react, @types/react, @vitejs/plugin-react, jest-serializer-html, react, react-dom, rollup, rollup-plugin-dts, rollup-plugin-preserve-directives, typescript, vite, vitest, @lucide/shared, @lucide/build-icons, @lucide/rollup-plugins
+Repository package.json: https://github.com/lucide-icons/lucide/blob/main/package.json
+--------------------------------------------------
+Package: lucide-static
+Version: 0.543.0
+Malicious: NO
+Total Dependencies: 8
+  - Dependencies: 0
+  - Dev Dependencies: 8
+Dev Dependencies List: @types/node, prettier, svgson, rollup, rollup-plugin-dts, @lucide/build-icons, @lucide/helpers, @lucide/rollup-plugins
+Repository package.json: https://github.com/lucide-icons/lucide/blob/main/package.json
+--------------------------------------------------
+Package: next
+Version: 15.5.1-canary.35
+Malicious: YES ⚠️
+Malicious Versions: 13.3.0
+Total Dependencies: 226
+  - Dependencies: 5
+  - Dev Dependencies: 221
+Dependencies List: @next/env, @swc/helpers, caniuse-lite, postcss, styled-jsx
+Dev Dependencies List: @ampproject/toolbox-optimizer, @babel/code-frame, @babel/core, @babel/eslint-parser, @babel/generator, @babel/plugin-syntax-bigint, @babel/plugin-syntax-dynamic-import, @babel/plugin-syntax-import-attributes, @babel/plugin-syntax-jsx, @babel/plugin-syntax-typescript, @babel/plugin-transform-class-properties, @babel/plugin-transform-export-namespace-from, @babel/plugin-transform-modules-commonjs, @babel/plugin-transform-numeric-separator, @babel/plugin-transform-object-rest-spread, @babel/plugin-transform-runtime, @babel/preset-env, @babel/preset-react, @babel/preset-typescript, @babel/runtime, @babel/traverse, @babel/types, @base-ui-components/react, @capsizecss/metrics, @edge-runtime/cookies, @edge-runtime/ponyfill, @edge-runtime/primitives, @hapi/accept, @jest/transform, @jest/types, @mswjs/interceptors, @napi-rs/triples, @next/font, @next/polyfill-module, @next/polyfill-nomodule, @next/react-refresh-utils, @next/swc, @opentelemetry/api, @playwright/test, @rspack/core, @storybook/addon-a11y, @storybook/addon-essentials, @storybook/addon-interactions, @storybook/addon-webpack5-compiler-swc, @storybook/blocks, @storybook/react, @storybook/react-webpack5, @storybook/test, @storybook/test-runner, @swc/core, @swc/types, @taskr/clear, @taskr/esnext, @types/amphtml-validator, @types/babel__code-frame, @types/babel__core, @types/babel__generator, @types/babel__template, @types/babel__traverse, @types/bytes, @types/ci-info, @types/compression, @types/content-disposition, @types/content-type, @types/cookie, @types/cross-spawn, @types/debug, @types/express-serve-static-core, @types/fresh, @types/glob, @types/jsonwebtoken, @types/lodash, @types/lodash.curry, @types/path-to-regexp, @types/picomatch, @types/platform, @types/react, @types/react-dom, @types/react-is, @types/semver, @types/send, @types/shell-quote, @types/tar, @types/text-table, @types/ua-parser-js, @types/webpack-sources1, @types/ws, @vercel/ncc, @vercel/nft, @vercel/turbopack-ecmascript-runtime, acorn, amphtml-validator, anser, arg, assert, async-retry, async-sema, axe-playwright, babel-loader, babel-plugin-react-compiler, babel-plugin-transform-define, babel-plugin-transform-react-remove-prop-types, browserify-zlib, browserslist, buffer, busboy, bytes, ci-info, cli-select, client-only, commander, comment-json, compression, conf, constants-browserify, content-disposition, content-type, cookie, cross-env, cross-spawn, crypto-browserify, css-loader, css.escape, cssnano-preset-default, data-uri-to-buffer, debug, devalue, domain-browser, edge-runtime, events, find-up, fresh, glob, gzip-size, http-proxy, http-proxy-agent, https-browserify, https-proxy-agent, icss-utils, ignore-loader, image-size, is-docker, is-wsl, jest-worker, json5, jsonwebtoken, loader-runner, loader-utils2, loader-utils3, lodash.curry, mini-css-extract-plugin, msw, nanoid, native-url, neo-async, node-html-parser, ora, os-browserify, p-limit, p-queue, path-browserify, path-to-regexp, picomatch, postcss-flexbugs-fixes, postcss-modules-extract-imports, postcss-modules-local-by-default, postcss-modules-scope, postcss-modules-values, postcss-preset-env, postcss-safe-parser, postcss-scss, postcss-value-parser, process, punycode, querystring-es3, raw-body, react-refresh, recast, regenerator-runtime, safe-stable-stringify, sass-loader, schema-utils2, schema-utils3, semver, send, server-only, setimmediate, shell-quote, source-map, source-map-loader, source-map08, stacktrace-parser, storybook, stream-browserify, stream-http, strict-event-emitter, string-hash, string_decoder, strip-ansi, style-loader, superstruct, tar, taskr, terser, terser-webpack-plugin, text-table, timers-browserify, tty-browserify, typescript, ua-parser-js, unistore, util, vm-browserify, watchpack, web-vitals, webpack, webpack-sources1, webpack-sources3, ws, zod, zod-validation-error
+Repository package.json: https://github.com/vercel/next/blob/main/package.json
+--------------------------------------------------
+Package: next-themes
+Version: 0.4.6
+Malicious: NO
+Total Dependencies: 2
+  - Dependencies: 0
+  - Dev Dependencies: 2
+Dev Dependencies List: react, react-dom
+Repository package.json: https://github.com/pacocoursey/next-themes/blob/main/package.json
+--------------------------------------------------
+Package: openai
+Version: 5.20.0
+Malicious: NO
+Total Dependencies: 0
+  - Dependencies: 0
+  - Dev Dependencies: 0
+Repository package.json: https://github.com/openai/openai-node/blob/main/package.json
+--------------------------------------------------
+Package: react
+Version: 0.0.0-experimental-6b70072c-20250909
+Malicious: NO
+Total Dependencies: 0
+  - Dependencies: 0
+  - Dev Dependencies: 0
+Repository package.json: https://github.com/facebook/react/blob/main/package.json
+--------------------------------------------------
+Package: react-dom
+Version: 0.0.0-experimental-6b70072c-20250909
+Malicious: NO
+Total Dependencies: 1
+  - Dependencies: 1
+  - Dev Dependencies: 0
+Dependencies List: scheduler
+Repository package.json: https://github.com/facebook/react/blob/main/package.json
+--------------------------------------------------
+Package: react-hook-form
+Version: 7.62.0
+Malicious: NO
+Total Dependencies: 41
+  - Dependencies: 0
+  - Dev Dependencies: 41
+Dev Dependencies List: @eslint/compat, @microsoft/api-extractor, @rollup/plugin-commonjs, @rollup/plugin-node-resolve, @rollup/plugin-terser, @swc/core, @swc/jest, @testing-library/jest-dom, @testing-library/react, @types/jest, @types/react, @types/react-dom, @types/testing-library__jest-dom, bundlewatch, cypress, eslint, eslint-config-prettier, eslint-plugin-cypress, eslint-plugin-prettier, eslint-plugin-react, eslint-plugin-react-hooks, eslint-plugin-simple-import-sort, husky, jest, jest-environment-jsdom, jest-fixed-jsdom, jest-preview, lint-staged, msw, prettier, react, react-dom, react-test-renderer, rimraf, rollup, rollup-plugin-typescript2, tsd, typescript, typescript-eslint, whatwg-fetch, zod
+Repository package.json: https://github.com/react-hook-form/react-hook-form/blob/main/package.json
+--------------------------------------------------
+Package: sonner
+Version: 2.0.7
+Malicious: NO
+Total Dependencies: 9
+  - Dependencies: 0
+  - Dev Dependencies: 9
+Dev Dependencies List: @playwright/test, @types/node, @types/react, bunchee, prettier, react, react-dom, turbo, typescript
+Repository package.json: https://github.com/emilkowalski/sonner/blob/main/package.json
+--------------------------------------------------
+Package: tsx
+Version: 4.20.5
+Malicious: NO
+Total Dependencies: 2
+  - Dependencies: 2
+  - Dev Dependencies: 0
+Dependencies List: esbuild, get-tsconfig
+Repository package.json: https://github.com/privatenumber/tsx/blob/main/package.json
+--------------------------------------------------
+Package: typescript
+Version: 6.0.0-dev.20250909
+Malicious: NO
+Total Dependencies: 43
+  - Dependencies: 0
+  - Dev Dependencies: 43
+Dev Dependencies List: @dprint/formatter, @dprint/typescript, @esfx/canceltoken, @eslint/js, @octokit/rest, @types/chai, @types/minimist, @types/mocha, @types/ms, @types/node, @types/source-map-support, @types/which, @typescript-eslint/rule-tester, @typescript-eslint/type-utils, @typescript-eslint/utils, azure-devops-node-api, c8, chai, chokidar, diff, dprint, esbuild, eslint, eslint-formatter-autolinkable-stylish, eslint-plugin-regexp, fast-xml-parser, glob, globals, hereby, jsonc-parser, knip, minimist, mocha, mocha-fivemat-progress-reporter, monocart-coverage-reports, ms, picocolors, playwright, source-map-support, tslib, typescript, typescript-eslint, which
+Repository package.json: https://github.com/microsoft/TypeScript/blob/main/package.json
+--------------------------------------------------
+Package: uuid
+Version: 13.0.0
+Malicious: NO
+Total Dependencies: 21
+  - Dependencies: 0
+  - Dev Dependencies: 21
+Dev Dependencies List: @babel/eslint-parser, @commitlint/cli, @commitlint/config-conventional, @eslint/js, bundlewatch, commander, eslint, eslint-config-prettier, eslint-plugin-prettier, globals, husky, jest, lint-staged, neostandard, npm-run-all, prettier, release-please, runmd, standard-version, typescript, typescript-eslint
+Repository package.json: https://github.com/uuidjs/uuid/blob/main/package.json
+--------------------------------------------------
+Package: @pandacss/dev
+Version: 1.2.0
+Malicious: NO
+Total Dependencies: 13
+  - Dependencies: 10
+  - Dev Dependencies: 3
+Dependencies List: @clack/prompts, cac, @pandacss/config, @pandacss/logger, @pandacss/node, @pandacss/postcss, @pandacss/preset-panda, @pandacss/shared, @pandacss/token-dictionary, @pandacss/types
+Dev Dependencies List: @types/update-notifier, kleur, update-notifier
+Repository package.json: https://github.com/chakra-ui/panda/blob/main/package.json
+--------------------------------------------------
+Package: @types/node
+Version: 18.19.124
+Malicious: NO
+Total Dependencies: 1
+  - Dependencies: 1
+  - Dev Dependencies: 0
+Dependencies List: undici-types
+Repository package.json: https://github.com/DefinitelyTyped/DefinitelyTyped/blob/main/package.json
+--------------------------------------------------
+Package: @types/react
+Version: 19.1.12
+Malicious: NO
+Total Dependencies: 1
+  - Dependencies: 1
+  - Dev Dependencies: 0
+Dependencies List: csstype
+Repository package.json: https://github.com/DefinitelyTyped/DefinitelyTyped/blob/main/package.json
+--------------------------------------------------
+Package: @types/react-dom
+Version: 19.1.9
+Malicious: NO
+Total Dependencies: 0
+  - Dependencies: 0
+  - Dev Dependencies: 0
+Repository package.json: https://github.com/DefinitelyTyped/DefinitelyTyped/blob/main/package.json
+--------------------------------------------------
+Package: @types/uuid
+Version: 10.0.0
+Malicious: NO
+Total Dependencies: 0
+  - Dependencies: 0
+  - Dev Dependencies: 0
+Repository package.json: https://github.com/DefinitelyTyped/DefinitelyTyped/blob/main/package.json
+--------------------------------------------------
+Package: prettier
+Version: 3.6.2
+Malicious: NO
+Total Dependencies: 0
+  - Dependencies: 0
+  - Dev Dependencies: 0
+Repository package.json: https://github.com/prettier/prettier/blob/main/package.json
+--------------------------------------------------
