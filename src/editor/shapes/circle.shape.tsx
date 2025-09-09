@@ -1,12 +1,22 @@
 /* eslint-disable react/display-name */
 import { PrimitiveAtom, useAtom, useAtomValue } from "jotai";
 import { useState } from "react";
-import { STAGE_DIMENSION_ATOM } from "../states/dimension";
+import { constants } from "../constants/color";
 import { SHAPE_IDS_ATOM } from "../states/shape";
 import { apply } from "./apply";
-import { IShape, IShapeWithEvents, WithInitialValue } from "./type.shape";
+import { Shapes } from "./shapes";
+import {
+  FCShapeWEvents,
+  IShape,
+  IShapeWithEvents,
+  WithInitialValue,
+} from "./type.shape";
 
-export const ShapeCircle = ({ shape: item, options }: IShapeWithEvents) => {
+export const ShapeCircle = ({
+  shape: item,
+  options,
+  layoutShapes,
+}: IShapeWithEvents) => {
   const [box, setBox] = useAtom(
     item.state as PrimitiveAtom<IShape> & WithInitialValue<IShape>
   );
@@ -16,11 +26,8 @@ export const ShapeCircle = ({ shape: item, options }: IShapeWithEvents) => {
     y: 0,
   });
 
-  const stage = useAtomValue(STAGE_DIMENSION_ATOM);
   const [shapeId, setShapeId] = useAtom(SHAPE_IDS_ATOM);
   const isSelected = shapeId.some((w) => w.id === box.id);
-
-  if (!box.visible) return null;
 
   const handleMouseDown = (e: React.MouseEvent) => {
     setDragging(true);
@@ -42,10 +49,26 @@ export const ShapeCircle = ({ shape: item, options }: IShapeWithEvents) => {
   const handleMouseUp = () => {
     setDragging(false);
   };
+  const childrens = useAtomValue(box.children);
+
+  const children = childrens?.map((item) => {
+    const Component = Shapes?.[item?.tool] as FCShapeWEvents;
+    return (
+      <Component
+        layoutShapes={layoutShapes}
+        shape={item}
+        key={`pixel-group-shapes-${item?.id}-${item.tool}`}
+        options={{
+          isLayout: box.isLayout,
+        }}
+      />
+    );
+  });
+  if (!box.visible) return null;
 
   return (
     <>
-      <div
+      <section
         id={box?.id}
         onClick={(e) => {
           e.stopPropagation();
@@ -60,31 +83,34 @@ export const ShapeCircle = ({ shape: item, options }: IShapeWithEvents) => {
         onMouseUp={handleMouseUp}
         onMouseLeave={handleMouseUp}
         style={{
+          outline: isSelected
+            ? `2px solid ${constants.theme.colors.primary}`
+            : "2px solid transparent",
           position: options?.isLayout ? "static" : "absolute",
           top: box.y,
           left: box.x,
           width: box.width,
           height: box.height,
-          opacity: box.opacity,
-          // minWidth: box.minWidth,
-          // maxWidth: box.maxWidth,
-          // minHeight: box.minHeight,
-          // maxHeight: box.maxHeight,
-          ...apply.backgroundColor(box),
-          ...apply.borderRadius(box),
-          ...apply.stroke(box),
-          ...apply.strokeDash(box),
-          ...apply.shadow(box),
-          ...apply.flex(box),
-          ...apply.padding(box),
-
-          // overflowY: "scroll",
-          // overflowX: "hidden",
-          // padding: 20,
-          // display: "flex",
-          // flexDirection: "column",
+          display: "flex",
         }}
-      />
+      >
+        <div
+          style={{
+            width: "100%",
+            height: "100%",
+            opacity: box.opacity,
+            ...apply.backgroundColor(box),
+            ...apply.borderRadius(box),
+            ...apply.stroke(box),
+            ...apply.strokeDash(box),
+            ...apply.shadow(box),
+            ...apply.flex(box),
+            ...apply.padding(box),
+          }}
+        >
+          {children}
+        </div>
+      </section>
     </>
   );
 };

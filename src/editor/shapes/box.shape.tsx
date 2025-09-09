@@ -1,7 +1,6 @@
 import { PrimitiveAtom, useAtom, useAtomValue } from "jotai";
 import { useState } from "react";
 import { constants } from "../constants/color";
-import { STAGE_DIMENSION_ATOM } from "../states/dimension";
 import { SHAPE_IDS_ATOM } from "../states/shape";
 import { apply } from "./apply";
 import { Shapes } from "./shapes";
@@ -23,7 +22,6 @@ const ShapeBox = ({ shape: item, layoutShapes, options }: IShapeWithEvents) => {
     y: 0,
   });
 
-  const stage = useAtomValue(STAGE_DIMENSION_ATOM);
   const [shapeId, setShapeId] = useAtom(SHAPE_IDS_ATOM);
   const isSelected = shapeId.some((w) => w.id === box.id);
 
