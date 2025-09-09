@@ -102,6 +102,7 @@ export const ShapeText = ({ shape: item, options }: IShapeWithEvents) => {
             width: "100%",
             height: "100%",
             backgroundColor: "transparent",
+            resize: "none",
           }}
           value={box.text}
           onChange={(e) => {
