@@ -159,7 +159,6 @@ export const ShapeImage = ({ options, shape }: IShapeWithEvents) => {
         // maxWidth: box.maxWidth,
         // minHeight: box.minHeight,
         // maxHeight: box.maxHeight,
-        cursor: "move",
       }}
     >
       <img

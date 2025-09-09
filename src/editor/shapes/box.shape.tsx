@@ -97,7 +97,6 @@ const ShapeBox = ({ shape: item, layoutShapes, options }: IShapeWithEvents) => {
           // maxWidth: box.maxWidth,
           // minHeight: box.minHeight,
           // maxHeight: box.maxHeight,
-          cursor: "move",
           ...apply.backgroundColor(box),
           ...apply.borderRadius(box),
           ...apply.stroke(box),

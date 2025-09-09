@@ -20,6 +20,21 @@ export const apply = {
       color: bg,
     };
   },
+  textShadow: (shape: IShape) => {
+    const shadows = shape.effects.filter(
+      (e) => e.visible && e.type === "shadow"
+    );
+    const shadow = shadows.at(0);
+    if (shadow) {
+      const { shadowOffsetX, shadowOffsetY, shadowBlur, shadowOpacity } = shape;
+      const textShadow = `${shadowOffsetX}px ${shadowOffsetY}px ${shadowBlur}px ${parseColorToRgba(
+        shadow.color,
+        shadowOpacity
+      )}`;
+      return { textShadow };
+    }
+    return {};
+  },
   borderRadius: (shape: IShape) => {
     if (shape.isAllBorderRadius) {
       return {
