@@ -61,10 +61,6 @@ export const useEventStage = () => {
 
   // ===== MOUSE EVENT HANDLERS =====
   const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
-    // if (e.target !== e.currentTarget) return; // no crear encima de otro box
-
-    // const { x, y } = stageAbsolutePosition(event);
-
     const rect = e.currentTarget.getBoundingClientRect();
 
     const x = e.clientX - rect.left;
@@ -91,10 +87,10 @@ export const useEventStage = () => {
     if (EVENT_STAGE === "COPY") {
       handleCopyMode();
     }
+    console.log("mouse down");
   };
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    // const { x, y } = stageAbsolutePosition(event);
     const rect = e.currentTarget.getBoundingClientRect();
     const currentX = e.clientX - rect.left;
     const currentY = e.clientY - rect.top;
@@ -115,40 +111,43 @@ export const useEventStage = () => {
     if (EVENT_STAGE === "CREATING") {
       handleCreatingMode(currentX, currentY);
     }
+    console.log("mouse move");
   };
 
   const handleMouseUp = async () => {
-    if (selection.visible && EVENT_STAGE === "IDLE" && tool === "MOVE") {
-      const childrens = Stage?.current?.getStage?.()?.children;
+    console.log("mouse up");
 
-      if (!childrens) return;
-      // const layer = childrens?.find((e) => e?.attrs?.id === "layer-shapes");
-      // const nodes = layer?.children?.filter?.(
-      //   (child) =>
-      //     child?.attrs?.id !== "transformer-editable" && child?.attrs?.listening
-      // );
-      // if (!nodes) return;
-      // const selected = nodes.filter((shape) =>
-      // );
+    // if (selection.visible && EVENT_STAGE === "IDLE" && tool === "MOVE") {
+    //   const childrens = Stage?.current?.getStage?.()?.children;
 
-      // setTimeout(() => {
-      //   SET_UPDATE_SHAPES_IDS(
-      //     selected
-      //       ?.map((e) => ({
-      //         id: e?.attrs?.id,
-      //         parentId: e?.attrs?.parentId,
-      //       }))
-      //       ?.filter((e) => typeof e?.id === "string")
-      //   );
-      //   setSelection({
-      //     x: 0,
-      //     y: 0,
-      //     width: 0,
-      //     height: 0,
-      //     visible: false,
-      //   });
-      // }, 10);
-    }
+    //   if (!childrens) return;
+    // const layer = childrens?.find((e) => e?.attrs?.id === "layer-shapes");
+    // const nodes = layer?.children?.filter?.(
+    //   (child) =>
+    //     child?.attrs?.id !== "transformer-editable" && child?.attrs?.listening
+    // );
+    // if (!nodes) return;
+    // const selected = nodes.filter((shape) =>
+    // );
+
+    // setTimeout(() => {
+    //   SET_UPDATE_SHAPES_IDS(
+    //     selected
+    //       ?.map((e) => ({
+    //         id: e?.attrs?.id,
+    //         parentId: e?.attrs?.parentId,
+    //       }))
+    //       ?.filter((e) => typeof e?.id === "string")
+    //   );
+    //   setSelection({
+    //     x: 0,
+    //     y: 0,
+    //     width: 0,
+    //     height: 0,
+    //     visible: false,
+    //   });
+    // }, 10);
+    // }
 
     if (EVENT_STAGE === "CREATING") {
       handleCreatingComplete(CURRENT_ITEM);
@@ -450,7 +449,7 @@ export const useEventStage = () => {
     };
 
     const handleKeyUp = (event: KeyboardEvent): void => {
-      if (event.key === "Shift") {
+      if (event.key === "Shift" || event.key === "Alt") {
         SET_EVENT_STAGE("IDLE");
       }
     };
