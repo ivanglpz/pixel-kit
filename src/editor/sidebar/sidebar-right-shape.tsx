@@ -3,7 +3,7 @@
 import { Valid } from "@/components/valid";
 import { InputSelect } from "@/editor/components/input-select";
 import { InputTextArea } from "@/editor/components/input-textarea";
-import { IShape } from "@/editor/shapes/type.shape";
+import { AlignItems, IShape, JustifyContent } from "@/editor/shapes/type.shape";
 import { SHAPE_SELECTED_ATOM, SHAPE_UPDATE_ATOM } from "@/editor/states/shape";
 import { css } from "@stylespixelkit/css";
 import { useAtomValue, useSetAtom } from "jotai";
@@ -40,7 +40,6 @@ import { Input } from "../components/input";
 import { ListIcons } from "../components/list-icons";
 import { constants } from "../constants/color";
 import { useDelayedExecutor } from "../hooks/useDelayExecutor";
-import { AlignItems, JustifyContent } from "../shapes/layout-flex";
 import { UPDATE_UNDO_REDO } from "../states/undo-redo";
 
 // Función utilitaria para calcular la escala de imagen

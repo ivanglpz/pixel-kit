@@ -238,22 +238,24 @@ export const CREATE_SHAPE_ATOM = atom(null, (get, set, args: IShape) => {
     );
     if (!FIND_SHAPE) return;
 
-    const newAllShape: ALL_SHAPES = {
-      id: args?.id,
-      tool: args?.tool,
-      state: atom({
-        ...args,
-        children: atom(
-          args?.children ? get(args.children) : ([] as ALL_SHAPES[])
-        ),
-      }),
-      pageId: get(PAGE_ID_ATOM),
-    };
     const currentChildren = get(get(FIND_SHAPE.state).children);
 
     const newElement = {
       ...get(FIND_SHAPE.state),
-      children: atom([...currentChildren, newAllShape]),
+      children: atom([
+        ...currentChildren,
+        {
+          id: args?.id,
+          tool: args?.tool,
+          state: atom({
+            ...args,
+            children: atom(
+              args?.children ? get(args.children) : ([] as ALL_SHAPES[])
+            ),
+          }),
+          pageId: get(PAGE_ID_ATOM),
+        },
+      ]),
     };
 
     set(FIND_SHAPE.state, newElement);

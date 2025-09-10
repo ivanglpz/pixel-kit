@@ -166,8 +166,6 @@ export const useEventStage = () => {
 
   // ===== COMPLETION HANDLERS =====
   const handleCreateShapes = () => {
-    console.log(CURRENT_ITEM, "CURRENT_ITEM");
-
     for (const newShape of CURRENT_ITEM) {
       SET_CREATE(newShape);
     }

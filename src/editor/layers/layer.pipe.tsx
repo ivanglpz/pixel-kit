@@ -10,14 +10,13 @@ export const LayerPipe = () => {
 
   return (
     <>
-      {/* <Layer id="layer-pipe-shapes"> */}
       {CURRENT_ITEMS?.map((item) => {
         const Component = Shapes?.[item?.tool] as FCShapeWEvents;
         return (
           <Component
             shape={{
               id: "1",
-              state: atom({ ...item }),
+              state: atom(item),
               pageId: "main-image-render-stage",
               tool: item.tool,
             }}
@@ -25,7 +24,6 @@ export const LayerPipe = () => {
           />
         );
       })}
-      {/* </Layer> */}
     </>
   );
 };

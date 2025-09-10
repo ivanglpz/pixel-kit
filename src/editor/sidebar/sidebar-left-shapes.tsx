@@ -46,7 +46,6 @@ export const SidebarLeftShapes = () => {
   const clearAll = useSetAtom(DELETE_ALL_SHAPES_ATOM);
 
   const { open } = useContextMenu();
-  console.log(ALL_SHAPES, "ALL_SHAPES");
 
   return (
     <div
