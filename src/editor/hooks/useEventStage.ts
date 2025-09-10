@@ -15,7 +15,6 @@ import CURRENT_ITEM_ATOM, {
 } from "../states/currentItem";
 import { DRAW_START_CONFIG_ATOM } from "../states/drawing";
 import { EVENT_ATOM } from "../states/event";
-import { RECTANGLE_SELECTION_ATOM } from "../states/rectangle-selection";
 import {
   GET_SELECTED_SHAPES_ATOM,
   SHAPE_IDS_ATOM,
@@ -38,9 +37,6 @@ export const useEventStage = () => {
   const [shapeId, setShapeId] = useAtom(SHAPE_IDS_ATOM);
   const [CURRENT_ITEM, SET_UPDATE_CITEM] = useAtom(CURRENT_ITEM_ATOM);
   const [EVENT_STAGE, SET_EVENT_STAGE] = useAtom(EVENT_ATOM);
-  console.log(EVENT_STAGE, "EVENT_STAGE");
-
-  console.log(CURRENT_ITEM, "CURRENT_ITEM");
 
   // ===== READ-ONLY STATE =====
   const PAUSE = useAtomValue(PAUSE_MODE_ATOM);
@@ -56,34 +52,17 @@ export const useEventStage = () => {
   const SET_CREATE_CITEM = useSetAtom(CREATE_CURRENT_ITEM_ATOM);
   const SET_CLEAR_CITEM = useSetAtom(CLEAR_CURRENT_ITEM_ATOM);
   const setshowClip = useSetAtom(SHOW_CLIP_ATOM);
-  const [selection, setSelection] = useAtom(RECTANGLE_SELECTION_ATOM);
+  // const [selection, setSelection] = useAtom(RECTANGLE_SELECTION_ATOM);
   const setRedo = useSetAtom(REDO_ATOM);
   const setUndo = useSetAtom(UNDO_ATOM);
 
   // ===== MOUSE EVENT HANDLERS =====
   const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
-    console.log("DISPARANDO MOUSE DOWN");
-
     const rect = e.currentTarget.getBoundingClientRect();
 
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
-    // if (
-    //   EVENT_STAGE === "IDLE" &&
-    //   [null, undefined, "main-image-render-stage", "pixel-kit-stage"].includes(
-    //     event.target?.attrs?.id
-    //   ) &&
-    //   tool === "MOVE" &&
-    //   shapeId?.length === 0
-    // ) {
-    //   setSelection({
-    //     x,
-    //     y,
-    //     width: 0,
-    //     height: 0,
-    //     visible: true,
-    //   });
-    // }
+
     if (EVENT_STAGE === "CREATE") {
       handleCreateMode(x, y);
     }
@@ -92,28 +71,13 @@ export const useEventStage = () => {
       SET_EVENT_STAGE("COPYING");
       setTool("MOVE");
     }
-
-    console.log("mouse down");
   };
 
   const handleMouseMove = (e: React.MouseEvent) => {
     const rect = e.currentTarget.getBoundingClientRect();
     const currentX = e.clientX - rect.left;
     const currentY = e.clientY - rect.top;
-    // if (
-    //   selection.visible &&
-    //   EVENT_STAGE === "IDLE" &&
-    //   tool === "MOVE" &&
-    //   shapeId?.length === 0
-    // ) {
-    //   setSelection({
-    //     x: Math.min(selection.x, currentX),
-    //     y: Math.min(selection.y, currentY),
-    //     width: Math.abs(currentX - selection.x),
-    //     height: Math.abs(currentY - selection.y),
-    //     visible: true,
-    //   });
-    // }
+
     if (EVENT_STAGE === "CREATING") {
       handleCreatingMode(currentX, currentY);
     }
@@ -127,44 +91,9 @@ export const useEventStage = () => {
       });
       SET_UPDATE_CITEM(items);
     }
-    console.log("mouse move");
   };
 
   const handleMouseUp = async () => {
-    console.log("mouse up");
-
-    // if (selection.visible && EVENT_STAGE === "IDLE" && tool === "MOVE") {
-    //   const childrens = Stage?.current?.getStage?.()?.children;
-
-    //   if (!childrens) return;
-    // const layer = childrens?.find((e) => e?.attrs?.id === "layer-shapes");
-    // const nodes = layer?.children?.filter?.(
-    //   (child) =>
-    //     child?.attrs?.id !== "transformer-editable" && child?.attrs?.listening
-    // );
-    // if (!nodes) return;
-    // const selected = nodes.filter((shape) =>
-    // );
-
-    // setTimeout(() => {
-    //   SET_UPDATE_SHAPES_IDS(
-    //     selected
-    //       ?.map((e) => ({
-    //         id: e?.attrs?.id,
-    //         parentId: e?.attrs?.parentId,
-    //       }))
-    //       ?.filter((e) => typeof e?.id === "string")
-    //   );
-    //   setSelection({
-    //     x: 0,
-    //     y: 0,
-    //     width: 0,
-    //     height: 0,
-    //     visible: false,
-    //   });
-    // }, 10);
-    // }
-
     if (EVENT_STAGE === "CREATING") {
       handleCreatingComplete(CURRENT_ITEM);
     }
@@ -262,6 +191,15 @@ export const useEventStage = () => {
         setTool("DRAW");
       }
     }
+    setTimeout(() => {
+      SET_UPDATE_SHAPES_IDS(
+        payloads?.map((e) => ({
+          id: e?.id,
+          parentId: e?.parentId,
+        }))
+      );
+    }, 10);
+
     SET_CLEAR_CITEM();
   };
 
