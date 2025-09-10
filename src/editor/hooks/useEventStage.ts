@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { IShape } from "@/editor/shapes/type.shape";
 import { SHOW_CLIP_ATOM } from "@/editor/states/clipImage";
-import TOOL_ATOM, { IKeyTool, PAUSE_MODE_ATOM } from "@/editor/states/tool";
+import TOOL_ATOM, { PAUSE_MODE_ATOM } from "@/editor/states/tool";
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { useEffect } from "react";
 import { v4 as uuidv4 } from "uuid";
@@ -195,16 +195,6 @@ export const useEventStage = () => {
     SET_CLEAR_CITEM();
   };
 
-  // ===== UTILITY FUNCTIONS =====
-  const toolKeydown = (kl: IKeyTool) => {
-    setTool(kl);
-    SET_CLEAR_CITEM();
-  };
-
-  const handleDeleteShapes = () => {
-    DELETE_SHAPE();
-  };
-
   const createImageFromFile = (file: File, dataUrl: string) => {
     const image = new Image();
     image.src = dataUrl;
@@ -315,7 +305,7 @@ export const useEventStage = () => {
 
       // Handle delete operations
       if (DELETE_KEYS.includes(KEY)) {
-        handleDeleteShapes();
+        DELETE_SHAPE();
         setTool("MOVE");
       }
 
@@ -340,7 +330,8 @@ export const useEventStage = () => {
 
       if (keysActions[KEY]) {
         setshowClip(Boolean(keysActions[KEY].showClip));
-        toolKeydown(keysActions[KEY].keyMethod);
+        setTool(keysActions[KEY].keyMethod);
+        SET_CLEAR_CITEM();
         SET_EVENT_STAGE(keysActions[KEY].eventStage);
       }
     };
