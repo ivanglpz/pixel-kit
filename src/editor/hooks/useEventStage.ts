@@ -372,6 +372,8 @@ export const useEventStage = () => {
     const handleKeyUp = (event: KeyboardEvent): void => {
       if (event.key === "Shift" || event.key === "Alt") {
         SET_EVENT_STAGE("IDLE");
+        setTool("MOVE");
+        SET_CLEAR_CITEM();
       }
     };
     document.addEventListener("keydown", handleKeyDown);
