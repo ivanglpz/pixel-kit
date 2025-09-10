@@ -250,18 +250,18 @@ export const CREATE_SHAPE_ATOM = atom(null, (get, set, args: IShape) => {
       pageId: get(PAGE_ID_ATOM),
     };
     const currentChildren = get(get(FIND_SHAPE.state).children);
-    set(FIND_SHAPE.state, {
+
+    const newElement = {
       ...get(FIND_SHAPE.state),
       children: atom([...currentChildren, newAllShape]),
-    });
+    };
+
+    set(FIND_SHAPE.state, newElement);
     set(NEW_UNDO_REDO, {
       shapes: [
         {
           ...FIND_SHAPE,
-          state: atom({
-            ...get(FIND_SHAPE.state),
-            children: atom([...currentChildren, newAllShape]),
-          }),
+          state: atom(newElement),
           pageId: get(PAGE_ID_ATOM),
         },
       ],

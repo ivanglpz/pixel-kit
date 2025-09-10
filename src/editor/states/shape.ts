@@ -4,7 +4,7 @@ import { v4 as uuidv4 } from "uuid";
 import { cloneDeep } from "../helpers/shape-schema";
 import { CREATE_CURRENT_ITEM_ATOM } from "./currentItem";
 import { EVENT_ATOM } from "./event";
-import { CURRENT_PAGE, IPageShapeIds } from "./pages";
+import { CURRENT_PAGE, IPageShapeIds, PAGE_ID_ATOM } from "./pages";
 import { ALL_SHAPES, PLANE_SHAPES_ATOM } from "./shapes";
 export const SHAPE_IDS_ATOM = atom(
   (get) => {
@@ -87,10 +87,16 @@ export const GET_SELECTED_SHAPES_ATOM = atom(null, (get, set) => {
       id: newId, // también en el state
       parentId, // el parentId que viene del nivel superior
       children: atom<ALL_SHAPES[]>(
-        get(state.children)?.map((i) => ({
-          ...i,
-          state: atom(recursiveCloneShape(i, newId)),
-        }))
+        get(state.children)?.map((i) => {
+          const newElement = recursiveCloneShape(i, newId);
+          return {
+            ...i,
+            id: newElement.id,
+            tool: newElement.tool,
+            pageId: get(PAGE_ID_ATOM),
+            state: atom(newElement),
+          };
+        })
       ),
     };
   };
