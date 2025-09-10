@@ -2,16 +2,23 @@ import { PrimitiveAtom } from "jotai";
 import { FC } from "react";
 import { ALL_SHAPES } from "../states/shapes";
 import { IKeyMethods } from "../states/tool";
-import {
-  AlignItems,
-  FlexDirection,
-  FlexWrap,
-  JustifyContent,
-} from "./layout-flex";
 
 export type WithInitialValue<Value> = {
   init: Value;
 };
+
+export type JustifyContent =
+  | "flex-start"
+  | "center"
+  | "flex-end"
+  | "space-between"
+  | "space-around";
+
+export type AlignItems = "flex-start" | "center" | "flex-end";
+
+export type FlexDirection = "row" | "column";
+
+export type FlexWrap = "nowrap" | "wrap";
 
 type FillImage = {
   src: string;
@@ -120,7 +127,6 @@ export type IShape = {
 
 export type IShapeWithEvents = {
   shape: ALL_SHAPES;
-  layoutShapes: ALL_SHAPES[];
   options?: Partial<Exclude<IShape, "children">>;
 };
 

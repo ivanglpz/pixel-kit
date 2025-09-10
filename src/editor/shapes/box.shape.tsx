@@ -12,7 +12,7 @@ import {
 } from "./type.shape";
 
 // eslint-disable-next-line react/display-name
-const ShapeBox = ({ shape: item, layoutShapes, options }: IShapeWithEvents) => {
+const ShapeBox = ({ shape: item, options }: IShapeWithEvents) => {
   const [box, setBox] = useAtom(
     item.state as PrimitiveAtom<IShape> & WithInitialValue<IShape>
   );
@@ -58,7 +58,6 @@ const ShapeBox = ({ shape: item, layoutShapes, options }: IShapeWithEvents) => {
     const Component = Shapes?.[item?.tool] as FCShapeWEvents;
     return (
       <Component
-        layoutShapes={layoutShapes}
         shape={item}
         key={`pixel-group-shapes-${item?.id}-${item.tool}`}
         options={{

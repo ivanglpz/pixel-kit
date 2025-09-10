@@ -12,11 +12,7 @@ import {
   WithInitialValue,
 } from "./type.shape";
 
-export const ShapeCircle = ({
-  shape: item,
-  options,
-  layoutShapes,
-}: IShapeWithEvents) => {
+export const ShapeCircle = ({ shape: item, options }: IShapeWithEvents) => {
   const [box, setBox] = useAtom(
     item.state as PrimitiveAtom<IShape> & WithInitialValue<IShape>
   );
@@ -55,7 +51,6 @@ export const ShapeCircle = ({
     const Component = Shapes?.[item?.tool] as FCShapeWEvents;
     return (
       <Component
-        layoutShapes={layoutShapes}
         shape={item}
         key={`pixel-group-shapes-${item?.id}-${item.tool}`}
         options={{

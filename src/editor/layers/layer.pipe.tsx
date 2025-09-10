@@ -2,7 +2,6 @@ import { atom, useAtomValue } from "jotai";
 import { Shapes } from "../shapes/shapes";
 import { FCShapeWEvents } from "../shapes/type.shape";
 import CURRENT_ITEM_ATOM from "../states/currentItem";
-import { ALL_SHAPES } from "../states/shapes";
 
 export const LayerPipe = () => {
   const CURRENT_ITEMS = useAtomValue(CURRENT_ITEM_ATOM);
@@ -16,10 +15,9 @@ export const LayerPipe = () => {
         const Component = Shapes?.[item?.tool] as FCShapeWEvents;
         return (
           <Component
-            layoutShapes={[]}
             shape={{
               id: "1",
-              state: atom({ ...item, children: atom([] as ALL_SHAPES[]) }),
+              state: atom({ ...item }),
               pageId: "main-image-render-stage",
               tool: item.tool,
             }}
