@@ -55,6 +55,7 @@ export const useEventStage = () => {
   // const [selection, setSelection] = useAtom(RECTANGLE_SELECTION_ATOM);
   const setRedo = useSetAtom(REDO_ATOM);
   const setUndo = useSetAtom(UNDO_ATOM);
+  console.log(EVENT_STAGE, "EVENT_STAGE");
 
   // ===== MOUSE EVENT HANDLERS =====
   const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -64,7 +65,7 @@ export const useEventStage = () => {
     const y = e.clientY - rect.top;
 
     if (EVENT_STAGE === "CREATE") {
-      handleCreateMode(x, y);
+      handleCreateStartShape(x, y);
     }
     if (EVENT_STAGE === "COPY") {
       selectedShapes();
@@ -79,7 +80,7 @@ export const useEventStage = () => {
     const currentY = e.clientY - rect.top;
 
     if (EVENT_STAGE === "CREATING") {
-      handleCreatingMode(currentX, currentY);
+      handleCreatingNow(currentX, currentY);
     }
     if (EVENT_STAGE === "COPYING") {
       const items = CURRENT_ITEM?.map((i) => {
@@ -94,16 +95,13 @@ export const useEventStage = () => {
   };
 
   const handleMouseUp = async () => {
-    if (EVENT_STAGE === "CREATING") {
-      handleCreatingComplete(CURRENT_ITEM);
-    }
-    if (EVENT_STAGE === "COPYING") {
-      handleCreatingComplete(CURRENT_ITEM);
+    if (EVENT_STAGE === "CREATING" || EVENT_STAGE === "COPYING") {
+      handleCreateShapes(CURRENT_ITEM);
     }
   };
 
   // ===== CREATE MODE HANDLERS =====
-  const handleCreateMode = (x: number, y: number) => {
+  const handleCreateStartShape = (x: number, y: number) => {
     SET_EVENT_STAGE("CREATING");
 
     if (TOOLS_BOX_BASED.includes(tool)) {
@@ -143,7 +141,7 @@ export const useEventStage = () => {
   };
 
   // ===== CREATING MODE HANDLERS =====
-  const handleCreatingMode = (x: number, y: number) => {
+  const handleCreatingNow = (x: number, y: number) => {
     const newShape = CURRENT_ITEM.at(0);
     if (!newShape) return;
 
@@ -168,17 +166,11 @@ export const useEventStage = () => {
   };
 
   // ===== COMPLETION HANDLERS =====
-  const handleCreatingComplete = (payloads: typeof CURRENT_ITEM) => {
+  const handleCreateShapes = (payloads: typeof CURRENT_ITEM) => {
     for (const newShape of payloads) {
       SET_CREATE(newShape);
 
       if (TOOLS_BOX_BASED.includes(newShape.tool)) {
-        setTimeout(() => {
-          setShapeId({
-            id: newShape?.id,
-            parentId: newShape?.parentId,
-          });
-        }, 10);
         SET_EVENT_STAGE("IDLE");
         setTool("MOVE");
       }
