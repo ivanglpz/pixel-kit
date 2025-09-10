@@ -96,7 +96,7 @@ export const useEventStage = () => {
 
   const handleMouseUp = async () => {
     if (EVENT_STAGE === "CREATING" || EVENT_STAGE === "COPYING") {
-      handleCreateShapes(CURRENT_ITEM);
+      handleCreateShapes();
     }
   };
 
@@ -166,32 +166,21 @@ export const useEventStage = () => {
   };
 
   // ===== COMPLETION HANDLERS =====
-  const handleCreateShapes = (payloads: typeof CURRENT_ITEM) => {
-    for (const newShape of payloads) {
+  const handleCreateShapes = () => {
+    for (const newShape of CURRENT_ITEM) {
       SET_CREATE(newShape);
-
-      if (TOOLS_BOX_BASED.includes(newShape.tool)) {
-        SET_EVENT_STAGE("IDLE");
-        setTool("MOVE");
-      }
-      if (TOOLS_LINE_BASED.includes(newShape.tool)) {
-        SET_EVENT_STAGE("CREATE");
-        setTool("LINE");
-      }
-      if (TOOLS_DRAW_BASED.includes(newShape.tool)) {
-        SET_EVENT_STAGE("CREATE");
-        setTool("DRAW");
-      }
     }
+
     setTimeout(() => {
       SET_UPDATE_SHAPES_IDS(
-        payloads?.map((e) => ({
+        CURRENT_ITEM?.map((e) => ({
           id: e?.id,
           parentId: e?.parentId,
         }))
       );
     }, 10);
-
+    SET_EVENT_STAGE("IDLE");
+    setTool("MOVE");
     SET_CLEAR_CITEM();
   };
 
