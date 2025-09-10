@@ -80,18 +80,18 @@ export const GET_SELECTED_SHAPES_ATOM = atom(null, (get, set) => {
     const state = get(shape.state);
     const newId = uuidv4(); // Generamos un nuevo ID
 
-    // Clonamos los children recursivamente pasando el nuevo ID como parentId
-    const updatedChildren = get(state.children).map((child) =>
-      recursiveCloneShape(child, newId)
-    );
-
     return {
       ...cloneDeep(state),
-      id: newId, // también en el state
-      parentId, // el parentId que viene del nivel superior
-      children: atom(updatedChildren),
       x: state.x + 10, // desplazamiento para diferenciar
       y: state.y + 10,
+      id: newId, // también en el state
+      parentId, // el parentId que viene del nivel superior
+      children: atom<ALL_SHAPES[]>(
+        get(state.children)?.map((i) => ({
+          ...i,
+          state: atom(recursiveCloneShape(i, newId)),
+        }))
+      ),
     };
   };
   const newShapes = shapesSelected.map((shape) =>

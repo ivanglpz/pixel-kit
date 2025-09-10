@@ -269,14 +269,15 @@ export const CREATE_SHAPE_ATOM = atom(null, (get, set, args: IShape) => {
     });
     return;
   }
+
+  const result = args?.children ? get(args?.children) : [];
+
   const newAllShape: ALL_SHAPES = {
     id: args?.id,
     tool: args?.tool,
     state: atom({
       ...args,
-      children: atom(
-        args?.children ? get(args.children) : ([] as ALL_SHAPES[])
-      ),
+      children: atom(result),
     }),
     pageId: get(PAGE_ID_ATOM),
   };

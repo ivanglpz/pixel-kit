@@ -55,7 +55,6 @@ export const useEventStage = () => {
   // const [selection, setSelection] = useAtom(RECTANGLE_SELECTION_ATOM);
   const setRedo = useSetAtom(REDO_ATOM);
   const setUndo = useSetAtom(UNDO_ATOM);
-  console.log(EVENT_STAGE, "EVENT_STAGE");
 
   // ===== MOUSE EVENT HANDLERS =====
   const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -167,6 +166,8 @@ export const useEventStage = () => {
 
   // ===== COMPLETION HANDLERS =====
   const handleCreateShapes = () => {
+    console.log(CURRENT_ITEM, "CURRENT_ITEM");
+
     for (const newShape of CURRENT_ITEM) {
       SET_CREATE(newShape);
     }
