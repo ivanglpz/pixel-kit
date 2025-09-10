@@ -255,7 +255,16 @@ export const CREATE_SHAPE_ATOM = atom(null, (get, set, args: IShape) => {
       children: atom([...currentChildren, newAllShape]),
     });
     set(NEW_UNDO_REDO, {
-      shapes: [newAllShape],
+      shapes: [
+        {
+          ...FIND_SHAPE,
+          state: atom({
+            ...get(FIND_SHAPE.state),
+            children: atom([...currentChildren, newAllShape]),
+          }),
+          pageId: get(PAGE_ID_ATOM),
+        },
+      ],
       type: "CREATE",
     });
     return;
