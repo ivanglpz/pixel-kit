@@ -232,6 +232,34 @@ export const MOVE_SHAPES_TO_ROOT = atom(null, (get, set) => {
 
 export const CREATE_SHAPE_ATOM = atom(null, (get, set, args: IShape) => {
   if (!args || !args?.id) return;
+  if (args.parentId) {
+    const FIND_SHAPE = get(PLANE_SHAPES_ATOM).find(
+      (e) => e.id === args.parentId
+    );
+    if (!FIND_SHAPE) return;
+
+    const newAllShape: ALL_SHAPES = {
+      id: args?.id,
+      tool: args?.tool,
+      state: atom({
+        ...args,
+        children: atom(
+          args?.children ? get(args.children) : ([] as ALL_SHAPES[])
+        ),
+      }),
+      pageId: get(PAGE_ID_ATOM),
+    };
+    const currentChildren = get(get(FIND_SHAPE.state).children);
+    set(FIND_SHAPE.state, {
+      ...get(FIND_SHAPE.state),
+      children: atom([...currentChildren, newAllShape]),
+    });
+    set(NEW_UNDO_REDO, {
+      shapes: [newAllShape],
+      type: "CREATE",
+    });
+    return;
+  }
   const newAllShape: ALL_SHAPES = {
     id: args?.id,
     tool: args?.tool,

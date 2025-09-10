@@ -27,7 +27,7 @@ const ShapeBox = ({ shape: item, layoutShapes, options }: IShapeWithEvents) => {
 
   const handleMouseDown = (e: React.MouseEvent) => {
     if (!isSelected) return;
-    e.stopPropagation();
+    // e.stopPropagation();
     setDragging(true);
     setOffset({
       x: e.clientX - box.x,
@@ -38,7 +38,7 @@ const ShapeBox = ({ shape: item, layoutShapes, options }: IShapeWithEvents) => {
   const handleMouseMove = (e: React.MouseEvent) => {
     if (!isSelected) return;
 
-    e.stopPropagation();
+    // e.stopPropagation();
     if (!dragging) return;
     setBox({
       ...box,

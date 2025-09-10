@@ -2,9 +2,10 @@ import { IShape } from "@/editor/shapes/type.shape";
 import { atom } from "jotai";
 import { v4 as uuidv4 } from "uuid";
 import { cloneDeep } from "../helpers/shape-schema";
+import { CREATE_CURRENT_ITEM_ATOM } from "./currentItem";
 import { EVENT_ATOM } from "./event";
 import { CURRENT_PAGE, IPageShapeIds } from "./pages";
-import ALL_SHAPES_ATOM, { ALL_SHAPES, PLANE_SHAPES_ATOM } from "./shapes";
+import { ALL_SHAPES, PLANE_SHAPES_ATOM } from "./shapes";
 export const SHAPE_IDS_ATOM = atom(
   (get) => {
     return get(get(CURRENT_PAGE).SHAPES.ID);
@@ -75,7 +76,7 @@ export const GET_SELECTED_SHAPES_ATOM = atom(null, (get, set) => {
   const recursiveCloneShape = (
     shape: ALL_SHAPES,
     parentId: string | null = null
-  ): ALL_SHAPES => {
+  ): IShape => {
     const state = get(shape.state);
     const newId = uuidv4(); // Generamos un nuevo ID
 
@@ -85,33 +86,18 @@ export const GET_SELECTED_SHAPES_ATOM = atom(null, (get, set) => {
     );
 
     return {
-      ...shape,
-      id: newId, // asignamos el nuevo ID
-      state: atom({
-        ...cloneDeep(state),
-        id: newId, // también en el state
-        parentId, // el parentId que viene del nivel superior
-        children: atom(updatedChildren),
-      }),
+      ...cloneDeep(state),
+      id: newId, // también en el state
+      parentId, // el parentId que viene del nivel superior
+      children: atom(updatedChildren),
+      x: state.x + 10, // desplazamiento para diferenciar
+      y: state.y + 10,
     };
   };
-  const PLANE_SHAPES = get(PLANE_SHAPES_ATOM);
   const newShapes = shapesSelected.map((shape) =>
     recursiveCloneShape(shape, get(shape.state).parentId)
   );
-
-  for (const element of newShapes) {
-    if (get(element.state).parentId) {
-      const FIND_SHAPE = PLANE_SHAPES?.find(
-        (w) => w.id === get(element.state).parentId
-      );
-      if (!FIND_SHAPE) continue;
-      const children = get(FIND_SHAPE.state).children;
-      set(children, [...get(children), element]);
-    } else {
-      set(ALL_SHAPES_ATOM, [...get(ALL_SHAPES_ATOM), element]);
-    }
-  }
+  set(CREATE_CURRENT_ITEM_ATOM, newShapes);
 
   return;
 });

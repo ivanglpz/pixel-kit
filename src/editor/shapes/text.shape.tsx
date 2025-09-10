@@ -3,10 +3,8 @@
 import { PrimitiveAtom, useAtom, useSetAtom } from "jotai";
 import { IShape, IShapeWithEvents, WithInitialValue } from "./type.shape";
 /* eslint-disable react/display-name */
-import { useAtomValue } from "jotai";
 import { useState } from "react";
 import { constants } from "../constants/color";
-import { STAGE_DIMENSION_ATOM } from "../states/dimension";
 import { SHAPE_IDS_ATOM } from "../states/shape";
 import { TEXT_WRITING_IDS } from "../states/text";
 import { PAUSE_MODE_ATOM } from "../states/tool";
@@ -22,14 +20,12 @@ export const ShapeText = ({ shape: item, options }: IShapeWithEvents) => {
     y: 0,
   });
 
-  const stage = useAtomValue(STAGE_DIMENSION_ATOM);
   const [shapeId, setShapeId] = useAtom(SHAPE_IDS_ATOM);
   const isSelected = shapeId.some((w) => w.id === box.id);
   const [textIds, setTextIds] = useAtom(TEXT_WRITING_IDS);
   const setPause = useSetAtom(PAUSE_MODE_ATOM);
   const handleMouseDown = (e: React.MouseEvent) => {
     if (!isSelected) return;
-    e.stopPropagation();
     setDragging(true);
     setOffset({
       x: e.clientX - box.x,
@@ -40,7 +36,6 @@ export const ShapeText = ({ shape: item, options }: IShapeWithEvents) => {
   const handleMouseMove = (e: React.MouseEvent) => {
     if (!isSelected) return;
 
-    e.stopPropagation();
     if (!dragging) return;
     setBox({
       ...box,

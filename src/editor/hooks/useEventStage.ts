@@ -25,7 +25,6 @@ import { CREATE_SHAPE_ATOM, DELETE_SHAPES_ATOM } from "../states/shapes";
 import { REDO_ATOM, UNDO_ATOM } from "../states/undo-redo";
 import { capitalize } from "../utils/capitalize";
 import { useConfiguration } from "./useConfiguration";
-import { useReference } from "./useReference";
 
 // ===== CONSTANTS =====
 const TOOLS_BOX_BASED = ["BOX", "CIRCLE", "IMAGE", "TEXT", "GROUP"];
@@ -39,6 +38,9 @@ export const useEventStage = () => {
   const [shapeId, setShapeId] = useAtom(SHAPE_IDS_ATOM);
   const [CURRENT_ITEM, SET_UPDATE_CITEM] = useAtom(CURRENT_ITEM_ATOM);
   const [EVENT_STAGE, SET_EVENT_STAGE] = useAtom(EVENT_ATOM);
+  console.log(EVENT_STAGE, "EVENT_STAGE");
+
+  console.log(CURRENT_ITEM, "CURRENT_ITEM");
 
   // ===== READ-ONLY STATE =====
   const PAUSE = useAtomValue(PAUSE_MODE_ATOM);
@@ -57,10 +59,11 @@ export const useEventStage = () => {
   const [selection, setSelection] = useAtom(RECTANGLE_SELECTION_ATOM);
   const setRedo = useSetAtom(REDO_ATOM);
   const setUndo = useSetAtom(UNDO_ATOM);
-  const { ref: Stage } = useReference({ type: "STAGE" });
 
   // ===== MOUSE EVENT HANDLERS =====
   const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
+    console.log("DISPARANDO MOUSE DOWN");
+
     const rect = e.currentTarget.getBoundingClientRect();
 
     const x = e.clientX - rect.left;
@@ -85,31 +88,44 @@ export const useEventStage = () => {
       handleCreateMode(x, y);
     }
     if (EVENT_STAGE === "COPY") {
-      handleCopyMode();
+      selectedShapes();
+      SET_EVENT_STAGE("COPYING");
+      setTool("MOVE");
     }
+
     console.log("mouse down");
   };
 
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+  const handleMouseMove = (e: React.MouseEvent) => {
     const rect = e.currentTarget.getBoundingClientRect();
     const currentX = e.clientX - rect.left;
     const currentY = e.clientY - rect.top;
-    if (
-      selection.visible &&
-      EVENT_STAGE === "IDLE" &&
-      tool === "MOVE" &&
-      shapeId?.length === 0
-    ) {
-      setSelection({
-        x: Math.min(selection.x, currentX),
-        y: Math.min(selection.y, currentY),
-        width: Math.abs(currentX - selection.x),
-        height: Math.abs(currentY - selection.y),
-        visible: true,
-      });
-    }
+    // if (
+    //   selection.visible &&
+    //   EVENT_STAGE === "IDLE" &&
+    //   tool === "MOVE" &&
+    //   shapeId?.length === 0
+    // ) {
+    //   setSelection({
+    //     x: Math.min(selection.x, currentX),
+    //     y: Math.min(selection.y, currentY),
+    //     width: Math.abs(currentX - selection.x),
+    //     height: Math.abs(currentY - selection.y),
+    //     visible: true,
+    //   });
+    // }
     if (EVENT_STAGE === "CREATING") {
       handleCreatingMode(currentX, currentY);
+    }
+    if (EVENT_STAGE === "COPYING") {
+      const items = CURRENT_ITEM?.map((i) => {
+        return {
+          ...i,
+          x: currentX,
+          y: currentY,
+        };
+      });
+      SET_UPDATE_CITEM(items);
     }
     console.log("mouse move");
   };
@@ -150,6 +166,9 @@ export const useEventStage = () => {
     // }
 
     if (EVENT_STAGE === "CREATING") {
+      handleCreatingComplete(CURRENT_ITEM);
+    }
+    if (EVENT_STAGE === "COPYING") {
       handleCreatingComplete(CURRENT_ITEM);
     }
   };
@@ -194,13 +213,6 @@ export const useEventStage = () => {
     }
   };
 
-  const handleCopyMode = () => {
-    selectedShapes();
-
-    SET_EVENT_STAGE("IDLE");
-    setTool("MOVE");
-  };
-
   // ===== CREATING MODE HANDLERS =====
   const handleCreatingMode = (x: number, y: number) => {
     const newShape = CURRENT_ITEM.at(0);
@@ -228,28 +240,27 @@ export const useEventStage = () => {
 
   // ===== COMPLETION HANDLERS =====
   const handleCreatingComplete = (payloads: typeof CURRENT_ITEM) => {
-    const newShape = payloads.at(0);
-    if (!newShape) return;
+    for (const newShape of payloads) {
+      SET_CREATE(newShape);
 
-    SET_CREATE(newShape);
-
-    if (TOOLS_BOX_BASED.includes(newShape.tool)) {
-      setTimeout(() => {
-        setShapeId({
-          id: newShape?.id,
-          parentId: newShape?.parentId,
-        });
-      }, 10);
-      SET_EVENT_STAGE("IDLE");
-      setTool("MOVE");
-    }
-    if (TOOLS_LINE_BASED.includes(newShape.tool)) {
-      SET_EVENT_STAGE("CREATE");
-      setTool("LINE");
-    }
-    if (TOOLS_DRAW_BASED.includes(newShape.tool)) {
-      SET_EVENT_STAGE("CREATE");
-      setTool("DRAW");
+      if (TOOLS_BOX_BASED.includes(newShape.tool)) {
+        setTimeout(() => {
+          setShapeId({
+            id: newShape?.id,
+            parentId: newShape?.parentId,
+          });
+        }, 10);
+        SET_EVENT_STAGE("IDLE");
+        setTool("MOVE");
+      }
+      if (TOOLS_LINE_BASED.includes(newShape.tool)) {
+        SET_EVENT_STAGE("CREATE");
+        setTool("LINE");
+      }
+      if (TOOLS_DRAW_BASED.includes(newShape.tool)) {
+        SET_EVENT_STAGE("CREATE");
+        setTool("DRAW");
+      }
     }
     SET_CLEAR_CITEM();
   };
