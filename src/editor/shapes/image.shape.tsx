@@ -28,6 +28,8 @@ export const ShapeImage = ({ options, shape }: IShapeWithEvents) => {
 
   const handleMouseDown = (e: React.MouseEvent) => {
     if (!isSelected) return;
+    e.stopPropagation();
+
     setDragging(true);
     setOffset({
       x: e.clientX - box.x,
@@ -37,6 +39,7 @@ export const ShapeImage = ({ options, shape }: IShapeWithEvents) => {
 
   const handleMouseMove = (e: React.MouseEvent) => {
     if (!isSelected) return;
+    e.stopPropagation();
 
     if (!dragging) return;
     setBox({

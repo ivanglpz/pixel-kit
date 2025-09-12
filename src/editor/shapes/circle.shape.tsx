@@ -26,6 +26,8 @@ export const ShapeCircle = ({ shape: item, options }: IShapeWithEvents) => {
   const isSelected = shapeId.some((w) => w.id === box.id);
 
   const handleMouseDown = (e: React.MouseEvent) => {
+    e.stopPropagation();
+
     setDragging(true);
     setOffset({
       x: e.clientX - box.x,
@@ -34,6 +36,8 @@ export const ShapeCircle = ({ shape: item, options }: IShapeWithEvents) => {
   };
 
   const handleMouseMove = (e: React.MouseEvent) => {
+    e.stopPropagation();
+
     if (!dragging) return;
     setBox({
       ...box,
