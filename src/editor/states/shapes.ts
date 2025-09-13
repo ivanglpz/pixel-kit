@@ -308,6 +308,8 @@ export const EVENT_DOWN_COPY = atom(
       selectedIds.some((w) => w.id === shape.id)
     );
 
+    //
+
     const recursiveCloneShape = (
       shape: ALL_SHAPES,
       parentId: string | null = null,
@@ -316,21 +318,23 @@ export const EVENT_DOWN_COPY = atom(
       const state = get(shape.state);
       const newId = uuidv4(); // Generamos un nuevo ID
 
-      // Clonamos los children recursivamente pasando el nuevo ID como parentId
-      const updatedChildren = get(state.children).map((child) =>
-        recursiveCloneShape(child, newId)
-      );
-
       return {
-        // ...shape,
-        // id: newId, // asignamos el nuevo ID
-        // state: atom({
         ...cloneDeep(state),
         ...offset,
         id: newId, // también en el state
         parentId, // el parentId que viene del nivel superior
-        children: atom(updatedChildren),
-        // }),
+        children: atom<ALL_SHAPES[]>(
+          get(state.children)?.map((i) => {
+            const newElement = recursiveCloneShape(i, newId);
+            return {
+              ...i,
+              id: newElement.id,
+              tool: newElement.tool,
+              pageId: get(PAGE_ID_ATOM),
+              state: atom(newElement),
+            };
+          })
+        ),
       };
     };
     const newShapes = shapesSelected.map((shape) => {
