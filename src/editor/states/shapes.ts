@@ -358,7 +358,6 @@ export const EVENT_DOWN_COPY = atom(
     //     set(ALL_SHAPES_ATOM, [...get(ALL_SHAPES_ATOM), element]);
     //   }
     // }
-    console.log(newShapes, "newShapes");
 
     set(RESET_SHAPES_IDS_ATOM);
     set(CREATE_CURRENT_ITEM_ATOM, newShapes);
