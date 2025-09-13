@@ -354,6 +354,8 @@ export const EVENT_DOWN_COPY = atom(
     //     set(ALL_SHAPES_ATOM, [...get(ALL_SHAPES_ATOM), element]);
     //   }
     // }
+    console.log(newShapes, "newShapes");
+
     set(RESET_SHAPES_IDS_ATOM);
     set(CREATE_CURRENT_ITEM_ATOM, newShapes);
     set(TOOL_ATOM, "MOVE");
@@ -430,14 +432,54 @@ export const EVENT_MOVING_SHAPE = atom(
 
 export const CREATE_SHAPE_ATOM = atom(null, (get, set, args: IShape) => {
   if (!args || !args?.id) return;
+  if (args.parentId) {
+    const FIND_SHAPE = get(PLANE_SHAPES_ATOM).find(
+      (e) => e.id === args.parentId
+    );
+    if (!FIND_SHAPE) return;
+
+    const currentChildren = get(get(FIND_SHAPE.state).children);
+
+    const newElement = {
+      ...get(FIND_SHAPE.state),
+      children: atom([
+        ...currentChildren,
+        {
+          id: args?.id,
+          tool: args?.tool,
+          state: atom({
+            ...args,
+            children: atom(
+              args?.children ? get(args.children) : ([] as ALL_SHAPES[])
+            ),
+          }),
+          pageId: get(PAGE_ID_ATOM),
+        },
+      ]),
+    };
+
+    set(FIND_SHAPE.state, newElement);
+    set(NEW_UNDO_REDO, {
+      shapes: [
+        {
+          ...FIND_SHAPE,
+          state: atom(newElement),
+          pageId: get(PAGE_ID_ATOM),
+        },
+      ],
+      type: "CREATE",
+    });
+    return;
+  }
+
+  const result = args?.children ? get(args?.children) : [];
+
   const newAllShape: ALL_SHAPES = {
     id: args?.id,
     tool: args?.tool,
     state: atom({
       ...args,
-      children: atom(
-        args?.children ? get(args.children) : ([] as ALL_SHAPES[])
-      ),
+      children: atom(result),
     }),
     pageId: get(PAGE_ID_ATOM),
   };
