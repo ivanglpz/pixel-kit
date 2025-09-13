@@ -1,22 +1,18 @@
 import { IKeyTool } from "../states/tool";
-import ShapeBox from "./box.shape";
-import { ShapeCircle } from "./circle.shape";
-import { ShapeDraw } from "./drawn.shape";
-import { ShapeImage } from "./image.shape";
-import { ShapeLine } from "./line.shape";
-import { ShapeText } from "./text.shape";
-import { IShapeWithEvents } from "./type.shape";
+import SHAPE_BOX from "./box.shape";
+import { SHAPE_CIRCLE } from "./circle.shape";
+import { SHAPE_IMAGE } from "./image.shape";
+import { SHAPE_TEXT } from "./text.shape";
+import { ShapeProps } from "./type.shape";
 
-export type IMapperElements = {
-  [key in IKeyTool]?: (item: IShapeWithEvents) => JSX.Element | null;
+export type SHAPES_BY_KEY = {
+  [key in IKeyTool]?: (item: ShapeProps) => JSX.Element | null;
 };
 
-export const Shapes: IMapperElements = {
-  BOX: ShapeBox,
-  TEXT: ShapeText,
-  CIRCLE: ShapeCircle,
-  LINE: ShapeLine,
-  IMAGE: ShapeImage,
-  DRAW: ShapeDraw,
-  GROUP: ShapeBox,
+export const SHAPES: SHAPES_BY_KEY = {
+  BOX: SHAPE_BOX,
+  TEXT: SHAPE_TEXT,
+  CIRCLE: SHAPE_CIRCLE,
+  IMAGE: SHAPE_IMAGE,
+  GROUP: SHAPE_BOX,
 };

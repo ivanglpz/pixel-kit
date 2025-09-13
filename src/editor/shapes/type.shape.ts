@@ -1,5 +1,4 @@
 import { PrimitiveAtom } from "jotai";
-import { FC } from "react";
 import { ALL_SHAPES } from "../states/shapes";
 import { IKeyMethods } from "../states/tool";
 
@@ -125,9 +124,7 @@ export type IShape = {
   children: PrimitiveAtom<ALL_SHAPES[]> & WithInitialValue<ALL_SHAPES[]>;
 };
 
-export type IShapeWithEvents = {
+export type ShapeProps = {
   shape: ALL_SHAPES;
   options?: Partial<Exclude<IShape, "children">>;
 };
-
-export type FCShapeWEvents = FC<IShapeWithEvents>;

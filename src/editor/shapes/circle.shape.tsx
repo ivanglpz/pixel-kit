@@ -4,16 +4,11 @@ import { useState } from "react";
 import { constants } from "../constants/color";
 import { SHAPE_IDS_ATOM } from "../states/shape";
 import { apply } from "./apply";
-import { Shapes } from "./shapes";
+import { SHAPES } from "./shapes";
 import { sizeStyles } from "./size";
-import {
-  FCShapeWEvents,
-  IShape,
-  IShapeWithEvents,
-  WithInitialValue,
-} from "./type.shape";
+import { IShape, ShapeProps, WithInitialValue } from "./type.shape";
 
-export const ShapeCircle = ({ shape: item, options }: IShapeWithEvents) => {
+export const SHAPE_CIRCLE = ({ shape: item, options }: ShapeProps) => {
   const [box, setBox] = useAtom(
     item.state as PrimitiveAtom<IShape> & WithInitialValue<IShape>
   );
@@ -53,7 +48,10 @@ export const ShapeCircle = ({ shape: item, options }: IShapeWithEvents) => {
   const childrens = useAtomValue(box.children);
 
   const children = childrens?.map((item) => {
-    const Component = Shapes?.[item?.tool] as FCShapeWEvents;
+    const Component = SHAPES?.[item?.tool];
+    if (!Component) {
+      return null;
+    }
     return (
       <Component
         shape={item}

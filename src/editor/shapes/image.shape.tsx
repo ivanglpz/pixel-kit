@@ -9,9 +9,9 @@ import { constants } from "../constants/color";
 import { SHAPE_IDS_ATOM } from "../states/shape";
 import { apply } from "./apply";
 import { sizeStyles } from "./size";
-import { IShape, IShapeWithEvents, WithInitialValue } from "./type.shape";
+import { IShape, ShapeProps, WithInitialValue } from "./type.shape";
 
-export const ShapeImage = ({ options, shape }: IShapeWithEvents) => {
+export const SHAPE_IMAGE = ({ options, shape }: ShapeProps) => {
   const [box, setBox] = useAtom(
     shape.state as PrimitiveAtom<IShape> & WithInitialValue<IShape>
   );

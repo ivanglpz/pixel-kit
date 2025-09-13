@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react/display-name */
 import { PrimitiveAtom, useAtom, useSetAtom } from "jotai";
-import { IShape, IShapeWithEvents, WithInitialValue } from "./type.shape";
+import { IShape, ShapeProps, WithInitialValue } from "./type.shape";
 /* eslint-disable react/display-name */
 import { useState } from "react";
 import { constants } from "../constants/color";
@@ -11,7 +11,7 @@ import { PAUSE_MODE_ATOM } from "../states/tool";
 import { apply } from "./apply";
 import { sizeStyles } from "./size";
 
-export const ShapeText = ({ shape: item, options }: IShapeWithEvents) => {
+export const SHAPE_TEXT = ({ shape: item, options }: ShapeProps) => {
   const [box, setBox] = useAtom(
     item.state as PrimitiveAtom<IShape> & WithInitialValue<IShape>
   );

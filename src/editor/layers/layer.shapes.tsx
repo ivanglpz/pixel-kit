@@ -1,6 +1,5 @@
 import { useAtomValue } from "jotai";
-import { Shapes } from "../shapes/shapes";
-import { FCShapeWEvents } from "../shapes/type.shape";
+import { SHAPES } from "../shapes/shapes";
 import ALL_SHAPES_ATOM from "../states/shapes";
 
 export const LayerShapes = () => {
@@ -24,48 +23,13 @@ export const LayerShapes = () => {
 
   return (
     <>
-      {/* <Layer id="layer-shapes" ref={lyRef}> */}
       {ALL_SHAPES?.map((item) => {
-        const Component = Shapes?.[item?.tool] as FCShapeWEvents;
+        const Component = SHAPES?.[item?.tool];
+        if (!Component) {
+          return null;
+        }
         return <Component shape={item} key={`pixel-kit-shapes-${item?.id}`} />;
       })}
-      {/* Transformer */}
-      {/* <Transformer
-          id="transformer-editable"
-          ref={trRef}
-          anchorSize={10}
-          borderStroke={constants.theme.colors.primary}
-          borderStrokeWidth={2}
-          anchorCornerRadius={2}
-          keepRatio={false}
-          onTransformEnd={() => {
-            setUpdateUndoRedo();
-          }}
-          onDragEnd={() => {
-            setUpdateUndoRedo();
-          }}
-          anchorStroke={constants.theme.colors.primary}
-          boundBoxFunc={(oldBox, newBox) => {
-            // Limitar el tamaño mínimo
-            if (newBox.width < 5 || newBox.height < 5) {
-              return oldBox;
-            }
-            return newBox;
-          }}
-        /> */}
-      {/* Rectángulo de selección */}
-      {/* {selection && selection.visible && (
-          <Rect
-            x={selection.x}
-            y={selection.y}
-            width={selection.width}
-            height={selection.height}
-            fill={constants.theme.colors.background}
-            stroke={constants.theme.colors.primary}
-            strokeWidth={1.5}
-          />
-        )} */}
-      {/* </Layer> */}
     </>
   );
 };
