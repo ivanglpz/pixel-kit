@@ -20,7 +20,12 @@ export const LayerPipe = () => {
               layoutShapes={[]}
               shape={{
                 id: "1",
-                state: atom({ ...item, children: atom([] as ALL_SHAPES[]) }),
+                state: atom({
+                  ...item,
+                  children: item.children
+                    ? item.children
+                    : atom([] as ALL_SHAPES[]),
+                }),
                 pageId: "main-image-render-stage",
                 tool: item.tool,
               }}
