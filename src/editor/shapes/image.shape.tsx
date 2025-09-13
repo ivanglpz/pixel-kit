@@ -8,6 +8,7 @@ import { PrimitiveAtom, useAtom } from "jotai";
 import { constants } from "../constants/color";
 import { SHAPE_IDS_ATOM } from "../states/shape";
 import { apply } from "./apply";
+import { sizeStyles } from "./size";
 import { IShape, IShapeWithEvents, WithInitialValue } from "./type.shape";
 
 export const ShapeImage = ({ options, shape }: IShapeWithEvents) => {
@@ -58,7 +59,7 @@ export const ShapeImage = ({ options, shape }: IShapeWithEvents) => {
   if (!box.visible) return null;
 
   return (
-    <div
+    <section
       onClick={(e) => {
         e.stopPropagation();
 
@@ -78,9 +79,8 @@ export const ShapeImage = ({ options, shape }: IShapeWithEvents) => {
         position: options?.isLayout ? "static" : "absolute",
         top: box.y,
         left: box.x,
-        width: box.width,
-        height: box.height,
         display: "flex",
+        ...sizeStyles(box),
       }}
     >
       <img
@@ -98,6 +98,6 @@ export const ShapeImage = ({ options, shape }: IShapeWithEvents) => {
           pointerEvents: "none",
         }}
       />
-    </div>
+    </section>
   );
 };

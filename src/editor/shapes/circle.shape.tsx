@@ -5,6 +5,7 @@ import { constants } from "../constants/color";
 import { SHAPE_IDS_ATOM } from "../states/shape";
 import { apply } from "./apply";
 import { Shapes } from "./shapes";
+import { sizeStyles } from "./size";
 import {
   FCShapeWEvents,
   IShape,
@@ -88,9 +89,8 @@ export const ShapeCircle = ({ shape: item, options }: IShapeWithEvents) => {
           position: options?.isLayout ? "static" : "absolute",
           top: box.y,
           left: box.x,
-          width: box.width,
-          height: box.height,
           display: "flex",
+          ...sizeStyles(box),
         }}
       >
         <div

@@ -9,6 +9,7 @@ import { SHAPE_IDS_ATOM } from "../states/shape";
 import { TEXT_WRITING_IDS } from "../states/text";
 import { PAUSE_MODE_ATOM } from "../states/tool";
 import { apply } from "./apply";
+import { sizeStyles } from "./size";
 
 export const ShapeText = ({ shape: item, options }: IShapeWithEvents) => {
   const [box, setBox] = useAtom(
@@ -55,7 +56,7 @@ export const ShapeText = ({ shape: item, options }: IShapeWithEvents) => {
   if (!box.visible) return null;
 
   return (
-    <div
+    <section
       id={box?.id}
       onClick={(e) => {
         e.stopPropagation();
@@ -76,12 +77,11 @@ export const ShapeText = ({ shape: item, options }: IShapeWithEvents) => {
         position: options?.isLayout ? "static" : "absolute",
         top: box.y,
         left: box.x,
-        width: box.width,
-        height: box.height,
+
         display: "flex",
         flexDirection: "column",
-        fontSize: box.fontSize,
         overflow: "hidden",
+        ...sizeStyles(box),
       }}
     >
       {textIds?.includes(box.id) ? (
@@ -133,6 +133,6 @@ export const ShapeText = ({ shape: item, options }: IShapeWithEvents) => {
           {box.text}
         </p>
       )}
-    </div>
+    </section>
   );
 };
