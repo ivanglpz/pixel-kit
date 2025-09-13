@@ -87,9 +87,11 @@ export const SHAPE_IMAGE = ({ options, shape }: ShapeProps) => {
         src={fill?.image?.src}
         alt={`image-${box.id}`}
         style={{
-          width: box.width,
-          height: box.height,
+          width: "100%",
+          height: "100%",
           opacity: box.opacity,
+          objectFit: "contain",
+          objectPosition: "left",
           ...apply.backgroundColor(box),
           ...apply.borderRadius(box),
           ...apply.stroke(box),
