@@ -43,8 +43,8 @@ const configs: { [key in MODE]: Config } = {
     show_clip_config: false,
     expand_stage: true,
     expand_stage_resolution: {
-      width: 7680,
-      height: 4320,
+      width: 3840,
+      height: 2160,
     },
     tools: [
       {
