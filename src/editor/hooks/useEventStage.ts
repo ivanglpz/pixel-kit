@@ -8,10 +8,7 @@ import { useEffect } from "react";
 import { v4 as uuidv4 } from "uuid";
 import stageAbsolutePosition from "../helpers/position";
 import { CreateShapeSchema } from "../helpers/shape-schema";
-import CURRENT_ITEM_ATOM, {
-  CLEAR_CURRENT_ITEM_ATOM,
-} from "../states/currentItem";
-import { DRAW_START_CONFIG_ATOM } from "../states/drawing";
+import { CLEAR_CURRENT_ITEM_ATOM } from "../states/currentItem";
 import { EVENT_ATOM } from "../states/event";
 import { RECTANGLE_SELECTION_ATOM } from "../states/rectangle-selection";
 import { SHAPE_IDS_ATOM, UPDATE_SHAPES_IDS_ATOM } from "../states/shape";
@@ -34,16 +31,11 @@ import { useReference } from "./useReference";
 export const useEventStage = () => {
   // ===== STATE HOOKS =====
   const [tool, setTool] = useAtom(TOOL_ATOM);
-  const [shapeId, setShapeId] = useAtom(SHAPE_IDS_ATOM);
-  const [CURRENT_ITEM, SET_UPDATE_CITEM] = useAtom(CURRENT_ITEM_ATOM);
+  const shapeId = useAtomValue(SHAPE_IDS_ATOM);
   const [EVENT_STAGE, SET_EVENT_STAGE] = useAtom(EVENT_ATOM);
-  console.log(EVENT_STAGE, "EVENT_STAGE");
-  console.log(CURRENT_ITEM, "CURRENT_ITEM");
 
   // ===== READ-ONLY STATE =====
   const PAUSE = useAtomValue(PAUSE_MODE_ATOM);
-
-  const drawConfig = useAtomValue(DRAW_START_CONFIG_ATOM);
 
   const { config } = useConfiguration();
 
@@ -88,7 +80,7 @@ export const useEventStage = () => {
       SET_EVENT_DOWN({ x, y });
     }
     if (EVENT_STAGE === "COPY") {
-      SET_EVENT_DOWN_COPY();
+      SET_EVENT_DOWN_COPY({ x, y });
     }
   };
 
