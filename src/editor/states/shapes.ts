@@ -373,11 +373,8 @@ export const EVENT_UP_SHAPES = atom(null, (get, set) => {
     set(CREATE_SHAPE_ATOM, newShape);
   }
 
-  // const SHAPES_IDS = get(SHAPE_IDS_ATOM);
+setTimeout(() => {
 
-  set(TOOL_ATOM, "MOVE");
-  set(EVENT_ATOM, "IDLE");
-  set(CLEAR_CURRENT_ITEM_ATOM);
   set(
     UPDATE_SHAPES_IDS_ATOM,
     CURRENT_ITEMS?.map((e) => ({
@@ -385,6 +382,10 @@ export const EVENT_UP_SHAPES = atom(null, (get, set) => {
       parentId: e?.parentId,
     }))
   );
+}, 10);
+  set(TOOL_ATOM, "MOVE");
+  set(EVENT_ATOM, "IDLE");
+  set(CLEAR_CURRENT_ITEM_ATOM);
 });
 
 export const EVENT_COPYING_SHAPES = atom(
@@ -435,7 +436,11 @@ export const EVENT_MOVING_SHAPE = atom(
 
 export const CREATE_SHAPE_ATOM = atom(null, (get, set, args: IShape) => {
   if (!args || !args?.id) return;
+  console.log(args, "ENTRANDO");
+
   if (args.parentId) {
+    console.log("ENTRANDO AQUI");
+
     const FIND_SHAPE = get(PLANE_SHAPES_ATOM).find(
       (e) => e.id === args.parentId
     );
