@@ -149,9 +149,7 @@ export const Nodes = ({
             label: "Move to Group",
             icon: <Group size={14} />,
             onClick: () => setMove(shape.id),
-            isEnabled:
-              shape.tool === "GROUP" &&
-              shapeId.filter((shp) => shp.id !== shape.id)?.length > 0,
+            isEnabled: true,
           },
           {
             label: "Rename",

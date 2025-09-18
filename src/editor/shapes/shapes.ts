@@ -1,5 +1,4 @@
 import { IKeyTool } from "../states/tool";
-import ShapeBox from "./box.shape";
 import { ShapeCircle } from "./circle.shape";
 import { ShapeDraw } from "./drawn.shape";
 import { ShapeGroup } from "./group.shape";
@@ -13,7 +12,7 @@ export type IMapperElements = {
 };
 
 export const Shapes: IMapperElements = {
-  BOX: ShapeBox,
+  BOX: ShapeGroup,
   TEXT: ShapeText,
   CIRCLE: ShapeCircle,
   LINE: ShapeLine,
