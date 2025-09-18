@@ -1,7 +1,7 @@
 import { PrimitiveAtom, useAtomValue } from "jotai";
 import { Group } from "react-konva";
 import { Html } from "react-konva-utils";
-import { SmallChatAI } from "../components/SmallChatAI";
+import { ChatSmallAI } from "../components/SmallChatAI";
 import ShapeBox from "./box.shape";
 import { LayoutFlex } from "./layout-flex";
 import { Shapes } from "./shapes";
@@ -79,7 +79,7 @@ export const ShapeGroup = ({ shape: item }: IShapeWithEvents) => {
           },
         }}
       >
-        <SmallChatAI />
+        <ChatSmallAI />
       </Html>
     </>
   );
