@@ -51,7 +51,7 @@ export const ShapeLine = ({ shape: item }: IShapeWithEvents) => {
         stroke={box?.strokes?.filter((e) => e?.visible)?.at(0)?.color}
         strokeWidth={strokeWidth}
         strokeEnabled={box.strokeWidth > 0}
-        dash={[dash, dash, dash, dash]}
+        dash={[box.dash]}
         dashEnabled={box?.dash > 0}
         cornerRadius={
           !box?.isAllBorderRadius

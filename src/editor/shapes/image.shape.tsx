@@ -135,7 +135,7 @@ export const ShapeImage = (props: IShapeWithEvents) => {
         stroke={box?.strokes?.filter((e) => e?.visible)?.at(0)?.color}
         strokeWidth={strokeWidth}
         strokeEnabled={box.strokeWidth > 0}
-        dash={[dash, dash, dash, dash]}
+        dash={[box.dash]}
         dashEnabled={box?.dash > 0}
         // 6. Crop (object-fit: cover)
         crop={cropConfig}
