@@ -47,11 +47,7 @@ export const LayerShapes = () => {
         {ALL_SHAPES?.map((item) => {
           const Component = Shapes?.[item?.tool] as FCShapeWEvents;
           return (
-            <Component
-              layoutShapes={ALL_SHAPES}
-              shape={item}
-              key={`pixel-kit-shapes-${item?.id}`}
-            />
+            <Component shape={item} key={`pixel-kit-shapes-${item?.id}`} />
           );
         })}
         {/* Transformer */}

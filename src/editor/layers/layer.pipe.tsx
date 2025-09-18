@@ -17,7 +17,6 @@ export const LayerPipe = () => {
           const Component = Shapes?.[item?.tool] as FCShapeWEvents;
           return (
             <Component
-              layoutShapes={[]}
               shape={{
                 id: "1",
                 state: atom({
