@@ -34,6 +34,8 @@ export const LayerImage = () => {
     align: "center",
     tool: "IMAGE",
     visible: true,
+    offsetX: 0,
+    offsetY: 0,
     isLocked: true,
     dash: 0,
     rotation: 0,
