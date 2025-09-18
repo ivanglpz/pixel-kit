@@ -1,8 +1,25 @@
 import { IShape } from "@/editor/shapes/type.shape";
 import { atom, PrimitiveAtom } from "jotai";
+import { v4 as uuidv4 } from "uuid";
+import {
+  cloneDeep,
+  CreateShapeSchema,
+  UpdateShapeDimension,
+} from "../helpers/shape-schema";
+import { capitalize } from "../utils/capitalize";
+import CURRENT_ITEM_ATOM, {
+  CLEAR_CURRENT_ITEM_ATOM,
+  CREATE_CURRENT_ITEM_ATOM,
+} from "./currentItem";
+import { DRAW_START_CONFIG_ATOM } from "./drawing";
+import { EVENT_ATOM } from "./event";
 import { CURRENT_PAGE, PAGE_ID_ATOM } from "./pages";
-import { SHAPE_IDS_ATOM } from "./shape";
-import { IKeyMethods } from "./tool";
+import {
+  RESET_SHAPES_IDS_ATOM,
+  SHAPE_IDS_ATOM,
+  UPDATE_SHAPES_IDS_ATOM,
+} from "./shape";
+import TOOL_ATOM, { IKeyMethods } from "./tool";
 import { NEW_UNDO_REDO } from "./undo-redo";
 
 export type WithInitialValue<Value> = {
@@ -14,6 +31,11 @@ export type ALL_SHAPES = {
   pageId: string;
   state: PrimitiveAtom<IShape> & WithInitialValue<IShape>;
 };
+
+const TOOLS_BOX_BASED = ["BOX", "CIRCLE", "IMAGE", "TEXT", "GROUP"];
+const TOOLS_DRAW_BASED = ["DRAW"];
+const TOOLS_LINE_BASED = ["LINE"];
+export const DELETE_KEYS = ["DELETE", "BACKSPACE"];
 
 export const ALL_SHAPES_ATOM = atom(
   (get) => {
@@ -230,16 +252,242 @@ export const MOVE_SHAPES_TO_ROOT = atom(null, (get, set) => {
   });
 });
 
+export const EVENT_DOWN_SHAPES = atom(
+  null,
+  (get, set, args: { x: number; y: number }) => {
+    const { x, y } = args;
+    const drawConfig = get(DRAW_START_CONFIG_ATOM);
+    const tool = get(TOOL_ATOM);
+    if (TOOLS_BOX_BASED.includes(tool)) {
+      const createStartElement = CreateShapeSchema({
+        tool: tool as IShape["tool"],
+        x,
+        y,
+        id: uuidv4(),
+        label: capitalize(tool),
+      });
+      set(CREATE_CURRENT_ITEM_ATOM, [createStartElement]);
+    }
+    if (TOOLS_LINE_BASED.includes(tool)) {
+      const createStartElement = CreateShapeSchema({
+        ...drawConfig,
+        tool: tool as IShape["tool"],
+        x: 0,
+        y: 0,
+        points: [x, y],
+        id: uuidv4(),
+        label: capitalize(tool),
+      });
+      set(CREATE_CURRENT_ITEM_ATOM, [createStartElement]);
+    }
+    if (TOOLS_DRAW_BASED.includes(tool)) {
+      const createStartElement = CreateShapeSchema({
+        ...drawConfig,
+        tool: tool as IShape["tool"],
+        x: 0,
+        y: 0,
+        points: [x, y, x, y],
+        id: uuidv4(),
+        label: capitalize(tool),
+      });
+      set(CREATE_CURRENT_ITEM_ATOM, [createStartElement]);
+    }
+    set(TOOL_ATOM, "MOVE");
+    set(EVENT_ATOM, "CREATING");
+  }
+);
+export const EVENT_DOWN_COPY = atom(
+  null,
+  (get, set, args: { x: number; y: number }) => {
+    const rootShapes = get(PLANE_SHAPES_ATOM);
+    const selectedIds = get(SHAPE_IDS_ATOM);
+
+    if (!rootShapes) return [];
+
+    const shapesSelected = rootShapes.filter((shape) =>
+      selectedIds.some((w) => w.id === shape.id)
+    );
+
+    //
+
+    const recursiveCloneShape = (
+      shape: ALL_SHAPES,
+      parentId: string | null = null,
+      offset?: { offsetX: number; offsetY: number }
+    ): IShape => {
+      const state = get(shape.state);
+      const newId = uuidv4(); // Generamos un nuevo ID
+
+      return {
+        ...cloneDeep(state),
+        ...offset,
+        id: newId, // también en el state
+        parentId, // el parentId que viene del nivel superior
+        children: atom<ALL_SHAPES[]>(
+          get(state.children)?.map((i) => {
+            const newElement = recursiveCloneShape(i, newId);
+            return {
+              ...i,
+              id: newElement.id,
+              tool: newElement.tool,
+              pageId: get(PAGE_ID_ATOM),
+              state: atom(newElement),
+            };
+          })
+        ),
+      };
+    };
+    const newShapes = shapesSelected.map((shape) => {
+      const offsetX = args.x - get(shape.state).x;
+      const offsetY = args.y - get(shape.state).y;
+      return recursiveCloneShape(shape, get(shape.state).parentId, {
+        offsetX,
+        offsetY,
+      });
+    });
+
+    // for (const element of newShapes) {
+    //   if (get(element.state).parentId) {
+    //     const FIND_SHAPE = PLANE_SHAPES?.find(
+    //       (w) => w.id === get(element.state).parentId
+    //     );
+    //     if (!FIND_SHAPE) continue;
+    //     const children = get(FIND_SHAPE.state).children;
+    //     set(children, [...get(children), element]);
+    //   } else {
+    //     set(ALL_SHAPES_ATOM, [...get(ALL_SHAPES_ATOM), element]);
+    //   }
+    // }
+
+    set(RESET_SHAPES_IDS_ATOM);
+    set(CREATE_CURRENT_ITEM_ATOM, newShapes);
+    set(TOOL_ATOM, "MOVE");
+    set(EVENT_ATOM, "COPYING");
+    // return newShapes;
+  }
+);
+
+export const EVENT_UP_SHAPES = atom(null, (get, set) => {
+  const CURRENT_ITEMS = get(CURRENT_ITEM_ATOM);
+  for (const newShape of CURRENT_ITEMS) {
+    set(CREATE_SHAPE_ATOM, newShape);
+  }
+
+setTimeout(() => {
+
+  set(
+    UPDATE_SHAPES_IDS_ATOM,
+    CURRENT_ITEMS?.map((e) => ({
+      id: e?.id,
+      parentId: e?.parentId,
+    }))
+  );
+}, 10);
+  set(TOOL_ATOM, "MOVE");
+  set(EVENT_ATOM, "IDLE");
+  set(CLEAR_CURRENT_ITEM_ATOM);
+});
+
+export const EVENT_COPYING_SHAPES = atom(
+  null,
+  (get, set, args: { x: number; y: number }) => {
+    const CURRENT_ITEMS = get(CURRENT_ITEM_ATOM);
+
+    const items = CURRENT_ITEMS?.map((i) => {
+      return {
+        ...i,
+        x: args.x - i.offsetX,
+        y: args.y - i.offsetY,
+      };
+    });
+    set(CURRENT_ITEM_ATOM, items);
+  }
+);
+
+export const EVENT_MOVING_SHAPE = atom(
+  null,
+  (get, set, args: { x: number; y: number }) => {
+    const { x, y } = args;
+    const CURRENT_ITEMS = get(CURRENT_ITEM_ATOM);
+
+    const newShape = CURRENT_ITEMS.at(0);
+    if (!newShape) return;
+
+    if (TOOLS_BOX_BASED.includes(newShape.tool)) {
+      const updateShape = UpdateShapeDimension(x, y, newShape);
+      set(CURRENT_ITEM_ATOM, [updateShape]);
+    }
+    if (TOOLS_LINE_BASED.includes(newShape.tool)) {
+      const updateShape = UpdateShapeDimension(x, y, {
+        ...newShape,
+        points: [newShape?.points?.[0] ?? 0, newShape?.points?.[1] ?? 0, x, y],
+      });
+      set(CURRENT_ITEM_ATOM, [updateShape]);
+    }
+    if (TOOLS_DRAW_BASED.includes(newShape.tool)) {
+      const updateShape = UpdateShapeDimension(x, y, {
+        ...newShape,
+        points: newShape.points?.concat([x, y]),
+      });
+      set(CURRENT_ITEM_ATOM, [updateShape]);
+    }
+  }
+);
+
 export const CREATE_SHAPE_ATOM = atom(null, (get, set, args: IShape) => {
   if (!args || !args?.id) return;
+  console.log(args, "ENTRANDO");
+
+  if (args.parentId) {
+    console.log("ENTRANDO AQUI");
+
+    const FIND_SHAPE = get(PLANE_SHAPES_ATOM).find(
+      (e) => e.id === args.parentId
+    );
+    if (!FIND_SHAPE) return;
+
+    const currentChildren = get(get(FIND_SHAPE.state).children);
+
+    const newElement = {
+      ...get(FIND_SHAPE.state),
+      children: atom([
+        ...currentChildren,
+        {
+          id: args?.id,
+          tool: args?.tool,
+          state: atom({
+            ...args,
+            children: atom(
+              args?.children ? get(args.children) : ([] as ALL_SHAPES[])
+            ),
+          }),
+          pageId: get(PAGE_ID_ATOM),
+        },
+      ]),
+    };
+
+    set(FIND_SHAPE.state, newElement);
+    set(NEW_UNDO_REDO, {
+      shapes: [
+        {
+          ...FIND_SHAPE,
+          state: atom(newElement),
+          pageId: get(PAGE_ID_ATOM),
+        },
+      ],
+      type: "CREATE",
+    });
+    return;
+  }
+
+  const result = args?.children ? get(args?.children) : [];
+
   const newAllShape: ALL_SHAPES = {
     id: args?.id,
     tool: args?.tool,
     state: atom({
       ...args,
-      children: atom(
-        args?.children ? get(args.children) : ([] as ALL_SHAPES[])
-      ),
+      children: atom(result),
     }),
     pageId: get(PAGE_ID_ATOM),
   };
