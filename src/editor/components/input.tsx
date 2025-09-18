@@ -1,6 +1,6 @@
 import { css } from "@stylespixelkit/css";
 import { useSetAtom } from "jotai";
-import { ReactNode } from "react";
+import { CSSProperties, ReactNode } from "react";
 import { PAUSE_MODE_ATOM } from "../states/tool";
 
 const Label = ({ text }: { text: string }) => {
@@ -125,6 +125,8 @@ const NumberComponent = ({
 type InputTextProps = {
   value: string;
   onChange: (value: string) => void;
+  style?: CSSProperties;
+  placeholder?: string;
 };
 
 const TextComponent = ({ onChange, value }: InputTextProps) => {
@@ -147,6 +149,37 @@ const TextComponent = ({ onChange, value }: InputTextProps) => {
         borderRadius: "md",
         fontSize: "sm",
       })}
+    />
+  );
+};
+
+export const TextArea = ({
+  onChange,
+  value,
+  style,
+  placeholder,
+}: InputTextProps) => {
+  const setPause = useSetAtom(PAUSE_MODE_ATOM);
+
+  return (
+    <textarea
+      value={value}
+      onChange={(event) => onChange(event.target.value)}
+      onFocus={() => setPause(true)} // Inicia pausa al entrar en el input
+      onBlur={() => setPause(false)} // Quita pausa al salir del input
+      placeholder={placeholder}
+      className={css({
+        width: "100%",
+        height: "100%",
+        flex: 1,
+        backgroundColor: "transparent",
+        color: "text",
+        padding: "sm",
+        borderRadius: "md",
+        fontSize: "sm",
+        resize: "vertical", // permite ajustar el tamaño vertical
+      })}
+      style={style}
     />
   );
 };
@@ -217,4 +250,5 @@ export const Input = {
   Text: TextComponent,
   Color: ColorComponent,
   IconContainer,
+  TextArea,
 };
