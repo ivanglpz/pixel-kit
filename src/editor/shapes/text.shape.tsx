@@ -8,6 +8,8 @@ import { useAtomValue } from "jotai";
 import { STAGE_DIMENSION_ATOM } from "../states/dimension";
 import { SHAPE_IDS_ATOM } from "../states/shape";
 
+import { Html } from "react-konva-utils";
+import { ChatSmallAI } from "../components/SmallChatAI";
 import { coordinatesShapeMove, shapeEventDragMove } from "./events.shape";
 export const ShapeText = ({ shape: item }: IShapeWithEvents) => {
   const [box, setBox] = useAtom(
@@ -110,6 +112,17 @@ export const ShapeText = ({ shape: item }: IShapeWithEvents) => {
           });
         }}
       />
+      <Html
+        divProps={{
+          style: {
+            position: "absolute",
+            top: y + "px",
+            left: width + x + 10 + "px",
+          },
+        }}
+      >
+        <ChatSmallAI />
+      </Html>
     </>
   );
 };

@@ -4,7 +4,7 @@ import { useState } from "react";
 import { constants } from "../constants/color";
 import { Input } from "./input";
 
-export const SmallChatAI = () => {
+export const ChatSmallAI = () => {
   const [show, setShow] = useState(false);
   const [text, setText] = useState("");
 
