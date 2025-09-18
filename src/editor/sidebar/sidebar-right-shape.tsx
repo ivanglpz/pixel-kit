@@ -666,6 +666,7 @@ export const LayoutShapeConfig = () => {
                   </Input.IconContainer>
                   <Input.Number
                     step={1}
+                    min={0}
                     value={Number(shape.width) || 0}
                     onChange={(v) => {
                       shapeUpdate({ width: v });
@@ -729,6 +730,7 @@ export const LayoutShapeConfig = () => {
                   </Input.IconContainer>
                   <Input.Number
                     step={1}
+                    min={0}
                     value={Number(shape.height) || 0}
                     onChange={(v) => {
                       shapeUpdate({ height: v });
@@ -1972,6 +1974,7 @@ export const LayoutShapeConfig = () => {
                 />
               </Input.IconContainer>
               <Input.Number
+                min={0}
                 step={1}
                 onChange={(e) => {
                   shapeUpdate({ shadowBlur: e });
@@ -1990,7 +1993,9 @@ export const LayoutShapeConfig = () => {
                 />
               </Input.IconContainer>
               <Input.Number
-                step={1}
+                min={0}
+                max={1}
+                step={0.1}
                 onChange={(e) => {
                   shapeUpdate({ shadowOpacity: e });
                   execute(); // Ejecutar después del cambio
