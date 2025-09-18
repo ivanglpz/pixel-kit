@@ -1,10 +1,8 @@
 import { IShape } from "@/editor/shapes/type.shape";
 import { atom } from "jotai";
-import { v4 as uuidv4 } from "uuid";
-import { cloneDeep } from "../helpers/shape-schema";
 import { EVENT_ATOM } from "./event";
 import { CURRENT_PAGE, IPageShapeIds } from "./pages";
-import ALL_SHAPES_ATOM, { ALL_SHAPES, PLANE_SHAPES_ATOM } from "./shapes";
+import { PLANE_SHAPES_ATOM } from "./shapes";
 export const SHAPE_IDS_ATOM = atom(
   (get) => {
     return get(get(CURRENT_PAGE).SHAPES.ID);
@@ -62,59 +60,6 @@ export const SHAPE_SELECTED_ATOM = atom((get) => {
   return get(shape?.state);
 });
 
-export const GET_SELECTED_SHAPES_ATOM = atom(null, (get, set) => {
-  const rootShapes = get(PLANE_SHAPES_ATOM);
-  const selectedIds = get(SHAPE_IDS_ATOM);
-
-  if (!rootShapes) return [];
-
-  const shapesSelected = rootShapes.filter((shape) =>
-    selectedIds.some((w) => w.id === shape.id)
-  );
-
-  const recursiveCloneShape = (
-    shape: ALL_SHAPES,
-    parentId: string | null = null
-  ): ALL_SHAPES => {
-    const state = get(shape.state);
-    const newId = uuidv4(); // Generamos un nuevo ID
-
-    // Clonamos los children recursivamente pasando el nuevo ID como parentId
-    const updatedChildren = get(state.children).map((child) =>
-      recursiveCloneShape(child, newId)
-    );
-
-    return {
-      ...shape,
-      id: newId, // asignamos el nuevo ID
-      state: atom({
-        ...cloneDeep(state),
-        id: newId, // también en el state
-        parentId, // el parentId que viene del nivel superior
-        children: atom(updatedChildren),
-      }),
-    };
-  };
-  const PLANE_SHAPES = get(PLANE_SHAPES_ATOM);
-  const newShapes = shapesSelected.map((shape) =>
-    recursiveCloneShape(shape, get(shape.state).parentId)
-  );
-
-  for (const element of newShapes) {
-    if (get(element.state).parentId) {
-      const FIND_SHAPE = PLANE_SHAPES?.find(
-        (w) => w.id === get(element.state).parentId
-      );
-      if (!FIND_SHAPE) continue;
-      const children = get(FIND_SHAPE.state).children;
-      set(children, [...get(children), element]);
-    } else {
-      set(ALL_SHAPES_ATOM, [...get(ALL_SHAPES_ATOM), element]);
-    }
-  }
-
-  return;
-});
 export const SHAPE_UPDATE_ATOM = atom(
   null,
   (get, set, args: Partial<IShape>) => {

@@ -20,6 +20,8 @@ const initial: Omit<IShape, "children"> = {
   y: 0,
   tool: "BOX",
   align: "left",
+  offsetX: 0,
+  offsetY: 0,
   verticalAlign: "top",
   paddingBottom: 10,
   paddingTop: 10,

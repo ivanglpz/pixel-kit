@@ -1,5 +1,4 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { IShape } from "@/editor/shapes/type.shape";
 import { SHOW_CLIP_ATOM } from "@/editor/states/clipImage";
 import TOOL_ATOM, { IKeyTool, PAUSE_MODE_ATOM } from "@/editor/states/tool";
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
@@ -8,58 +7,52 @@ import { KonvaEventObject } from "konva/lib/Node";
 import { useEffect } from "react";
 import { v4 as uuidv4 } from "uuid";
 import stageAbsolutePosition from "../helpers/position";
-import {
-  CreateShapeSchema,
-  UpdateShapeDimension,
-} from "../helpers/shape-schema";
-import CURRENT_ITEM_ATOM, {
-  CLEAR_CURRENT_ITEM_ATOM,
-  CREATE_CURRENT_ITEM_ATOM,
-} from "../states/currentItem";
-import { DRAW_START_CONFIG_ATOM } from "../states/drawing";
+import { CreateShapeSchema } from "../helpers/shape-schema";
+import { CLEAR_CURRENT_ITEM_ATOM } from "../states/currentItem";
 import { EVENT_ATOM } from "../states/event";
 import { RECTANGLE_SELECTION_ATOM } from "../states/rectangle-selection";
+import { SHAPE_IDS_ATOM, UPDATE_SHAPES_IDS_ATOM } from "../states/shape";
 import {
-  GET_SELECTED_SHAPES_ATOM,
-  SHAPE_IDS_ATOM,
-  UPDATE_SHAPES_IDS_ATOM,
-} from "../states/shape";
-import { CREATE_SHAPE_ATOM, DELETE_SHAPES_ATOM } from "../states/shapes";
+  CREATE_SHAPE_ATOM,
+  DELETE_KEYS,
+  DELETE_SHAPES_ATOM,
+  EVENT_COPYING_SHAPES,
+  EVENT_DOWN_COPY,
+  EVENT_DOWN_SHAPES,
+  EVENT_MOVING_SHAPE,
+  EVENT_UP_SHAPES,
+} from "../states/shapes";
 import { REDO_ATOM, UNDO_ATOM } from "../states/undo-redo";
-import { capitalize } from "../utils/capitalize";
 import { useConfiguration } from "./useConfiguration";
 import { useReference } from "./useReference";
 
 // ===== CONSTANTS =====
-const TOOLS_BOX_BASED = ["BOX", "CIRCLE", "IMAGE", "TEXT", "GROUP"];
-const TOOLS_DRAW_BASED = ["DRAW"];
-const TOOLS_LINE_BASED = ["LINE"];
-const DELETE_KEYS = ["DELETE", "BACKSPACE"];
 
 export const useEventStage = () => {
   // ===== STATE HOOKS =====
   const [tool, setTool] = useAtom(TOOL_ATOM);
-  const [shapeId, setShapeId] = useAtom(SHAPE_IDS_ATOM);
-  const [CURRENT_ITEM, SET_UPDATE_CITEM] = useAtom(CURRENT_ITEM_ATOM);
+  const shapeId = useAtomValue(SHAPE_IDS_ATOM);
   const [EVENT_STAGE, SET_EVENT_STAGE] = useAtom(EVENT_ATOM);
 
   // ===== READ-ONLY STATE =====
   const PAUSE = useAtomValue(PAUSE_MODE_ATOM);
 
-  const drawConfig = useAtomValue(DRAW_START_CONFIG_ATOM);
-  const selectedShapes = useSetAtom(GET_SELECTED_SHAPES_ATOM);
   const { config } = useConfiguration();
 
   // ===== SETTERS =====
   const SET_CREATE = useSetAtom(CREATE_SHAPE_ATOM);
   const DELETE_SHAPE = useSetAtom(DELETE_SHAPES_ATOM);
   const SET_UPDATE_SHAPES_IDS = useSetAtom(UPDATE_SHAPES_IDS_ATOM);
-  const SET_CREATE_CITEM = useSetAtom(CREATE_CURRENT_ITEM_ATOM);
   const SET_CLEAR_CITEM = useSetAtom(CLEAR_CURRENT_ITEM_ATOM);
   const setshowClip = useSetAtom(SHOW_CLIP_ATOM);
   const [selection, setSelection] = useAtom(RECTANGLE_SELECTION_ATOM);
   const setRedo = useSetAtom(REDO_ATOM);
   const setUndo = useSetAtom(UNDO_ATOM);
+  const SET_EVENT_UP = useSetAtom(EVENT_UP_SHAPES);
+  const SET_EVENT_MOVING_SHAPE = useSetAtom(EVENT_MOVING_SHAPE);
+  const SET_EVENT_COPYING = useSetAtom(EVENT_COPYING_SHAPES);
+  const SET_EVENT_DOWN = useSetAtom(EVENT_DOWN_SHAPES);
+  const SET_EVENT_DOWN_COPY = useSetAtom(EVENT_DOWN_COPY);
   const { ref: Stage } = useReference({ type: "STAGE" });
 
   // ===== MOUSE EVENT HANDLERS =====
@@ -84,10 +77,10 @@ export const useEventStage = () => {
     }
 
     if (EVENT_STAGE === "CREATE") {
-      handleCreateMode(x, y);
+      SET_EVENT_DOWN({ x, y });
     }
     if (EVENT_STAGE === "COPY") {
-      handleCopyMode();
+      SET_EVENT_DOWN_COPY({ x, y });
     }
   };
 
@@ -110,7 +103,10 @@ export const useEventStage = () => {
     }
 
     if (EVENT_STAGE === "CREATING") {
-      handleCreatingMode(x, y);
+      SET_EVENT_MOVING_SHAPE({ x, y });
+    }
+    if (EVENT_STAGE === "COPYING") {
+      SET_EVENT_COPYING({ x, y });
     }
   };
 
@@ -148,109 +144,9 @@ export const useEventStage = () => {
       }, 10);
     }
 
-    if (EVENT_STAGE === "CREATING") {
-      handleCreatingComplete(CURRENT_ITEM);
+    if (EVENT_STAGE === "CREATING" || EVENT_STAGE === "COPYING") {
+      SET_EVENT_UP();
     }
-  };
-
-  // ===== CREATE MODE HANDLERS =====
-  const handleCreateMode = (x: number, y: number) => {
-    SET_EVENT_STAGE("CREATING");
-
-    if (TOOLS_BOX_BASED.includes(tool)) {
-      const createStartElement = CreateShapeSchema({
-        tool: tool as IShape["tool"],
-        x,
-        y,
-        id: uuidv4(),
-        label: capitalize(tool),
-      });
-      SET_CREATE_CITEM([createStartElement]);
-    }
-    if (TOOLS_LINE_BASED.includes(tool)) {
-      const createStartElement = CreateShapeSchema({
-        ...drawConfig,
-        tool: tool as IShape["tool"],
-        x: 0,
-        y: 0,
-        points: [x, y],
-        id: uuidv4(),
-        label: capitalize(tool),
-      });
-      SET_CREATE_CITEM([createStartElement]);
-    }
-    if (TOOLS_DRAW_BASED.includes(tool)) {
-      const createStartElement = CreateShapeSchema({
-        ...drawConfig,
-        tool: tool as IShape["tool"],
-        x: 0,
-        y: 0,
-        points: [x, y, x, y],
-        id: uuidv4(),
-        label: capitalize(tool),
-      });
-      SET_CREATE_CITEM([createStartElement]);
-    }
-  };
-
-  const handleCopyMode = () => {
-    selectedShapes();
-
-    SET_EVENT_STAGE("IDLE");
-    setTool("MOVE");
-  };
-
-  // ===== CREATING MODE HANDLERS =====
-  const handleCreatingMode = (x: number, y: number) => {
-    const newShape = CURRENT_ITEM.at(0);
-    if (!newShape) return;
-
-    if (TOOLS_BOX_BASED.includes(newShape.tool)) {
-      const updateShape = UpdateShapeDimension(x, y, newShape);
-      SET_UPDATE_CITEM([updateShape]);
-    }
-    if (TOOLS_LINE_BASED.includes(newShape.tool)) {
-      const updateShape = UpdateShapeDimension(x, y, {
-        ...newShape,
-        points: [newShape?.points?.[0] ?? 0, newShape?.points?.[1] ?? 0, x, y],
-      });
-      SET_UPDATE_CITEM([updateShape]);
-    }
-    if (TOOLS_DRAW_BASED.includes(newShape.tool)) {
-      const updateShape = UpdateShapeDimension(x, y, {
-        ...newShape,
-        points: newShape.points?.concat([x, y]),
-      });
-      SET_UPDATE_CITEM([updateShape]);
-    }
-  };
-
-  // ===== COMPLETION HANDLERS =====
-  const handleCreatingComplete = (payloads: typeof CURRENT_ITEM) => {
-    const newShape = payloads.at(0);
-    if (!newShape) return;
-
-    SET_CREATE(newShape);
-
-    if (TOOLS_BOX_BASED.includes(newShape.tool)) {
-      setTimeout(() => {
-        setShapeId({
-          id: newShape?.id,
-          parentId: newShape?.parentId,
-        });
-      }, 10);
-      SET_EVENT_STAGE("IDLE");
-      setTool("MOVE");
-    }
-    if (TOOLS_LINE_BASED.includes(newShape.tool)) {
-      SET_EVENT_STAGE("CREATE");
-      setTool("LINE");
-    }
-    if (TOOLS_DRAW_BASED.includes(newShape.tool)) {
-      SET_EVENT_STAGE("CREATE");
-      setTool("DRAW");
-    }
-    SET_CLEAR_CITEM();
   };
 
   // ===== UTILITY FUNCTIONS =====
@@ -448,8 +344,10 @@ export const useEventStage = () => {
     };
 
     const handleKeyUp = (event: KeyboardEvent): void => {
-      if (event.key === "Shift") {
+      if (event.key === "Shift" || event.key === "Alt") {
         SET_EVENT_STAGE("IDLE");
+        setTool("MOVE");
+        SET_CLEAR_CITEM();
       }
     };
     document.addEventListener("keydown", handleKeyDown);
