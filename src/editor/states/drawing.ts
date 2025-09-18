@@ -9,6 +9,8 @@ const Initial: Omit<IShape, "children"> = {
   align: "left",
   verticalAlign: "top",
   paddingBottom: 10,
+  offsetX: 0,
+  offsetY: 0,
   paddingTop: 10,
   borderBottomLeftRadius: 0,
   isAllPadding: true,

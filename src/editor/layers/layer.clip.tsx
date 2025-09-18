@@ -101,6 +101,8 @@ export const LayerClip = () => {
     rotation: 0,
     isLayout: false,
     alignItems: "flex-start",
+    offsetX: 0,
+    offsetY: 0,
     flexDirection: "row",
     flexWrap: "nowrap",
     justifyContent: "flex-start",
