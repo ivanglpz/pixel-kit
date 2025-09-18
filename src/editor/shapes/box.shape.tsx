@@ -11,7 +11,6 @@ const ShapeBox = ({ shape: item }: IShapeWithEvents) => {
     item.state as PrimitiveAtom<IShape> & WithInitialValue<IShape>
   );
 
-  const { width, height, x, y, strokeWidth, dash } = box;
   const rotation = Number(box.rotation) || 0;
 
   const stage = useAtomValue(STAGE_DIMENSION_ATOM);
@@ -33,10 +32,10 @@ const ShapeBox = ({ shape: item }: IShapeWithEvents) => {
         id={box?.id}
         parentId={box?.parentId}
         // 2. Posición y tamaño - calculada manualmente para rotación
-        x={x}
-        y={y}
-        width={width}
-        height={height}
+        x={box.x}
+        y={box.y}
+        width={box.width}
+        height={box.height}
         rotation={rotation}
         // Sin offset - calculamos todo manualmente
         // offsetX={width / 2}
@@ -51,9 +50,10 @@ const ShapeBox = ({ shape: item }: IShapeWithEvents) => {
         }
         // 4. Bordes y trazos
         stroke={box?.strokes?.filter((e) => e?.visible)?.at(0)?.color}
-        strokeWidth={strokeWidth}
+        strokeWidth={box.strokeWidth}
         strokeEnabled={box.strokeWidth > 0}
-        dash={[dash, dash, dash, dash]}
+        // dash={[dash, dash, dash, dash]}
+        dash={[box.dash]}
         dashEnabled={box?.dash > 0}
         cornerRadius={
           !box?.isAllBorderRadius
