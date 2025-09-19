@@ -2,7 +2,7 @@ import { PrimitiveAtom } from "jotai";
 import { LineCap, LineJoin } from "konva/lib/Shape";
 import { FC } from "react";
 import { ALL_SHAPES } from "../states/shapes";
-import { IKeyMethods } from "../states/tool";
+import { IShapesKeys } from "../states/tool";
 import {
   AlignItems,
   FlexDirection,
@@ -46,7 +46,7 @@ export type IShape = {
   // Identity
   id: string;
   label: string;
-  tool: IKeyMethods;
+  tool: IShapesKeys;
   parentId: string | null;
 
   // Position & Transform

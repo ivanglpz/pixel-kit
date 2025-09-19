@@ -227,7 +227,7 @@ export const Nodes = ({
           <GripVertical size={14} opacity={isHovered ? 1 : 0.3} />
         </div>
 
-        {shape.tool === "GROUP" && children.length > 0 ? (
+        {shape.tool === "FRAME" && children.length > 0 ? (
           <button
             onClick={(e) => {
               e.stopPropagation();

@@ -1,5 +1,5 @@
 /* eslint-disable jsx-a11y/alt-text */
-import { IKeyTool } from "@/editor/states/tool";
+import { IShapesKeys } from "@/editor/states/tool";
 import { css } from "@stylespixelkit/css";
 import {
   Circle,
@@ -238,14 +238,14 @@ const icons = {
   ),
 };
 
-export const iconsWithTools: { [key in IKeyTool]?: JSX.Element } = {
-  BOX: icons.box,
-  CIRCLE: icons.circle,
+export const iconsWithTools: { [key in IShapesKeys]: JSX.Element } = {
+  FRAME: icons.box,
+  // CIRCLE: icons.circle,
   DRAW: icons.peentool,
-  GROUP: icons.group,
+  // GROUP: icons.group,
   IMAGE: icons.image,
   TEXT: icons.text,
-  LINE: icons.line,
-  CLIP: icons.clip,
+  // LINE: icons.line,
+  // CLIP: icons.clip,
 };
 export default icons;

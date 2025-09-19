@@ -55,23 +55,23 @@ const configs: { [key in MODE]: Config } = {
       },
       {
         icon: icons.box,
-        keyMethod: "BOX",
+        keyMethod: "FRAME",
         keyBoard: "W",
         eventStage: "CREATE",
       },
 
-      {
-        icon: icons.circle,
-        keyMethod: "CIRCLE",
-        keyBoard: "E",
-        eventStage: "CREATE",
-      },
-      {
-        icon: icons.line,
-        keyMethod: "LINE",
-        keyBoard: "R",
-        eventStage: "CREATE",
-      },
+      // {
+      //   icon: icons.circle,
+      //   keyMethod: "CIRCLE",
+      //   keyBoard: "E",
+      //   eventStage: "CREATE",
+      // },
+      // {
+      //   icon: icons.line,
+      //   keyMethod: "LINE",
+      //   keyBoard: "R",
+      //   eventStage: "CREATE",
+      // },
       {
         icon: icons.image,
         keyMethod: "IMAGE",
@@ -91,12 +91,12 @@ const configs: { [key in MODE]: Config } = {
         keyBoard: "D",
         eventStage: "CREATE",
       },
-      {
-        icon: icons.group,
-        keyMethod: "GROUP",
-        keyBoard: "F",
-        eventStage: "CREATE",
-      },
+      // {
+      //   icon: icons.group,
+      //   keyMethod: "GROUP",
+      //   keyBoard: "F",
+      //   eventStage: "CREATE",
+      // },
     ],
     show_layer_background: true,
     show_layer_clip: false,
@@ -121,23 +121,22 @@ const configs: { [key in MODE]: Config } = {
 
       {
         icon: icons.box,
-        keyMethod: "BOX",
+        keyMethod: "FRAME",
         keyBoard: "W",
         eventStage: "CREATE",
       },
-
-      {
-        icon: icons.circle,
-        keyMethod: "CIRCLE",
-        keyBoard: "E",
-        eventStage: "CREATE",
-      },
-      {
-        icon: icons.line,
-        keyMethod: "LINE",
-        keyBoard: "R",
-        eventStage: "CREATE",
-      },
+      // {
+      //   icon: icons.circle,
+      //   keyMethod: "CIRCLE",
+      //   keyBoard: "E",
+      //   eventStage: "CREATE",
+      // },
+      // {
+      //   icon: icons.line,
+      //   keyMethod: "LINE",
+      //   keyBoard: "R",
+      //   eventStage: "CREATE",
+      // },
       {
         icon: icons.image,
         keyMethod: "IMAGE",
@@ -157,12 +156,12 @@ const configs: { [key in MODE]: Config } = {
         keyBoard: "D",
         eventStage: "CREATE",
       },
-      {
-        icon: icons.group,
-        keyMethod: "GROUP",
-        keyBoard: "F",
-        eventStage: "CREATE",
-      },
+      // {
+      //   icon: icons.group,
+      //   keyMethod: "GROUP",
+      //   keyBoard: "F",
+      //   eventStage: "CREATE",
+      // },
       {
         icon: icons.clip,
         keyMethod: "CLIP",
