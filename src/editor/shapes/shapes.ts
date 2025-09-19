@@ -1,6 +1,6 @@
 import { IShapesKeys } from "../states/tool";
 import { ShapeDraw } from "./drawn.shape";
-import { SHAPE_FRAME } from "./group.shape";
+import { SHAPE_FRAME } from "./frame.shape";
 import { ShapeImage } from "./image.shape";
 import { ShapeText } from "./text.shape";
 import { IShapeWithEvents } from "./type.shape";

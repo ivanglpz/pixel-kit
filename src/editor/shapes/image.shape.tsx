@@ -17,7 +17,7 @@ import { IShape, IShapeWithEvents, WithInitialValue } from "./type.shape";
 
 // Eventos de shape
 import { Html } from "react-konva-utils";
-import { ChatSmallAI } from "../components/SmallChatAI";
+import { EditPanel } from "../components/EditPanel";
 import { coordinatesShapeMove, shapeEventDragMove } from "./events.shape";
 
 // Transformer
@@ -202,7 +202,7 @@ export const ShapeImage = (props: IShapeWithEvents) => {
           },
         }}
       >
-        <ChatSmallAI />
+        <EditPanel />
       </Html>
     </>
   );
