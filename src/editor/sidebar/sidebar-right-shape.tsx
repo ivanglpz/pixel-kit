@@ -942,7 +942,7 @@ export const LayoutShapeConfig = () => {
 
       <Separator />
 
-      {["BOX", "GROUP"].includes(shape?.tool) ? (
+      {shape.tool === "FRAME" ? (
         <>
           <section className={commonStyles.container}>
             <SectionHeader

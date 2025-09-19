@@ -13,7 +13,7 @@ import {
 } from "./type.shape";
 
 // eslint-disable-next-line react/display-name
-export const ShapeGroup = ({ shape: item }: IShapeWithEvents) => {
+export const SHAPE_FRAME = ({ shape: item }: IShapeWithEvents) => {
   const box = useAtomValue(
     item.state as PrimitiveAtom<IShape> & WithInitialValue<IShape>
   );

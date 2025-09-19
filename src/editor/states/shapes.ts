@@ -19,7 +19,7 @@ import {
   SHAPE_IDS_ATOM,
   UPDATE_SHAPES_IDS_ATOM,
 } from "./shape";
-import TOOL_ATOM, { IKeyMethods } from "./tool";
+import TOOL_ATOM, { IShapesKeys } from "./tool";
 import { NEW_UNDO_REDO } from "./undo-redo";
 
 export type WithInitialValue<Value> = {
@@ -27,14 +27,14 @@ export type WithInitialValue<Value> = {
 };
 export type ALL_SHAPES = {
   id: string;
-  tool: IKeyMethods;
+  tool: IShapesKeys;
   pageId: string;
   state: PrimitiveAtom<IShape> & WithInitialValue<IShape>;
 };
 
-const TOOLS_BOX_BASED = ["BOX", "CIRCLE", "IMAGE", "TEXT", "GROUP"];
+const TOOLS_BOX_BASED = ["FRAME", "IMAGE", "TEXT"];
+
 const TOOLS_DRAW_BASED = ["DRAW"];
-const TOOLS_LINE_BASED = ["LINE"];
 export const DELETE_KEYS = ["DELETE", "BACKSPACE"];
 
 export const ALL_SHAPES_ATOM = atom(
@@ -268,18 +268,18 @@ export const EVENT_DOWN_SHAPES = atom(
       });
       set(CREATE_CURRENT_ITEM_ATOM, [createStartElement]);
     }
-    if (TOOLS_LINE_BASED.includes(tool)) {
-      const createStartElement = CreateShapeSchema({
-        ...drawConfig,
-        tool: tool as IShape["tool"],
-        x: 0,
-        y: 0,
-        points: [x, y],
-        id: uuidv4(),
-        label: capitalize(tool),
-      });
-      set(CREATE_CURRENT_ITEM_ATOM, [createStartElement]);
-    }
+    // if (TOOLS_LINE_BASED.includes(tool)) {
+    //   const createStartElement = CreateShapeSchema({
+    //     ...drawConfig,
+    //     tool: tool as IShape["tool"],
+    //     x: 0,
+    //     y: 0,
+    //     points: [x, y],
+    //     id: uuidv4(),
+    //     label: capitalize(tool),
+    //   });
+    //   set(CREATE_CURRENT_ITEM_ATOM, [createStartElement]);
+    // }
     if (TOOLS_DRAW_BASED.includes(tool)) {
       const createStartElement = CreateShapeSchema({
         ...drawConfig,
@@ -373,16 +373,15 @@ export const EVENT_UP_SHAPES = atom(null, (get, set) => {
     set(CREATE_SHAPE_ATOM, newShape);
   }
 
-setTimeout(() => {
-
-  set(
-    UPDATE_SHAPES_IDS_ATOM,
-    CURRENT_ITEMS?.map((e) => ({
-      id: e?.id,
-      parentId: e?.parentId,
-    }))
-  );
-}, 10);
+  setTimeout(() => {
+    set(
+      UPDATE_SHAPES_IDS_ATOM,
+      CURRENT_ITEMS?.map((e) => ({
+        id: e?.id,
+        parentId: e?.parentId,
+      }))
+    );
+  }, 10);
   set(TOOL_ATOM, "MOVE");
   set(EVENT_ATOM, "IDLE");
   set(CLEAR_CURRENT_ITEM_ATOM);
@@ -417,13 +416,13 @@ export const EVENT_MOVING_SHAPE = atom(
       const updateShape = UpdateShapeDimension(x, y, newShape);
       set(CURRENT_ITEM_ATOM, [updateShape]);
     }
-    if (TOOLS_LINE_BASED.includes(newShape.tool)) {
-      const updateShape = UpdateShapeDimension(x, y, {
-        ...newShape,
-        points: [newShape?.points?.[0] ?? 0, newShape?.points?.[1] ?? 0, x, y],
-      });
-      set(CURRENT_ITEM_ATOM, [updateShape]);
-    }
+    // if (TOOLS_LINE_BASED.includes(newShape.tool)) {
+    //   const updateShape = UpdateShapeDimension(x, y, {
+    //     ...newShape,
+    //     points: [newShape?.points?.[0] ?? 0, newShape?.points?.[1] ?? 0, x, y],
+    //   });
+    //   set(CURRENT_ITEM_ATOM, [updateShape]);
+    // }
     if (TOOLS_DRAW_BASED.includes(newShape.tool)) {
       const updateShape = UpdateShapeDimension(x, y, {
         ...newShape,

@@ -18,7 +18,7 @@ const initial: Omit<IShape, "children"> = {
   id: uuidv4(),
   x: 0,
   y: 0,
-  tool: "BOX",
+  tool: "FRAME",
   align: "left",
   offsetX: 0,
   offsetY: 0,
@@ -111,9 +111,9 @@ export const UpdateShapeDimension = (
     ...element,
     width: isHeight,
     height: isWidth,
-    borderRadius:
-      element?.tool === "CIRCLE"
-        ? isNotNegative(Number(element?.width) / 2)
-        : 0,
+    // borderRadius:
+    //   element?.tool === "CIRCLE"
+    //     ? isNotNegative(Number(element?.width) / 2)
+    //     : 0,
   });
 };

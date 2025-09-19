@@ -3,17 +3,15 @@ import { PROJECT_ATOM } from "./projects";
 
 export type IKeyTool =
   | "MOVE"
-  | "BOX"
-  | "CIRCLE"
-  | "LINE"
+  // | "BOX"
+  // | "CIRCLE"
+  // | "LINE"
   | "IMAGE"
   | "TEXT"
   | "FRAME"
-  | "EXPORT"
   | "DRAW"
-  | "WRITING"
-  | "CODE"
-  | "GROUP"
+  // | "CODE"
+  // | "GROUP"
   | "CLIP";
 
 export type IKeyMethods = Exclude<
@@ -21,6 +19,7 @@ export type IKeyMethods = Exclude<
   "MOVE" | "FRAME" | "WRITING" | "CLIP"
 >;
 
+export type IShapesKeys = Exclude<IKeyTool, "MOVE" | "CLIP">;
 const TOOL_ATOM = atom(
   (get) => get(get(PROJECT_ATOM).TOOL),
   (_get, _set, newTool: IKeyTool) => {

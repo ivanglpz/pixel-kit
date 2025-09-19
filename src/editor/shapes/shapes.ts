@@ -1,22 +1,21 @@
-import { IKeyTool } from "../states/tool";
-import { ShapeCircle } from "./circle.shape";
+import { IShapesKeys } from "../states/tool";
 import { ShapeDraw } from "./drawn.shape";
-import { ShapeGroup } from "./group.shape";
+import { SHAPE_FRAME } from "./group.shape";
 import { ShapeImage } from "./image.shape";
-import { ShapeLine } from "./line.shape";
 import { ShapeText } from "./text.shape";
 import { IShapeWithEvents } from "./type.shape";
 
 export type IMapperElements = {
-  [key in IKeyTool]?: (item: IShapeWithEvents) => JSX.Element | null;
+  [key in IShapesKeys]: (item: IShapeWithEvents) => JSX.Element | null;
 };
 
 export const Shapes: IMapperElements = {
-  BOX: ShapeGroup,
+  // BOX: ShapeGroup,
+  FRAME: SHAPE_FRAME,
   TEXT: ShapeText,
-  CIRCLE: ShapeCircle,
-  LINE: ShapeLine,
+  // CIRCLE: ShapeCircle,
+  // LINE: ShapeLine,
   IMAGE: ShapeImage,
   DRAW: ShapeDraw,
-  GROUP: ShapeGroup,
+  // GROUP: ShapeGroup,
 };
