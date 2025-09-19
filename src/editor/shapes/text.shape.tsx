@@ -9,7 +9,7 @@ import { STAGE_DIMENSION_ATOM } from "../states/dimension";
 import { SHAPE_IDS_ATOM } from "../states/shape";
 
 import { Html } from "react-konva-utils";
-import { ChatSmallAI } from "../components/SmallChatAI";
+import { EditPanel } from "../components/EditPanel";
 import { coordinatesShapeMove, shapeEventDragMove } from "./events.shape";
 export const ShapeText = ({ shape: item }: IShapeWithEvents) => {
   const [box, setBox] = useAtom(
@@ -121,7 +121,7 @@ export const ShapeText = ({ shape: item }: IShapeWithEvents) => {
           },
         }}
       >
-        <ChatSmallAI />
+        <EditPanel />
       </Html>
     </>
   );

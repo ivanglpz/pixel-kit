@@ -4,7 +4,7 @@ import { useState } from "react";
 import { constants } from "../constants/color";
 import { Input } from "./input";
 
-export const ChatSmallAI = () => {
+export const EditPanel = () => {
   const [show, setShow] = useState(false);
   const [text, setText] = useState("");
 
@@ -59,6 +59,8 @@ export const ChatSmallAI = () => {
             gap: "lg",
             borderWidth: "1px",
             borderStyle: "solid",
+            zIndex: 9999999999,
+
             borderColor: "#e3e3e3ff", // ← usa el semantic token
           })}
         >

@@ -1,7 +1,8 @@
 import { PrimitiveAtom, useAtomValue } from "jotai";
 import { Group } from "react-konva";
 import { Html } from "react-konva-utils";
-import { ChatSmallAI } from "../components/SmallChatAI";
+import { EditPanel } from "../components/EditPanel";
+import { SHAPE_IDS_ATOM } from "../states/shape";
 import ShapeBox from "./box.shape";
 import { LayoutFlex } from "./layout-flex";
 import { Shapes } from "./shapes";
@@ -17,7 +18,8 @@ export const SHAPE_FRAME = ({ shape: item }: IShapeWithEvents) => {
   const box = useAtomValue(
     item.state as PrimitiveAtom<IShape> & WithInitialValue<IShape>
   );
-
+  const shapeId = useAtomValue(SHAPE_IDS_ATOM);
+  const isSelected = shapeId.some((w) => w.id === box.id);
   const { x, y, height, width, rotation } = box;
 
   const childrens = useAtomValue(box.children);
@@ -76,10 +78,11 @@ export const SHAPE_FRAME = ({ shape: item }: IShapeWithEvents) => {
             position: "absolute",
             top: y + "px",
             left: width + x + 10 + "px",
+            zIndex: 9999999999,
           },
         }}
       >
-        <ChatSmallAI />
+        {isSelected ? <EditPanel /> : null}
       </Html>
     </>
   );
