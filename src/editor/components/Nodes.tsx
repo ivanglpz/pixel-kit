@@ -196,8 +196,13 @@ export const Nodes = ({
           flexDirection: "row",
           alignItems: "center",
           borderRadius: "4",
+          _dark: {
+            backgroundColor: shapeId.some((w) => w.id === shape.id)
+              ? "gray.800"
+              : "transparent",
+          },
           backgroundColor: shapeId.some((w) => w.id === shape.id)
-            ? "gray.800"
+            ? "gray.150"
             : "transparent",
           _hover: {
             backgroundColor: "gray.100",

@@ -57,7 +57,10 @@ const DraggableRootItem = ({
           borderRadius: "md",
           alignItems: "center",
           gap: "md",
-          backgroundColor: isSelected ? "gray.800" : "transparent",
+          _dark: {
+            backgroundColor: isSelected ? "gray.800" : "transparent",
+          },
+          backgroundColor: isSelected ? "gray.150" : "transparent",
           display: "grid",
           gridTemplateColumns: "15px 15px 1fr",
           _hover: {

@@ -8,7 +8,7 @@ export const StageCanvasColor: FC = () => {
   const [config, setConfig] = useAtom(STAGE_CANVAS_BACKGROUND);
 
   return (
-    <Input.Container>
+    <Input.Container id={`pixel-kit-canvas-color`}>
       <Input.Grid>
         <Input.IconContainer>
           <Input.Color
