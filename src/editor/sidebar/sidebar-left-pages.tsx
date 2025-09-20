@@ -97,7 +97,15 @@ const DraggableRootItem = ({
         </div>
         <File size={14} />
         {show ? (
-          <Input.Text value={name} onChange={(e) => setName(e)} />
+          <Input.Text
+            value={name}
+            onChange={(e) => setName(e)}
+            style={{
+              fontSize: "x-small",
+              height: 20,
+              border: "none",
+            }}
+          />
         ) : (
           <span
             className={css({
