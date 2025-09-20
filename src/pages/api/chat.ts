@@ -38,32 +38,40 @@ Strict rules:
 
 1. The "tool" property must always be in UPPERCASE. Possible values are: IMAGE, TEXT, FRAME, DRAW.
 2. Do not create or use the "DRAW" tool. Omit it completely.
-3. For IMAGE elements, always provide a URL from lorem picsum (https://picsum.photos) and include a "fills" array as the first element in state with type:"image".
-4. For SHADOW elements, include an object in state with type: "shadow".
-5. UUIDs must be unique and dynamically generated only for newly added elements.
-6. Do not modify or replace existing UUIDs or pageIds of elements that are already present in the input array. They must remain exactly as provided.
-7. The parentId of each child must match the UUID of its parent.
-8. Do not remove, shorten, or change the schema. All properties must be present exactly as provided.
-   - If a property is unused, set it to 0, false, an empty string, or an empty array depending on its type.
-   - The schema must remain fully intact.
-9. Do not insert comments inside the array. The output must always be a valid array that can be parsed directly with JSON.parse.
-10. Use layout properties such as isLayout, flexDirection (row or column), flexWrap (wrap or nowrap), alignItems, and justifyContent to structure elements properly.
+3. FRAME elements are containers. They are equivalent to HTML structural tags like <div>, <section>, <main>.
+   - They must support "children" to nest other elements.
+   - Use layout properties (isLayout, flexDirection, flexWrap, alignItems, justifyContent) to define structure.
+4. IMAGE elements must always provide a URL from lorem picsum (https://picsum.photos).
+   - They must include a "fills" array as the first element in state with type: "image".
+   - Example: "fills": [{ "type": "image", "src": "https://picsum.photos/200/300" }].
+5. TEXT elements must always use the "text" property to render content.
+   - Respect text-related props: fontWeight, textDecoration, align, verticalAlign.
+   - Example: "text": "Hello World".
+6. For SHADOW elements, include an object in state with type: "shadow".
+7. UUIDs must be unique and dynamically generated only for newly added elements.
+8. Do not modify or replace existing UUIDs or pageIds of elements that are already present in the input array. They must remain exactly as provided.
+9. The parentId of each child must match the UUID of its parent.
+10. Do not remove, shorten, or change the schema. All properties must be present exactly as provided.
+    - If a property is unused, set it to 0, false, an empty string, or an empty array depending on its type.
+    - The schema must remain fully intact.
+11. Do not insert comments inside the array. The output must always be a valid array that can be parsed directly with JSON.parse.
+12. Use layout properties such as isLayout, flexDirection (row or column), flexWrap (wrap or nowrap), alignItems, and justifyContent to structure elements properly.
     - Set isLayout to true or false depending on the context.
-11. Text properties must respect:
+13. Text properties must respect:
     - fontWeight: "bold" | "normal" | "lighter" | "bolder" | "100" | "900"
     - textDecoration?: string
     - align: "left" | "center" | "right" | "justify"
     - verticalAlign: "top" | "middle" | "bottom"
-12. This is an expert-level task: when the user asks for UI components (e.g. input, button, card, or text), you must create them following the schema exactly.
-13. The array shown below is only an example. You may be given a completely different input array.
+14. This is an expert-level task: when the user asks for UI components (e.g. input, button, card, or text), you must create them following the schema exactly.
+15. The array shown below is only an example. You may be given a completely different input array.
     - Existing elements in that array must retain all their original UUIDs and pageIds.
     - Only generate new UUIDs for any newly added objects.
-14. The user will provide instructions describing new elements, layout changes, or styling modifications.
+16. The user will provide instructions describing new elements, layout changes, or styling modifications.
     - You must analyze these instructions and apply them to generate the new array.
     - Ensure all new elements follow the schema exactly.
     - Existing elements should remain unchanged unless explicitly instructed by the user.
-15. Always return a top-level array.
-16. Return only valid JSON. Do not include backticks, comments, explanations, or any extra text. The output must be ready to be parsed with JSON.parse().
+17. Always return a top-level array.
+18. Return only valid JSON. Do not include backticks, comments, explanations, or any extra text. The output must be ready to be parsed with JSON.parse().
 
 Here is the existing array (do not modify their UUIDs):
 
