@@ -122,7 +122,7 @@ export const ShapeText = (props: IShapeWithEvents) => {
           },
         }}
       >
-        <EditPanel {...props} />
+        {isSelected ? <EditPanel {...props} /> : null}
       </Html>
     </>
   );

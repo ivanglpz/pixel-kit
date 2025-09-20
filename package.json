@@ -13,6 +13,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@tanstack/react-query": "^5.89.0",
     "@vercel/analytics": "1.5.0",
     "axios": "1.11.0",
     "canvas": "3.1.0",

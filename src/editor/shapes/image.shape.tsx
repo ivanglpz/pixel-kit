@@ -202,7 +202,7 @@ export const ShapeImage = (props: IShapeWithEvents) => {
           },
         }}
       >
-        <EditPanel {...props} />
+        {isSelected ? <EditPanel {...props} /> : null}
       </Html>
     </>
   );

@@ -1,14 +1,31 @@
 import { css } from "@stylespixelkit/css";
+import { useMutation } from "@tanstack/react-query";
+import { useAtom, useSetAtom } from "jotai";
 import { Send } from "lucide-react";
 import { useState } from "react";
 import { constants } from "../constants/color";
 import { IShapeWithEvents } from "../shapes/type.shape";
+import { GET_ALL_SHAPES_BY_ID } from "../states/shapes";
 import { Input } from "./input";
 
-export const EditPanel = ({}: IShapeWithEvents) => {
+export const EditPanel = ({ shape }: IShapeWithEvents) => {
   const [show, setShow] = useState(false);
   const [text, setText] = useState("");
+  const [box, setBox] = useAtom(shape.state);
+  const GET_ALL = useSetAtom(GET_ALL_SHAPES_BY_ID);
+  const mutation = useMutation({
+    mutationKey: [box.id],
+    mutationFn: async () => {
+      const SHAPES = GET_ALL(box.id);
+      console.log({ SHAPES });
 
+      return null;
+    },
+    onSuccess: () => {
+      // Invalidate and refetch
+      // queryClient.invalidateQueries({ queryKey: ["todos"] });
+    },
+  });
   return (
     <div
       className={css({
@@ -95,7 +112,7 @@ export const EditPanel = ({}: IShapeWithEvents) => {
                   : "transparent",
                 border: `1px solid ${constants.theme.colors.primary}`,
               }}
-              onClick={() => setShow(!show)}
+              onClick={() => mutation.mutate()}
             >
               <Send size={constants.icon.size} />
             </button>
