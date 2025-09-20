@@ -241,12 +241,11 @@ Return the updated array following all rules.
     const messages: ChatMessage[] = [
       {
         role: "system",
-        content:
-          "You are an expert UI layout generator. Always follow schema and rules strictly.",
+        content: basePrompt,
       },
       {
         role: "user",
-        content: `${basePrompt}\n${userPrompt}`,
+        content: userPrompt,
       },
     ];
 
