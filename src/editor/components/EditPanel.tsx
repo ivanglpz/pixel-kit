@@ -2,9 +2,10 @@ import { css } from "@stylespixelkit/css";
 import { Send } from "lucide-react";
 import { useState } from "react";
 import { constants } from "../constants/color";
+import { IShapeWithEvents } from "../shapes/type.shape";
 import { Input } from "./input";
 
-export const EditPanel = () => {
+export const EditPanel = ({}: IShapeWithEvents) => {
   const [show, setShow] = useState(false);
   const [text, setText] = useState("");
 

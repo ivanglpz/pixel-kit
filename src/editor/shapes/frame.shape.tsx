@@ -14,7 +14,8 @@ import {
 } from "./type.shape";
 
 // eslint-disable-next-line react/display-name
-export const SHAPE_FRAME = ({ shape: item }: IShapeWithEvents) => {
+export const SHAPE_FRAME = (props: IShapeWithEvents) => {
+  const { shape: item } = props;
   const box = useAtomValue(
     item.state as PrimitiveAtom<IShape> & WithInitialValue<IShape>
   );
@@ -82,7 +83,7 @@ export const SHAPE_FRAME = ({ shape: item }: IShapeWithEvents) => {
           },
         }}
       >
-        {isSelected ? <EditPanel /> : null}
+        {isSelected ? <EditPanel {...props} /> : null}
       </Html>
     </>
   );
