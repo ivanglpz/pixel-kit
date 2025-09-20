@@ -155,10 +155,6 @@ export const useEventStage = () => {
     SET_CLEAR_CITEM();
   };
 
-  const handleDeleteShapes = () => {
-    DELETE_SHAPE();
-  };
-
   const createImageFromFile = (file: File, dataUrl: string) => {
     const image = new Image();
     image.src = dataUrl;
@@ -269,7 +265,7 @@ export const useEventStage = () => {
 
       // Handle delete operations
       if (DELETE_KEYS.includes(KEY)) {
-        handleDeleteShapes();
+        DELETE_SHAPE();
         setTool("MOVE");
       }
 
