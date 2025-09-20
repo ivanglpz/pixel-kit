@@ -1,7 +1,5 @@
 import { Valid } from "@/components/valid";
 import { Button } from "@/editor/components/button";
-import { InputSelect } from "@/editor/components/input-select";
-import { InputText } from "@/editor/components/input-text";
 import { useConfiguration } from "@/editor/hooks/useConfiguration";
 import { useReference } from "@/editor/hooks/useReference";
 import { SHOW_CLIP_ATOM } from "@/editor/states/clipImage";
@@ -17,6 +15,7 @@ import { createPortal } from "react-dom";
 import { Stage as StageContainer } from "react-konva";
 import { toast } from "sonner";
 import { v4 as uuidv4 } from "uuid";
+import { Input } from "../components/input";
 import { AllLayers } from "../layers/root.layers";
 import { STAGE_DIMENSION_ATOM } from "../states/dimension";
 import { typeExportAtom } from "../states/export";
@@ -332,45 +331,91 @@ export const ExportStage = () => {
                       gap: "md",
                     })}
                   >
-                    <InputSelect
-                      labelText="Format Quality"
-                      options={[
-                        {
-                          id: "1",
-                          label: "Low",
-                          value: "LOW",
-                        },
-                        {
-                          id: "2",
-                          label: "Medium",
-                          value: "MEDIUM",
-                        },
-                        {
-                          id: "3",
-                          label: "High",
-                          value: "HIGH",
-                        },
-                        {
-                          id: "4",
-                          label: "Big High",
-                          value: "BIG_HIGH",
-                        },
-                        {
-                          id: "4",
-                          label: "Ultra High",
-                          value: "ULTRA_HIGH",
-                        },
-                      ]}
-                      onChange={(e) => setformat(e)}
-                      value={format}
-                    />
-                    <Valid isValid={config?.export_mode === "EDIT_IMAGE"}>
-                      <InputText
-                        labelText="Resolution"
-                        value={`${imageRender.width}x${imageRender?.height}`}
-                        onChange={() => {}}
-                        disable
+                    <Input.Container>
+                      <Input.Select
+                        options={[
+                          {
+                            id: "1",
+                            label: "Low",
+                            value: "LOW",
+                          },
+                          {
+                            id: "2",
+                            label: "Medium",
+                            value: "MEDIUM",
+                          },
+                          {
+                            id: "3",
+                            label: "High",
+                            value: "HIGH",
+                          },
+                          {
+                            id: "4",
+                            label: "Big High",
+                            value: "BIG_HIGH",
+                          },
+                          {
+                            id: "4",
+                            label: "Ultra High",
+                            value: "ULTRA_HIGH",
+                          },
+                        ]}
+                        onChange={(e) => setformat(e)}
+                        value={format}
                       />
+                    </Input.Container>
+                    <Valid isValid={config?.export_mode === "EDIT_IMAGE"}>
+                      <Input.Label text="Dimensions" />
+                      <div
+                        className={css({
+                          display: "grid",
+                          gridTemplateColumns: "2",
+                          gap: "md",
+                        })}
+                      >
+                        <Input.Container>
+                          <Input.Grid>
+                            <Input.IconContainer>
+                              <p
+                                className={css({
+                                  fontWeight: 600,
+                                  fontSize: "x-small",
+                                })}
+                              >
+                                W
+                              </p>
+                              {/* <MoveHorizontal size={constants.icon.size} /> */}
+                            </Input.IconContainer>
+                            <Input.Number
+                              step={1}
+                              min={0}
+                              value={Number(imageRender.width) || 0}
+                              onChange={(v) => {}}
+                            />
+                          </Input.Grid>
+                        </Input.Container>
+                        <Input.Container>
+                          <Input.Grid>
+                            <Input.IconContainer>
+                              <p
+                                className={css({
+                                  fontWeight: 600,
+                                  fontSize: "x-small",
+                                })}
+                              >
+                                H
+                              </p>
+                              {/* <MoveHorizontal size={constants.icon.size} /> */}
+                            </Input.IconContainer>
+                            <Input.Number
+                              step={1}
+                              min={0}
+                              value={Number(imageRender.height) || 0}
+                              onChange={(v) => {}}
+                            />
+                          </Input.Grid>
+                        </Input.Container>
+                      </div>
                     </Valid>
                   </div>
                   <Button

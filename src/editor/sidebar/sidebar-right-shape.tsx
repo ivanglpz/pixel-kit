@@ -1,8 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 /* eslint-disable jsx-a11y/alt-text */
 import { Valid } from "@/components/valid";
-import { InputSelect } from "@/editor/components/input-select";
-import { InputTextArea } from "@/editor/components/input-textarea";
 import { IShape } from "@/editor/shapes/type.shape";
 import { SHAPE_SELECTED_ATOM, SHAPE_UPDATE_ATOM } from "@/editor/states/shape";
 import { css } from "@stylespixelkit/css";
@@ -1481,24 +1479,30 @@ export const LayoutShapeConfig = () => {
         {/* SECCIÓN: TYPOGRAPHY - Tipografía */}
         <section className={commonStyles.container}>
           <SectionHeader title="Typography" />
-          <InputSelect
-            value={shape.fontFamily ?? "Roboto"}
-            onChange={(e) => {
-              shapeUpdate({ fontFamily: e as IShape["fontFamily"] });
-              execute(); // Ejecutar después del cambio
-            }}
-            options={fontFamilyOptions}
-          />
-          <div className={commonStyles.twoColumnGrid}>
-            <InputSelect
-              labelText=""
-              value={shape.fontWeight ?? "normal"}
+
+          <Input.Container>
+            <Input.Select
+              value={shape.fontFamily ?? "Roboto"}
               onChange={(e) => {
-                shapeUpdate({ fontWeight: e as IShape["fontWeight"] });
+                shapeUpdate({ fontFamily: e as IShape["fontFamily"] });
                 execute(); // Ejecutar después del cambio
               }}
-              options={fontWeightOptions}
+              options={fontFamilyOptions}
             />
+          </Input.Container>
+
+          <div className={commonStyles.twoColumnGrid}>
+            <Input.Container>
+              <Input.Select
+                value={shape.fontWeight ?? "normal"}
+                onChange={(e) => {
+                  shapeUpdate({ fontWeight: e as IShape["fontWeight"] });
+                  execute(); // Ejecutar después del cambio
+                }}
+                options={fontWeightOptions}
+              />
+            </Input.Container>
+
             {/* Font Size */}
             <Input.Container>
               <Input.Grid>
@@ -1521,14 +1525,15 @@ export const LayoutShapeConfig = () => {
             {/* Text Content */}
           </div>
           <div className={css({ gridColumn: 2, gridRow: 3 })}>
-            <InputTextArea
-              labelText=""
-              onChange={(e) => {
-                shapeUpdate({ text: e });
-                execute(); // Ejecutar después del cambio
-              }}
-              value={shape.text || ""}
-            />
+            <Input.Container>
+              <Input.TextArea
+                onChange={(e) => {
+                  shapeUpdate({ text: e });
+                  execute(); // Ejecutar después del cambio
+                }}
+                value={shape.text || ""}
+              />
+            </Input.Container>
           </div>
         </section>
         <Separator />
