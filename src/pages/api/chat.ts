@@ -56,8 +56,10 @@ Strict rules:
     - You must analyze these instructions and apply them to generate the new array.
     - Ensure all new elements follow the schema exactly.
     - Existing elements should remain unchanged unless explicitly instructed by the user.
+13. Always return a top-level array.
+14. Return only valid JSON. Do not include backticks, comments, explanations, or any extra text. The output must be ready to be parsed with JSON.parse().
 
-Example array (do not treat these IDs as mandatory; they are for reference only):
+Here is the existing array (do not modify their UUIDs):
 
 [
     {
@@ -245,13 +247,14 @@ Return the updated array following all rules.
     const completion = await openai.chat.completions.create({
       model: "gpt-4o",
       messages,
-      response_format: { type: "json_object" },
       temperature: 0,
     });
 
-    return res.status(200).json({
-      content: completion.choices[0].message.content,
-    });
+    // Parse the model's response as a JSON array
+
+    return res
+      .status(200)
+      .json({ content: completion.choices[0].message.content });
   } catch (error) {
     console.error("OpenAI API error:", error);
     return res.status(500).json({
