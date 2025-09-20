@@ -1,24 +1,29 @@
 import "@/styles/globals.css";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Analytics } from "@vercel/analytics/react";
 import { ThemeProvider } from "next-themes";
 import type { AppPropsWithLayout } from "next/app";
 import { Toaster } from "sonner";
 import { css } from "../../styled-system/css";
+
+const queryClient = new QueryClient();
 const App = ({ Component, pageProps }: AppPropsWithLayout) => {
   return (
     <>
-      <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-        <Analytics />
+      <QueryClientProvider client={queryClient}>
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+          <Analytics />
 
-        <Toaster
-          richColors
-          expand={true}
-          className={css({
-            zIndex: 99999999999999,
-          })}
-        />
-        <Component {...pageProps} />
-      </ThemeProvider>
+          <Toaster
+            richColors
+            expand={true}
+            className={css({
+              zIndex: 99999999999999,
+            })}
+          />
+          <Component {...pageProps} />
+        </ThemeProvider>
+      </QueryClientProvider>
     </>
   );
 };

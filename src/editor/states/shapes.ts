@@ -1,4 +1,4 @@
-import { IShape } from "@/editor/shapes/type.shape";
+import { IShape, IShapeChildren } from "@/editor/shapes/type.shape";
 import { atom, PrimitiveAtom } from "jotai";
 import { v4 as uuidv4 } from "uuid";
 import {
@@ -32,6 +32,9 @@ export type ALL_SHAPES = {
   state: PrimitiveAtom<IShape> & WithInitialValue<IShape>;
 };
 
+export type ALL_SHAPES_CHILDREN = Omit<ALL_SHAPES, "state"> & {
+  state: IShapeChildren;
+};
 const TOOLS_BOX_BASED = ["FRAME", "IMAGE", "TEXT"];
 
 const TOOLS_DRAW_BASED = ["DRAW"];
@@ -95,6 +98,27 @@ export const DELETE_SHAPES_ATOM = atom(null, (get, set) => {
     shapes: selected,
   });
 });
+export const GET_ALL_SHAPES_BY_ID = atom(
+  null,
+  (get, set, id: string): ALL_SHAPES_CHILDREN[] => {
+    const PLANE_SHAPES = get(PLANE_SHAPES_ATOM);
+    const FIND_SHAPE = PLANE_SHAPES.find((e) => e.id === id);
+    if (!FIND_SHAPE) return [];
+
+    const sanitizemap = (shape: ALL_SHAPES): ALL_SHAPES_CHILDREN => {
+      const state = get(shape.state);
+      return {
+        ...shape,
+        state: {
+          ...state,
+          children: get(state.children).map((child) => sanitizemap(child)),
+        },
+      };
+    };
+
+    return [sanitizemap(FIND_SHAPE)];
+  }
+);
 export const DELETE_ALL_SHAPES_ATOM = atom(null, (get, set) => {
   const currentShapes = get(PLANE_SHAPES_ATOM);
 

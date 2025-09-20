@@ -1,7 +1,7 @@
 import { PrimitiveAtom } from "jotai";
 import { LineCap, LineJoin } from "konva/lib/Shape";
 import { FC } from "react";
-import { ALL_SHAPES } from "../states/shapes";
+import { ALL_SHAPES, ALL_SHAPES_CHILDREN } from "../states/shapes";
 import { IShapesKeys } from "../states/tool";
 import {
   AlignItems,
@@ -119,6 +119,10 @@ export type IShape = {
   padding: number;
   // Children
   children: PrimitiveAtom<ALL_SHAPES[]> & WithInitialValue<ALL_SHAPES[]>;
+};
+
+export type IShapeChildren = Omit<IShape, "children"> & {
+  children: ALL_SHAPES_CHILDREN[];
 };
 
 export type IShapeWithEvents = {
