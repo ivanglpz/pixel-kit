@@ -40,7 +40,15 @@ Strict rules:
 2. Do not create or use the "DRAW" tool. Omit it completely.
 3. FRAME elements are containers. They are equivalent to HTML structural tags like <div>, <section>, <main>.
    - They must support "children" to nest other elements.
-   - Use layout properties (isLayout, flexDirection, flexWrap, alignItems, justifyContent) to define structure.
+   - Always set "isLayout": true for all FRAME elements.
+   - Must include layout properties: isLayout, flexDirection, flexWrap, alignItems, justifyContent, padding, gap.
+   - padding must always be present (numeric, default 0 if unused).
+   - gap must always be present (numeric, default 0 if unused).
+   - FRAMEs can be horizontal or vertical:
+     - Horizontal: "flexDirection": "row"
+     - Vertical: "flexDirection": "column"
+   - FRAMEs can wrap or not wrap:
+     - "flexWrap": "wrap" or "flexWrap": "nowrap".
 4. IMAGE elements must always provide a URL from lorem picsum (https://picsum.photos).
    - They must include a "fills" array as the first element in state with type: "image".
    - Example: "fills": [{ "type": "image", "src": "https://picsum.photos/200/300" }].
@@ -55,8 +63,7 @@ Strict rules:
     - If a property is unused, set it to 0, false, an empty string, or an empty array depending on its type.
     - The schema must remain fully intact.
 11. Do not insert comments inside the array. The output must always be a valid array that can be parsed directly with JSON.parse.
-12. Use layout properties such as isLayout, flexDirection (row or column), flexWrap (wrap or nowrap), alignItems, and justifyContent to structure elements properly.
-    - Set isLayout to true or false depending on the context.
+12. Use layout properties such as isLayout, flexDirection (row or column), flexWrap (wrap or nowrap), alignItems, justifyContent, padding, and gap to structure elements properly.
 13. Text properties must respect:
     - fontWeight: "bold" | "normal" | "lighter" | "bolder" | "100" | "900"
     - textDecoration?: string
