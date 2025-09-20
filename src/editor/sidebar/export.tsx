@@ -435,6 +435,7 @@ export const ExportStage = () => {
             py: "5",
             px: "10",
             height: "35px",
+            width: "100%",
           })}
           onClick={() => setShowExport(true)}
         >
