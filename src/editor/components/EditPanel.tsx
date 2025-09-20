@@ -1,29 +1,69 @@
 import { css } from "@stylespixelkit/css";
 import { useMutation } from "@tanstack/react-query";
-import { useAtom, useSetAtom } from "jotai";
+import axios from "axios";
+import { atom, useAtom, useSetAtom } from "jotai";
 import { Send } from "lucide-react";
 import { useState } from "react";
 import { constants } from "../constants/color";
 import { IShapeWithEvents } from "../shapes/type.shape";
-import { GET_ALL_SHAPES_BY_ID } from "../states/shapes";
+import {
+  ALL_SHAPES,
+  ALL_SHAPES_CHILDREN,
+  GET_ALL_SHAPES_BY_ID,
+} from "../states/shapes";
 import { Input } from "./input";
-
 export const EditPanel = ({ shape }: IShapeWithEvents) => {
   const [show, setShow] = useState(false);
   const [text, setText] = useState("");
   const [box, setBox] = useAtom(shape.state);
   const GET_ALL = useSetAtom(GET_ALL_SHAPES_BY_ID);
   const mutation = useMutation({
-    mutationKey: [box.id],
+    mutationKey: [box.id, text],
     mutationFn: async () => {
       const SHAPES = GET_ALL(box.id);
-      console.log({ SHAPES });
+      const response = await axios.post("/api/chat", {
+        inputArray: SHAPES,
+        instructions: text,
+      });
 
-      return null;
+      return response;
     },
-    onSuccess: () => {
-      // Invalidate and refetch
-      // queryClient.invalidateQueries({ queryKey: ["todos"] });
+    onSuccess: ({ data }) => {
+      try {
+        console.log("ENTRANDOA ESTO");
+
+        console.log(data, "QUE PEDO PORQUE NO ENTRA");
+
+        const newShapes: ALL_SHAPES_CHILDREN[] = JSON.parse(data.content);
+
+        const createAtomRecursively = (
+          shape: ALL_SHAPES_CHILDREN
+        ): ALL_SHAPES => {
+          return {
+            ...shape,
+            state: atom({
+              ...shape.state,
+              children: atom(
+                shape.state.children?.map((child) =>
+                  createAtomRecursively(child)
+                ) || []
+              ),
+            }),
+          };
+        };
+        const element = newShapes.at(0);
+        if (!element) return;
+        console.log(element, "HOLAPUTOS");
+
+        setBox({
+          ...element.state,
+          children: atom(
+            element.state.children.map((i) => createAtomRecursively(i))
+          ),
+        });
+      } catch (error) {
+        console.log(error, "error");
+      }
     },
   });
   return (
