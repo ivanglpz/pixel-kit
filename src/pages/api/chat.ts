@@ -19,8 +19,17 @@ export default async function handler(
   }
 
   try {
+    const { inputArray, instructions } = req.body;
+
+    if (!Array.isArray(inputArray)) {
+      return res.status(400).json({ error: "inputArray must be an array" });
+    }
+
+    if (typeof instructions !== "string") {
+      return res.status(400).json({ error: "instructions must be a string" });
+    }
     // Aquí declaras tu prompt completo
-    const prompt = `
+    const basePrompt = `
 You need to generate and modify an array of objects that represent visual editor elements.
 Each object contains properties such as width, height, position (x, y), colors (fill, stroke), shadows, etc.
 Every element can optionally include a "children" property that contains nested elements.
@@ -215,6 +224,12 @@ Example array (do not treat these IDs as mandatory; they are for reference only)
 ]
 `;
 
+    const userPrompt = `
+Existing array: ${JSON.stringify(inputArray)}
+Instructions: ${instructions}
+Return the updated array following all rules.
+`;
+
     const messages: ChatMessage[] = [
       {
         role: "system",
@@ -223,7 +238,7 @@ Example array (do not treat these IDs as mandatory; they are for reference only)
       },
       {
         role: "user",
-        content: prompt,
+        content: `${basePrompt}\n${userPrompt}`,
       },
     ];
 
