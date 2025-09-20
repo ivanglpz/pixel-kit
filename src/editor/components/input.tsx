@@ -42,12 +42,16 @@ const Container = ({ children, id }: { children: ReactNode; id?: string }) => {
           width: "100%",
           color: "text",
           fontSize: "sm",
-          backgroundColor: "gray.900", // Fondo más claro para el selector
+          _dark: {
+            borderColor: "gray.700", // ← usa el semantic token
+            backgroundColor: "gray.900", // Fondo más claro para el selector
+          },
+          backgroundColor: "gray.100",
+          borderColor: "gray.200", // ← usa el semantic token
           borderRadius: "md",
           padding: "sm",
           borderWidth: "1px",
           borderStyle: "solid",
-          borderColor: "gray.700", // ← usa el semantic token
           gap: "md",
           minHeight: 30,
         })}
@@ -62,12 +66,17 @@ const Container = ({ children, id }: { children: ReactNode; id?: string }) => {
         width: "100%",
         color: "text",
         fontSize: "sm",
-        backgroundColor: "gray.900", // Fondo más claro para el selector
+        _dark: {
+          borderColor: "gray.700", // ← usa el semantic token
+          backgroundColor: "gray.900", // Fondo más claro para el selector
+        },
+        backgroundColor: "gray.100",
+        borderColor: "gray.200", // ← usa el semantic token
+
         borderRadius: "md",
         padding: "sm",
         borderWidth: "1px",
         borderStyle: "solid",
-        borderColor: "gray.700", // ← usa el semantic token
         gap: "md",
         minHeight: 30,
       })}
@@ -85,8 +94,12 @@ const IconContainer = ({ children }: { children: ReactNode }) => {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        backgroundColor: "gray.700",
         borderRadius: "4px",
+        backgroundColor: "gray.150",
+
+        _dark: {
+          backgroundColor: "gray.700",
+        },
       })}
     >
       {children}
