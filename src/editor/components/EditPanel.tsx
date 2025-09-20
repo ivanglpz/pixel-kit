@@ -29,42 +29,32 @@ export const EditPanel = ({ shape }: IShapeWithEvents) => {
       return response;
     },
     onSuccess: ({ data }) => {
-      try {
-        console.log("ENTRANDOA ESTO");
+      const newShape: ALL_SHAPES_CHILDREN = JSON.parse(data.content);
 
-        console.log(data, "QUE PEDO PORQUE NO ENTRA");
-
-        const newShapes: ALL_SHAPES_CHILDREN[] = JSON.parse(data.content);
-
-        const createAtomRecursively = (
-          shape: ALL_SHAPES_CHILDREN
-        ): ALL_SHAPES => {
-          return {
-            ...shape,
-            state: atom({
-              ...shape.state,
-              children: atom(
-                shape.state.children?.map((child) =>
-                  createAtomRecursively(child)
-                ) || []
-              ),
-            }),
-          };
+      const createAtomRecursively = (
+        shape: ALL_SHAPES_CHILDREN
+      ): ALL_SHAPES => {
+        return {
+          ...shape,
+          state: atom({
+            ...shape.state,
+            children: atom(
+              shape.state.children?.map((child) =>
+                createAtomRecursively(child)
+              ) || []
+            ),
+          }),
         };
-        const element = newShapes.at(0);
-        if (!element) return;
-        console.log(element, "HOLAPUTOS");
+      };
+      if (!newShape) return;
 
-        setBox({
-          ...element.state,
-          children: atom(
-            element.state.children.map((i) => createAtomRecursively(i))
-          ),
-        });
-        setText("");
-      } catch (error) {
-        console.log(error, "error");
-      }
+      setBox({
+        ...newShape.state,
+        children: atom(
+          newShape.state.children.map((i) => createAtomRecursively(i))
+        ),
+      });
+      setText("");
     },
   });
   return (
