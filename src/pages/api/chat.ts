@@ -261,6 +261,7 @@ Return the updated array following all rules.
       model: "gpt-4o",
       messages,
       temperature: 0,
+      response_format: { type: "json_object" },
     });
 
     // Parse the model's response as a JSON array
