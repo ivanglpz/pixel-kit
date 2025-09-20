@@ -30,65 +30,164 @@ export default async function handler(
     }
     // Aquí declaras tu prompt completo
     const basePrompt = `
-You need to generate and modify an array of objects that represent visual editor elements.
-Each object contains properties such as width, height, position (x, y), colors (fill, stroke), shadows, etc.
-Every element can optionally include a "children" property that contains nested elements.
+# UI Generator Component Schema Guide
 
-Strict rules:
+Create UI components using the visual editor schema. Focus on understanding properties and their relationships for flexible component generation.
 
-1. The "tool" property must always be in UPPERCASE. Possible values are: IMAGE, TEXT, FRAME, DRAW.
-2. Do not create or use the "DRAW" tool. Omit it completely.
-3. FRAME elements are containers. They are equivalent to HTML structural tags like <div>, <section>, <main>.
-   - They must support "children" to nest other elements.
-   - Always set "isLayout": true for all FRAME elements.
-   - Must include layout properties: isLayout, flexDirection, flexWrap, alignItems, justifyContent, padding, gap.
-   - padding must always be present (numeric, default 0 if unused).
-   - gap must always be present (numeric, default 0 if unused).
-   - FRAMEs can be horizontal or vertical:
-     - Horizontal: "flexDirection": "row"
-     - Vertical: "flexDirection": "column"
-   - FRAMEs can wrap or not wrap:
-     - "flexWrap": "wrap" or "flexWrap": "nowrap".
-4. IMAGE elements must always provide a URL from lorem picsum (https://picsum.photos/200/300).
-   - They must include a "fills" array.
-   - **Do not remove, truncate, or replace any existing fills or their internal properties** (visible, color, opacity, type, id, image object with height, width, name, src).
-   - If adding a new fill to an existing IMAGE, append it to the fills array; do not replace the array.
-   - Only create minimal fills for new IMAGE elements that do not already have fills.
-5. TEXT elements must always use the "text" property to render content.
-   - Respect text-related props: fontWeight, textDecoration, align, verticalAlign, fontFamily, fontSize.
-6. For SHADOW elements, include an object in state with type: "shadow".
-7. UUIDs must be unique and dynamically generated only for newly added elements.
-8. Do not modify or replace existing UUIDs or pageIds of elements that are already present in the input array. They must remain exactly as provided.
-9. The parentId of each child must match the UUID of its parent.
-10. Do not remove, shorten, or change the schema. All properties must be present exactly as provided.
-    - If a property is unused, set it to 0, false, an empty string, or an empty array depending on its type.
-    - **Preserve all objects and arrays completely, including nested arrays and their objects**. Never truncate or collapse them.
-11. Do not insert comments inside the array. The output must always be a valid array that can be parsed directly with JSON.parse.
-12. Use layout properties such as isLayout, flexDirection (row or column), flexWrap (wrap or nowrap), alignItems, justifyContent, padding, and gap to structure elements properly.
-13. Text properties must respect:
-    - fontWeight: "bold" | "normal" | "lighter" | "bolder" | "100" | "900"
-    - textDecoration?: string
-    - align: "left" | "center" | "right" | "justify"
-    - verticalAlign: "top" | "middle" | "bottom"
-14. This is an expert-level task: when the user asks for UI components (e.g. input, button, card, or text), you must create them following the schema exactly.
-15. The array shown below is only an example. You may be given a completely different input array.
-    - Existing elements in that array must retain all their original UUIDs and pageIds.
-    - Only generate new UUIDs for any newly added objects.
-16. The user will provide instructions describing new elements, layout changes, or styling modifications.
-    - "Agregar" / "Add" means create and append a new element object.
-    - "Actualizar" / "Cambiar" / "Update" / "Change" means modify the value of an existing property (e.g. color, size, text).
-    - "Eliminar" / "Remove" / "Delete" means remove the element object from the array or from the children of its parent.
-17. User instructions may be written in different languages (e.g. English, Spanish). Always interpret them according to these rules and apply them consistently.
-18. When adding a new element, you must always define a non-zero width and height.
-    - For TEXT elements, width and height must be proportional to the fontSize and length of the text.
-19. Always return a top-level array.
-20. Return only valid JSON. Do not include backticks, comments, explanations, or any extra text. The output must be ready to be parsed with JSON.parse().
-21. **Preservation rules for all objects and arrays**:
-    - Never truncate or remove any property from the input array or its sub-objects.
-    - Preserve the order of all properties exactly as in the input.
-    - Arrays like fills, strokes, effects, points, and children must be preserved entirely.
-    - Objects inside these arrays must keep all their internal fields intact.
-    - Only modify properties explicitly instructed by the user; all others must remain unchanged.
+## Schema Structure Overview
+
+### Core Element Properties
+- id: Unique UUID string for element identification
+- tool: Component type ("FRAME"|"TEXT"|"IMAGE") - always UPPERCASE
+- state: Object containing all element properties and configuration
+- pageId: Page identifier for element association
+- parentId: UUID of parent element (null for root elements)
+
+### Universal State Properties
+- x, y: Position coordinates relative to parent container
+- width, height: Element dimensions (must be non-zero)
+- rotation: Rotation angle in degrees (default: 0)
+- opacity: Transparency level 0-1 (default: 1)
+- visible: Boolean visibility toggle (default: true)
+- isLocked: Boolean lock state for editing (default: false)
+
+### Layout System (Required for all FRAMEs)
+- isLayout: Always true for FRAME elements
+- flexDirection: "row" (horizontal) | "column" (vertical)
+- flexWrap: "wrap" (allow wrapping) | "nowrap" (single line)
+- alignItems: Cross-axis alignment
+  * "flex-start": Align to start
+  * "center": Center alignment
+  * "flex-end": Align to end
+  * "stretch": Fill available space
+- justifyContent: Main-axis alignment
+  * "flex-start": Pack to start
+  * "center": Center items
+  * "flex-end": Pack to end
+  * "space-between": Equal space between items
+  * "space-around": Equal space around items
+- gap: Space between child elements (numeric pixels)
+- padding: Internal spacing (numeric pixels)
+
+### Padding System
+- padding: Uniform padding for all sides
+- paddingTop, paddingBottom, paddingLeft, paddingRight: Individual side padding
+- isAllPadding: Boolean indicating if padding is uniform
+
+### Border Radius System
+- borderRadius: Uniform corner radius
+- borderTopLeftRadius, borderTopRightRadius, borderBottomLeftRadius, borderBottomRightRadius: Individual corners
+- isAllBorderRadius: Boolean indicating if radius is uniform
+
+### Visual Properties
+- fills: Array of fill objects for backgrounds or images
+  * Structure: { visible: boolean, color: "#HEXCODE", opacity: number, type: "fill", id: "unique-string" }
+  * Structure: { visible: boolean, color: "#HEXCODE", opacity: number, type: "image", id: "unique-string", image:{ src:"https://...", width:100,height:100,name:"name.png"} }
+- strokes: Array of stroke objects for borders
+  * Structure: { visible: boolean, color: "#HEXCODE", id: "unique-string" }
+- effects: Array for shadows and other effects
+  * Shadow: { type: "shadow", id: "unique-string", visible:boolean, color:string }
+
+### Container Properties
+- children: Array of nested elements
+- fillContainerWidth: Boolean for width filling behavior
+- fillContainerHeight: Boolean for height filling behavior
+- maxWidth, maxHeight: Maximum dimension constraints
+- minWidth, minHeight: Minimum dimension constraints
+
+
+### Text Content
+- text: String content to display
+- fontSize: Font size in pixels
+- fontWeight: Weight specification
+  * "normal": Standard weight
+  * "bold": Bold text
+  * "lighter"|"bolder": Relative weights
+  * "100"|"200"|"300"|"400"|"500"|"600"|"700"|"800"|"900": Numeric weights
+- fontFamily: Font family name (default: system font)
+- fontStyle: Font style specification
+
+### Text Alignment
+- align: Horizontal text alignment
+  * "left": Left-aligned text
+  * "center": Center-aligned text
+  * "right": Right-aligned text
+  * "justify": Justified text
+- verticalAlign: Vertical alignment within container
+  * "top": Align to top
+  * "middle": Center vertically
+  * "bottom": Align to bottom
+
+### Text Styling
+- textDecoration: Text decoration ("underline"|"line-through"|"none")
+- color: Text color in hex format "#HEXCODE"
+
+### Layout Properties (Inherited)
+- TEXT elements inherit standard positioning and sizing properties
+- No fills array needed (text color handled by color property)
+- Can have strokes for text outlines (optional)
+
+
+### Image Source
+- fills: Required array containing image fill object
+  * Must include: visible, color, opacity, type, id
+  * image object: { height: number, width: number, name: "filename.ext", src: "URL" }
+  * Use Lorem Picsum: "https://picsum.photos/WIDTH/HEIGHT"
+
+### Image Sizing
+- width, height: Display dimensions (can differ from source dimensions)
+- Image maintains aspect ratio unless explicitly styled otherwise
+
+### Preservation Rules
+- Never remove or replace existing fills
+- Only append new fills to existing array
+- Preserve all nested object properties completely
+
+
+### Parent-Child Structure
+- parentId must match parent element's id
+- Child positioning (x, y) is relative to parent container
+- Children array contains nested elements
+- Layout properties of parent affect child positioning
+
+### Sizing Relationships
+- Child elements constrained by parent dimensions
+- Padding reduces available space for children
+- Gap creates spacing between siblings
+- FlexDirection determines layout flow
+
+### Color and Visual Hierarchy
+- fills array can contain multiple fill objects
+- Later fills in array appear on top
+- opacity affects entire element and children
+- Strokes appear on top of fills
+
+
+### Planning Phase
+1. Determine component type and purpose
+2. Calculate required dimensions and positioning
+3. Plan parent-child relationships and nesting
+4. Define layout flow (flexDirection) and alignment
+5. Specify colors, typography, and visual properties
+
+### Implementation Rules
+- Generate unique UUIDs for new elements only
+- Preserve existing UUIDs and pageIds completely
+- Include all required properties with appropriate defaults
+- Ensure proper parent-child linking via parentId
+- Validate layout property combinations make sense
+
+### Property Defaults
+- Numeric properties: Use 0 if unused
+- Boolean properties: Use false if inactive
+- String properties: Use empty string if unused
+- Arrays: Use empty array [] if no items
+- Required properties: Always include with valid values
+
+### Always return a top-level array.
+### Return only valid JSON. Do not include backticks, comments, explanations, or any extra text. The output must be ready to be parsed with JSON.parse().
+
+This schema enables creation of any UI component by understanding how properties interact and combining them effectively.
 `;
 
     const userPrompt = `
