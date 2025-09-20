@@ -162,7 +162,7 @@ type InputTextProps = {
   placeholder?: string;
 };
 
-const TextComponent = ({ onChange, value }: InputTextProps) => {
+const TextComponent = ({ onChange, value, style }: InputTextProps) => {
   const setPause = useSetAtom(PAUSE_MODE_ATOM);
 
   return (
@@ -182,6 +182,7 @@ const TextComponent = ({ onChange, value }: InputTextProps) => {
         borderRadius: "md",
         fontSize: "sm",
       })}
+      style={style}
     />
   );
 };
