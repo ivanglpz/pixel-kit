@@ -202,7 +202,7 @@ export const ShapeImage = (props: IShapeWithEvents) => {
           },
         }}
       >
-        <EditPanel />
+        <EditPanel {...props} />
       </Html>
     </>
   );
