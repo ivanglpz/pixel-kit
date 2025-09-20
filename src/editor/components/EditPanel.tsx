@@ -61,6 +61,7 @@ export const EditPanel = ({ shape }: IShapeWithEvents) => {
             element.state.children.map((i) => createAtomRecursively(i))
           ),
         });
+        setText("");
       } catch (error) {
         console.log(error, "error");
       }
