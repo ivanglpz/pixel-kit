@@ -49,19 +49,20 @@ Strict rules:
      - Vertical: "flexDirection": "column"
    - FRAMEs can wrap or not wrap:
      - "flexWrap": "wrap" or "flexWrap": "nowrap".
-4. IMAGE elements must always provide a URL from lorem picsum (https://picsum.photos).
-   - They must include a "fills" array as the first element in state with type: "image".
-   - Example: "fills": [{ "type": "image", "src": "https://picsum.photos/200/300" }].
+4. IMAGE elements must always provide a URL from lorem picsum (https://picsum.photos/200/300).
+   - They must include a "fills" array.
+   - **Do not remove, truncate, or replace any existing fills or their internal properties** (visible, color, opacity, type, id, image object with height, width, name, src).
+   - If adding a new fill to an existing IMAGE, append it to the fills array; do not replace the array.
+   - Only create minimal fills for new IMAGE elements that do not already have fills.
 5. TEXT elements must always use the "text" property to render content.
-   - Respect text-related props: fontWeight, textDecoration, align, verticalAlign.
-   - Example: "text": "Hello World".
+   - Respect text-related props: fontWeight, textDecoration, align, verticalAlign, fontFamily, fontSize.
 6. For SHADOW elements, include an object in state with type: "shadow".
 7. UUIDs must be unique and dynamically generated only for newly added elements.
 8. Do not modify or replace existing UUIDs or pageIds of elements that are already present in the input array. They must remain exactly as provided.
 9. The parentId of each child must match the UUID of its parent.
 10. Do not remove, shorten, or change the schema. All properties must be present exactly as provided.
     - If a property is unused, set it to 0, false, an empty string, or an empty array depending on its type.
-    - The schema must remain fully intact.
+    - **Preserve all objects and arrays completely, including nested arrays and their objects**. Never truncate or collapse them.
 11. Do not insert comments inside the array. The output must always be a valid array that can be parsed directly with JSON.parse.
 12. Use layout properties such as isLayout, flexDirection (row or column), flexWrap (wrap or nowrap), alignItems, justifyContent, padding, and gap to structure elements properly.
 13. Text properties must respect:
@@ -82,6 +83,12 @@ Strict rules:
     - For TEXT elements, width and height must be proportional to the fontSize and length of the text.
 19. Always return a top-level array.
 20. Return only valid JSON. Do not include backticks, comments, explanations, or any extra text. The output must be ready to be parsed with JSON.parse().
+21. **Preservation rules for all objects and arrays**:
+    - Never truncate or remove any property from the input array or its sub-objects.
+    - Preserve the order of all properties exactly as in the input.
+    - Arrays like fills, strokes, effects, points, and children must be preserved entirely.
+    - Objects inside these arrays must keep all their internal fields intact.
+    - Only modify properties explicitly instructed by the user; all others must remain unchanged.
 `;
 
     const userPrompt = `
