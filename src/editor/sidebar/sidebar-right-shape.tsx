@@ -124,7 +124,11 @@ const Separator = () => (
     className={css({
       height: 1,
       width: "100%",
-      backgroundColor: "gray.700",
+      _dark: {
+        backgroundColor: "gray.800",
+      },
+
+      backgroundColor: "gray.150",
     })}
   />
 );
