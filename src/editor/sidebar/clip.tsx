@@ -2,7 +2,7 @@ import { useReference } from "@/editor/hooks/useReference";
 import { CLIP_DIMENSION_ATOM, SHOW_CLIP_ATOM } from "@/editor/states/clipImage";
 import { css } from "@stylespixelkit/css";
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
-import { InputNumber } from "../components/input-number";
+import { Input } from "../components/input";
 import { IMAGE_RENDER_ATOM, RESTORE_ORIGINAL_RENDER } from "../states/image";
 import TOOL_ATOM from "../states/tool";
 
@@ -50,17 +50,48 @@ export const Clip = () => {
           gap: "md",
         })}
       >
-        <InputNumber
-          iconType="width"
-          value={Number(box.width)}
-          onChange={() => {}}
-        />
-        <InputNumber
-          iconType="height"
-          labelText=""
-          value={Number(box.height)}
-          onChange={() => {}}
-        />
+        <Input.Container>
+          <Input.Grid>
+            <Input.IconContainer>
+              <p
+                className={css({
+                  fontWeight: 600,
+                  fontSize: "x-small",
+                })}
+              >
+                W
+              </p>
+              {/* <MoveHorizontal size={constants.icon.size} /> */}
+            </Input.IconContainer>
+            <Input.Number
+              step={1}
+              min={0}
+              value={Number(box.width) || 0}
+              onChange={(v) => {}}
+            />
+          </Input.Grid>
+        </Input.Container>
+        <Input.Container>
+          <Input.Grid>
+            <Input.IconContainer>
+              <p
+                className={css({
+                  fontWeight: 600,
+                  fontSize: "x-small",
+                })}
+              >
+                H
+              </p>
+              {/* <MoveHorizontal size={constants.icon.size} /> */}
+            </Input.IconContainer>
+            <Input.Number
+              step={1}
+              min={0}
+              value={Number(box.height) || 0}
+              onChange={(v) => {}}
+            />
+          </Input.Grid>
+        </Input.Container>
       </div>
 
       <section

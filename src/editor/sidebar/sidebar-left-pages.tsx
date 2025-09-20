@@ -1,4 +1,3 @@
-import { InputAtomText } from "@/editor/components/input-atom-text";
 import {
   IPage,
   NEW_PAGE,
@@ -11,6 +10,7 @@ import { Reorder, useDragControls } from "framer-motion";
 import { useAtom, useSetAtom } from "jotai";
 import { File, GripVertical, Plus } from "lucide-react";
 import { useRef, useState } from "react";
+import { Input } from "../components/input";
 
 const DraggableRootItem = ({
   page,
@@ -22,7 +22,7 @@ const DraggableRootItem = ({
   onClick: () => void;
 }) => {
   const [show, setShow] = useState(false);
-  const [name] = useAtom(page.name);
+  const [name, setName] = useAtom(page.name);
   const setPause = useSetAtom(PAUSE_MODE_ATOM);
   const rootDragControls = useDragControls();
 
@@ -94,7 +94,7 @@ const DraggableRootItem = ({
         </div>
         <File size={14} />
         {show ? (
-          <InputAtomText atom={page.name} />
+          <Input.Text value={name} onChange={(e) => setName(e)} />
         ) : (
           <span
             className={css({
