@@ -372,7 +372,6 @@ export const EVENT_UP_SHAPES = atom(null, (get, set) => {
   for (const newShape of CURRENT_ITEMS) {
     set(CREATE_SHAPE_ATOM, newShape);
   }
-
   setTimeout(() => {
     set(
       UPDATE_SHAPES_IDS_ATOM,
