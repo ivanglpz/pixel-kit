@@ -1,18 +1,24 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import InputColor from "@/editor/components/input-color";
 import { useAtom } from "jotai";
 import { FC } from "react";
+import { Input } from "../components/input";
 import STAGE_CANVAS_BACKGROUND from "../states/canvas";
 
 export const StageCanvasColor: FC = () => {
   const [config, setConfig] = useAtom(STAGE_CANVAS_BACKGROUND);
 
   return (
-    <InputColor
-      color={config}
-      onChangeColor={(bg) => setConfig(bg)}
-      labelText="Canvas color"
-      keyInput="canvas-bg"
-    />
+    <Input.Container>
+      <Input.Grid>
+        <Input.IconContainer>
+          <Input.Color
+            id={`pixel-kit-canvas-color`}
+            value={config}
+            onChange={(bg) => setConfig(bg)}
+          />
+        </Input.IconContainer>
+        <Input.Label text={`#${config?.replace(/#/, "") ?? "ffffff"}`} />
+      </Input.Grid>
+    </Input.Container>
   );
 };
