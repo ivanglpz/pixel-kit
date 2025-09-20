@@ -18,7 +18,11 @@ import {
 import { useCallback, useState } from "react";
 import { constants } from "../constants/color";
 import { SHAPE_IDS_ATOM } from "../states/shape";
-import { ALL_SHAPES, MOVE_SHAPES_BY_ID } from "../states/shapes";
+import {
+  ALL_SHAPES,
+  DELETE_SHAPES_ATOM,
+  MOVE_SHAPES_BY_ID,
+} from "../states/shapes";
 import TOOL_ATOM, { PAUSE_MODE_ATOM } from "../states/tool";
 import { UPDATE_UNDO_REDO } from "../states/undo-redo";
 import { ContextMenu, useContextMenu } from "./context-menu";
@@ -86,6 +90,7 @@ export const Nodes = ({
   const [isHovered, setIsHovered] = useState(false);
   const setUpdateUndoRedo = useSetAtom(UPDATE_UNDO_REDO);
 
+  const DELETE_SHAPE = useSetAtom(DELETE_SHAPES_ATOM);
   const setMove = useSetAtom(MOVE_SHAPES_BY_ID);
 
   const { open } = useContextMenu();
@@ -162,7 +167,10 @@ export const Nodes = ({
             label: "Delete",
             icon: <Trash size={14} />,
 
-            onClick: () => alert("Option 3 clicked"),
+            onClick: () => {
+              setTool("MOVE");
+              DELETE_SHAPE();
+            },
             isEnabled: true,
           },
         ]}
