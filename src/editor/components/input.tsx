@@ -26,7 +26,6 @@ const GridComponent = ({ children }: { children: ReactNode }) => {
         alignItems: "center",
         justifyContent: "center",
         alignContent: "center",
-        flex: 1,
         gap: "md",
       })}
     >
@@ -35,9 +34,30 @@ const GridComponent = ({ children }: { children: ReactNode }) => {
   );
 };
 const Container = ({ children, id }: { children: ReactNode; id?: string }) => {
+  if (id) {
+    return (
+      <label
+        htmlFor={id}
+        className={css({
+          width: "100%",
+          color: "text",
+          fontSize: "sm",
+          backgroundColor: "gray.900", // Fondo más claro para el selector
+          borderRadius: "md",
+          padding: "sm",
+          borderWidth: "1px",
+          borderStyle: "solid",
+          borderColor: "gray.700", // ← usa el semantic token
+          gap: "md",
+          minHeight: 30,
+        })}
+      >
+        {children}
+      </label>
+    );
+  }
   return (
-    <label
-      htmlFor={id}
+    <div
       className={css({
         width: "100%",
         color: "text",
@@ -49,11 +69,11 @@ const Container = ({ children, id }: { children: ReactNode; id?: string }) => {
         borderStyle: "solid",
         borderColor: "gray.700", // ← usa el semantic token
         gap: "md",
-        height: 30,
+        minHeight: 30,
       })}
     >
       {children}
-    </label>
+    </div>
   );
 };
 const IconContainer = ({ children }: { children: ReactNode }) => {
@@ -171,7 +191,6 @@ export const TextArea = ({
       className={css({
         width: "100%",
         height: "100%",
-        flex: 1,
         backgroundColor: "transparent",
         color: "text",
         padding: "sm",
@@ -181,6 +200,37 @@ export const TextArea = ({
       })}
       style={style}
     />
+  );
+};
+
+type Props = {
+  value: string;
+  options: {
+    id: string | number;
+    label: string;
+    value: string;
+  }[];
+  onChange: (value: string) => void;
+};
+
+const Select = ({ options, value, onChange }: Props) => {
+  return (
+    <select
+      value={value}
+      className={css({
+        width: "100%",
+        color: "text",
+        fontSize: "sm",
+        backgroundColor: "transparent",
+      })}
+      onChange={(event) => onChange(event.target.value)}
+    >
+      {options?.map((e) => (
+        <option key={e.id} value={e.value}>
+          {e.label}
+        </option>
+      ))}
+    </select>
   );
 };
 
@@ -226,18 +276,6 @@ const ColorComponent = ({
           onChange={(event) => onChange(event.target.value)}
         />
       </div>
-      {/* <label
-        htmlFor={id}
-        className={css({
-          backgroundColor: "transparent",
-          color: "text",
-          height: "20px",
-          fontSize: "sm",
-          border: "none",
-        })}
-      >
-        #{value?.replace(/#/, "") ?? "ffffff"}
-      </label> */}
     </>
   );
 };
@@ -251,4 +289,5 @@ export const Input = {
   Color: ColorComponent,
   IconContainer,
   TextArea,
+  Select,
 };
