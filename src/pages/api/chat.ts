@@ -71,8 +71,10 @@ Strict rules:
     - "Actualizar" / "Cambiar" / "Update" / "Change" means modify the value of an existing property (e.g. color, size, text).
     - "Eliminar" / "Remove" / "Delete" means remove the element object from the array or from the children of its parent.
 17. User instructions may be written in different languages (e.g. English, Spanish). Always interpret them according to these rules and apply them consistently.
-18. Always return a top-level array.
-19. Return only valid JSON. Do not include backticks, comments, explanations, or any extra text. The output must be ready to be parsed with JSON.parse().
+18. When adding a new element, you must always define a non-zero width and height.
+    - For TEXT elements, width and height must be proportional to the fontSize and length of the text.
+19. Always return a top-level array.
+20. Return only valid JSON. Do not include backticks, comments, explanations, or any extra text. The output must be ready to be parsed with JSON.parse().
 `;
 
     const userPrompt = `
