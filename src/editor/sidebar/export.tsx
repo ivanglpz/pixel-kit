@@ -17,6 +17,7 @@ import { v4 as uuidv4 } from "uuid";
 import { Button } from "../components/button";
 import { Dialog } from "../components/dialog";
 import { Input } from "../components/input";
+import { Loading } from "../components/loading";
 import { constants } from "../constants/color";
 import { AllLayers } from "../layers/root.layers";
 import { STAGE_DIMENSION_ATOM } from "../states/dimension";
@@ -113,7 +114,6 @@ export const ExportStage = () => {
   const [showImage, setShowImage] = useState(false);
 
   const setImage = useSetAtom(SET_EDIT_IMAGE);
-  const img = useAtomValue(IMAGE_RENDER_ATOM);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleFiles = async (event: ChangeEvent<HTMLInputElement>) => {
@@ -420,8 +420,14 @@ export const ExportStage = () => {
               Cancel
             </Button.Secondary>
             <Button.Primary onClick={() => handleExport()}>
-              <File size={constants.icon.size} />
-              Export
+              {loading ? (
+                <Loading color={constants.theme.colors.black} />
+              ) : (
+                <>
+                  <File size={constants.icon.size} />
+                  Export
+                </>
+              )}
             </Button.Primary>
           </footer>
         </Dialog.Container>
@@ -508,36 +514,6 @@ export const ExportStage = () => {
           <File size={constants.icon.size} />
           Export
         </Button.Primary>
-        {/* <Valid isValid={config?.show_files_browser}>
-          <ImageConfiguration />
-        </Valid> */}
-        {/* <Valid isValid={!config?.show_files_browser}>
-          <div></div>
-        </Valid> */}
-        {/* <button
-          className={css({
-            padding: "md",
-            borderColor: "green.light.200",
-            borderWidth: 1,
-            borderRadius: "md",
-            backgroundColor: "green.dark.600",
-            py: "5",
-            px: "10",
-            height: "35px",
-            width: "100%",
-          })}
-          onClick={() => setShow(true)}
-        >
-          <p
-            className={css({
-              fontSize: "sm",
-              color: "black",
-              fontWeight: "600",
-            })}
-          >
-            Export
-          </p>
-        </button> */}
       </div>
     </>
   );
