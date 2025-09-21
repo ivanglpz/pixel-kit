@@ -71,8 +71,14 @@ const Close = ({ onClose }: CloseProps) => {
         justifyContent: "center",
         alignItems: "center",
         borderRadius: "lg",
+        cursor: "pointer",
         _hover: {
-          backgroundColor: "gray.600",
+          backgroundColor: "gray.150",
+        },
+        _dark: {
+          _hover: {
+            backgroundColor: "gray.600",
+          },
         },
       })}
     >
