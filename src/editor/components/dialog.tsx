@@ -124,7 +124,8 @@ const Container = ({ children }: ContainerProps) => {
         flexDirection: "column",
         backgroundColor: "bg",
         borderRadius: "lg",
-        border: "container",
+        borderWidth: 1,
+        borderColor: "gray.250",
         maxWidth: 600,
         minWidth: 300,
         width: "auto",
@@ -132,6 +133,10 @@ const Container = ({ children }: ContainerProps) => {
         height: "auto",
         gridAutoRows: "60px",
         transition: "opacity 0.3s ease, transform 0.3s ease",
+        _dark: {
+          borderWidth: 1,
+          borderColor: "gray.700",
+        },
       })}
       onClick={(e) => e?.stopPropagation()}
     >
