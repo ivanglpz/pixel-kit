@@ -2,7 +2,10 @@ import { useReference } from "@/editor/hooks/useReference";
 import { CLIP_DIMENSION_ATOM, SHOW_CLIP_ATOM } from "@/editor/states/clipImage";
 import { css } from "@stylespixelkit/css";
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
+import { Save } from "lucide-react";
+import { Button } from "../components/button";
 import { Input } from "../components/input";
+import { constants } from "../constants/color";
 import { IMAGE_RENDER_ATOM, RESTORE_ORIGINAL_RENDER } from "../states/image";
 import TOOL_ATOM from "../states/tool";
 
@@ -61,7 +64,6 @@ export const Clip = () => {
               >
                 W
               </p>
-              {/* <MoveHorizontal size={constants.icon.size} /> */}
             </Input.IconContainer>
             <Input.Number
               step={1}
@@ -82,7 +84,6 @@ export const Clip = () => {
               >
                 H
               </p>
-              {/* <MoveHorizontal size={constants.icon.size} /> */}
             </Input.IconContainer>
             <Input.Number
               step={1}
@@ -94,49 +95,22 @@ export const Clip = () => {
         </Input.Container>
       </div>
 
-      <section
+      <footer
         className={css({
           display: "flex",
           flexDirection: "row",
-          gap: "md",
+          gap: "lg",
           justifyContent: "end",
         })}
       >
-        <button
-          className={css({
-            padding: "md",
-            borderColor: "border",
-            borderWidth: 1,
-            borderRadius: "md",
-            backgroundColor: "gray.800",
-            py: "5",
-            px: "10",
-            height: "35px",
-          })}
+        <Button.Secondary
           onClick={() => {
             reset();
-            setshowClip(false);
           }}
         >
-          <p
-            className={css({
-              fontSize: "sm",
-            })}
-          >
-            Reset
-          </p>
-        </button>
-        <button
-          className={css({
-            padding: "md",
-            borderColor: "border",
-            borderWidth: 1,
-            borderRadius: "md",
-            backgroundColor: "primary",
-            py: "5",
-            px: "10",
-            height: "35px",
-          })}
+          Cancel
+        </Button.Secondary>
+        <Button.Primary
           onClick={() => {
             setTool("MOVE");
             const base64 = ref?.current?.toDataURL({
@@ -164,15 +138,10 @@ export const Clip = () => {
             image.src = base64;
           }}
         >
-          <p
-            className={css({
-              fontSize: "sm",
-            })}
-          >
-            Save
-          </p>
-        </button>
-      </section>
+          <Save size={constants.icon.size} />
+          Save
+        </Button.Primary>
+      </footer>
     </div>
   );
 };
