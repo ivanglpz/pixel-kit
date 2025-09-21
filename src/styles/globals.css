@@ -80,7 +80,7 @@ body {
 :root {
   --bg: #ffffff;
   --text: #000000;
-  --bar: red;
+  --bar: #3ea1f2;
   --bar-bg: #e2e2e2;
 }
 @media (prefers-color-scheme: dark) {
