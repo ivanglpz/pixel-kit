@@ -6,8 +6,6 @@ import {
   MouseEvent,
   ReactElement,
   ReactNode,
-  useEffect,
-  useState,
 } from "react";
 import { createPortal } from "react-dom";
 import { constants } from "../constants/color";
@@ -19,22 +17,7 @@ type DialogProps = {
 };
 
 export const Provider = ({ children, onClose, visible }: DialogProps) => {
-  const [shouldRender, setShouldRender] = useState(visible);
-  const [isAnimating, setIsAnimating] = useState(false);
   const Container = document.getElementById("pixel-app");
-
-  useEffect(() => {
-    if (visible) {
-      setShouldRender(true);
-      // Pequeño delay para permitir que el elemento se renderice antes de la animación
-      setTimeout(() => setIsAnimating(true), 10);
-    } else {
-      setIsAnimating(false);
-      // Esperar a que termine la animación antes de desmontar
-      const timer = setTimeout(() => setShouldRender(false), 300);
-      return () => clearTimeout(timer);
-    }
-  }, [visible]);
 
   const enhancedChildren = isValidElement(children)
     ? cloneElement(children as ReactElement, {
@@ -46,7 +29,7 @@ export const Provider = ({ children, onClose, visible }: DialogProps) => {
       })
     : children;
 
-  if (!shouldRender) return null;
+  if (!visible) return null;
   return Container
     ? createPortal(
         <main
@@ -60,9 +43,6 @@ export const Provider = ({ children, onClose, visible }: DialogProps) => {
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            opacity: isAnimating ? 1 : 0,
-            transform: isAnimating ? "scale(1)" : "scale(0.95)",
-            transition: "opacity 0.3s ease, transform 0.3s ease",
           })}
           onClick={onClose}
         >
@@ -121,14 +101,6 @@ const Header = ({ children }: HeaderProps) => {
         })}
       >
         {children}
-        {/* <p
-          className={css({
-            fontWeight: "bold",
-          })}
-        >
-          {title}
-        </p>
-        <Close /> */}
       </div>
     </header>
   );
@@ -152,6 +124,7 @@ const Container = ({ children }: ContainerProps) => {
         maxHeight: 520,
         height: "100%",
         gridAutoRows: "60px",
+        transition: "opacity 0.3s ease, transform 0.3s ease",
       })}
       onClick={(e) => e?.stopPropagation()}
     >
