@@ -47,7 +47,6 @@ export const EditPanel = ({ shape }: IShapeWithEvents) => {
         };
       };
       if (!newShape) return;
-      console.log(newShape, "newShape");
 
       setBox({
         ...newShape.state,
