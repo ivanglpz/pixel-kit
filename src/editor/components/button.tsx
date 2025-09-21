@@ -1,77 +1,79 @@
-import { Valid } from "@/components/valid";
 import { css } from "@stylespixelkit/css";
 import { ReactNode } from "react";
+import { constants } from "../constants/color";
 
-type Props = {
-  text?: string;
-  onClick: () => void;
-  isLoading?: boolean;
-  children?: ReactNode;
-  type?: "normal" | "danger" | "success" | "dangerfill";
-  fullWidth?: boolean;
+type ButtonProps = {
+  onClick: VoidFunction;
+  children: ReactNode;
 };
 
-const stylesType = {
-  normal: "rgb(0, 153, 255)",
-  danger: "#bb2124",
-  success: "#5cb85c",
-  dangerfill: "#bb2124",
-};
-
-const defaultStyles = {
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  borderWidth: 1,
-  borderStyle: "solid",
-  borderRadius: "md",
-  padding: "md",
-  color: "text",
-  textAlign: "center",
-  fontSize: "x-small",
-  fontWeight: "bold",
-};
-export const Button = ({
-  onClick,
-  text,
-  isLoading = false,
-  children,
-  fullWidth = true,
-  type = "normal",
-}: Props) => {
+const Primary = ({ onClick, children }: ButtonProps) => {
   return (
     <button
       type="button"
       className={css({
-        ...defaultStyles,
-        width: fullWidth ? "100%" : "max-content",
-        _hover: {
-          backgroundColor: stylesType[type],
-          cursor: "pointer",
-          opacity: 0.8,
+        padding: "md",
+        borderColor: "border",
+        borderWidth: 1,
+        borderRadius: "md",
+        py: "5",
+        px: "10",
+        height: "35px",
+        fontSize: "x-small",
+        fontWeight: 700,
+        color: "white",
+        _dark: {
+          color: "black",
         },
-        _active: {
-          backgroundColor: "primary",
-          opacity: 1,
-          scale: 0.95,
-        },
+        cursor: "pointer",
+        display: "flex",
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "center",
+        gap: "md",
       })}
-      disabled={isLoading}
       style={{
-        borderColor: stylesType[type],
-        backgroundColor: stylesType[type],
+        backgroundColor: constants.theme.colors.primary,
       }}
       onClick={onClick}
     >
-      <Valid isValid={!isLoading}>{text ?? children}</Valid>
-      <Valid isValid={isLoading}>
-        <div className="lds-ring">
-          <div></div>
-          <div></div>
-          <div></div>
-          <div></div>
-        </div>
-      </Valid>
+      {children}
     </button>
   );
+};
+const Secondary = ({ onClick, children }: ButtonProps) => {
+  return (
+    <button
+      type="button"
+      className={css({
+        padding: "md",
+        borderColor: "border",
+        borderWidth: 1,
+        borderRadius: "md",
+        py: "5",
+        px: "10",
+        height: "35px",
+        fontSize: "x-small",
+        fontWeight: 700,
+        color: "white",
+        _dark: {
+          color: "white",
+          backgroundColor: "gray.800",
+        },
+        cursor: "pointer",
+        display: "flex",
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "center",
+        gap: "md",
+      })}
+      onClick={onClick}
+    >
+      {children}
+    </button>
+  );
+};
+export const Button = {
+  Primary,
+  Secondary,
 };

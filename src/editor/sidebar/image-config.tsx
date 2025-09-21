@@ -124,10 +124,9 @@ export const ImageConfiguration = () => {
                       Please upload an image for editing before proceeding.
                     </p>
                   </div>
-                  <Button
-                    text="Upload Image"
-                    onClick={() => inputRef.current?.click()}
-                  />
+                  <Button.Primary onClick={() => inputRef.current?.click()}>
+                    Upload Image
+                  </Button.Primary>
                   {img?.name ? (
                     <p
                       className={css({

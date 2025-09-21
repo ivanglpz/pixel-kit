@@ -113,16 +113,18 @@ const Container = ({ children }: ContainerProps) => {
     <div
       className={css({
         padding: "lg",
-        gap: "md",
+        gap: "lg",
         display: "flex",
         flexDirection: "column",
         backgroundColor: "bg",
         borderRadius: "lg",
         border: "container",
         maxWidth: 600,
-        width: "100%",
+        minWidth: 300,
+        minHeight: 260,
+        width: "auto",
         maxHeight: 520,
-        height: "100%",
+        height: "auto",
         gridAutoRows: "60px",
         transition: "opacity 0.3s ease, transform 0.3s ease",
       })}
