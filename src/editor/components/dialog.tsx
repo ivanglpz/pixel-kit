@@ -1,4 +1,5 @@
 import { css } from "@stylespixelkit/css";
+import { X } from "lucide-react";
 import {
   cloneElement,
   isValidElement,
@@ -9,6 +10,7 @@ import {
   useState,
 } from "react";
 import { createPortal } from "react-dom";
+import { constants } from "../constants/color";
 
 type DialogProps = {
   visible: boolean;
@@ -16,7 +18,7 @@ type DialogProps = {
   onClose: VoidFunction;
 };
 
-export const Dialog = ({ children, onClose, visible }: DialogProps) => {
+export const Provider = ({ children, onClose, visible }: DialogProps) => {
   const [shouldRender, setShouldRender] = useState(visible);
   const [isAnimating, setIsAnimating] = useState(false);
   const Container = document.getElementById("pixel-app");
@@ -69,4 +71,97 @@ export const Dialog = ({ children, onClose, visible }: DialogProps) => {
         Container
       )
     : null;
+};
+
+type CloseProps = {
+  onClose: VoidFunction;
+};
+
+const Close = ({ onClose }: CloseProps) => {
+  return (
+    <button
+      onClick={(e) => {
+        e.stopPropagation();
+        onClose();
+      }}
+      className={css({
+        width: 30,
+        height: 30,
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        borderRadius: "lg",
+        _hover: {
+          backgroundColor: "gray.600",
+        },
+      })}
+    >
+      <X size={constants.icon.size} />
+    </button>
+  );
+};
+
+type HeaderProps = {
+  children: ReactNode;
+};
+const Header = ({ children }: HeaderProps) => {
+  return (
+    <header
+      className={css({
+        display: "flex",
+        flexDirection: "column",
+        gap: "lg",
+      })}
+    >
+      <div
+        className={css({
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+        })}
+      >
+        {children}
+        {/* <p
+          className={css({
+            fontWeight: "bold",
+          })}
+        >
+          {title}
+        </p>
+        <Close /> */}
+      </div>
+    </header>
+  );
+};
+type ContainerProps = {
+  children: ReactNode;
+};
+const Container = ({ children }: ContainerProps) => {
+  return (
+    <div
+      className={css({
+        padding: "lg",
+        gap: "lg",
+        display: "flex",
+        flexDirection: "column",
+        backgroundColor: "bg",
+        borderRadius: "lg",
+        border: "container",
+        maxWidth: 600,
+        width: "100%",
+        maxHeight: 520,
+        height: "100%",
+        gridAutoRows: "60px",
+      })}
+      onClick={(e) => e?.stopPropagation()}
+    >
+      {children}
+    </div>
+  );
+};
+export const Dialog = {
+  Provider,
+  Header,
+  Container,
+  Close,
 };

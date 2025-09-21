@@ -581,7 +581,7 @@ export default defineConfig({
       colors: {
         bg: {
           DEFAULT: {
-            value: { base: "{colors.gray.50}", _dark: "{colors.gray.950}" }, // Fondo principal
+            value: { base: "{colors.gray.50}", _dark: "{colors.gray.850}" }, // Fondo principal
           },
           muted: {
             value: { base: "{colors.gray.100}", _dark: "{colors.gray.800}" }, // Para secciones secundarias

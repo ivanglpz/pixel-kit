@@ -562,15 +562,26 @@ export const LayoutShapeConfig = () => {
         gap: "lg",
       })} scrollbar_container`}
     >
-      <Dialog visible={showIcons} onClose={() => setshowIcons(false)}>
-        <ListIcons
-          onClose={() => setshowIcons(false)}
-          onCreate={(svg, name) => {
-            createImageFromSVG(svg, name);
-            setshowIcons(false);
-          }}
-        />
-      </Dialog>
+      <Dialog.Provider visible={showIcons} onClose={() => setshowIcons(false)}>
+        <Dialog.Container>
+          <Dialog.Header>
+            <p
+              className={css({
+                fontWeight: "bold",
+              })}
+            >
+              Lucide Icons
+            </p>
+            <Dialog.Close onClose={() => setshowIcons(false)} />
+          </Dialog.Header>
+          <ListIcons
+            onCreate={(svg, name) => {
+              createImageFromSVG(svg, name);
+              setshowIcons(false);
+            }}
+          />
+        </Dialog.Container>
+      </Dialog.Provider>
 
       {/* SECCIÓN: SHAPE - Información general */}
       <section className={commonStyles.container}>
