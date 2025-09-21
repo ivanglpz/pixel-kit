@@ -1,3 +1,4 @@
+import { constants } from "@/editor/constants/color";
 import { defineConfig } from "@pandacss/dev";
 
 export default defineConfig({
@@ -614,7 +615,10 @@ export default defineConfig({
         // Primary & Secondary Variants
         primary: {
           DEFAULT: {
-            value: { base: "#4bacfcff", _dark: "#4bacfcff" },
+            value: {
+              base: constants.theme.colors.primary,
+              _dark: constants.theme.colors.primary,
+            },
           },
           hover: {
             value: { base: "rgb(0, 130, 220)", _dark: "rgb(0, 180, 220)" },
