@@ -3,6 +3,7 @@ export const constants = {
     colors: {
       primary: "#4bacfcff",
       white: "white",
+      black: "black",
       background: "rgba(75, 172, 252, 0.1)",
       "blue.50": "hsl(215, 90%, 90%)",
       "blue.100": "hsl(215, 90.1%, 85.53%)",
