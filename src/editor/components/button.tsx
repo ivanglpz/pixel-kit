@@ -47,7 +47,7 @@ const Secondary = ({ onClick, children }: ButtonProps) => {
       type="button"
       className={css({
         padding: "md",
-        borderColor: "border",
+        borderColor: "gray.150",
         borderWidth: 1,
         borderRadius: "md",
         py: "5",
@@ -55,11 +55,11 @@ const Secondary = ({ onClick, children }: ButtonProps) => {
         height: "35px",
         fontSize: "x-small",
         fontWeight: 700,
-        color: "white",
         _dark: {
           color: "white",
-          backgroundColor: "gray.800",
+          borderColor: "gray.700",
         },
+        color: "black",
         cursor: "pointer",
         display: "flex",
         flexDirection: "row",
