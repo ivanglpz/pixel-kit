@@ -4,13 +4,13 @@ import { useReference } from "@/editor/hooks/useReference";
 import { SHOW_CLIP_ATOM } from "@/editor/states/clipImage";
 import { calculateDimension } from "@/editor/utils/calculateDimension";
 import { css } from "@stylespixelkit/css";
-import { useAtom, useAtomValue } from "jotai";
+import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import Konva from "konva";
 import { Group } from "konva/lib/Group";
 import { Stage } from "konva/lib/Stage";
 import { File } from "lucide-react";
 import Link from "next/link";
-import { RefObject, useEffect, useRef, useState } from "react";
+import { ChangeEvent, RefObject, useEffect, useRef, useState } from "react";
 import { Stage as StageContainer } from "react-konva";
 import { toast } from "sonner";
 import { v4 as uuidv4 } from "uuid";
@@ -21,7 +21,7 @@ import { constants } from "../constants/color";
 import { AllLayers } from "../layers/root.layers";
 import { STAGE_DIMENSION_ATOM } from "../states/dimension";
 import { typeExportAtom } from "../states/export";
-import { IMAGE_RENDER_ATOM } from "../states/image";
+import { IMAGE_RENDER_ATOM, SET_EDIT_IMAGE } from "../states/image";
 import ALL_SHAPES_ATOM from "../states/shapes";
 
 const formats = {
@@ -110,6 +110,61 @@ export const ExportStage = () => {
   const ALL_SHAPES = useAtomValue(ALL_SHAPES_ATOM);
   const [format, setformat] = useAtom(typeExportAtom);
   const [show, setShow] = useState(false);
+  const [showImage, setShowImage] = useState(false);
+
+  const setImage = useSetAtom(SET_EDIT_IMAGE);
+  const img = useAtomValue(IMAGE_RENDER_ATOM);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const handleFiles = async (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    try {
+      // Convertir archivo a base64
+      const base64 = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          if (typeof reader.result === "string") {
+            resolve(reader.result);
+          } else {
+            reject(new Error("FileReader result is not a string"));
+          }
+        };
+        reader.onerror = () => reject(new Error("Error reading file"));
+        reader.readAsDataURL(file);
+      });
+
+      // Crear objeto Image para obtener dimensiones
+      const { width, height } = await new Promise<{
+        width: number;
+        height: number;
+      }>((resolve, reject) => {
+        const img = new Image();
+        img.onload = () => resolve({ width: img.width, height: img.height });
+        img.onerror = () => reject(new Error("Error loading image"));
+        img.src = base64;
+      });
+
+      // Setear en jotai
+      setImage({
+        base64,
+        name: file.name,
+        width,
+        height,
+        x: 0,
+        y: 0,
+      });
+    } catch (error) {
+      console.error("Error loading image:", error);
+    } finally {
+      // Resetear input
+      if (inputRef.current) {
+        inputRef.current.value = "";
+      }
+    }
+  };
+
   const [showClip, setshowClip] = useAtom(SHOW_CLIP_ATOM);
   const handleExport = async () => {
     toast.success("Thank you very much for using pixel kit!", {
@@ -371,6 +426,46 @@ export const ExportStage = () => {
           </footer>
         </Dialog.Container>
       </Dialog.Provider>
+      <Dialog.Provider visible={showImage} onClose={() => setShowImage(false)}>
+        <Dialog.Container>
+          <Dialog.Header>
+            <p
+              className={css({
+                fontWeight: "bold",
+              })}
+            >
+              Image
+            </p>
+            <Dialog.Close onClose={() => setShowImage(false)} />
+          </Dialog.Header>
+          <p
+            className={css({
+              fontSize: "sm",
+              color: "text",
+              fontWeight: "normal",
+            })}
+          >
+            Please upload an image here to edit it.
+          </p>
+
+          <Button.Secondary onClick={() => inputRef.current?.click()}>
+            <File size={constants.icon.size} />
+            Upload
+          </Button.Secondary>
+          <input
+            ref={inputRef}
+            type="file"
+            color="white"
+            accept="image/*"
+            onChange={handleFiles}
+            className={css({
+              width: 0,
+              height: 0,
+              display: "none",
+            })}
+          />
+        </Dialog.Container>
+      </Dialog.Provider>
 
       <p
         className={css({
@@ -406,7 +501,7 @@ export const ExportStage = () => {
           gap: "md",
         })}
       >
-        <Button.Secondary onClick={() => setShow(false)}>
+        <Button.Secondary onClick={() => setShowImage(true)}>
           Change
         </Button.Secondary>
         <Button.Primary onClick={() => setShow(true)}>
