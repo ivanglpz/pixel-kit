@@ -121,7 +121,6 @@ const Container = ({ children }: ContainerProps) => {
         border: "container",
         maxWidth: 600,
         minWidth: 300,
-        minHeight: 260,
         width: "auto",
         maxHeight: 520,
         height: "auto",

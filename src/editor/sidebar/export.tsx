@@ -252,90 +252,106 @@ export const ExportStage = () => {
             </p>
             <Dialog.Close onClose={() => setShow(false)} />
           </Dialog.Header>
-          <Input.Label text="Format" />
-          <Input.Container>
-            <Input.Select
-              options={[
-                {
-                  id: "1",
-                  label: "Low",
-                  value: "LOW",
-                },
-                {
-                  id: "2",
-                  label: "Medium",
-                  value: "MEDIUM",
-                },
-                {
-                  id: "3",
-                  label: "High",
-                  value: "HIGH",
-                },
-                {
-                  id: "4",
-                  label: "Big High",
-                  value: "BIG_HIGH",
-                },
-                {
-                  id: "4",
-                  label: "Ultra High",
-                  value: "ULTRA_HIGH",
-                },
-              ]}
-              onChange={(e) => setformat(e)}
-              value={format}
-            />
-          </Input.Container>
+          <section
+            className={css({
+              display: "flex",
+              flexDirection: "column",
+              gap: "md",
+            })}
+          >
+            <Input.Label text="Format" />
+            <Input.Container>
+              <Input.Select
+                options={[
+                  {
+                    id: "1",
+                    label: "Low",
+                    value: "LOW",
+                  },
+                  {
+                    id: "2",
+                    label: "Medium",
+                    value: "MEDIUM",
+                  },
+                  {
+                    id: "3",
+                    label: "High",
+                    value: "HIGH",
+                  },
+                  {
+                    id: "4",
+                    label: "Big High",
+                    value: "BIG_HIGH",
+                  },
+                  {
+                    id: "4",
+                    label: "Ultra High",
+                    value: "ULTRA_HIGH",
+                  },
+                ]}
+                onChange={(e) => setformat(e)}
+                value={format}
+              />
+            </Input.Container>
+          </section>
           <Valid isValid={config?.export_mode === "EDIT_IMAGE"}>
-            <Input.Label text="Dimensions" />
-            <div
+            <section
               className={css({
-                display: "grid",
-                gridTemplateColumns: "2",
+                display: "flex",
+                flexDirection: "column",
                 gap: "md",
               })}
             >
-              <Input.Container>
-                <Input.Grid>
-                  <Input.IconContainer>
-                    <p
-                      className={css({
-                        fontWeight: 600,
-                        fontSize: "x-small",
-                      })}
-                    >
-                      W
-                    </p>
-                  </Input.IconContainer>
-                  <Input.Number
-                    step={1}
-                    min={0}
-                    value={Number(imageRender.width) || 0}
-                    onChange={(v) => {}}
-                  />
-                </Input.Grid>
-              </Input.Container>
-              <Input.Container>
-                <Input.Grid>
-                  <Input.IconContainer>
-                    <p
-                      className={css({
-                        fontWeight: 600,
-                        fontSize: "x-small",
-                      })}
-                    >
-                      H
-                    </p>
-                  </Input.IconContainer>
-                  <Input.Number
-                    step={1}
-                    min={0}
-                    value={Number(imageRender.height) || 0}
-                    onChange={(v) => {}}
-                  />
-                </Input.Grid>
-              </Input.Container>
-            </div>
+              <Input.Label text="Dimensions" />
+              <div
+                className={css({
+                  display: "grid",
+                  gridTemplateColumns: "2",
+                  gap: "lg",
+                })}
+              >
+                <Input.Container>
+                  <Input.Grid>
+                    <Input.IconContainer>
+                      <p
+                        className={css({
+                          fontWeight: 600,
+                          fontSize: "x-small",
+                        })}
+                      >
+                        W
+                      </p>
+                    </Input.IconContainer>
+                    <Input.Number
+                      step={1}
+                      min={0}
+                      value={Number(imageRender.width) || 0}
+                      onChange={(v) => {}}
+                    />
+                  </Input.Grid>
+                </Input.Container>
+                <Input.Container>
+                  <Input.Grid>
+                    <Input.IconContainer>
+                      <p
+                        className={css({
+                          fontWeight: 600,
+                          fontSize: "x-small",
+                        })}
+                      >
+                        H
+                      </p>
+                    </Input.IconContainer>
+                    <Input.Number
+                      step={1}
+                      min={0}
+                      value={Number(imageRender.height) || 0}
+                      onChange={(v) => {}}
+                    />
+                  </Input.Grid>
+                </Input.Container>
+              </div>
+            </section>
           </Valid>
           <footer
             className={css({
