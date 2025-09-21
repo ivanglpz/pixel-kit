@@ -198,7 +198,7 @@ export const Nodes = ({
           borderRadius: "4",
           _dark: {
             backgroundColor: shapeId.some((w) => w.id === shape.id)
-              ? "gray.800"
+              ? "gray.700"
               : "transparent",
           },
           backgroundColor: shapeId.some((w) => w.id === shape.id)
