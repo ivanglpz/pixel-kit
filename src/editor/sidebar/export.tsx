@@ -1,5 +1,4 @@
 import { Valid } from "@/components/valid";
-import { Button } from "@/editor/components/button";
 import { useConfiguration } from "@/editor/hooks/useConfiguration";
 import { useReference } from "@/editor/hooks/useReference";
 import { SHOW_CLIP_ATOM } from "@/editor/states/clipImage";
@@ -11,10 +10,11 @@ import { Group } from "konva/lib/Group";
 import { Stage } from "konva/lib/Stage";
 import Link from "next/link";
 import { RefObject, useEffect, useRef, useState } from "react";
-import { createPortal } from "react-dom";
 import { Stage as StageContainer } from "react-konva";
 import { toast } from "sonner";
 import { v4 as uuidv4 } from "uuid";
+import { Button } from "../components/button";
+import { Dialog } from "../components/dialog";
 import { Input } from "../components/input";
 import { AllLayers } from "../layers/root.layers";
 import { STAGE_DIMENSION_ATOM } from "../states/dimension";
@@ -108,7 +108,7 @@ export const ExportStage = () => {
   const { height, width } = useAtomValue(STAGE_DIMENSION_ATOM);
   const ALL_SHAPES = useAtomValue(ALL_SHAPES_ATOM);
   const [format, setformat] = useAtom(typeExportAtom);
-  const [showExport, setShowExport] = useState(false);
+  const [show, setShow] = useState(false);
   const [showClip, setshowClip] = useAtom(SHOW_CLIP_ATOM);
   const handleExport = async () => {
     toast.success("Thank you very much for using pixel kit!", {
@@ -241,7 +241,7 @@ export const ExportStage = () => {
 
   return (
     <>
-      <Valid isValid={showExport}>
+      {/* <Valid isValid={show}>
         {Container
           ? createPortal(
               <main
@@ -256,7 +256,7 @@ export const ExportStage = () => {
                   alignItems: "center",
                   justifyContent: "center",
                 })}
-                onClick={() => setShowExport(false)}
+                onClick={() => setShow(false)}
               >
                 <div
                   className={css({
@@ -269,7 +269,6 @@ export const ExportStage = () => {
                     justifyContent: "flex-end",
                     alignItems: "flex-end",
                     width: 300,
-                    // minHeight: 320,
                     gap: "lg",
                   })}
                   onClick={(e) => e.stopPropagation()}
@@ -296,7 +295,7 @@ export const ExportStage = () => {
                         padding: "sm",
                         cursor: "pointer",
                       })}
-                      onClick={() => setShowExport(false)}
+                      onClick={() => setShow(false)}
                     >
                       <svg
                         width="24"
@@ -384,7 +383,6 @@ export const ExportStage = () => {
                               >
                                 W
                               </p>
-                              {/* <MoveHorizontal size={constants.icon.size} /> */}
                             </Input.IconContainer>
                             <Input.Number
                               step={1}
@@ -405,7 +403,6 @@ export const ExportStage = () => {
                               >
                                 H
                               </p>
-                              {/* <MoveHorizontal size={constants.icon.size} /> */}
                             </Input.IconContainer>
                             <Input.Number
                               step={1}
@@ -429,7 +426,112 @@ export const ExportStage = () => {
               Container
             )
           : null}
-      </Valid>
+      </Valid> */}
+      <Dialog.Provider visible={show} onClose={() => setShow(false)}>
+        <Dialog.Container>
+          <Dialog.Header>
+            <p
+              className={css({
+                fontWeight: "bold",
+              })}
+            >
+              Export
+            </p>
+            <Dialog.Close onClose={() => setShow(false)} />
+          </Dialog.Header>
+          <Input.Container>
+            <Input.Select
+              options={[
+                {
+                  id: "1",
+                  label: "Low",
+                  value: "LOW",
+                },
+                {
+                  id: "2",
+                  label: "Medium",
+                  value: "MEDIUM",
+                },
+                {
+                  id: "3",
+                  label: "High",
+                  value: "HIGH",
+                },
+                {
+                  id: "4",
+                  label: "Big High",
+                  value: "BIG_HIGH",
+                },
+                {
+                  id: "4",
+                  label: "Ultra High",
+                  value: "ULTRA_HIGH",
+                },
+              ]}
+              onChange={(e) => setformat(e)}
+              value={format}
+            />
+          </Input.Container>
+          <Valid isValid={config?.export_mode === "EDIT_IMAGE"}>
+            <Input.Label text="Dimensions" />
+            <div
+              className={css({
+                display: "grid",
+                gridTemplateColumns: "2",
+                gap: "md",
+              })}
+            >
+              <Input.Container>
+                <Input.Grid>
+                  <Input.IconContainer>
+                    <p
+                      className={css({
+                        fontWeight: 600,
+                        fontSize: "x-small",
+                      })}
+                    >
+                      W
+                    </p>
+                  </Input.IconContainer>
+                  <Input.Number
+                    step={1}
+                    min={0}
+                    value={Number(imageRender.width) || 0}
+                    onChange={(v) => {}}
+                  />
+                </Input.Grid>
+              </Input.Container>
+              <Input.Container>
+                <Input.Grid>
+                  <Input.IconContainer>
+                    <p
+                      className={css({
+                        fontWeight: 600,
+                        fontSize: "x-small",
+                      })}
+                    >
+                      H
+                    </p>
+                  </Input.IconContainer>
+                  <Input.Number
+                    step={1}
+                    min={0}
+                    value={Number(imageRender.height) || 0}
+                    onChange={(v) => {}}
+                  />
+                </Input.Grid>
+              </Input.Container>
+            </div>
+          </Valid>
+          <Button
+            text="Export Now"
+            onClick={() => handleExport()}
+            isLoading={loading}
+            fullWidth={false}
+          ></Button>
+        </Dialog.Container>
+      </Dialog.Provider>
+
       <p
         className={css({
           paddingBottom: "md",
@@ -482,7 +584,7 @@ export const ExportStage = () => {
             height: "35px",
             width: "100%",
           })}
-          onClick={() => setShowExport(true)}
+          onClick={() => setShow(true)}
         >
           <p
             className={css({

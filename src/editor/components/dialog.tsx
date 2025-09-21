@@ -113,7 +113,7 @@ const Container = ({ children }: ContainerProps) => {
     <div
       className={css({
         padding: "lg",
-        gap: "lg",
+        gap: "md",
         display: "flex",
         flexDirection: "column",
         backgroundColor: "bg",
