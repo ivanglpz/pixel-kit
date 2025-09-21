@@ -155,6 +155,7 @@ export const ExportStage = () => {
         x: 0,
         y: 0,
       });
+      setShowImage(false);
     } catch (error) {
       console.error("Error loading image:", error);
     } finally {
@@ -454,10 +455,22 @@ export const ExportStage = () => {
             Please upload an image here to edit it.
           </p>
 
-          <Button.Secondary onClick={() => inputRef.current?.click()}>
-            <File size={constants.icon.size} />
-            Upload
-          </Button.Secondary>
+          <footer
+            className={css({
+              display: "flex",
+              flexDirection: "row",
+              gap: "lg",
+              justifyContent: "end",
+            })}
+          >
+            <Button.Secondary onClick={() => setShowImage(false)}>
+              Cancel
+            </Button.Secondary>
+            <Button.Primary onClick={() => inputRef.current?.click()}>
+              <File size={constants.icon.size} />
+              Upload
+            </Button.Primary>
+          </footer>
           <input
             ref={inputRef}
             type="file"
