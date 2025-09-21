@@ -75,20 +75,20 @@ const configs: { [key in MODE]: Config } = {
       {
         icon: icons.image,
         keyMethod: "IMAGE",
-        keyBoard: "A",
+        keyBoard: "E",
         eventStage: "CREATE",
       },
       {
         icon: icons.text,
         keyMethod: "TEXT",
-        keyBoard: "S",
+        keyBoard: "R",
         eventStage: "CREATE",
       },
 
       {
         icon: icons.peentool,
         keyMethod: "DRAW",
-        keyBoard: "D",
+        keyBoard: "T",
         eventStage: "CREATE",
       },
       // {
