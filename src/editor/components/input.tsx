@@ -44,7 +44,7 @@ const Container = ({ children, id }: { children: ReactNode; id?: string }) => {
           fontSize: "sm",
           _dark: {
             borderColor: "gray.700", // ← usa el semantic token
-            backgroundColor: "gray.900", // Fondo más claro para el selector
+            backgroundColor: "gray.800", // Fondo más claro para el selector
           },
           backgroundColor: "gray.100",
           borderColor: "gray.200", // ← usa el semantic token
@@ -68,7 +68,7 @@ const Container = ({ children, id }: { children: ReactNode; id?: string }) => {
         fontSize: "sm",
         _dark: {
           borderColor: "gray.700", // ← usa el semantic token
-          backgroundColor: "gray.900", // Fondo más claro para el selector
+          backgroundColor: "gray.800", // Fondo más claro para el selector
         },
         backgroundColor: "gray.100",
         borderColor: "gray.200", // ← usa el semantic token
