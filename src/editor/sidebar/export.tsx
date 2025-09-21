@@ -8,6 +8,7 @@ import { useAtom, useAtomValue } from "jotai";
 import Konva from "konva";
 import { Group } from "konva/lib/Group";
 import { Stage } from "konva/lib/Stage";
+import { File } from "lucide-react";
 import Link from "next/link";
 import { RefObject, useEffect, useRef, useState } from "react";
 import { Stage as StageContainer } from "react-konva";
@@ -16,12 +17,12 @@ import { v4 as uuidv4 } from "uuid";
 import { Button } from "../components/button";
 import { Dialog } from "../components/dialog";
 import { Input } from "../components/input";
+import { constants } from "../constants/color";
 import { AllLayers } from "../layers/root.layers";
 import { STAGE_DIMENSION_ATOM } from "../states/dimension";
 import { typeExportAtom } from "../states/export";
 import { IMAGE_RENDER_ATOM } from "../states/image";
 import ALL_SHAPES_ATOM from "../states/shapes";
-import { ImageConfiguration } from "./image-config";
 
 const formats = {
   LOW: 0.8,
@@ -205,8 +206,6 @@ export const ExportStage = () => {
     }
   };
 
-  const Container = document.getElementById("pixel-app");
-
   const stageWidth = 210;
   const stageHeight = 210;
   const stageRef = useRef<Konva.Stage>(null);
@@ -241,192 +240,6 @@ export const ExportStage = () => {
 
   return (
     <>
-      {/* <Valid isValid={show}>
-        {Container
-          ? createPortal(
-              <main
-                className={css({
-                  position: "absolute",
-                  top: 0,
-                  zIndex: 9999,
-                  width: "100%",
-                  height: "100%",
-                  backgroundColor: "rgba(0,0,0,0.6)",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                })}
-                onClick={() => setShow(false)}
-              >
-                <div
-                  className={css({
-                    padding: "lg",
-                    display: "flex",
-                    flexDirection: "column",
-                    backgroundColor: "bg",
-                    borderRadius: "lg",
-                    border: "container",
-                    justifyContent: "flex-end",
-                    alignItems: "flex-end",
-                    width: 300,
-                    gap: "lg",
-                  })}
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <div
-                    className={css({
-                      display: "flex",
-                      justifyContent: "space-between",
-                      width: "100%",
-                      alignItems: "center",
-                    })}
-                  >
-                    <p
-                      className={css({
-                        fontSize: "md",
-                        color: "text",
-                        fontWeight: "bold",
-                      })}
-                    >
-                      Export
-                    </p>
-                    <button
-                      className={css({
-                        padding: "sm",
-                        cursor: "pointer",
-                      })}
-                      onClick={() => setShow(false)}
-                    >
-                      <svg
-                        width="24"
-                        height="24"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path
-                          d="M6.4 19L5 17.6L10.6 12L5 6.4L6.4 5L12 10.6L17.6 5L19 6.4L13.4 12L19 17.6L17.6 19L12 13.4L6.4 19Z"
-                          fill="white"
-                        />
-                      </svg>
-                    </button>
-                  </div>
-
-                  <p
-                    className={css({
-                      color: "text",
-                      fontSize: "sm",
-                      opacity: 0.7,
-                    })}
-                  >
-                    Export your edit to the quality you prefer the most.
-                  </p>
-                  <div
-                    className={css({
-                      display: "flex",
-                      flexDirection: "column",
-                      width: "100%",
-                      height: "100%",
-                      gap: "md",
-                    })}
-                  >
-                    <Input.Container>
-                      <Input.Select
-                        options={[
-                          {
-                            id: "1",
-                            label: "Low",
-                            value: "LOW",
-                          },
-                          {
-                            id: "2",
-                            label: "Medium",
-                            value: "MEDIUM",
-                          },
-                          {
-                            id: "3",
-                            label: "High",
-                            value: "HIGH",
-                          },
-                          {
-                            id: "4",
-                            label: "Big High",
-                            value: "BIG_HIGH",
-                          },
-                          {
-                            id: "4",
-                            label: "Ultra High",
-                            value: "ULTRA_HIGH",
-                          },
-                        ]}
-                        onChange={(e) => setformat(e)}
-                        value={format}
-                      />
-                    </Input.Container>
-                    <Valid isValid={config?.export_mode === "EDIT_IMAGE"}>
-                      <Input.Label text="Dimensions" />
-                      <div
-                        className={css({
-                          display: "grid",
-                          gridTemplateColumns: "2",
-                          gap: "md",
-                        })}
-                      >
-                        <Input.Container>
-                          <Input.Grid>
-                            <Input.IconContainer>
-                              <p
-                                className={css({
-                                  fontWeight: 600,
-                                  fontSize: "x-small",
-                                })}
-                              >
-                                W
-                              </p>
-                            </Input.IconContainer>
-                            <Input.Number
-                              step={1}
-                              min={0}
-                              value={Number(imageRender.width) || 0}
-                              onChange={(v) => {}}
-                            />
-                          </Input.Grid>
-                        </Input.Container>
-                        <Input.Container>
-                          <Input.Grid>
-                            <Input.IconContainer>
-                              <p
-                                className={css({
-                                  fontWeight: 600,
-                                  fontSize: "x-small",
-                                })}
-                              >
-                                H
-                              </p>
-                            </Input.IconContainer>
-                            <Input.Number
-                              step={1}
-                              min={0}
-                              value={Number(imageRender.height) || 0}
-                              onChange={(v) => {}}
-                            />
-                          </Input.Grid>
-                        </Input.Container>
-                      </div>
-                    </Valid>
-                  </div>
-                  <Button
-                    text="Export Now"
-                    onClick={() => handleExport()}
-                    isLoading={loading}
-                    fullWidth={false}
-                  ></Button>
-                </div>
-              </main>,
-              Container
-            )
-          : null}
-      </Valid> */}
       <Dialog.Provider visible={show} onClose={() => setShow(false)}>
         <Dialog.Container>
           <Dialog.Header>
@@ -439,6 +252,7 @@ export const ExportStage = () => {
             </p>
             <Dialog.Close onClose={() => setShow(false)} />
           </Dialog.Header>
+          <Input.Label text="Format" />
           <Input.Container>
             <Input.Select
               options={[
@@ -523,12 +337,22 @@ export const ExportStage = () => {
               </Input.Container>
             </div>
           </Valid>
-          <Button
-            text="Export Now"
-            onClick={() => handleExport()}
-            isLoading={loading}
-            fullWidth={false}
-          ></Button>
+          <footer
+            className={css({
+              display: "flex",
+              flexDirection: "row",
+              gap: "lg",
+              justifyContent: "end",
+            })}
+          >
+            <Button.Secondary onClick={() => setShow(false)}>
+              Cancel
+            </Button.Secondary>
+            <Button.Primary onClick={() => handleExport()}>
+              <File size={constants.icon.size} />
+              Export
+            </Button.Primary>
+          </footer>
         </Dialog.Container>
       </Dialog.Provider>
 
@@ -566,13 +390,20 @@ export const ExportStage = () => {
           gap: "md",
         })}
       >
-        <Valid isValid={config?.show_files_browser}>
+        <Button.Secondary onClick={() => setShow(false)}>
+          Change
+        </Button.Secondary>
+        <Button.Primary onClick={() => setShow(true)}>
+          <File size={constants.icon.size} />
+          Export
+        </Button.Primary>
+        {/* <Valid isValid={config?.show_files_browser}>
           <ImageConfiguration />
-        </Valid>
-        <Valid isValid={!config?.show_files_browser}>
+        </Valid> */}
+        {/* <Valid isValid={!config?.show_files_browser}>
           <div></div>
-        </Valid>
-        <button
+        </Valid> */}
+        {/* <button
           className={css({
             padding: "md",
             borderColor: "green.light.200",
@@ -595,7 +426,7 @@ export const ExportStage = () => {
           >
             Export
           </p>
-        </button>
+        </button> */}
       </div>
     </>
   );
