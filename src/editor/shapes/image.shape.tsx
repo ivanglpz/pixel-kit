@@ -5,8 +5,7 @@
 import { useMemo } from "react";
 
 // Estado global (jotai)
-import { PrimitiveAtom, useAtom, useAtomValue } from "jotai";
-import { STAGE_DIMENSION_ATOM } from "../states/dimension";
+import { PrimitiveAtom, useAtom } from "jotai";
 import { SHAPE_IDS_ATOM } from "../states/shape";
 
 // Konva
@@ -16,6 +15,7 @@ import { Image as KonvaImage } from "react-konva";
 import { IShape, IShapeWithEvents, WithInitialValue } from "./type.shape";
 
 // Eventos de shape
+import { useConfiguration } from "../hooks/useConfiguration";
 import { coordinatesShapeMove, shapeEventDragMove } from "./events.shape";
 
 // Transformer
@@ -93,7 +93,8 @@ export const ShapeImage = (props: IShapeWithEvents) => {
   // Refs para shape y transformer
 
   // Estado global
-  const stage = useAtomValue(STAGE_DIMENSION_ATOM);
+  const { config } = useConfiguration();
+
   const [shapeId, setShapeId] = useAtom(SHAPE_IDS_ATOM);
   const isSelected = shapeId.some((w) => w.id === box.id);
 
@@ -169,7 +170,13 @@ export const ShapeImage = (props: IShapeWithEvents) => {
           })
         }
         onDragMove={(e) =>
-          setBox(shapeEventDragMove(e, stage.width, stage.height))
+          setBox(
+            shapeEventDragMove(
+              e,
+              Number(config.expand_stage_resolution?.width),
+              Number(config.expand_stage_resolution?.height)
+            )
+          )
         }
         onTransform={(e) => {
           const scaleX = e.target.scaleX();
@@ -178,8 +185,8 @@ export const ShapeImage = (props: IShapeWithEvents) => {
           e.target.scaleY(1);
           const payload = coordinatesShapeMove(
             box,
-            stage.width,
-            stage.height,
+            Number(config.expand_stage_resolution?.width),
+            Number(config.expand_stage_resolution?.height),
             e
           );
 

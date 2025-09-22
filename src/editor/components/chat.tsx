@@ -4,7 +4,6 @@
 // import { FormEvent, useState } from "react";
 // import { useTool } from "../hooks";
 // import { IShape } from "../shapes/type.shape";
-// import { STAGE_DIMENSION_ATOM } from "../states/dimension";
 // import { PAGE_ID_ATOM } from "../states/pages";
 // import ALL_SHAPES_ATOM from "../states/shapes";
 // import { IKeyMethods } from "../states/tool";
@@ -657,7 +656,6 @@
 //   const [messages, setMessages] = useState<Message[]>([]);
 //   const [input, setInput] = useState("");
 //   const [isLoading, setIsLoading] = useState(false);
-//   const dimension = useAtomValue(STAGE_DIMENSION_ATOM);
 //   const pageId = useAtomValue(PAGE_ID_ATOM);
 //   const setShapes = useSetAtom(ALL_SHAPES_ATOM);
 //   const { setTool } = useTool();
