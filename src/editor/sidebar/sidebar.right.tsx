@@ -9,7 +9,8 @@ import TOOL_ATOM from "../states/tool";
 import { StageCanvasColor } from "./canvas";
 import { Clip } from "./clip";
 import { Drawing } from "./drawing";
-import { ExportStage } from "./export";
+import { ExportShape } from "./export";
+import { ExportStage } from "./export-stage";
 import { LayoutShapeConfig } from "./sidebar-right-shape";
 
 const SidebarRight: FC = () => {
@@ -44,13 +45,19 @@ const SidebarRight: FC = () => {
       <Valid isValid={config?.show_clip_config}>
         <Clip />
       </Valid>
-      <Drawing />
-      <LayoutShapeConfig />
-      {/* <Valid isValid={tool === "MOVE"}> */}
-      {/* <Valid isValid={!shapeIds.length}> */}
-      <ExportStage />
-      {/* </Valid> */}
-      {/* </Valid> */}
+      <Valid isValid={!shapeIds.length}>
+        <Drawing />
+      </Valid>
+      <Valid isValid={shapeIds.length > 0}>
+        <LayoutShapeConfig />
+        <ExportShape />
+      </Valid>
+
+      <Valid isValid={tool === "MOVE"}>
+        <Valid isValid={!shapeIds.length}>
+          <ExportStage />
+        </Valid>
+      </Valid>
     </aside>
   );
 };

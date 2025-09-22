@@ -1,10 +1,10 @@
 import { useConfiguration } from "@/editor/hooks/useConfiguration";
 import { css } from "@stylespixelkit/css";
-import { atom, useAtom, useAtomValue, useSetAtom } from "jotai";
+import { useAtom, useAtomValue } from "jotai";
 import Konva from "konva";
 import { File } from "lucide-react";
 import Link from "next/link";
-import { ChangeEvent, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Layer, Stage as StageContainer } from "react-konva";
 import { toast } from "sonner";
 import { v4 as uuidv4 } from "uuid";
@@ -14,10 +14,8 @@ import { Input } from "../components/input";
 import { Loading } from "../components/loading";
 import { constants } from "../constants/color";
 import { Shapes } from "../shapes/shapes";
-import { FCShapeWEvents, IShape } from "../shapes/type.shape";
 import { typeExportAtom } from "../states/export";
-import { SET_EDIT_IMAGE } from "../states/image";
-import { SHAPE_SELECTED_ATOM } from "../states/shape";
+import ALL_SHAPES_ATOM from "../states/shapes";
 
 const formats = {
   LOW: 0.8,
@@ -26,9 +24,6 @@ const formats = {
   BIG_HIGH: 2.6,
   ULTRA_HIGH: 3.5,
 };
-
-const stageWidth = 210;
-const stageHeight = 210;
 
 function downloadBase64Image(base64: string) {
   const link = document.createElement("a");
@@ -39,9 +34,9 @@ function downloadBase64Image(base64: string) {
   link.remove();
 }
 
-function computeStageTransform(shape: IShape | null) {
-  const contentWidth = Number(shape?.width) || 0;
-  const contentHeight = Number(shape?.height) || 0;
+function computeStageTransform(config: { width: number; height: number }) {
+  const contentWidth = Number(config?.width) || 0;
+  const contentHeight = Number(config?.height) || 0;
   if (!contentWidth || !contentHeight)
     return { scale: 1, offsetX: 0, offsetY: 0 };
 
@@ -61,51 +56,19 @@ function computeStageTransform(shape: IShape | null) {
   };
 }
 
-export const ExportShape = () => {
+const stageWidth = 210;
+const stageHeight = 210;
+export const ExportStage = () => {
+  const ALL_SHAPES = useAtomValue(ALL_SHAPES_ATOM);
+  const [showExportDialog, setShowExportDialog] = useState(false);
   const { config } = useConfiguration();
-  const shape = useAtomValue(SHAPE_SELECTED_ATOM);
   const [loading, setLoading] = useState(false);
   const [format, setFormat] = useAtom(typeExportAtom);
-  const [showExportDialog, setShowExportDialog] = useState(false);
-  const [showImageDialog, setShowImageDialog] = useState(false);
 
   const stageRef = useRef<Konva.Stage>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
-  const setImage = useSetAtom(SET_EDIT_IMAGE);
-
-  const handleFiles = async (event: ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-
-    try {
-      const base64 = await new Promise<string>((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onloadend = () =>
-          typeof reader.result === "string"
-            ? resolve(reader.result)
-            : reject(new Error("Invalid file"));
-        reader.onerror = () => reject(new Error("Error reading file"));
-        reader.readAsDataURL(file);
-      });
-
-      const { width, height } = await new Promise<{
-        width: number;
-        height: number;
-      }>((resolve, reject) => {
-        const img = new Image();
-        img.onload = () => resolve({ width: img.width, height: img.height });
-        img.onerror = () => reject(new Error("Error loading image"));
-        img.src = base64;
-      });
-
-      setImage({ base64, name: file.name, width, height, x: 0, y: 0 });
-      setShowImageDialog(false);
-    } finally {
-      if (inputRef.current) inputRef.current.value = "";
-    }
-  };
 
   const handleExport = () => {
+    if (!config.expand_stage_resolution) return;
     toast.success("Thank you very much for using pixel kit!", {
       description: (
         <p>
@@ -123,7 +86,9 @@ export const ExportShape = () => {
 
     setLoading(true);
 
-    const { offsetX, offsetY, width, height } = computeStageTransform(shape);
+    const { offsetX, offsetY, width, height } = computeStageTransform(
+      config.expand_stage_resolution
+    );
     const image = stageRef.current?.toDataURL({
       quality: 1,
       pixelRatio: formats[format as keyof typeof formats],
@@ -138,16 +103,18 @@ export const ExportShape = () => {
   };
 
   useEffect(() => {
-    if (!stageRef.current || !shape) return;
+    if (!stageRef.current || !config.expand_stage_resolution) return;
     const stage = stageRef.current;
-    const { scale, offsetX, offsetY } = computeStageTransform(shape);
+    const { scale, offsetX, offsetY } = computeStageTransform(
+      config.expand_stage_resolution
+    );
 
     stage.width(stageWidth);
     stage.height(stageHeight);
     stage.scale({ x: scale, y: scale });
     stage.position({ x: offsetX, y: offsetY });
     stage.batchDraw();
-  }, [config.export_mode, shape]);
+  }, [config.export_mode, ALL_SHAPES]);
 
   return (
     <>
@@ -204,46 +171,6 @@ export const ExportShape = () => {
           </footer>
         </Dialog.Container>
       </Dialog.Provider>
-
-      {/* Image Dialog */}
-      <Dialog.Provider
-        visible={showImageDialog}
-        onClose={() => setShowImageDialog(false)}
-      >
-        <Dialog.Container>
-          <Dialog.Header>
-            <p className={css({ fontWeight: "bold" })}>Image</p>
-            <Dialog.Close onClose={() => setShowImageDialog(false)} />
-          </Dialog.Header>
-          <p className={css({ fontSize: "sm", color: "text" })}>
-            Please upload an image here to edit it.
-          </p>
-          <footer
-            className={css({
-              display: "flex",
-              flexDirection: "row",
-              gap: "lg",
-              justifyContent: "end",
-            })}
-          >
-            <Button.Secondary onClick={() => setShowImageDialog(false)}>
-              Cancel
-            </Button.Secondary>
-            <Button.Primary onClick={() => inputRef.current?.click()}>
-              <File size={constants.icon.size} /> Upload
-            </Button.Primary>
-          </footer>
-          <input
-            ref={inputRef}
-            type="file"
-            accept="image/*"
-            onChange={handleFiles}
-            className={css({ width: 0, height: 0, display: "none" })}
-          />
-        </Dialog.Container>
-      </Dialog.Provider>
-
-      {/* Preview */}
       <p
         className={css({
           paddingBottom: "md",
@@ -252,10 +179,10 @@ export const ExportShape = () => {
           fontSize: "sm",
         })}
       >
-        Export
+        Export stage
       </p>
       <StageContainer
-        id="preview-shape"
+        id="preview-stage"
         ref={stageRef}
         width={stageWidth}
         height={stageHeight}
@@ -268,21 +195,12 @@ export const ExportShape = () => {
         })}
       >
         <Layer>
-          {shape &&
-            (() => {
-              const Component = Shapes?.[shape.tool] as FCShapeWEvents;
-              return (
-                <Component
-                  key={`pixel-kit-preview-${shape.id}`}
-                  shape={{
-                    id: "1",
-                    pageId: "one",
-                    state: atom({ ...shape, x: 0, y: 0 }),
-                    tool: shape.tool,
-                  }}
-                />
-              );
-            })()}
+          {ALL_SHAPES.map((e) => {
+            const Component = Shapes?.[e.tool];
+            return (
+              <Component key={`pixel-kit-stage-preview-${e.id}`} shape={e} />
+            );
+          })}
         </Layer>
       </StageContainer>
       <div
@@ -292,9 +210,6 @@ export const ExportShape = () => {
           gap: "md",
         })}
       >
-        <Button.Secondary onClick={() => setShowImageDialog(true)}>
-          Change
-        </Button.Secondary>
         <Button.Primary onClick={() => setShowExportDialog(true)}>
           <File size={constants.icon.size} /> Export
         </Button.Primary>
