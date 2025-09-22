@@ -3,7 +3,6 @@ import { useConfiguration } from "@/editor/hooks/useConfiguration";
 import { css } from "@stylespixelkit/css";
 import { useAtomValue } from "jotai";
 import { FC } from "react";
-import { StageMode } from "../components/ChangeEnv";
 import { SHAPE_IDS_ATOM } from "../states/shape";
 import TOOL_ATOM from "../states/tool";
 import { StageCanvasColor } from "./canvas";
@@ -36,7 +35,7 @@ const SidebarRight: FC = () => {
     >
       <Valid isValid={tool === "MOVE"}>
         <Valid isValid={!shapeIds.length}>
-          <StageMode />
+          {/* <StageMode /> */}
           <Valid isValid={config?.show_canvas_config}>
             <StageCanvasColor />
           </Valid>

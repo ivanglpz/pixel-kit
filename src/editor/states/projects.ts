@@ -66,45 +66,45 @@ export const PROJECTS_ATOM = atom([
         ]),
         ID: atom<string>("8eb9cfc3-023f-4204-a745-3d5347d1f057"),
       },
-      EDIT_IMAGE: {
-        LIST: atom<IPage[]>([
-          {
-            id: "c9fafa46-137a-4f89-94c5-acb3d787ac34",
-            name: atom("Page 1"),
-            color: atom(canvasTheme.dark),
-            isVisible: atom(true),
-            SHAPES: {
-              ID: atom<IPageShapeIds[]>([]),
-              LIST: atom<ALL_SHAPES[]>([]),
-            },
-            UNDOREDO: {
-              COUNT_UNDO_REDO: atom<number>(0),
-              LIST_UNDO_REDO: atom<UndoRedoAction[]>([]),
-            },
-          },
-        ]),
-        ID: atom<string>("c9fafa46-137a-4f89-94c5-acb3d787ac34"),
-      },
+      // EDIT_IMAGE: {
+      //   LIST: atom<IPage[]>([
+      //     {
+      //       id: "c9fafa46-137a-4f89-94c5-acb3d787ac34",
+      //       name: atom("Page 1"),
+      //       color: atom(canvasTheme.dark),
+      //       isVisible: atom(true),
+      //       SHAPES: {
+      //         ID: atom<IPageShapeIds[]>([]),
+      //         LIST: atom<ALL_SHAPES[]>([]),
+      //       },
+      //       UNDOREDO: {
+      //         COUNT_UNDO_REDO: atom<number>(0),
+      //         LIST_UNDO_REDO: atom<UndoRedoAction[]>([]),
+      //       },
+      //     },
+      //   ]),
+      //   ID: atom<string>("c9fafa46-137a-4f89-94c5-acb3d787ac34"),
+      // },
 
-      FREE_DRAW: {
-        LIST: atom<IPage[]>([
-          {
-            id: "7fca22f8-ce7c-4494-87b7-f5c21240d7aa",
-            name: atom("Page 1"),
-            color: atom(canvasTheme.dark),
-            isVisible: atom(true),
-            SHAPES: {
-              ID: atom<IPageShapeIds[]>([]),
-              LIST: atom<ALL_SHAPES[]>([]),
-            },
-            UNDOREDO: {
-              COUNT_UNDO_REDO: atom<number>(0),
-              LIST_UNDO_REDO: atom<UndoRedoAction[]>([]),
-            },
-          },
-        ]),
-        ID: atom<string>("7fca22f8-ce7c-4494-87b7-f5c21240d7aa"),
-      },
+      // FREE_DRAW: {
+      //   LIST: atom<IPage[]>([
+      //     {
+      //       id: "7fca22f8-ce7c-4494-87b7-f5c21240d7aa",
+      //       name: atom("Page 1"),
+      //       color: atom(canvasTheme.dark),
+      //       isVisible: atom(true),
+      //       SHAPES: {
+      //         ID: atom<IPageShapeIds[]>([]),
+      //         LIST: atom<ALL_SHAPES[]>([]),
+      //       },
+      //       UNDOREDO: {
+      //         COUNT_UNDO_REDO: atom<number>(0),
+      //         LIST_UNDO_REDO: atom<UndoRedoAction[]>([]),
+      //       },
+      //     },
+      //   ]),
+      //   ID: atom<string>("7fca22f8-ce7c-4494-87b7-f5c21240d7aa"),
+      // },
     },
 
     EVENT: atom<IStageEvents>("IDLE"),
@@ -169,45 +169,45 @@ export const NEW_PROJECT = atom(null, (get, set) => {
           ]),
           ID: atom<string>(NEW_DESIGN_MODE_UUID),
         },
-        EDIT_IMAGE: {
-          LIST: atom<IPage[]>([
-            {
-              id: NEWEDIT_IMAGE_UUID,
-              name: atom("Page 1"),
-              color: atom(canvasTheme.dark),
-              isVisible: atom(true),
-              SHAPES: {
-                ID: atom<IPageShapeIds[]>([]),
-                LIST: atom<ALL_SHAPES[]>([]),
-              },
-              UNDOREDO: {
-                COUNT_UNDO_REDO: atom<number>(0),
-                LIST_UNDO_REDO: atom<UndoRedoAction[]>([]),
-              },
-            },
-          ]),
-          ID: atom<string>(NEWEDIT_IMAGE_UUID),
-        },
+        // EDIT_IMAGE: {
+        //   LIST: atom<IPage[]>([
+        //     {
+        //       id: NEWEDIT_IMAGE_UUID,
+        //       name: atom("Page 1"),
+        //       color: atom(canvasTheme.dark),
+        //       isVisible: atom(true),
+        //       SHAPES: {
+        //         ID: atom<IPageShapeIds[]>([]),
+        //         LIST: atom<ALL_SHAPES[]>([]),
+        //       },
+        //       UNDOREDO: {
+        //         COUNT_UNDO_REDO: atom<number>(0),
+        //         LIST_UNDO_REDO: atom<UndoRedoAction[]>([]),
+        //       },
+        //     },
+        //   ]),
+        //   ID: atom<string>(NEWEDIT_IMAGE_UUID),
+        // },
 
-        FREE_DRAW: {
-          LIST: atom<IPage[]>([
-            {
-              id: NEW_FREE_DRAW_UUID,
-              name: atom("Page 1"),
-              color: atom(canvasTheme.dark),
-              isVisible: atom(true),
-              SHAPES: {
-                ID: atom<IPageShapeIds[]>([]),
-                LIST: atom<ALL_SHAPES[]>([]),
-              },
-              UNDOREDO: {
-                COUNT_UNDO_REDO: atom<number>(0),
-                LIST_UNDO_REDO: atom<UndoRedoAction[]>([]),
-              },
-            },
-          ]),
-          ID: atom<string>(NEW_FREE_DRAW_UUID),
-        },
+        // FREE_DRAW: {
+        //   LIST: atom<IPage[]>([
+        //     {
+        //       id: NEW_FREE_DRAW_UUID,
+        //       name: atom("Page 1"),
+        //       color: atom(canvasTheme.dark),
+        //       isVisible: atom(true),
+        //       SHAPES: {
+        //         ID: atom<IPageShapeIds[]>([]),
+        //         LIST: atom<ALL_SHAPES[]>([]),
+        //       },
+        //       UNDOREDO: {
+        //         COUNT_UNDO_REDO: atom<number>(0),
+        //         LIST_UNDO_REDO: atom<UndoRedoAction[]>([]),
+        //       },
+        //     },
+        //   ]),
+        //   ID: atom<string>(NEW_FREE_DRAW_UUID),
+        // },
       },
 
       EVENT: atom<IStageEvents>("IDLE"),
