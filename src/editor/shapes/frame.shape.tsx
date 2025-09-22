@@ -1,7 +1,5 @@
 import { PrimitiveAtom, useAtomValue } from "jotai";
 import { Group } from "react-konva";
-import { Html } from "react-konva-utils";
-import { EditPanel } from "../components/EditPanel";
 import { SHAPE_IDS_ATOM } from "../states/shape";
 import ShapeBox from "./box.shape";
 import { LayoutFlex } from "./layout-flex";
@@ -73,18 +71,6 @@ export const SHAPE_FRAME = (props: IShapeWithEvents) => {
           children
         )}
       </Group>
-      <Html
-        divProps={{
-          style: {
-            position: "absolute",
-            top: y + "px",
-            left: width + x + 10 + "px",
-            zIndex: 9999999999,
-          },
-        }}
-      >
-        {isSelected ? <EditPanel {...props} /> : null}
-      </Html>
     </>
   );
 };

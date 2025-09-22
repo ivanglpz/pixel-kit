@@ -46,11 +46,11 @@ const SidebarRight: FC = () => {
       </Valid>
       <Drawing />
       <LayoutShapeConfig />
-      <Valid isValid={tool === "MOVE"}>
-        <Valid isValid={!shapeIds.length}>
-          <ExportStage />
-        </Valid>
-      </Valid>
+      {/* <Valid isValid={tool === "MOVE"}> */}
+      {/* <Valid isValid={!shapeIds.length}> */}
+      <ExportStage />
+      {/* </Valid> */}
+      {/* </Valid> */}
     </aside>
   );
 };

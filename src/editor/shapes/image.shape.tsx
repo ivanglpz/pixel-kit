@@ -16,8 +16,6 @@ import { Image as KonvaImage } from "react-konva";
 import { IShape, IShapeWithEvents, WithInitialValue } from "./type.shape";
 
 // Eventos de shape
-import { Html } from "react-konva-utils";
-import { EditPanel } from "../components/EditPanel";
 import { coordinatesShapeMove, shapeEventDragMove } from "./events.shape";
 
 // Transformer
@@ -193,17 +191,6 @@ export const ShapeImage = (props: IShapeWithEvents) => {
           });
         }}
       />
-      <Html
-        divProps={{
-          style: {
-            position: "absolute",
-            top: y + "px",
-            left: width + x + 10 + "px",
-          },
-        }}
-      >
-        {isSelected ? <EditPanel {...props} /> : null}
-      </Html>
     </>
   );
 };
