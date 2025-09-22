@@ -26,6 +26,7 @@ import {
 import TOOL_ATOM, { PAUSE_MODE_ATOM } from "../states/tool";
 import { UPDATE_UNDO_REDO } from "../states/undo-redo";
 import { ContextMenu, useContextMenu } from "./context-menu";
+import { Input } from "./input";
 
 type NodeProps = {
   shape: ALL_SHAPES;
@@ -276,16 +277,20 @@ export const Nodes = ({
           }}
         >
           {show ? (
-            <input
-              type="text"
+            <Input.Text
               value={shape?.label}
-              onChange={(e) => setShape({ ...shape, label: e.target.value })}
-              className={css({
+              onChange={(e) => setShape({ ...shape, label: e })}
+              style={{
+                width: "auto",
+                border: "none",
                 backgroundColor: "transparent",
+                color: "text",
+                paddingLeft: "0px",
+                padding: "sm",
+                height: "15px",
+                borderRadius: "0px",
                 fontSize: "x-small",
-              })}
-              onFocus={() => setPause(true)}
-              onBlur={() => setPause(false)}
+              }}
             />
           ) : (
             <p

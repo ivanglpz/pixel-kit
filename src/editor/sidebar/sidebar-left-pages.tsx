@@ -101,9 +101,15 @@ const DraggableRootItem = ({
             value={name}
             onChange={(e) => setName(e)}
             style={{
-              fontSize: "x-small",
-              height: 20,
+              width: "auto",
               border: "none",
+              backgroundColor: "transparent",
+              color: "text",
+              paddingLeft: "0px",
+              padding: "sm",
+              height: "15px",
+              borderRadius: "0px",
+              fontSize: "x-small",
             }}
           />
         ) : (
