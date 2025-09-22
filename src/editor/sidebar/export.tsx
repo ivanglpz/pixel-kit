@@ -1,4 +1,3 @@
-import { Valid } from "@/components/valid";
 import { useConfiguration } from "@/editor/hooks/useConfiguration";
 import { css } from "@stylespixelkit/css";
 import { atom, useAtom, useAtomValue, useSetAtom } from "jotai";
@@ -17,7 +16,7 @@ import { constants } from "../constants/color";
 import { Shapes } from "../shapes/shapes";
 import { FCShapeWEvents } from "../shapes/type.shape";
 import { typeExportAtom } from "../states/export";
-import { IMAGE_RENDER_ATOM, SET_EDIT_IMAGE } from "../states/image";
+import { SET_EDIT_IMAGE } from "../states/image";
 import { SHAPE_SELECTED_ATOM } from "../states/shape";
 
 const formats = {
@@ -42,10 +41,8 @@ const stageHeight = 210;
 
 export const ExportStage = () => {
   const { config } = useConfiguration();
-  const imageRender = useAtomValue(IMAGE_RENDER_ATOM);
   const shape = useAtomValue(SHAPE_SELECTED_ATOM);
   const [loading, setloading] = useState(false);
-  // const { height, width } = useAtomValue(STAGE_DIMENSION_ATOM);
   const [format, setformat] = useAtom(typeExportAtom);
   const [show, setShow] = useState(false);
   const [showImage, setShowImage] = useState(false);
@@ -240,65 +237,7 @@ export const ExportStage = () => {
               />
             </Input.Container>
           </section>
-          <Valid isValid={config?.export_mode === "EDIT_IMAGE"}>
-            <section
-              className={css({
-                display: "flex",
-                flexDirection: "column",
-                gap: "md",
-              })}
-            >
-              <Input.Label text="Dimensions" />
-              <div
-                className={css({
-                  display: "grid",
-                  gridTemplateColumns: "2",
-                  gap: "lg",
-                })}
-              >
-                <Input.Container>
-                  <Input.Grid>
-                    <Input.IconContainer>
-                      <p
-                        className={css({
-                          fontWeight: 600,
-                          fontSize: "x-small",
-                        })}
-                      >
-                        W
-                      </p>
-                    </Input.IconContainer>
-                    <Input.Number
-                      step={1}
-                      min={0}
-                      value={Number(imageRender.width) || 0}
-                      onChange={(v) => {}}
-                    />
-                  </Input.Grid>
-                </Input.Container>
-                <Input.Container>
-                  <Input.Grid>
-                    <Input.IconContainer>
-                      <p
-                        className={css({
-                          fontWeight: 600,
-                          fontSize: "x-small",
-                        })}
-                      >
-                        H
-                      </p>
-                    </Input.IconContainer>
-                    <Input.Number
-                      step={1}
-                      min={0}
-                      value={Number(imageRender.height) || 0}
-                      onChange={(v) => {}}
-                    />
-                  </Input.Grid>
-                </Input.Container>
-              </div>
-            </section>
-          </Valid>
+
           <footer
             className={css({
               display: "flex",
@@ -417,7 +356,7 @@ export const ExportStage = () => {
                   }),
                   tool: item?.tool,
                 }}
-                key={`pixel-kit-shapes-${item?.id}`}
+                key={`pixel-kit-preview-${item?.id}`}
               />
             );
           })}
