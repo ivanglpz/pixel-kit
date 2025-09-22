@@ -50,9 +50,7 @@ const PxStage: FC<Props> = ({ children }) => {
   // ✅ Definimos el tamaño final del Stage
   // ✅ Versión 4K
 
-  const rstage = config.expand_stage_resolution;
-  const stageWidth = config.expand_stage ? Number(rstage?.width) : width; // 4K horizontal
-  const stageHeight = config.expand_stage ? Number(rstage?.height) : height; // 4K vertical
+  const dimension = config.expand_stage_resolution;
 
   const MAX_SCALE = 10; // Máximo zoom permitido
   const MIN_SCALE = 1; // Mínimo zoom permitido
@@ -85,8 +83,8 @@ const PxStage: FC<Props> = ({ children }) => {
       let newX = pointer.x - mousePointTo.x * newScale;
       let newY = pointer.y - mousePointTo.y * newScale;
 
-      const scaledWidth = stageWidth * newScale;
-      const scaledHeight = stageHeight * newScale;
+      const scaledWidth = Number(dimension?.width) * newScale;
+      const scaledHeight = Number(dimension?.height) * newScale;
 
       const containerWidth = stage.width();
       const containerHeight = stage.height();
@@ -122,8 +120,8 @@ const PxStage: FC<Props> = ({ children }) => {
       const currentPos = stage.position();
       const currentScale = stage.scaleX();
 
-      const scaledWidth = stageWidth * currentScale;
-      const scaledHeight = stageHeight * currentScale;
+      const scaledWidth = Number(dimension?.width) * currentScale;
+      const scaledHeight = Number(dimension?.height) * currentScale;
 
       const containerWidth = stage.width();
       const containerHeight = stage.height();
@@ -170,7 +168,7 @@ const PxStage: FC<Props> = ({ children }) => {
         ref: stageRef,
       });
     }
-  }, [stageHeight, stageWidth, stageRef, config.expand_stage]);
+  }, [, stageRef, config.expand_stage]);
 
   return (
     <div
@@ -191,8 +189,8 @@ const PxStage: FC<Props> = ({ children }) => {
         <Stage
           id="pixel-kit-stage"
           ref={stageRef}
-          width={stageWidth}
-          height={stageHeight}
+          width={Number(dimension?.width)}
+          height={Number(dimension?.height)}
           onMouseDown={handleMouseDown}
           onMousemove={handleMouseMove}
           onWheel={handleWheel} // 👈 Zoom real en HD

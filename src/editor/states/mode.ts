@@ -117,4 +117,6 @@ export const MODE_ATOM = atom(
     _set(toolAtom, newTool);
   }
 );
-export const CONFIG_ATOM = atom((get) => configs[get(MODE_ATOM)]);
+export const CONFIG_ATOM = atom(
+  (get) => configs[get(MODE_ATOM)] || configs.DESIGN_MODE
+);

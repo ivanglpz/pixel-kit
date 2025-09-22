@@ -6,7 +6,6 @@ import { FC } from "react";
 import { SHAPE_IDS_ATOM } from "../states/shape";
 import TOOL_ATOM from "../states/tool";
 import { StageCanvasColor } from "./canvas";
-import { Clip } from "./clip";
 import { Drawing } from "./drawing";
 import { ExportShape } from "./export";
 import { ExportStage } from "./export-stage";
@@ -41,9 +40,7 @@ const SidebarRight: FC = () => {
           </Valid>
         </Valid>
       </Valid>
-      <Valid isValid={config?.show_clip_config}>
-        <Clip />
-      </Valid>
+
       <Valid isValid={!shapeIds.length}>
         <Drawing />
       </Valid>
