@@ -10,7 +10,6 @@ import { useConfiguration } from "./hooks/useConfiguration";
 import { useEventStage } from "./hooks/useEventStage";
 import { useReference } from "./hooks/useReference";
 import { Tools } from "./sidebar/Tools";
-import { STAGE_DIMENSION_ATOM } from "./states/dimension";
 import { RESET_SHAPES_IDS_ATOM } from "./states/shape";
 import TOOL_ATOM from "./states/tool";
 
@@ -19,7 +18,6 @@ type Props = {
 };
 
 const PxStage: FC<Props> = ({ children }) => {
-  const [{ height, width }, setDimension] = useAtom(STAGE_DIMENSION_ATOM);
   const containerRef = useRef<HTMLDivElement>(null);
   const stageRef = useRef<Konva.Stage>(null);
   const [show, setShow] = useState(true);
@@ -48,46 +46,6 @@ const PxStage: FC<Props> = ({ children }) => {
       setTool("MOVE");
     }
   };
-
-  const updateSize = () => {
-    if (!containerRef.current) return;
-
-    setShow(false); // 🔄 Oculta el Stage mientras actualiza
-
-    const { width, height } = containerRef.current.getBoundingClientRect();
-
-    if (!config.expand_stage) {
-      setDimension({ width, height });
-    }
-    if (config.expand_stage && config.expand_stage_resolution) {
-      setDimension(config.expand_stage_resolution);
-    }
-
-    requestAnimationFrame(() => {
-      setShow(true);
-    });
-  };
-
-  useEffect(() => {
-    const timeout = requestAnimationFrame(updateSize);
-
-    return () => cancelAnimationFrame(timeout);
-  }, []);
-
-  useEffect(() => {
-    if (!containerRef.current) return;
-
-    const resizeObserver = new ResizeObserver(updateSize);
-    resizeObserver.observe(containerRef.current);
-
-    window.addEventListener("resize", updateSize);
-    updateSize();
-
-    return () => {
-      if (containerRef.current) resizeObserver.unobserve(containerRef.current);
-      window.removeEventListener("resize", updateSize);
-    };
-  }, [config.expand_stage]);
 
   // ✅ Definimos el tamaño final del Stage
   // ✅ Versión 4K

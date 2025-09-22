@@ -4,10 +4,9 @@ import { Line } from "react-konva";
 import { IShape, IShapeWithEvents, WithInitialValue } from "./type.shape";
 
 /* eslint-disable react/display-name */
-import { useAtomValue } from "jotai";
-import { STAGE_DIMENSION_ATOM } from "../states/dimension";
 import { SHAPE_IDS_ATOM } from "../states/shape";
 
+import { useConfiguration } from "../hooks/useConfiguration";
 import { coordinatesShapeMove, shapeEventDragMove } from "./events.shape";
 
 export const ShapeDraw = ({ shape: item }: IShapeWithEvents) => {
@@ -17,7 +16,8 @@ export const ShapeDraw = ({ shape: item }: IShapeWithEvents) => {
 
   const { x, y, strokeWidth, dash, rotation } = box;
 
-  const stage = useAtomValue(STAGE_DIMENSION_ATOM);
+  const { config } = useConfiguration();
+
   const [shapeId, setShapeId] = useAtom(SHAPE_IDS_ATOM);
   const isSelected = shapeId.some((w) => w.id === box.id);
 
@@ -85,7 +85,13 @@ export const ShapeDraw = ({ shape: item }: IShapeWithEvents) => {
           })
         }
         onDragMove={(e) =>
-          setBox(shapeEventDragMove(e, stage.width, stage.height))
+          setBox(
+            shapeEventDragMove(
+              e,
+              Number(config.expand_stage_resolution?.width),
+              Number(config.expand_stage_resolution?.height)
+            )
+          )
         }
         onTransform={(e) => {
           const scaleX = e.target.scaleX();
@@ -94,8 +100,8 @@ export const ShapeDraw = ({ shape: item }: IShapeWithEvents) => {
           e.target.scaleY(1);
           const payload = coordinatesShapeMove(
             box,
-            stage.width,
-            stage.height,
+            Number(config.expand_stage_resolution?.width),
+            Number(config.expand_stage_resolution?.height),
             e
           );
 
