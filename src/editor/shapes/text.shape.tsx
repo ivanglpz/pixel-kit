@@ -8,8 +8,6 @@ import { useAtomValue } from "jotai";
 import { STAGE_DIMENSION_ATOM } from "../states/dimension";
 import { SHAPE_IDS_ATOM } from "../states/shape";
 
-import { Html } from "react-konva-utils";
-import { EditPanel } from "../components/EditPanel";
 import { coordinatesShapeMove, shapeEventDragMove } from "./events.shape";
 export const ShapeText = (props: IShapeWithEvents) => {
   const { shape: item } = props;
@@ -113,17 +111,6 @@ export const ShapeText = (props: IShapeWithEvents) => {
           });
         }}
       />
-      <Html
-        divProps={{
-          style: {
-            position: "absolute",
-            top: y + "px",
-            left: width + x + 10 + "px",
-          },
-        }}
-      >
-        {isSelected ? <EditPanel {...props} /> : null}
-      </Html>
     </>
   );
 };

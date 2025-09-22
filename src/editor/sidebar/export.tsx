@@ -4,14 +4,14 @@ import { useReference } from "@/editor/hooks/useReference";
 import { SHOW_CLIP_ATOM } from "@/editor/states/clipImage";
 import { calculateDimension } from "@/editor/utils/calculateDimension";
 import { css } from "@stylespixelkit/css";
-import { useAtom, useAtomValue, useSetAtom } from "jotai";
+import { atom, useAtom, useAtomValue, useSetAtom } from "jotai";
 import Konva from "konva";
 import { Group } from "konva/lib/Group";
 import { Stage } from "konva/lib/Stage";
 import { File } from "lucide-react";
 import Link from "next/link";
 import { ChangeEvent, RefObject, useEffect, useRef, useState } from "react";
-import { Stage as StageContainer } from "react-konva";
+import { Layer, Stage as StageContainer } from "react-konva";
 import { toast } from "sonner";
 import { v4 as uuidv4 } from "uuid";
 import { Button } from "../components/button";
@@ -19,10 +19,12 @@ import { Dialog } from "../components/dialog";
 import { Input } from "../components/input";
 import { Loading } from "../components/loading";
 import { constants } from "../constants/color";
-import { AllLayers } from "../layers/root.layers";
+import { Shapes } from "../shapes/shapes";
+import { FCShapeWEvents } from "../shapes/type.shape";
 import { STAGE_DIMENSION_ATOM } from "../states/dimension";
 import { typeExportAtom } from "../states/export";
 import { IMAGE_RENDER_ATOM, SET_EDIT_IMAGE } from "../states/image";
+import { SHAPE_SELECTED_ATOM } from "../states/shape";
 import ALL_SHAPES_ATOM from "../states/shapes";
 
 const formats = {
@@ -105,7 +107,7 @@ export const ExportStage = () => {
   const { ref } = useReference({ type: "STAGE" });
   const { config } = useConfiguration();
   const imageRender = useAtomValue(IMAGE_RENDER_ATOM);
-
+  const shape = useAtomValue(SHAPE_SELECTED_ATOM);
   const [loading, setloading] = useState(false);
   const { height, width } = useAtomValue(STAGE_DIMENSION_ATOM);
   const ALL_SHAPES = useAtomValue(ALL_SHAPES_ATOM);
@@ -273,8 +275,8 @@ export const ExportStage = () => {
     if (!childrens) return;
 
     // Usar las dimensiones estáticas del stage (o las de config)
-    const contentWidth = width;
-    const contentHeight = height;
+    const contentWidth = shape?.width;
+    const contentHeight = shape?.height;
 
     // 1. Escalar proporcionalmente para que encaje en 210x210
     const scale = Math.min(
@@ -292,7 +294,7 @@ export const ExportStage = () => {
 
     stage.position({ x: offsetX, y: offsetY });
     stage.batchDraw();
-  }, [width, height, config.export_mode, showClip, ALL_SHAPES]);
+  }, [width, height, config.export_mode, showClip, shape]);
 
   return (
     <>
@@ -511,7 +513,27 @@ export const ExportStage = () => {
           },
         })}
       >
-        <AllLayers />
+        <Layer>
+          {[shape]?.map((item) => {
+            if (!shape) return null;
+            const Component = Shapes?.[item?.tool] as FCShapeWEvents;
+            return (
+              <Component
+                shape={{
+                  id: "1",
+                  pageId: "one",
+                  state: atom({
+                    ...item,
+                    x: 0,
+                    y: 0,
+                  }),
+                  tool: item?.tool,
+                }}
+                key={`pixel-kit-shapes-${item?.id}`}
+              />
+            );
+          })}
+        </Layer>
       </StageContainer>
       <div
         className={css({
