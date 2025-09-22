@@ -43,8 +43,8 @@
   "devDependencies": {
     "@pandacss/dev": "0.32.1",
     "@types/node": "24.5.2",
-    "@types/react": "19.1.13",
-    "@types/react-dom": "18.0.11",
+    "@types/react": "18.3.24",
+    "@types/react-dom": "18.3.7",
     "@types/uuid": "9.0.8",
     "prettier": "3.5.3"
   }
