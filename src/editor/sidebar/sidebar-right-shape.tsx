@@ -43,6 +43,7 @@ import { constants } from "../constants/color";
 import { useDelayedExecutor } from "../hooks/useDelayExecutor";
 import { AlignItems, JustifyContent } from "../shapes/layout-flex";
 import { UPDATE_UNDO_REDO } from "../states/undo-redo";
+import { ExportShape } from "./export-shape";
 
 // Función utilitaria para calcular la escala de imagen
 const calculateScale = (
@@ -125,7 +126,7 @@ const Separator = () => (
       height: 1,
       width: "100%",
       _dark: {
-        backgroundColor: "gray.800",
+        backgroundColor: "gray.700",
       },
 
       backgroundColor: "gray.150",
@@ -2024,6 +2025,10 @@ export const LayoutShapeConfig = () => {
           </Input.Container>
         </div>
       </Valid>
+      <Separator />
+
+      <ExportShape />
+
       {/* Input file oculto para subir imágenes */}
       <input
         ref={inputRef}
