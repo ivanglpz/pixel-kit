@@ -1,16 +1,11 @@
 import { Valid } from "@/components/valid";
 import { useConfiguration } from "@/editor/hooks/useConfiguration";
-import { useReference } from "@/editor/hooks/useReference";
-import { SHOW_CLIP_ATOM } from "@/editor/states/clipImage";
-import { calculateDimension } from "@/editor/utils/calculateDimension";
 import { css } from "@stylespixelkit/css";
 import { atom, useAtom, useAtomValue, useSetAtom } from "jotai";
 import Konva from "konva";
-import { Group } from "konva/lib/Group";
-import { Stage } from "konva/lib/Stage";
 import { File } from "lucide-react";
 import Link from "next/link";
-import { ChangeEvent, RefObject, useEffect, useRef, useState } from "react";
+import { ChangeEvent, useEffect, useRef, useState } from "react";
 import { Layer, Stage as StageContainer } from "react-konva";
 import { toast } from "sonner";
 import { v4 as uuidv4 } from "uuid";
@@ -21,11 +16,9 @@ import { Loading } from "../components/loading";
 import { constants } from "../constants/color";
 import { Shapes } from "../shapes/shapes";
 import { FCShapeWEvents } from "../shapes/type.shape";
-import { STAGE_DIMENSION_ATOM } from "../states/dimension";
 import { typeExportAtom } from "../states/export";
 import { IMAGE_RENDER_ATOM, SET_EDIT_IMAGE } from "../states/image";
 import { SHAPE_SELECTED_ATOM } from "../states/shape";
-import ALL_SHAPES_ATOM from "../states/shapes";
 
 const formats = {
   LOW: 0.8,
@@ -44,76 +37,20 @@ function downloadBase64Image(base64String: string) {
   document.body.removeChild(link);
 }
 
-const getBoundingBox = (
-  ref: RefObject<Stage> | RefObject<Group> | undefined,
-  props: {
-    pixelRatio?: number;
-    mimeType?: string;
-    quality?: number;
-  }
-) => {
-  const childrens = ref?.current?.getStage?.()?.children;
-  if (!childrens) return;
-  const layerShapes = childrens?.find((e) => e?.attrs?.id === "layer-shapes");
-  if (!layerShapes) return;
-
-  layerShapes?.children
-    ?.filter?.((child) => child?.attrs?.id === "transformer-editable")
-    ?.forEach?.((child) => {
-      child?.destroy?.();
-    });
-  let minX = Infinity,
-    minY = Infinity,
-    maxX = -Infinity,
-    maxY = -Infinity;
-  layerShapes.scale({ x: 1, y: 1 });
-  layerShapes.position({ x: 0, y: 0 });
-
-  ref?.current.scale({ x: 1, y: 1 });
-  ref?.current.position({ x: 0, y: 0 });
-
-  layerShapes?.children.forEach((node) => {
-    const box = node.getClientRect({ relativeTo: layerShapes });
-    minX = Math.min(minX, box.x);
-    minY = Math.min(minY, box.y);
-    maxX = Math.max(maxX, box.x + box.width);
-    maxY = Math.max(maxY, box.y + box.height);
-  });
-  return layerShapes?.toDataURL({
-    ...props,
-    x: minX,
-    y: minY,
-    width: maxX - minX,
-    height: maxY - minY,
-  });
-};
-
-const destroyTransforms = (
-  ref: RefObject<Stage> | RefObject<Group> | undefined
-) => {
-  const childrens = ref?.current?.getStage?.()?.children;
-  if (!childrens) return;
-  const layerShapes = childrens?.find((e) => e?.attrs?.id === "layer-shapes");
-  if (!layerShapes) return;
-
-  layerShapes?.children
-    ?.filter?.((child) => child?.attrs?.id === "transformer-editable")
-    ?.forEach?.((child) => {
-      child?.destroy?.();
-    });
-};
+const stageWidth = 210;
+const stageHeight = 210;
 
 export const ExportStage = () => {
-  const { ref } = useReference({ type: "STAGE" });
   const { config } = useConfiguration();
   const imageRender = useAtomValue(IMAGE_RENDER_ATOM);
   const shape = useAtomValue(SHAPE_SELECTED_ATOM);
   const [loading, setloading] = useState(false);
-  const { height, width } = useAtomValue(STAGE_DIMENSION_ATOM);
-  const ALL_SHAPES = useAtomValue(ALL_SHAPES_ATOM);
+  // const { height, width } = useAtomValue(STAGE_DIMENSION_ATOM);
   const [format, setformat] = useAtom(typeExportAtom);
   const [show, setShow] = useState(false);
   const [showImage, setShowImage] = useState(false);
+
+  const stageRef = useRef<Konva.Stage>(null);
 
   const setImage = useSetAtom(SET_EDIT_IMAGE);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -168,7 +105,6 @@ export const ExportStage = () => {
     }
   };
 
-  const [showClip, setshowClip] = useAtom(SHOW_CLIP_ATOM);
   const handleExport = async () => {
     toast.success("Thank you very much for using pixel kit!", {
       description: (
@@ -191,82 +127,34 @@ export const ExportStage = () => {
     });
 
     setloading(true);
-    if (config?.export_mode === "DESIGN_MODE") {
-      destroyTransforms(ref);
-      const image = getBoundingBox(ref, {
-        quality: 1,
-        pixelRatio: formats[format as keyof typeof formats],
-      });
+    // Usar las dimensiones estáticas del stage (o las de config)
+    const contentWidth = Number(shape?.width) || 0;
+    const contentHeight = Number(shape?.height) || 0;
 
-      await new Promise(() => {
-        setTimeout(() => {
-          // const image = ref?.current?.toDataURL({
-          //   quality: 1,
-          //   pixelRatio: formats[format as keyof typeof formats],
-          //   width,
-          //   height,
-          //   ...dimension,
-          // });
-          if (!image) return;
-          downloadBase64Image(image);
-          setloading(false);
-        }, 100);
-      });
-    }
-    if (config?.export_mode === "FREE_DRAW") {
-      destroyTransforms(ref);
-      await new Promise(() => {
-        setTimeout(() => {
-          const image = ref?.current?.toDataURL({
-            quality: 1,
-            pixelRatio: formats[format as keyof typeof formats],
-          });
-          if (!image) return;
-          downloadBase64Image(image);
-          setloading(false);
-        }, 100);
-      });
-    }
-    if (config?.export_mode === "EDIT_IMAGE") {
-      setshowClip(false);
-      destroyTransforms(ref);
-      // destroyTransforms(ref, 2);
-      await new Promise(() => {
-        setTimeout(() => {
-          const base64String = ref?.current?.toDataURL({
-            quality: 1,
-            pixelRatio: formats[format as keyof typeof formats],
-            ...calculateDimension(
-              width,
-              height,
-              imageRender?.width,
-              imageRender?.height
-            ),
-          });
-          if (!base64String) return;
+    // 1. Escalar proporcionalmente para que encaje en 210x210
+    const scale = Math.min(
+      stageWidth / contentWidth,
+      stageHeight / contentHeight
+    );
 
-          const canvas = document.createElement("canvas");
-          const ctx = canvas.getContext("2d");
-          canvas.width = imageRender.width;
-          canvas.height = imageRender.height;
-
-          const image = new Image();
-          image.onload = () => {
-            ctx?.drawImage(image, 0, 0, imageRender.width, imageRender.height);
-
-            downloadBase64Image(canvas.toDataURL("image/png", 1));
-            setloading(false);
-          };
-
-          image.src = base64String;
-        }, 100);
-      });
-    }
+    // 2. Centrarlo simplemente (sin minX/minY)
+    const offsetX = (stageWidth - contentWidth * scale) / 2;
+    const offsetY = (stageHeight - contentHeight * scale) / 2;
+    const width = contentWidth * scale;
+    const height = contentHeight * scale;
+    const image = stageRef?.current?.toDataURL({
+      quality: 1,
+      pixelRatio: formats[format as keyof typeof formats],
+      x: offsetX,
+      y: offsetY,
+      width,
+      height,
+      // ...dimension,
+    });
+    if (!image) return;
+    downloadBase64Image(image);
+    setloading(false);
   };
-
-  const stageWidth = 210;
-  const stageHeight = 210;
-  const stageRef = useRef<Konva.Stage>(null);
 
   useEffect(() => {
     if (!stageRef.current) return;
@@ -275,8 +163,8 @@ export const ExportStage = () => {
     if (!childrens) return;
 
     // Usar las dimensiones estáticas del stage (o las de config)
-    const contentWidth = shape?.width;
-    const contentHeight = shape?.height;
+    const contentWidth = Number(shape?.width) || 0;
+    const contentHeight = Number(shape?.height) || 0;
 
     // 1. Escalar proporcionalmente para que encaje en 210x210
     const scale = Math.min(
@@ -294,7 +182,7 @@ export const ExportStage = () => {
 
     stage.position({ x: offsetX, y: offsetY });
     stage.batchDraw();
-  }, [width, height, config.export_mode, showClip, shape]);
+  }, [config.export_mode, shape, stageRef]);
 
   return (
     <>
@@ -515,7 +403,7 @@ export const ExportStage = () => {
       >
         <Layer>
           {[shape]?.map((item) => {
-            if (!shape) return null;
+            if (!item) return null;
             const Component = Shapes?.[item?.tool] as FCShapeWEvents;
             return (
               <Component
