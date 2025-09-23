@@ -1,0 +1,33 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
+import { AUTH_TOKEN } from "@/utils/token";
+import type { NextApiRequest, NextApiResponse } from "next";
+import { DB_CONNECT } from "../mongodb";
+
+type NextHandler<T = any> = (
+  req: NextApiRequest & { userId: string },
+  res: NextApiResponse<T>
+) => Promise<void>;
+
+export function withAuth<T>(handler: NextHandler<T>) {
+  return async (req: NextApiRequest, res: NextApiResponse<T>) => {
+    try {
+      await DB_CONNECT();
+
+      const token = req.headers.authorization;
+      if (!token) {
+        return res.status(401).json({ error: "Unauthorized" } as any);
+      }
+
+      const decoded = AUTH_TOKEN(token);
+
+      // ✅ Inyectamos el userId al req original
+      (req as NextApiRequest & { userId: string }).userId = decoded.userId;
+
+      return handler(req as NextApiRequest & { userId: string }, res);
+    } catch (error) {
+      console.error("Middleware error:", error);
+      return res.status(500).json({ error: "Internal Server Error" } as any);
+    }
+  };
+}
