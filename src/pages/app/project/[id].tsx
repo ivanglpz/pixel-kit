@@ -1,6 +1,7 @@
 import PixelEditor from "@/editor";
 
-const Project = () => {
+export const ProjectById = () => {
   return <PixelEditor />;
 };
-export default Project;
+
+export default ProjectById;

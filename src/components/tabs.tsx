@@ -175,6 +175,7 @@ export const TabsProjects = () => {
               isEnable={listProjects?.length > 1}
               onClick={() => {
                 setSelected(e.ID);
+                router.push(`/app/project/${e.ID}`);
               }}
               onDelete={() => {
                 setDelete(e?.ID);
