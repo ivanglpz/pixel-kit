@@ -72,7 +72,7 @@ export default async function handler(
         userId: newUser?._id?.toString(),
       }, // Payload del token
       process.env.JWT_SECRET!, // Clave secreta para firmar el token (debe ser configurada en .env)
-      { expiresIn: "1h" } // El token expirará en 1 hora
+      { expiresIn: "24h" }
     );
 
     return res.status(201).json({

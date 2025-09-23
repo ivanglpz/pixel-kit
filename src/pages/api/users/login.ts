@@ -55,7 +55,7 @@ export default async function handler(
         userId: existingUser._id.toString(),
       },
       process.env.JWT_SECRET!,
-      { expiresIn: "1h" }
+      { expiresIn: "24h" }
     );
 
     return res.status(200).json({
