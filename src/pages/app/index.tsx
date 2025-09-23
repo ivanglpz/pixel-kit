@@ -1,5 +1,4 @@
 /* eslint-disable @next/next/no-img-element */
-import { TabsProjects } from "@/components/tabs";
 import { ICON_MODES_TABS } from "@/editor/icons/mode";
 import { IPROJECT, PROJECTS_ATOM } from "@/editor/states/projects";
 import { css } from "@stylespixelkit/css";
@@ -74,51 +73,41 @@ const App = () => {
     >
       <div
         className={css({
-          overflow: "hidden",
-          display: "grid",
-          gridTemplateRows: "40px 1fr",
+          backgroundColor: "black",
+          overflowY: "hidden",
           height: "100%",
+          display: "grid",
+          gridTemplateColumns: "300px 1fr",
         })}
       >
-        <TabsProjects />
-        <div
+        <aside
           className={css({
-            backgroundColor: "black",
-            overflowY: "hidden",
-            height: "100%",
-            display: "grid",
-            gridTemplateColumns: "300px 1fr",
+            padding: "lg",
+            backgroundColor: "bg",
+            borderRightWidth: "1px",
+            borderRightStyle: "solid",
+            borderRightColor: "border", // ← usa el semantic token
+            overflow: "hidden",
           })}
         >
-          <aside
-            className={css({
-              padding: "lg",
-              backgroundColor: "bg",
-              borderRightWidth: "1px",
-              borderRightStyle: "solid",
-              borderRightColor: "border", // ← usa el semantic token
-              overflow: "hidden",
-            })}
-          >
-            test
-          </aside>
-          <section
-            className={css({
-              backgroundColor: "black",
-              overflowY: "scroll",
-              height: "100%",
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
-              gridAutoRows: "300px",
-              padding: "lg",
-              gap: "xlg",
-            })}
-          >
-            {listProjects?.map((e) => {
-              return <CardProject key={e?.ID} project={e} />;
-            })}
-          </section>
-        </div>
+          test
+        </aside>
+        <section
+          className={css({
+            backgroundColor: "black",
+            overflowY: "scroll",
+            height: "100%",
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
+            gridAutoRows: "300px",
+            padding: "lg",
+            gap: "xlg",
+          })}
+        >
+          {listProjects?.map((e) => {
+            return <CardProject key={e?.ID} project={e} />;
+          })}
+        </section>
       </div>
     </div>
   );

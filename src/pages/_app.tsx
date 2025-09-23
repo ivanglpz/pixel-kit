@@ -1,3 +1,4 @@
+import { Layout } from "@/layout/layout";
 import "@/styles/globals.css";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Analytics } from "@vercel/analytics/react";
@@ -21,7 +22,9 @@ const App = ({ Component, pageProps }: AppPropsWithLayout) => {
               zIndex: 99999999999999,
             })}
           />
-          <Component {...pageProps} />
+          <Layout>
+            <Component {...pageProps} />
+          </Layout>
         </ThemeProvider>
       </QueryClientProvider>
     </>
