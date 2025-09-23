@@ -14,7 +14,7 @@ import { useRouter } from "next/router";
 import { useRef, useState } from "react";
 import { Valid } from "./valid";
 
-export const Tab = ({
+const Tab = ({
   project,
   onClick,
   onDelete,
