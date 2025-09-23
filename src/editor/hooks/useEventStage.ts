@@ -1,5 +1,4 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { SHOW_CLIP_ATOM } from "@/editor/states/clipImage";
 import TOOL_ATOM, { IKeyTool, PAUSE_MODE_ATOM } from "@/editor/states/tool";
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import Konva from "konva";
@@ -44,7 +43,6 @@ export const useEventStage = () => {
   const DELETE_SHAPE = useSetAtom(DELETE_SHAPES_ATOM);
   const SET_UPDATE_SHAPES_IDS = useSetAtom(UPDATE_SHAPES_IDS_ATOM);
   const SET_CLEAR_CITEM = useSetAtom(CLEAR_CURRENT_ITEM_ATOM);
-  const setshowClip = useSetAtom(SHOW_CLIP_ATOM);
   const [selection, setSelection] = useAtom(RECTANGLE_SELECTION_ATOM);
   const setRedo = useSetAtom(REDO_ATOM);
   const setUndo = useSetAtom(UNDO_ATOM);
@@ -289,7 +287,6 @@ export const useEventStage = () => {
       );
 
       if (keysActions[KEY]) {
-        setshowClip(Boolean(keysActions[KEY].showClip));
         toolKeydown(keysActions[KEY].keyMethod);
         SET_EVENT_STAGE(keysActions[KEY].eventStage);
       }
