@@ -1,4 +1,5 @@
 import { createUser } from "@/services/users";
+import { css } from "@stylespixelkit/css";
 import { useMutation } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import { useFormik } from "formik";
@@ -46,31 +47,39 @@ const LoginPage = () => {
   });
 
   return (
-    <div>
-      <p>Sign up</p>
-      <input
-        type="text"
-        name="fullName"
-        id="fullName"
-        value={formik.values.fullName}
-        onChange={formik.handleChange}
-      />
-      <input
-        type="email"
-        name="email"
-        id="email"
-        value={formik.values.email}
-        onChange={formik.handleChange}
-      />
-      <input
-        type="password"
-        name="password"
-        id="password"
-        value={formik.values.password}
-        onChange={formik.handleChange}
-      />
-      <button onClick={() => formik.submitForm()}>click</button>
-    </div>
+    <main
+      className={css({
+        display: "grid",
+        gridColumn: "2",
+      })}
+    >
+      <section>t</section>
+      <section>
+        <p>Sign up</p>
+        <input
+          type="text"
+          name="fullName"
+          id="fullName"
+          value={formik.values.fullName}
+          onChange={formik.handleChange}
+        />
+        <input
+          type="email"
+          name="email"
+          id="email"
+          value={formik.values.email}
+          onChange={formik.handleChange}
+        />
+        <input
+          type="password"
+          name="password"
+          id="password"
+          value={formik.values.password}
+          onChange={formik.handleChange}
+        />
+        <button onClick={() => formik.submitForm()}>click</button>
+      </section>
+    </main>
   );
 };
 export default LoginPage;
