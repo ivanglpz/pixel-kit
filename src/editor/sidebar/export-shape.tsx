@@ -1,10 +1,10 @@
 import { useConfiguration } from "@/editor/hooks/useConfiguration";
 import { css } from "@stylespixelkit/css";
-import { atom, useAtom, useAtomValue, useSetAtom } from "jotai";
+import { atom, useAtom, useAtomValue } from "jotai";
 import Konva from "konva";
 import { File } from "lucide-react";
 import Link from "next/link";
-import { ChangeEvent, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Layer, Stage as StageContainer } from "react-konva";
 import { toast } from "sonner";
 import { v4 as uuidv4 } from "uuid";
@@ -16,7 +16,6 @@ import { constants } from "../constants/color";
 import { Shapes } from "../shapes/shapes";
 import { FCShapeWEvents, IShape } from "../shapes/type.shape";
 import { typeExportAtom } from "../states/export";
-import { SET_EDIT_IMAGE } from "../states/image";
 import { SHAPE_SELECTED_ATOM } from "../states/shape";
 
 const formats = {
@@ -71,39 +70,6 @@ export const ExportShape = () => {
 
   const stageRef = useRef<Konva.Stage>(null);
   const inputRef = useRef<HTMLInputElement>(null);
-  const setImage = useSetAtom(SET_EDIT_IMAGE);
-
-  const handleFiles = async (event: ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-
-    try {
-      const base64 = await new Promise<string>((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onloadend = () =>
-          typeof reader.result === "string"
-            ? resolve(reader.result)
-            : reject(new Error("Invalid file"));
-        reader.onerror = () => reject(new Error("Error reading file"));
-        reader.readAsDataURL(file);
-      });
-
-      const { width, height } = await new Promise<{
-        width: number;
-        height: number;
-      }>((resolve, reject) => {
-        const img = new Image();
-        img.onload = () => resolve({ width: img.width, height: img.height });
-        img.onerror = () => reject(new Error("Error loading image"));
-        img.src = base64;
-      });
-
-      setImage({ base64, name: file.name, width, height, x: 0, y: 0 });
-      setShowImageDialog(false);
-    } finally {
-      if (inputRef.current) inputRef.current.value = "";
-    }
-  };
 
   const handleExport = () => {
     toast.success("Thank you very much for using pixel kit!", {
@@ -233,13 +199,6 @@ export const ExportShape = () => {
               <File size={constants.icon.size} /> Upload
             </Button.Primary>
           </footer>
-          <input
-            ref={inputRef}
-            type="file"
-            accept="image/*"
-            onChange={handleFiles}
-            className={css({ width: 0, height: 0, display: "none" })}
-          />
         </Dialog.Container>
       </Dialog.Provider>
 

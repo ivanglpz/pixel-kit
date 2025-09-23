@@ -1,10 +1,9 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { Valid } from "@/components/valid";
 import { css } from "@stylespixelkit/css";
 import { useAtom, useSetAtom } from "jotai";
 import Konva from "konva";
 import { KonvaEventObject } from "konva/lib/Node";
-import { FC, ReactNode, useEffect, useRef, useState } from "react";
+import { FC, ReactNode, useEffect, useRef } from "react";
 import { Stage } from "react-konva";
 import { useConfiguration } from "./hooks/useConfiguration";
 import { useEventStage } from "./hooks/useEventStage";
@@ -20,7 +19,6 @@ type Props = {
 const PxStage: FC<Props> = ({ children }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const stageRef = useRef<Konva.Stage>(null);
-  const [show, setShow] = useState(true);
   const [tool, setTool] = useAtom(TOOL_ATOM);
 
   const { config } = useConfiguration(); // ✅ Ahora usamos config.expand2K
@@ -185,25 +183,23 @@ const PxStage: FC<Props> = ({ children }) => {
         overflow: config.expand_stage ? "scroll" : "hidden",
       }}
     >
-      <Valid isValid={show}>
-        <Stage
-          id="pixel-kit-stage"
-          ref={stageRef}
-          width={Number(dimension?.width)}
-          height={Number(dimension?.height)}
-          onMouseDown={handleMouseDown}
-          onMousemove={handleMouseMove}
-          onWheel={handleWheel} // 👈 Zoom real en HD
-          onMouseup={handleMouseUp}
-          onClick={handleClear}
-          style={{
-            width: "100%",
-            height: "100%",
-          }}
-        >
-          {children}
-        </Stage>
-      </Valid>
+      <Stage
+        id="pixel-kit-stage"
+        ref={stageRef}
+        width={Number(dimension?.width)}
+        height={Number(dimension?.height)}
+        onMouseDown={handleMouseDown}
+        onMousemove={handleMouseMove}
+        onWheel={handleWheel} // 👈 Zoom real en HD
+        onMouseup={handleMouseUp}
+        onClick={handleClear}
+        style={{
+          width: "100%",
+          height: "100%",
+        }}
+      >
+        {children}
+      </Stage>
       <section
         className={css({
           display: "flex",
