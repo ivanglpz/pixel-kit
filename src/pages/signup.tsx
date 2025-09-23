@@ -1,4 +1,4 @@
-import { loginUser } from "@/services/users";
+import { createUser } from "@/services/users";
 import { useMutation } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import { useFormik } from "formik";
@@ -7,6 +7,7 @@ import { useRouter } from "next/router";
 import { toast } from "sonner";
 import * as Yup from "yup";
 const validationSchema = Yup.object({
+  fullName: Yup.string().required("Full Name is required"),
   email: Yup.string()
     .email("This email is not valid")
     .required("Email is required"),
@@ -16,10 +17,12 @@ const validationSchema = Yup.object({
 const LoginPage = () => {
   const router = useRouter();
   const mutation = useMutation({
-    mutationFn: loginUser,
+    mutationFn: createUser,
     onSuccess: (e) => {
       Cookies.set("accessToken", e?.data?.token); // Expira en 7 días
-
+      toast.success("Registration Successful!", {
+        description: "Your account has been created successfully.",
+      });
       router.push("/");
     },
     onError: (error) => {
@@ -32,6 +35,7 @@ const LoginPage = () => {
   });
   const formik = useFormik({
     initialValues: {
+      fullName: "",
       password: "",
       email: "",
     },
@@ -43,7 +47,14 @@ const LoginPage = () => {
 
   return (
     <div>
-      <p>LoginPage</p>
+      <p>Sign up</p>
+      <input
+        type="text"
+        name="fullName"
+        id="fullName"
+        value={formik.values.fullName}
+        onChange={formik.handleChange}
+      />
       <input
         type="email"
         name="email"
