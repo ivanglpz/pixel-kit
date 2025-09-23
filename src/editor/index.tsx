@@ -1,5 +1,4 @@
 /* eslint-disable @next/next/no-img-element */
-import { TabsProjects } from "@/components/tabs";
 import { css } from "@stylespixelkit/css";
 import dynamic from "next/dynamic";
 import useBrowser from "./hooks/useBrowser";
@@ -18,14 +17,13 @@ const PixelEditor = () => {
       id="pixel-app"
       className={css({
         backgroundColor: "bg",
-        height: "100dvh",
+        height: "100%",
         width: "100%",
-        display: "grid",
-        gridTemplateRows: "40px 1fr",
         overflow: "hidden",
+        display: "flex",
+        flexDirection: "column",
       })}
     >
-      <TabsProjects />
       <div
         className={css({
           display: "grid",
