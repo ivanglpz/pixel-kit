@@ -24,41 +24,38 @@ export type IPROJECT = {
   EVENT: PrimitiveAtom<IStageEvents> & WithInitialValue<IStageEvents>;
 };
 
-export const PROJECT_ID_ATOM = atom<string>(
-  "415ee03c-ce26-4e8b-b373-8c1c0e0d9dd4"
-);
+export const PROJECT_ID_ATOM = atom<string | null>(null);
 
 export const PROJECTS_ATOM = atom([
-  {
-    ID: "415ee03c-ce26-4e8b-b373-8c1c0e0d9dd4",
-    name: atom("Project"),
-    MODE_ATOM: atom<MODE>("DESIGN_MODE"),
-    TOOL: atom<IKeyTool>("MOVE"),
-    PAUSE_MODE: atom<boolean>(false),
-    MODE: {
-      DESIGN_MODE: {
-        LIST: atom<IPage[]>([
-          {
-            id: "8eb9cfc3-023f-4204-a745-3d5347d1f057",
-            name: atom("Page 1"),
-            color: atom(canvasTheme.dark),
-            isVisible: atom(true),
-            SHAPES: {
-              ID: atom<IPageShapeIds[]>([]),
-              LIST: atom<ALL_SHAPES[]>([]),
-            },
-            UNDOREDO: {
-              COUNT_UNDO_REDO: atom<number>(0),
-              LIST_UNDO_REDO: atom<UndoRedoAction[]>([]),
-            },
-          },
-        ]),
-        ID: atom<string>("8eb9cfc3-023f-4204-a745-3d5347d1f057"),
-      },
-    },
-
-    EVENT: atom<IStageEvents>("IDLE"),
-  },
+  // {
+  //   ID: "415ee03c-ce26-4e8b-b373-8c1c0e0d9dd4",
+  //   name: atom("Project"),
+  //   MODE_ATOM: atom<MODE>("DESIGN_MODE"),
+  //   TOOL: atom<IKeyTool>("MOVE"),
+  //   PAUSE_MODE: atom<boolean>(false),
+  //   MODE: {
+  //     DESIGN_MODE: {
+  //       LIST: atom<IPage[]>([
+  //         {
+  //           id: "8eb9cfc3-023f-4204-a745-3d5347d1f057",
+  //           name: atom("Page 1"),
+  //           color: atom(canvasTheme.dark),
+  //           isVisible: atom(true),
+  //           SHAPES: {
+  //             ID: atom<IPageShapeIds[]>([]),
+  //             LIST: atom<ALL_SHAPES[]>([]),
+  //           },
+  //           UNDOREDO: {
+  //             COUNT_UNDO_REDO: atom<number>(0),
+  //             LIST_UNDO_REDO: atom<UndoRedoAction[]>([]),
+  //           },
+  //         },
+  //       ]),
+  //       ID: atom<string>("8eb9cfc3-023f-4204-a745-3d5347d1f057"),
+  //     },
+  //   },
+  //   EVENT: atom<IStageEvents>("IDLE"),
+  // },
 ] as IPROJECT[]);
 
 export const PROJECT_ATOM = atom((get) => {
