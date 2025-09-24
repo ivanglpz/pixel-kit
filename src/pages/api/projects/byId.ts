@@ -24,7 +24,6 @@ async function handler(
   try {
     const project = await Project.findOne({
       _id: id,
-      createdBy: req.userId,
     }).lean<IProject>();
 
     if (!project) {
