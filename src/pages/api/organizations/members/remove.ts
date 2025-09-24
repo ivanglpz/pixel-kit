@@ -1,6 +1,8 @@
 import { withAuth } from "@/db/middleware/auth";
+import { UserNotification } from "@/db/schemas/notifications";
 import { Organization } from "@/db/schemas/organizations";
 import { IMembers, IOrganization, Role } from "@/db/schemas/types";
+import { Types } from "mongoose";
 import type { NextApiRequest, NextApiResponse } from "next";
 
 type ResponseData =
@@ -63,6 +65,15 @@ async function handler(
       (m: IMembers<Role>) => m.user.toString() !== memberId
     );
     const updatedOrg = await org.save();
+
+    // Crear notificación para el usuario removido
+    await UserNotification.create({
+      user: new Types.ObjectId(memberId),
+      type: "organization_removed",
+      message: `You have been removed from the organization "${org.name}".`,
+      referenceId: org._id,
+      read: false,
+    });
 
     return res.status(200).json({
       message: "Member removed successfully",
