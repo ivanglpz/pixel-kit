@@ -22,17 +22,17 @@ async function handler(
 
   const {
     name,
-    organization,
+    // organization,
     data,
     // members
   } = req.body;
 
   try {
     const updatedProject = await Project.findOneAndUpdate(
-      { _id: id, createdBy: req.userId },
+      { _id: id },
       {
-        ...(name && { name }),
-        ...(organization && { organization }),
+        // ...(name && { name }),
+        // ...(organization && { organization }),
         ...(data && { data }),
         // ...(members && { members }),
       },
