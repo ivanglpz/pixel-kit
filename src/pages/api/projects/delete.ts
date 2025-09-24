@@ -1,11 +1,9 @@
 import { withAuth } from "@/db/middleware/auth";
+import { IOrganizationMember, Organization } from "@/db/schemas/organizations";
 import { Project } from "@/db/schemas/projects";
-import { IProject } from "@/db/schemas/types";
 import type { NextApiRequest, NextApiResponse } from "next";
 
-type ResponseData =
-  | { message: string; data: IProject | null }
-  | { error: string };
+type ResponseData = { message: string; data: any | null } | { error: string };
 
 async function handler(
   req: NextApiRequest & { userId: string },
@@ -21,16 +19,30 @@ async function handler(
   }
 
   try {
-    const deletedProject = await Project.findOneAndDelete({
-      _id: id,
-      createdBy: req.userId,
-    });
-
-    if (!deletedProject) {
-      return res
-        .status(404)
-        .json({ error: "Project not found or not authorized" });
+    // Obtener proyecto
+    const project = await Project.findById(id);
+    if (!project) {
+      return res.status(404).json({ error: "Project not found" });
     }
+
+    // Verificar rol del usuario en la organización
+    const org = await Organization.findById(project.organization);
+    if (!org) {
+      return res.status(404).json({ error: "Organization not found" });
+    }
+
+    const actingMember = org.members.find(
+      (m: IOrganizationMember) =>
+        m.user.toString() === req.userId && ["owner", "admin"].includes(m.role)
+    );
+
+    if (!actingMember) {
+      return res
+        .status(403)
+        .json({ error: "Not authorized to delete this project" });
+    }
+
+    const deletedProject = await Project.findByIdAndDelete(id);
 
     return res.status(200).json({
       message: "Project deleted successfully",

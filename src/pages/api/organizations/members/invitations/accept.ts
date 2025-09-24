@@ -1,9 +1,7 @@
 import { withAuth } from "@/db/middleware/auth";
+import { OrganizationInvitation } from "@/db/schemas/invitations";
 import { UserNotification } from "@/db/schemas/notifications";
-import {
-  Organization,
-  OrganizationInvitation,
-} from "@/db/schemas/organizations";
+import { Organization } from "@/db/schemas/organizations";
 import { IMembers, Role } from "@/db/schemas/types";
 import { UserSchema } from "@/db/schemas/users";
 import type { NextApiRequest, NextApiResponse } from "next";
