@@ -1,42 +1,41 @@
-import { BookmarkModel, IBookmark } from "@/backend/db/models/bookmark";
-import { withAuth } from "@/backend/middleware/auth";
+import { withAuth } from "@/db/middleware/auth";
+import { Project } from "@/db/schemas/projects";
+import { IProject } from "@/db/schemas/types";
 import type { NextApiRequest, NextApiResponse } from "next";
 
 type ResponseData =
-  | { message: string; data: IBookmark | null }
+  | { message: string; data: IProject | null }
   | { error: string };
 
 async function handler(
   req: NextApiRequest & { userId: string },
   res: NextApiResponse<ResponseData>
 ) {
-  if (req.method !== "GET") {
+  if (req.method !== "POST") {
     return res.status(405).json({ error: "Method not allowed" });
   }
 
-  const { _id } = req.query;
-  if (!_id || typeof _id !== "string") {
-    return res.status(400).json({ error: "Invalid or missing id" });
+  const { name, organization, data, members } = req.body;
+
+  if (!name || !organization) {
+    return res.status(400).json({ error: "Missing required fields" });
   }
 
   try {
-    const bookmark = await BookmarkModel.findOne({
-      _id: _id,
-      userId: req.userId, // ✅ Ya viene inyectado desde el middleware
-    })
-      .populate("tags")
-      .populate("category");
+    const newProject = await Project.create({
+      name,
+      organization,
+      createdBy: req.userId,
+      data: data ?? "{}",
+      members: members ?? [],
+    });
 
-    if (!bookmark) {
-      return res.status(404).json({ error: "Bookmark not found" });
-    }
-
-    return res.status(200).json({
-      message: "Bookmark retrieved successfully",
-      data: bookmark,
+    return res.status(201).json({
+      message: "Project created successfully",
+      data: newProject,
     });
   } catch (error) {
-    console.error("Error while querying bookmark:", error);
+    console.error("Error while creating project:", error);
     return res.status(500).json({ error: "Internal Server Error" });
   }
 }
