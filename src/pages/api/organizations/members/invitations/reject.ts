@@ -1,5 +1,5 @@
 import { withAuth } from "@/db/middleware/auth";
-import { OrganizationInvitation } from "@/db/schemas/organizations";
+import { OrganizationInvitation } from "@/db/schemas/invitations";
 import { UserSchema } from "@/db/schemas/users";
 import type { NextApiRequest, NextApiResponse } from "next";
 

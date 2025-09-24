@@ -22,10 +22,7 @@ async function handler(
   try {
     const projects = await Project.find({
       organization: new Types.ObjectId(organizationId),
-      "members.user": new Types.ObjectId(req.userId),
-    })
-      .populate("organization")
-      .populate("members.user");
+    }).populate("organization");
 
     return res.status(200).json({
       message: "Projects retrieved successfully",

@@ -12,19 +12,9 @@ export interface IProject extends Document {
   organization: Types.ObjectId;
   createdBy: Types.ObjectId;
   data: string;
-  members: IProjectMember[];
   createdAt: Date;
   updatedAt: Date;
 }
-
-const ProjectMemberSchema = new Schema<IProjectMember>({
-  user: { type: Schema.Types.ObjectId, ref: "users", required: true },
-  role: {
-    type: String,
-    enum: ["developer", "designer", "viewer", "commenter"],
-    required: true,
-  },
-});
 
 const ProjectSchema: Schema<IProject> = new Schema(
   {
@@ -36,7 +26,6 @@ const ProjectSchema: Schema<IProject> = new Schema(
     },
     createdBy: { type: Schema.Types.ObjectId, ref: "users", required: true },
     data: { type: String, default: "{}" },
-    members: { type: [ProjectMemberSchema], default: [] },
   },
   { timestamps: true }
 );
