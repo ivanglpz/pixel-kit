@@ -16,8 +16,8 @@ export type IMembers<role> = {
 export type IOrganization = {
   name: string;
   members: IMembers<Role>[];
-  projects: [];
-  owner: IUser;
+  // projects: [];
+  // owner: IUser;
 };
 
 export type IProject = {

@@ -16,7 +16,6 @@ export interface IOrganizationMember {
 export interface IOrganization extends Document {
   name: string;
   members: IOrganizationMember[];
-  projects: Types.ObjectId[];
 }
 
 const OrganizationMemberSchema = new Schema<IOrganizationMember>({
@@ -31,7 +30,6 @@ const OrganizationMemberSchema = new Schema<IOrganizationMember>({
 const OrganizationSchema: Schema<IOrganization> = new Schema({
   name: { type: String, required: true, unique: true },
   members: { type: [OrganizationMemberSchema], default: [] },
-  projects: [{ type: Schema.Types.ObjectId, ref: "projects" }],
 });
 
 export const Organization =
