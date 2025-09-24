@@ -1,11 +1,17 @@
 import { useRouter } from "next/router";
-import { ReactNode } from "react";
+import { JSX, ReactNode } from "react";
 import { LayoutApp } from "./app";
 
-export const Layout = ({ children }: { children: ReactNode }) => {
+type LayoutProps = {
+  children: ReactNode;
+};
+
+export const Layout = ({ children }: LayoutProps): JSX.Element => {
   const router = useRouter();
+
   if (router.pathname.startsWith("/app")) {
     return <LayoutApp>{children}</LayoutApp>;
   }
-  return children;
+
+  return <>{children}</>; // importante envolver en fragment
 };
