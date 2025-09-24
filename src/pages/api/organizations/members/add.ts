@@ -1,6 +1,6 @@
 import { withAuth } from "@/db/middleware/auth";
 import { Organization } from "@/db/schemas/organizations";
-import { IOrganization } from "@/db/schemas/types";
+import { IMembers, IOrganization, Role } from "@/db/schemas/types";
 import { Types } from "mongoose";
 import type { NextApiRequest, NextApiResponse } from "next";
 
@@ -39,7 +39,7 @@ async function handler(
 
     // Buscar el rol del usuario que hace la acción
     const actingMember = org.members.find(
-      (m) => m.user.toString() === req.userId
+      (m: IMembers<Role>) => m.user.toString() === req.userId
     );
 
     if (!actingMember || !["owner", "admin"].includes(actingMember.role)) {
@@ -54,7 +54,9 @@ async function handler(
     }
 
     // Evitar duplicados
-    if (org.members.some((m) => m.user.toString() === newUserId)) {
+    if (
+      org.members.some((m: IMembers<Role>) => m.user.toString() === newUserId)
+    ) {
       return res.status(400).json({ error: "User is already a member" });
     }
 

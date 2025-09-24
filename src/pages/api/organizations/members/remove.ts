@@ -1,6 +1,6 @@
 import { withAuth } from "@/db/middleware/auth";
 import { Organization } from "@/db/schemas/organizations";
-import { IOrganization } from "@/db/schemas/types";
+import { IMembers, IOrganization, Role } from "@/db/schemas/types";
 import type { NextApiRequest, NextApiResponse } from "next";
 
 type ResponseData =
@@ -34,7 +34,7 @@ async function handler(
 
     // Buscar rol del usuario que realiza la acción
     const actingMember = org.members.find(
-      (m) => m.user.toString() === req.userId
+      (m: IMembers<Role>) => m.user.toString() === req.userId
     );
     if (!actingMember || !["owner", "admin"].includes(actingMember.role)) {
       return res
@@ -44,7 +44,7 @@ async function handler(
 
     // Buscar al miembro a remover
     const targetMember = org.members.find(
-      (m) => m.user.toString() === memberId
+      (m: IMembers<Role>) => m.user.toString() === memberId
     );
     if (!targetMember) {
       return res.status(404).json({ error: "Member not found" });
@@ -59,7 +59,9 @@ async function handler(
     }
 
     // Remover miembro
-    org.members = org.members.filter((m) => m.user.toString() !== memberId);
+    org.members = org.members.filter(
+      (m: IMembers<Role>) => m.user.toString() !== memberId
+    );
     const updatedOrg = await org.save();
 
     return res.status(200).json({
