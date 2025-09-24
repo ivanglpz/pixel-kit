@@ -3,6 +3,7 @@ import {
   Organization,
   OrganizationInvitation,
 } from "@/db/schemas/organizations";
+import { IMembers, Role } from "@/db/schemas/types";
 import type { NextApiRequest, NextApiResponse } from "next";
 
 type ResponseData = { message: string; data: any } | { error: string };
@@ -32,7 +33,7 @@ async function handler(
     if (!org) return res.status(404).json({ error: "Organization not found" });
 
     const actingMember = org.members.find(
-      (m) => m.user.toString() === req.userId
+      (m: IMembers<Role>) => m.user.toString() === req.userId
     );
     if (!actingMember || !["owner", "admin"].includes(actingMember.role)) {
       return res
