@@ -20,7 +20,12 @@ async function handler(
     return res.status(400).json({ error: "Invalid or missing project id" });
   }
 
-  const { name, organization, data, members } = req.body;
+  const {
+    name,
+    organization,
+    data,
+    // members
+  } = req.body;
 
   try {
     const updatedProject = await Project.findOneAndUpdate(
@@ -29,7 +34,7 @@ async function handler(
         ...(name && { name }),
         ...(organization && { organization }),
         ...(data && { data }),
-        ...(members && { members }),
+        // ...(members && { members }),
       },
       { new: true }
     );
