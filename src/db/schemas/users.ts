@@ -25,6 +25,10 @@ const NewUserSchema: Schema = new Schema(
       type: String,
       required: true,
     },
+    photoUrl: {
+      type: String,
+      required: false,
+    },
     passwordUpdatedAt: { type: Date, default: Date.now },
   },
   {
