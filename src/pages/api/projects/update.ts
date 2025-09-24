@@ -31,7 +31,7 @@ async function handler(
     const updatedProject = await Project.findOneAndUpdate(
       { _id: id },
       {
-        // ...(name && { name }),
+        ...(name && { name }),
         // ...(organization && { organization }),
         ...(data && { data }),
         // ...(members && { members }),
