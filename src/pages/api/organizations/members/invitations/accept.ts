@@ -1,4 +1,5 @@
 import { withAuth } from "@/db/middleware/auth";
+import { UserNotification } from "@/db/schemas/notifications";
 import {
   Organization,
   OrganizationInvitation,
@@ -30,7 +31,6 @@ async function handler(
     if (!invitation)
       return res.status(404).json({ error: "Invitation not found" });
 
-    // Solo invitaciones pendientes
     if (invitation.status !== "pending") {
       return res.status(400).json({
         error: `Cannot accept invitation with status "${invitation.status}"`,
@@ -41,20 +41,16 @@ async function handler(
     if (!invitedUser)
       return res.status(404).json({ error: "Invited user not registered" });
 
-    // Solo el usuario invitado puede aceptar
     if (invitedUser._id.toString() !== req.userId) {
       return res.status(403).json({ error: "Not authorized" });
     }
 
-    // Actualizar estado de la invitación
     invitation.status = "accepted";
     await invitation.save();
 
-    // Agregar al miembro a la organización
     const org = await Organization.findById(invitation.organization);
     if (!org) return res.status(404).json({ error: "Organization not found" });
 
-    // Evitar duplicados
     if (
       org.members.some(
         (m: IMembers<Role>) => m.user.toString() === invitedUser._id.toString()
@@ -69,8 +65,19 @@ async function handler(
     });
     const updatedOrg = await org.save();
 
+    // Actualizar la notificación original
+    await UserNotification.findOneAndUpdate(
+      { user: invitedUser._id, referenceId: invitation._id },
+      {
+        type: "organization_joined",
+        message: `You have joined the organization "${org.name}" as ${invitation.role}.`,
+        read: false,
+      }
+    );
+
     return res.status(200).json({
-      message: "Invitation accepted and user added to organization",
+      message:
+        "Invitation accepted, user added to organization, notification updated",
       data: updatedOrg,
     });
   } catch (error) {

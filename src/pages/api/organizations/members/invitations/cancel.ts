@@ -1,4 +1,5 @@
 import { withAuth } from "@/db/middleware/auth";
+import { UserNotification } from "@/db/schemas/notifications";
 import {
   Organization,
   OrganizationInvitation,
@@ -41,11 +42,15 @@ async function handler(
         .json({ error: "Not authorized to cancel invitation" });
     }
 
+    // Cancelar invitación
     invitation.status = "cancelled";
     await invitation.save();
 
+    // Eliminar notificaciones relacionadas
+    await UserNotification.deleteMany({ referenceId: invitation._id });
+
     return res.status(200).json({
-      message: "Invitation cancelled successfully",
+      message: "Invitation cancelled and notifications removed successfully",
       data: invitation,
     });
   } catch (error) {

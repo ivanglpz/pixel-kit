@@ -1,7 +1,9 @@
 import mongoose, { Document, Schema, Types } from "mongoose";
 
 export type NotificationType =
-  | "organization_invite"
+  | "organization_invite" // invitación pendiente
+  | "organization_joined" // usuario aceptó la invitación
+  | "organization_removed" // usuario fue removido de la organización
   | "project_update"
   | "general";
 
@@ -18,7 +20,13 @@ const UserNotificationSchema = new Schema<IUserNotification>({
   user: { type: Schema.Types.ObjectId, ref: "users", required: true },
   type: {
     type: String,
-    enum: ["organization_invite", "project_update", "general"],
+    enum: [
+      "organization_invite",
+      "organization_joined",
+      "organization_removed",
+      "project_update",
+      "general",
+    ],
     required: true,
   },
   message: { type: String, required: true },

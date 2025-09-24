@@ -53,7 +53,7 @@ async function handler(
     await UserNotification.create({
       user: new Types.ObjectId(), // si tienes el userId real, reemplaza aquí; si solo email, deberías buscarlo
       type: "organization_invite",
-      message: `Has sido invitado a unirte a la organización "${org.name}" como ${role}.`,
+      message: `You have been invited to join the organization "${org.name}" as ${role}.`,
       referenceId: invitation._id,
       read: false,
     });
