@@ -185,7 +185,7 @@ const App = () => {
           >
             <Dialog.Container>
               <Dialog.Header>
-                <p className={css({ fontWeight: "bold" })}>New Project</p>
+                <p className={css({ fontWeight: "bold" })}>Project</p>
                 <Dialog.Close onClose={() => setShowCreate(false)} />
               </Dialog.Header>
               <div
