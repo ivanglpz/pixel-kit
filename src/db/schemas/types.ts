@@ -23,6 +23,7 @@ export type IProject = {
   _id: string;
   name: string;
   organization: IOrganization;
+  previewUrl: string;
   createdBy: IUser;
   data: string;
   createdAt: string;

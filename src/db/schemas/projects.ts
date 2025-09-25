@@ -12,6 +12,7 @@ export interface IProject extends Document {
   organization: Types.ObjectId;
   createdBy: Types.ObjectId;
   data: string;
+  previewUrl: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -26,6 +27,7 @@ const ProjectSchema: Schema<IProject> = new Schema(
     },
     createdBy: { type: Schema.Types.ObjectId, ref: "users", required: true },
     data: { type: String, default: "{}" },
+    previewUrl: { type: String, default: "./placeholder.svg" },
   },
   { timestamps: true }
 );
