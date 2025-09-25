@@ -1,5 +1,6 @@
 import { css } from "@stylespixelkit/css";
 import { X } from "lucide-react";
+import dynamic from "next/dynamic";
 import {
   cloneElement,
   isValidElement,
@@ -16,8 +17,8 @@ type DialogProps = {
   onClose: VoidFunction;
 };
 
-export const Provider = ({ children, onClose, visible }: DialogProps) => {
-  const Container = document.getElementById("pixel-app");
+export const ProviderSSR = ({ children, onClose, visible }: DialogProps) => {
+  const Container = document.getElementById("pixel-app") || document.body;
 
   const enhancedChildren = isValidElement(children)
     ? cloneElement(children as ReactElement, {
@@ -52,6 +53,9 @@ export const Provider = ({ children, onClose, visible }: DialogProps) => {
       )
     : null;
 };
+const Provider = dynamic(Promise.resolve(ProviderSSR), {
+  ssr: false,
+});
 
 type CloseProps = {
   onClose: VoidFunction;

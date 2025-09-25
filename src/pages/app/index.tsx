@@ -1,13 +1,15 @@
 /* eslint-disable @next/next/no-img-element */
 import { IProject } from "@/db/schemas/types";
+import { Button } from "@/editor/components/button";
+import { Dialog } from "@/editor/components/dialog";
 import { Input } from "@/editor/components/input";
+import { constants } from "@/editor/constants/color";
 import { ICON_MODES_TABS } from "@/editor/icons/mode";
-import { PROJECTS_ATOM } from "@/editor/states/projects";
 import { fetchListOrgs } from "@/services/organizations";
 import { fetchListProjects } from "@/services/projects";
 import { css } from "@stylespixelkit/css";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { useAtomValue } from "jotai";
+import { Plus } from "lucide-react";
 import { useEffect, useState } from "react";
 
 const CardProject = ({ project }: { project: IProject }) => {
@@ -24,8 +26,8 @@ const CardProject = ({ project }: { project: IProject }) => {
       })}
     >
       <img
-        src="./placeholder.svg"
-        alt=""
+        src={project?.previewUrl}
+        alt={project?.name}
         className={css({
           height: "100%",
           width: "100%",
@@ -65,16 +67,13 @@ const CardProject = ({ project }: { project: IProject }) => {
   );
 };
 const App = () => {
-  const listProjects = useAtomValue(PROJECTS_ATOM);
-
   const [orgId, setOrgId] = useState<string | null>(null);
-
+  const [showCreate, setShowCreate] = useState(false);
   const mutateOrgs = useMutation({
     mutationKey: ["orgs_user"],
     mutationFn: async () => fetchListOrgs(),
     onSuccess: (data) => {
       setOrgId(data.at(0)?._id ?? null);
-      console.log(data);
     },
   });
 
@@ -128,17 +127,27 @@ const App = () => {
         <section
           className={css({
             backgroundColor: "gray.700",
-            // overflowY: "scroll",
-            // height: "100%",
-            // display: "grid",
-            // gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
-            // gridAutoRows: "300px",
+
             padding: "lg",
-            // gap: "xlg",
+            gap: "xlg",
             display: "flex",
             flexDirection: "column",
           })}
         >
+          <Dialog.Provider
+            visible={showCreate}
+            onClose={() => {
+              setShowCreate(false);
+            }}
+          >
+            <Dialog.Container>
+              <Dialog.Header>
+                <p className={css({ fontWeight: "bold" })}>Image</p>
+                <Dialog.Close onClose={() => setShowCreate(false)} />
+              </Dialog.Header>
+              <p>hello world</p>
+            </Dialog.Container>
+          </Dialog.Provider>
           <header>
             <div
               className={css({
@@ -162,6 +171,16 @@ const App = () => {
                   }}
                 ></Input.Select>
               </Input.Container>
+            </div>
+            <div>
+              <Button.Primary
+                onClick={() => {
+                  setShowCreate(true);
+                }}
+              >
+                <Plus size={constants.icon.size} />
+                Create Project
+              </Button.Primary>
             </div>
           </header>
           <div

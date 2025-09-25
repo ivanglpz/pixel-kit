@@ -41,6 +41,7 @@ async function handler(
       organization,
       createdBy: req.userId,
       data: data ?? "{}",
+      previewUrl: "./placeholder.svg",
     });
 
     return res.status(201).json({
