@@ -1,12 +1,18 @@
 /* eslint-disable @next/next/no-img-element */
+import { IProject } from "@/db/schemas/types";
+import { Input } from "@/editor/components/input";
 import { ICON_MODES_TABS } from "@/editor/icons/mode";
-import { IPROJECT, PROJECTS_ATOM } from "@/editor/states/projects";
+import { PROJECTS_ATOM } from "@/editor/states/projects";
+import { fetchListOrgs } from "@/services/organizations";
+import { fetchListProjects } from "@/services/projects";
 import { css } from "@stylespixelkit/css";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useAtomValue } from "jotai";
+import { useEffect, useState } from "react";
 
-const CardProject = ({ project }: { project: IPROJECT }) => {
-  const text = useAtomValue(project.name);
-  const mode = useAtomValue(project.MODE_ATOM);
+const CardProject = ({ project }: { project: IProject }) => {
+  // const text = useAtomValue(project.name);
+  // const mode = useAtomValue(project.MODE_ATOM);
   return (
     <div
       className={css({
@@ -35,14 +41,15 @@ const CardProject = ({ project }: { project: IPROJECT }) => {
           alignItems: "center",
         })}
       >
-        {ICON_MODES_TABS[mode]}
+        {/* ke */}
+        {ICON_MODES_TABS.DESIGN_MODE}
         <div>
           <p
             className={css({
               fontSize: "sm",
             })}
           >
-            {text}
+            {project?.name}
           </p>
           <p
             className={css({
@@ -50,7 +57,7 @@ const CardProject = ({ project }: { project: IPROJECT }) => {
               opacity: 0.5,
             })}
           >
-            Edited 1h ago
+            {new Date(project?.updatedAt).toDateString()}
           </p>
         </div>
       </div>
@@ -59,6 +66,32 @@ const CardProject = ({ project }: { project: IPROJECT }) => {
 };
 const App = () => {
   const listProjects = useAtomValue(PROJECTS_ATOM);
+
+  const [orgId, setOrgId] = useState<string | null>(null);
+
+  const mutateOrgs = useMutation({
+    mutationKey: ["orgs_user"],
+    mutationFn: async () => fetchListOrgs(),
+    onSuccess: (data) => {
+      setOrgId(data.at(0)?._id ?? null);
+      console.log(data);
+    },
+  });
+
+  const QueryProjects = useQuery({
+    queryKey: ["projects_orgs", orgId],
+    queryFn: async () => {
+      if (!orgId) {
+        throw new Error("Org Id is require");
+      }
+      return fetchListProjects(orgId);
+    },
+    enabled: Boolean(orgId),
+  });
+
+  useEffect(() => {
+    mutateOrgs.mutate();
+  }, []);
 
   return (
     <div
@@ -94,19 +127,57 @@ const App = () => {
         </aside>
         <section
           className={css({
-            backgroundColor: "black",
-            overflowY: "scroll",
-            height: "100%",
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
-            gridAutoRows: "300px",
+            backgroundColor: "gray.700",
+            // overflowY: "scroll",
+            // height: "100%",
+            // display: "grid",
+            // gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
+            // gridAutoRows: "300px",
             padding: "lg",
-            gap: "xlg",
+            // gap: "xlg",
+            display: "flex",
+            flexDirection: "column",
           })}
         >
-          {listProjects?.map((e) => {
-            return <CardProject key={e?.ID} project={e} />;
-          })}
+          <header>
+            <div
+              className={css({
+                display: "flex",
+              })}
+            >
+              <Input.Container>
+                <Input.Select
+                  options={
+                    mutateOrgs?.data?.map((e) => {
+                      return {
+                        id: e?._id,
+                        label: e?.name,
+                        value: e?._id,
+                      };
+                    }) || []
+                  }
+                  value={orgId ?? ""}
+                  onChange={(e) => {
+                    setOrgId(e);
+                  }}
+                ></Input.Select>
+              </Input.Container>
+            </div>
+          </header>
+          <div
+            className={css({
+              overflowY: "scroll",
+              height: "100%",
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
+              gridAutoRows: "300px",
+              gap: "xlg",
+            })}
+          >
+            {QueryProjects?.data?.map((e) => {
+              return <CardProject key={e?._id} project={e} />;
+            })}
+          </div>
         </section>
       </div>
     </div>
