@@ -1,99 +1,24 @@
 /* eslint-disable @next/next/no-img-element */
-import { IProject } from "@/db/schemas/types";
 import { Button } from "@/editor/components/button";
 import { Input } from "@/editor/components/input";
 import { constants } from "@/editor/constants/color";
-import { ADD_PROJECT } from "@/editor/states/projects";
+import { ADD_PROJECT, PROJECT_ID_ATOM } from "@/editor/states/projects";
 import { fetchListOrgs } from "@/services/organizations";
 import { createProject, fetchListProjects } from "@/services/projects";
 import { css } from "@stylespixelkit/css";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { useSetAtom } from "jotai";
+import { useAtom, useSetAtom } from "jotai";
 import { Building, LayoutDashboard, Plus } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
-const CardProject = ({
-  project,
-  onDbClick,
-}: {
-  project: IProject;
-  onDbClick: VoidFunction;
-}) => {
-  return (
-    <div
-      onDoubleClick={onDbClick}
-      className={css({
-        display: "grid",
-        gridTemplateRows: "160px 1fr",
-        borderRadius: "lg",
-        borderWidth: 1,
-        borderColor: "bg.elevated",
-        backgroundColor: "gray.50",
-        _dark: {
-          backgroundColor: "gray.600",
-        },
-      })}
-    >
-      <img
-        src={project?.previewUrl}
-        alt={project?.name}
-        className={css({
-          height: "100%",
-          width: "100%",
-          objectFit: "cover",
-          borderTopRadius: "lg",
-        })}
-      />
-      <div
-        className={css({
-          padding: "lg",
-          display: "grid",
-          gridTemplateColumns: "30px 1fr",
-          alignContent: "center",
-          gap: "md",
-        })}
-      >
-        {/* ke */}
-        <div
-          className={css({
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "center",
-          })}
-        >
-          <LayoutDashboard size={25} />
-        </div>
-        <div
-          className={css({
-            display: "flex",
-            flexDirection: "column",
-          })}
-        >
-          <p
-            className={css({
-              fontSize: "sm",
-              fontWeight: "bold",
-            })}
-          >
-            {project?.name}
-          </p>
-          <p
-            className={css({
-              fontSize: "11px",
-            })}
-          >
-            {new Date(project?.updatedAt).toDateString()}
-          </p>
-        </div>
-      </div>
-    </div>
-  );
-};
-
 const App = () => {
   const [orgId, setOrgId] = useState<string | null>(null);
+  const router = useRouter();
+  const [selected, setSelected] = useAtom(PROJECT_ID_ATOM);
+
   const mutateOrgs = useMutation({
     mutationKey: ["orgs_user"],
     mutationFn: async () => fetchListOrgs(),
@@ -266,15 +191,79 @@ const App = () => {
               overflowY: "scroll",
             })}
           >
-            {QueryProjects?.data?.map((e) => {
+            {QueryProjects?.data?.map((project) => {
               return (
-                <CardProject
-                  key={e?._id}
-                  project={e}
-                  onDbClick={() => {
-                    setAdd(e);
+                <div
+                  key={project?._id}
+                  onClick={() => {
+                    setAdd(project);
+                    setSelected(project._id);
+                    router.push(`/app/project/${project._id}`);
                   }}
-                />
+                  className={css({
+                    display: "grid",
+                    gridTemplateRows: "160px 1fr",
+                    borderRadius: "lg",
+                    borderWidth: 1,
+                    borderColor: "bg.elevated",
+                    backgroundColor: "gray.50",
+                    _dark: {
+                      backgroundColor: "gray.600",
+                    },
+                  })}
+                >
+                  <img
+                    src={project?.previewUrl}
+                    alt={project?.name}
+                    className={css({
+                      height: "100%",
+                      width: "100%",
+                      objectFit: "cover",
+                      borderTopRadius: "lg",
+                    })}
+                  />
+                  <div
+                    className={css({
+                      padding: "lg",
+                      display: "grid",
+                      gridTemplateColumns: "30px 1fr",
+                      alignContent: "center",
+                      gap: "md",
+                    })}
+                  >
+                    <div
+                      className={css({
+                        display: "flex",
+                        flexDirection: "column",
+                        justifyContent: "center",
+                      })}
+                    >
+                      <LayoutDashboard size={25} />
+                    </div>
+                    <div
+                      className={css({
+                        display: "flex",
+                        flexDirection: "column",
+                      })}
+                    >
+                      <p
+                        className={css({
+                          fontSize: "sm",
+                          fontWeight: "bold",
+                        })}
+                      >
+                        {project?.name}
+                      </p>
+                      <p
+                        className={css({
+                          fontSize: "11px",
+                        })}
+                      >
+                        {new Date(project?.updatedAt).toDateString()}
+                      </p>
+                    </div>
+                  </div>
+                </div>
               );
             })}
           </div>
