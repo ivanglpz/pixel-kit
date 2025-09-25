@@ -4,13 +4,12 @@ import { Button } from "@/editor/components/button";
 import { Dialog } from "@/editor/components/dialog";
 import { Input } from "@/editor/components/input";
 import { constants } from "@/editor/constants/color";
-import { ICON_MODES_TABS } from "@/editor/icons/mode";
 import { fetchListOrgs } from "@/services/organizations";
 import { createProject, fetchListProjects } from "@/services/projects";
 import { css } from "@stylespixelkit/css";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useFormik } from "formik";
-import { Building, Plus } from "lucide-react";
+import { Building, LayoutDashboard, Plus } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -22,7 +21,7 @@ const CardProject = ({ project }: { project: IProject }) => {
     <div
       className={css({
         display: "grid",
-        gridTemplateRows: "230px 1fr",
+        gridTemplateRows: "160px 1fr",
         borderRadius: "lg",
         borderWidth: 1,
         borderColor: "bg.elevated",
@@ -47,23 +46,37 @@ const CardProject = ({ project }: { project: IProject }) => {
           padding: "lg",
           display: "grid",
           gridTemplateColumns: "30px 1fr",
-          alignItems: "center",
+          alignContent: "center",
+          gap: "md",
         })}
       >
         {/* ke */}
-        {ICON_MODES_TABS.DESIGN_MODE}
-        <div>
+        <div
+          className={css({
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+          })}
+        >
+          <LayoutDashboard size={25} />
+        </div>
+        <div
+          className={css({
+            display: "flex",
+            flexDirection: "column",
+          })}
+        >
           <p
             className={css({
               fontSize: "sm",
+              fontWeight: "bold",
             })}
           >
             {project?.name}
           </p>
           <p
             className={css({
-              fontSize: "sm",
-              opacity: 0.5,
+              fontSize: "11px",
             })}
           >
             {new Date(project?.updatedAt).toDateString()}
@@ -316,7 +329,7 @@ const App = () => {
               height: "100%",
               display: "grid",
               gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
-              gridAutoRows: "300px",
+              gridAutoRows: "244px",
               gap: "xlg",
             })}
           >
