@@ -1,9 +1,10 @@
 import { IProject } from "@/db/schemas/types";
 import { atom, PrimitiveAtom } from "jotai";
+import { IShape } from "../shapes/type.shape";
 import { IStageEvents } from "./event";
 import { MODE } from "./mode";
-import { IPage, IPageShapeIds } from "./pages";
-import { ALL_SHAPES, WithInitialValue } from "./shapes";
+import { IPage, IPageJSON, IPageShapeIds } from "./pages";
+import { ALL_SHAPES, ALL_SHAPES_CHILDREN, WithInitialValue } from "./shapes";
 import { IKeyTool } from "./tool";
 import { UndoRedoAction } from "./undo-redo";
 
@@ -25,37 +26,7 @@ export type IEDITORPROJECT = {
 
 export const PROJECT_ID_ATOM = atom<string | null>(null);
 
-export const PROJECTS_ATOM = atom([
-  // {
-  //   ID: "415ee03c-ce26-4e8b-b373-8c1c0e0d9dd4",
-  //   name: atom("Project"),
-  //   MODE_ATOM: atom<MODE>("DESIGN_MODE"),
-  //   TOOL: atom<IKeyTool>("MOVE"),
-  //   PAUSE_MODE: atom<boolean>(false),
-  //   MODE: {
-  //     DESIGN_MODE: {
-  //       LIST: atom<IPage[]>([
-  //         {
-  //           id: "8eb9cfc3-023f-4204-a745-3d5347d1f057",
-  //           name: atom("Page 1"),
-  //           color: atom(canvasTheme.dark),
-  //           isVisible: atom(true),
-  //           SHAPES: {
-  //             ID: atom<IPageShapeIds[]>([]),
-  //             LIST: atom<ALL_SHAPES[]>([]),
-  //           },
-  //           UNDOREDO: {
-  //             COUNT_UNDO_REDO: atom<number>(0),
-  //             LIST_UNDO_REDO: atom<UndoRedoAction[]>([]),
-  //           },
-  //         },
-  //       ]),
-  //       ID: atom<string>("8eb9cfc3-023f-4204-a745-3d5347d1f057"),
-  //     },
-  //   },
-  //   EVENT: atom<IStageEvents>("IDLE"),
-  // },
-] as IEDITORPROJECT[]);
+export const PROJECTS_ATOM = atom([] as IEDITORPROJECT[]);
 
 export const PROJECT_ATOM = atom((get) => {
   const PROJECT_ID = get(PROJECT_ID_ATOM);
@@ -64,14 +35,29 @@ export const PROJECT_ATOM = atom((get) => {
   if (!FIND_PROJECT) {
     throw new Error("PROJECT NOT FOUND");
   }
-  console.log(FIND_PROJECT);
 
   return FIND_PROJECT;
 });
 
 export const ADD_PROJECT = atom(null, (get, set, args: IProject) => {
+  const findProjet = get(PROJECTS_ATOM).some((e) => e.ID === args?._id);
+  if (findProjet) return;
   const DATA = JSON.parse(args.data);
-  const LIST_PAGES = DATA[args.mode]?.LIST;
+  const LIST_PAGES = DATA[args.mode]?.LIST as IPageJSON[];
+  const FIRST_PAGE = LIST_PAGES.at(0);
+  if (!FIRST_PAGE) return;
+
+  const cloneShapeRecursive = (shape: ALL_SHAPES_CHILDREN): ALL_SHAPES => {
+    return {
+      id: shape.id,
+      pageId: shape.pageId,
+      tool: shape.tool,
+      state: atom<IShape>({
+        ...shape.state,
+        children: atom(shape.state.children.map((c) => cloneShapeRecursive(c))),
+      }),
+    };
+  };
 
   set(PROJECTS_ATOM, [
     ...get(PROJECTS_ATOM),
@@ -85,15 +71,18 @@ export const ADD_PROJECT = atom(null, (get, set, args: IProject) => {
       MODE: {
         [args.mode]: {
           LIST: atom(
-            LIST_PAGES?.map((e) => {
+            LIST_PAGES?.map((page) => {
+              const LIST = page?.SHAPES?.LIST?.map((e) =>
+                cloneShapeRecursive(e)
+              );
               return {
-                id: e.id,
-                name: atom(e.name),
-                color: atom(e.color),
-                isVisible: atom(e.isVisible),
+                id: page.id,
+                name: atom(page.name),
+                color: atom(page.color),
+                isVisible: atom(page.isVisible),
                 SHAPES: {
                   ID: atom<IPageShapeIds[]>([]),
-                  LIST: atom<ALL_SHAPES[]>(e.SHAPES.LIST),
+                  LIST: atom<ALL_SHAPES[]>(LIST),
                 },
                 UNDOREDO: {
                   COUNT_UNDO_REDO: atom<number>(0),
@@ -102,7 +91,7 @@ export const ADD_PROJECT = atom(null, (get, set, args: IProject) => {
               };
             })
           ),
-          ID: atom<string>(LIST_PAGES.at(0).id),
+          ID: atom<string>(FIRST_PAGE.id),
         },
       },
 
