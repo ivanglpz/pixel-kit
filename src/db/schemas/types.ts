@@ -1,3 +1,5 @@
+import { MODE } from "@/editor/states/mode";
+
 export type Role = "admin" | "member";
 
 export type RoleProject = "developer" | "designer" | "viewer" | "commenter";
@@ -26,6 +28,8 @@ export type IProject = {
   previewUrl: string;
   createdBy: IUser;
   data: string;
+  version: number;
+  mode: MODE;
   createdAt: string;
   updatedAt: string;
 };

@@ -3,18 +3,27 @@ import { IProject } from "@/db/schemas/types";
 import { Button } from "@/editor/components/button";
 import { Input } from "@/editor/components/input";
 import { constants } from "@/editor/constants/color";
+import { ADD_PROJECT } from "@/editor/states/projects";
 import { fetchListOrgs } from "@/services/organizations";
 import { createProject, fetchListProjects } from "@/services/projects";
 import { css } from "@stylespixelkit/css";
 import { useMutation, useQuery } from "@tanstack/react-query";
+import { useSetAtom } from "jotai";
 import { Building, LayoutDashboard, Plus } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
-const CardProject = ({ project }: { project: IProject }) => {
+const CardProject = ({
+  project,
+  onDbClick,
+}: {
+  project: IProject;
+  onDbClick: VoidFunction;
+}) => {
   return (
     <div
+      onDoubleClick={onDbClick}
       className={css({
         display: "grid",
         gridTemplateRows: "160px 1fr",
@@ -85,7 +94,6 @@ const CardProject = ({ project }: { project: IProject }) => {
 
 const App = () => {
   const [orgId, setOrgId] = useState<string | null>(null);
-  const [showCreate, setShowCreate] = useState(false);
   const mutateOrgs = useMutation({
     mutationKey: ["orgs_user"],
     mutationFn: async () => fetchListOrgs(),
@@ -94,6 +102,7 @@ const App = () => {
     },
   });
 
+  const setAdd = useSetAtom(ADD_PROJECT);
   const QueryProjects = useQuery({
     queryKey: ["projects_orgs", orgId],
     queryFn: async () => {
@@ -120,7 +129,6 @@ const App = () => {
       toast.success("Project created successfully", {
         description: `The project "${data.name}" was added to your organization.`,
       });
-      setShowCreate(false);
       QueryProjects.refetch();
       // formik.resetForm();
     },
@@ -259,7 +267,15 @@ const App = () => {
             })}
           >
             {QueryProjects?.data?.map((e) => {
-              return <CardProject key={e?._id} project={e} />;
+              return (
+                <CardProject
+                  key={e?._id}
+                  project={e}
+                  onDbClick={() => {
+                    setAdd(e);
+                  }}
+                />
+              );
             })}
           </div>
         </section>
