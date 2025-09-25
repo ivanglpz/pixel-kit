@@ -6,11 +6,13 @@ import { Input } from "@/editor/components/input";
 import { constants } from "@/editor/constants/color";
 import { ICON_MODES_TABS } from "@/editor/icons/mode";
 import { fetchListOrgs } from "@/services/organizations";
-import { fetchListProjects } from "@/services/projects";
+import { createProject, fetchListProjects } from "@/services/projects";
 import { css } from "@stylespixelkit/css";
 import { useMutation, useQuery } from "@tanstack/react-query";
+import { useFormik } from "formik";
 import { Plus } from "lucide-react";
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 const CardProject = ({ project }: { project: IProject }) => {
   // const text = useAtomValue(project.name);
@@ -66,6 +68,11 @@ const CardProject = ({ project }: { project: IProject }) => {
     </div>
   );
 };
+
+import * as Yup from "yup";
+const validationSchema = Yup.object({
+  name: Yup.string().required("Name is required"),
+});
 const App = () => {
   const [orgId, setOrgId] = useState<string | null>(null);
   const [showCreate, setShowCreate] = useState(false);
@@ -86,6 +93,42 @@ const App = () => {
       return fetchListProjects(orgId);
     },
     enabled: Boolean(orgId),
+  });
+
+  const mutateNewProject = useMutation({
+    mutationKey: ["new_project", orgId],
+    mutationFn: async (values: { name: string }) => {
+      if (!orgId) {
+        throw new Error("Org Id is require");
+      }
+      return createProject({
+        name: values.name,
+        organization: orgId,
+      });
+    },
+    onSuccess: (data) => {
+      toast.success("Project created successfully", {
+        description: `The project "${data.name}" was added to your organization.`,
+      });
+      setShowCreate(false);
+      QueryProjects.refetch();
+      formik.resetForm();
+    },
+    onError: (error) => {
+      toast.error("Failed to create project", {
+        description:
+          error?.message ||
+          "There was an error creating your project. Please try again.",
+      });
+    },
+  });
+
+  const formik = useFormik({
+    initialValues: {
+      name: "",
+    },
+    validationSchema,
+    onSubmit: (values) => mutateNewProject.mutate(values),
   });
 
   useEffect(() => {
@@ -142,13 +185,46 @@ const App = () => {
           >
             <Dialog.Container>
               <Dialog.Header>
-                <p className={css({ fontWeight: "bold" })}>Image</p>
+                <p className={css({ fontWeight: "bold" })}>New Project</p>
                 <Dialog.Close onClose={() => setShowCreate(false)} />
               </Dialog.Header>
-              <p>hello world</p>
+              <div
+                className={css({
+                  display: "flex",
+                  flexDir: "column",
+                  gap: "lg",
+                })}
+              >
+                <Input.Label text="Name" />
+                <Input.Text
+                  value={formik.values.name}
+                  onChange={(e) => formik.setFieldValue("name", e)}
+                />
+                {formik.errors.name ? (
+                  <p
+                    className={css({
+                      color: "red.dark.600",
+                      fontWeight: "bold",
+                      fontSize: "x-small",
+                    })}
+                  >
+                    {formik.errors.name}
+                  </p>
+                ) : null}
+                <Button.Primary onClick={() => formik.submitForm()}>
+                  Create
+                </Button.Primary>
+              </div>
             </Dialog.Container>
           </Dialog.Provider>
-          <header>
+          <header
+            className={css({
+              display: "flex",
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "space-between",
+            })}
+          >
             <div
               className={css({
                 display: "flex",
