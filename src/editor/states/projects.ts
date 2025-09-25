@@ -45,7 +45,9 @@ export const ADD_PROJECT = atom(null, (get, set, args: IProject) => {
   const DATA = JSON.parse(args.data);
   const LIST_PAGES = DATA[args.mode]?.LIST as IPageJSON[];
   const FIRST_PAGE = LIST_PAGES.at(0);
-  if (!FIRST_PAGE) return;
+  if (!FIRST_PAGE) {
+    return;
+  }
 
   const cloneShapeRecursive = (shape: ALL_SHAPES_CHILDREN): ALL_SHAPES => {
     return {
@@ -98,7 +100,7 @@ export const ADD_PROJECT = atom(null, (get, set, args: IProject) => {
       EVENT: atom<IStageEvents>("IDLE"),
     },
   ]);
-  set(PROJECT_ID_ATOM, args?._id);
+  // set(PROJECT_ID_ATOM, args?._id);
 });
 
 export const DELETE_PROJECT = atom(null, (get, set, id: string) => {
