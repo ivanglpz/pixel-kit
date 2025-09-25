@@ -8,3 +8,9 @@ export const fetchListProjects = async (
     .get(`/projects/byList?organizationId=${organizationId}`)
     .then((e) => e.data?.data);
 };
+
+export const createProject = async (
+  payload: Pick<IProject, "name"> & { organization: string }
+) => {
+  return api.post(`/projects/create`, payload).then((e) => e.data?.data);
+};

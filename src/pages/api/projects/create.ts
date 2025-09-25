@@ -13,7 +13,7 @@ async function handler(
     return res.status(405).json({ error: "Method not allowed" });
   }
 
-  const { name, organization, data } = req.body;
+  const { name, organization } = req.body;
 
   if (!name || !organization) {
     return res.status(400).json({ error: "Missing required fields" });
@@ -40,7 +40,7 @@ async function handler(
       name,
       organization,
       createdBy: req.userId,
-      data: data ?? "{}",
+      data: "{}",
       previewUrl: "./placeholder.svg",
     });
 
