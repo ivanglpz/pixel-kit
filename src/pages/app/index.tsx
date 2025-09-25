@@ -174,11 +174,12 @@ const App = () => {
           <Link
             href={"/app/organizations"}
             className={css({
-              padding: "lg",
+              paddingLeft: "sm",
+              paddingTop: "sm",
               display: "flex",
               flexDirection: "row",
               alignItems: "center",
-              gap: "md",
+              gap: "lg",
             })}
           >
             <Building size={18} />

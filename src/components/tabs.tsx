@@ -185,13 +185,14 @@ export const TabsProjects = () => {
         })}
         <button
           onClick={() => {
-            setNew();
-            setTimeout(() => {
-              containerRef.current?.scrollTo({
-                left: containerRef.current.scrollWidth,
-                behavior: "smooth",
-              });
-            }, 10);
+            // setNew();
+            // setTimeout(() => {
+            //   containerRef.current?.scrollTo({
+            //     left: containerRef.current.scrollWidth,
+            //     behavior: "smooth",
+            //   });
+            // }, 10);
+            router.push("/app/project/create");
           }}
           className={css({
             display: "flex",
