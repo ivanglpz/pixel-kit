@@ -1,8 +1,8 @@
 import { ICON_MODES_TABS } from "@/editor/icons/mode";
 import {
+  ADD_PROJECT,
   DELETE_PROJECT,
-  IPROJECT,
-  NEW_PROJECT,
+  IEDITORPROJECT,
   PROJECT_ID_ATOM,
   PROJECTS_ATOM,
 } from "@/editor/states/projects";
@@ -21,7 +21,7 @@ const Tab = ({
   isEnable,
   isSelected,
 }: {
-  project: IPROJECT;
+  project: IEDITORPROJECT;
   onClick: VoidFunction;
   onDelete: VoidFunction;
   isEnable: boolean;
@@ -123,7 +123,7 @@ const Tab = ({
 export const TabsProjects = () => {
   const router = useRouter();
   const listProjects = useAtomValue(PROJECTS_ATOM);
-  const setNew = useSetAtom(NEW_PROJECT);
+  const setNew = useSetAtom(ADD_PROJECT);
   const [selected, setSelected] = useAtom(PROJECT_ID_ATOM);
   const setDelete = useSetAtom(DELETE_PROJECT);
   const containerRef = useRef<HTMLDivElement>(null);

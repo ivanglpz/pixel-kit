@@ -1,7 +1,9 @@
 import { withAuth } from "@/db/middleware/auth";
 import { IOrganizationMember, Organization } from "@/db/schemas/organizations";
 import { Project } from "@/db/schemas/projects";
+import { canvasTheme } from "@/editor/states/canvas";
 import type { NextApiRequest, NextApiResponse } from "next";
+import { v4 as uuidv4 } from "uuid";
 
 type ResponseData = { message: string; data: any | null } | { error: string };
 
@@ -42,7 +44,17 @@ async function handler(
       createdBy: req.userId,
       data: JSON.stringify({
         DESIGN_MODE: {
-          LIST: [],
+          LIST: [
+            {
+              id: uuidv4(),
+              name: "Page 1",
+              color: canvasTheme.dark,
+              isVisible: true,
+              SHAPES: {
+                LIST: [],
+              },
+            },
+          ],
         },
       }),
       previewUrl: "./placeholder.svg",
