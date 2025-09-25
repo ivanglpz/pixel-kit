@@ -40,8 +40,14 @@ async function handler(
       name,
       organization,
       createdBy: req.userId,
-      data: "{}",
+      data: JSON.stringify({
+        DESIGN_MODE: {
+          LIST: [],
+        },
+      }),
       previewUrl: "./placeholder.svg",
+      version: 1,
+      mode: "DESIGN_MODE",
     });
 
     return res.status(201).json({
