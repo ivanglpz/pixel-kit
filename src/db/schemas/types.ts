@@ -14,16 +14,17 @@ export type IMembers<role> = {
 };
 
 export type IOrganization = {
+  _id: string;
   name: string;
   members: IMembers<Role>[];
-  // projects: [];
-  // owner: IUser;
 };
 
 export type IProject = {
+  _id: string;
   name: string;
   organization: IOrganization;
   createdBy: IUser;
   data: string;
-  members: IMembers<RoleProject>[];
+  createdAt: string;
+  updatedAt: string;
 };

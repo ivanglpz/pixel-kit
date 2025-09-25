@@ -16,10 +16,10 @@ async function handler(
   }
 
   try {
-    const organizations = await Organization.find({
-      "members.user": req.userId,
-    });
-
+    const organizations = await Organization.find(
+      { "members.user": req.userId },
+      { members: 0 } // 0 significa excluir esta propiedad
+    );
     return res.status(200).json({
       message: "Organizations fetched successfully",
       data: organizations,

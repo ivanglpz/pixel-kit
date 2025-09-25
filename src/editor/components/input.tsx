@@ -1,7 +1,53 @@
 import { css } from "@stylespixelkit/css";
 import { useSetAtom } from "jotai";
-import { CSSProperties, ReactNode } from "react";
+import React, {
+  CSSProperties,
+  FocusEvent,
+  ReactElement,
+  ReactNode,
+} from "react";
 import { PAUSE_MODE_ATOM } from "../states/tool";
+
+// HOC para inyectar pausa
+
+type PauseWrapperProps = {
+  children: ReactNode;
+};
+
+export const PauseWrapper = ({ children }: PauseWrapperProps) => {
+  const setPause = useSetAtom(PAUSE_MODE_ATOM);
+
+  const handleFocus = (
+    event: FocusEvent<HTMLElement>,
+    original?: (e: FocusEvent<HTMLElement>) => void
+  ) => {
+    setPause(true);
+    original?.(event);
+  };
+
+  const handleBlur = (
+    event: FocusEvent<HTMLElement>,
+    original?: (e: FocusEvent<HTMLElement>) => void
+  ) => {
+    setPause(false);
+    original?.(event);
+  };
+
+  const enhanceChild = (child: ReactNode): ReactNode => {
+    if (!React.isValidElement(child)) return child;
+
+    const originalOnFocus = child.props.onFocus;
+    const originalOnBlur = child.props.onBlur;
+
+    return React.cloneElement(child as ReactElement, {
+      onFocus: (e: FocusEvent<HTMLElement>) => handleFocus(e, originalOnFocus),
+      onBlur: (e: FocusEvent<HTMLElement>) => handleBlur(e, originalOnBlur),
+    });
+  };
+
+  // Soporta múltiples hijos
+  return React.Children.map(children, enhanceChild);
+};
 
 const Label = ({ text }: { text: string }) => {
   return (
@@ -39,7 +85,7 @@ const Container = ({ children, id }: { children: ReactNode; id?: string }) => {
       <label
         htmlFor={id}
         className={css({
-          width: "100%",
+          // width: "100%",
           color: "text",
           fontSize: "sm",
           _dark: {
@@ -63,7 +109,7 @@ const Container = ({ children, id }: { children: ReactNode; id?: string }) => {
   return (
     <div
       className={css({
-        width: "100%",
+        // width: "100%",
         color: "text",
         fontSize: "sm",
         _dark: {
@@ -121,8 +167,7 @@ const NumberComponent = ({
   min,
   step,
 }: InputNumberProps) => {
-  const setPause = useSetAtom(PAUSE_MODE_ATOM);
-
+  // const setPause = useSetAtom(PAUSE_MODE_ATOM);
   const handleNumberChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = Number(event.target.value);
     if (!isNaN(newValue)) {
@@ -137,8 +182,8 @@ const NumberComponent = ({
       step={step}
       value={value}
       onChange={handleNumberChange}
-      onFocus={() => setPause(true)} // Inicia pausa al entrar en el input
-      onBlur={() => setPause(false)} // Quita pausa al salir del input
+      // onFocus={() => setPause(true)} // Inicia pausa al entrar en el input
+      // onBlur={() => setPause(false)} // Quita pausa al salir del input
       className={css({
         color: "text",
         backgroundColor: "transparent",
@@ -163,15 +208,15 @@ type InputTextProps = {
 };
 
 const TextComponent = ({ onChange, value, style }: InputTextProps) => {
-  const setPause = useSetAtom(PAUSE_MODE_ATOM);
+  // const setPause = useSetAtom(PAUSE_MODE_ATOM);
 
   return (
     <input
       type="text"
       value={value}
       onChange={(event) => onChange(event.target.value)}
-      onFocus={() => setPause(true)} // Inicia pausa al entrar en el input
-      onBlur={() => setPause(false)} // Quita pausa al salir del input
+      // onFocus={() => setPause(true)} // Inicia pausa al entrar en el input
+      // onBlur={() => setPause(false)} // Quita pausa al salir del input
       className={css({
         width: "auto",
         border: "container",
@@ -193,14 +238,14 @@ export const TextArea = ({
   style,
   placeholder,
 }: InputTextProps) => {
-  const setPause = useSetAtom(PAUSE_MODE_ATOM);
+  // const setPause = useSetAtom(PAUSE_MODE_ATOM);
 
   return (
     <textarea
       value={value}
       onChange={(event) => onChange(event.target.value)}
-      onFocus={() => setPause(true)} // Inicia pausa al entrar en el input
-      onBlur={() => setPause(false)} // Quita pausa al salir del input
+      // onFocus={() => setPause(true)} // Inicia pausa al entrar en el input
+      // onBlur={() => setPause(false)} // Quita pausa al salir del input
       placeholder={placeholder}
       className={css({
         width: "100%",
@@ -304,4 +349,5 @@ export const Input = {
   IconContainer,
   TextArea,
   Select,
+  withPause: PauseWrapper, // <- aquí
 };
