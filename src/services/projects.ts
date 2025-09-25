@@ -11,6 +11,6 @@ export const fetchListProjects = async (
 
 export const createProject = async (
   payload: Pick<IProject, "name"> & { organization: string }
-) => {
+): Promise<IProject> => {
   return api.post(`/projects/create`, payload).then((e) => e.data?.data);
 };
