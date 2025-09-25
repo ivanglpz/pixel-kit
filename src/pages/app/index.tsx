@@ -10,7 +10,8 @@ import { createProject, fetchListProjects } from "@/services/projects";
 import { css } from "@stylespixelkit/css";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useFormik } from "formik";
-import { Plus } from "lucide-react";
+import { Building, Plus } from "lucide-react";
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -156,7 +157,7 @@ const App = () => {
           overflowY: "hidden",
           height: "100%",
           display: "grid",
-          gridTemplateColumns: "300px 1fr",
+          gridTemplateColumns: "240px 1fr",
         })}
       >
         <aside
@@ -166,10 +167,30 @@ const App = () => {
             borderRightWidth: "1px",
             borderRightStyle: "solid",
             borderRightColor: "border", // ← usa el semantic token
-            overflow: "hidden",
+            display: "flex",
+            flexDirection: "column",
           })}
         >
-          test
+          <Link
+            href={"/app/organizations"}
+            className={css({
+              padding: "lg",
+              display: "flex",
+              flexDirection: "row",
+              alignItems: "center",
+              gap: "md",
+            })}
+          >
+            <Building size={18} />
+            <p
+              className={css({
+                fontSize: "sm",
+                fontWeight: "600",
+              })}
+            >
+              Organizations
+            </p>
+          </Link>
         </aside>
         <section
           className={css({
