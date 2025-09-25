@@ -1,22 +1,18 @@
 /* eslint-disable @next/next/no-img-element */
 import { IProject } from "@/db/schemas/types";
 import { Button } from "@/editor/components/button";
-import { Dialog } from "@/editor/components/dialog";
 import { Input } from "@/editor/components/input";
 import { constants } from "@/editor/constants/color";
 import { fetchListOrgs } from "@/services/organizations";
 import { createProject, fetchListProjects } from "@/services/projects";
 import { css } from "@stylespixelkit/css";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { useFormik } from "formik";
 import { Building, LayoutDashboard, Plus } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 const CardProject = ({ project }: { project: IProject }) => {
-  // const text = useAtomValue(project.name);
-  // const mode = useAtomValue(project.MODE_ATOM);
   return (
     <div
       className={css({
@@ -87,10 +83,6 @@ const CardProject = ({ project }: { project: IProject }) => {
   );
 };
 
-import * as Yup from "yup";
-const validationSchema = Yup.object({
-  name: Yup.string().required("Name is required"),
-});
 const App = () => {
   const [orgId, setOrgId] = useState<string | null>(null);
   const [showCreate, setShowCreate] = useState(false);
@@ -130,7 +122,7 @@ const App = () => {
       });
       setShowCreate(false);
       QueryProjects.refetch();
-      formik.resetForm();
+      // formik.resetForm();
     },
     onError: (error) => {
       toast.error("Failed to create project", {
@@ -139,14 +131,6 @@ const App = () => {
           "There was an error creating your project. Please try again.",
       });
     },
-  });
-
-  const formik = useFormik({
-    initialValues: {
-      name: "",
-    },
-    validationSchema,
-    onSubmit: (values) => mutateNewProject.mutate(values),
   });
 
   useEffect(() => {
@@ -217,70 +201,9 @@ const App = () => {
             gap: "xlg",
             display: "flex",
             flexDirection: "column",
+            overflow: "hidden",
           })}
         >
-          <Dialog.Provider
-            visible={showCreate}
-            onClose={() => {
-              setShowCreate(false);
-            }}
-          >
-            <Dialog.Container>
-              <Dialog.Header>
-                <p className={css({ fontWeight: "bold" })}>Project</p>
-                <Dialog.Close onClose={() => setShowCreate(false)} />
-              </Dialog.Header>
-              <section
-                className={css({
-                  display: "flex",
-                  flexDir: "column",
-                  gap: "lg",
-                })}
-              >
-                <div
-                  className={css({
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: "md",
-                  })}
-                >
-                  <Input.Label text="Name" />
-                  <Input.Text
-                    value={formik.values.name}
-                    onChange={(e) => formik.setFieldValue("name", e)}
-                  />
-                </div>
-                {formik.errors.name ? (
-                  <p
-                    className={css({
-                      color: "red.dark.600",
-                      fontWeight: "bold",
-                      fontSize: "x-small",
-                    })}
-                  >
-                    {formik.errors.name}
-                  </p>
-                ) : null}
-                <footer
-                  className={css({
-                    display: "flex",
-                    flexDirection: "row",
-                    justifyContent: "flex-end",
-                    alignItems: "center",
-                    gap: "lg",
-                  })}
-                >
-                  <Button.Secondary onClick={() => setShowCreate(false)}>
-                    Cancel
-                  </Button.Secondary>
-                  <Button.Primary onClick={() => formik.submitForm()}>
-                    <Plus size={constants.icon.size} />
-                    Create
-                  </Button.Primary>
-                </footer>
-              </section>
-            </Dialog.Container>
-          </Dialog.Provider>
           <header
             className={css({
               display: "flex",
@@ -315,7 +238,9 @@ const App = () => {
             <div>
               <Button.Primary
                 onClick={() => {
-                  setShowCreate(true);
+                  mutateNewProject.mutate({
+                    name: "Untitled",
+                  });
                 }}
               >
                 <Plus size={constants.icon.size} />
@@ -325,12 +250,12 @@ const App = () => {
           </header>
           <div
             className={css({
-              overflowY: "scroll",
               height: "100%",
               display: "grid",
               gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
               gridAutoRows: "244px",
               gap: "xlg",
+              overflowY: "scroll",
             })}
           >
             {QueryProjects?.data?.map((e) => {
