@@ -219,7 +219,12 @@ const TextComponent = ({ onChange, value, style }: InputTextProps) => {
       // onBlur={() => setPause(false)} // Quita pausa al salir del input
       className={css({
         width: "auto",
-        border: "container",
+        borderWidth: 1,
+        borderColor: "gray.150",
+        _dark: {
+          borderWidth: 1,
+          borderColor: "gray.650",
+        },
         backgroundColor: "transparent",
         color: "text",
         padding: "sm",

@@ -25,6 +25,10 @@ const CardProject = ({ project }: { project: IProject }) => {
         borderRadius: "lg",
         borderWidth: 1,
         borderColor: "bg.elevated",
+        backgroundColor: "gray.50",
+        _dark: {
+          backgroundColor: "gray.600",
+        },
       })}
     >
       <img
@@ -34,7 +38,7 @@ const CardProject = ({ project }: { project: IProject }) => {
           height: "100%",
           width: "100%",
           objectFit: "cover",
-          borderRadius: "lg",
+          borderTopRadius: "lg",
         })}
       />
       <div
@@ -169,7 +173,10 @@ const App = () => {
         </aside>
         <section
           className={css({
-            backgroundColor: "gray.700",
+            _dark: {
+              backgroundColor: "gray.700",
+            },
+            backgroundColor: "gray.100",
 
             padding: "lg",
             gap: "xlg",
@@ -188,18 +195,26 @@ const App = () => {
                 <p className={css({ fontWeight: "bold" })}>Project</p>
                 <Dialog.Close onClose={() => setShowCreate(false)} />
               </Dialog.Header>
-              <div
+              <section
                 className={css({
                   display: "flex",
                   flexDir: "column",
                   gap: "lg",
                 })}
               >
-                <Input.Label text="Name" />
-                <Input.Text
-                  value={formik.values.name}
-                  onChange={(e) => formik.setFieldValue("name", e)}
-                />
+                <div
+                  className={css({
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "md",
+                  })}
+                >
+                  <Input.Label text="Name" />
+                  <Input.Text
+                    value={formik.values.name}
+                    onChange={(e) => formik.setFieldValue("name", e)}
+                  />
+                </div>
                 {formik.errors.name ? (
                   <p
                     className={css({
@@ -211,10 +226,24 @@ const App = () => {
                     {formik.errors.name}
                   </p>
                 ) : null}
-                <Button.Primary onClick={() => formik.submitForm()}>
-                  Create
-                </Button.Primary>
-              </div>
+                <footer
+                  className={css({
+                    display: "flex",
+                    flexDirection: "row",
+                    justifyContent: "flex-end",
+                    alignItems: "center",
+                    gap: "lg",
+                  })}
+                >
+                  <Button.Secondary onClick={() => setShowCreate(false)}>
+                    Cancel
+                  </Button.Secondary>
+                  <Button.Primary onClick={() => formik.submitForm()}>
+                    <Plus size={constants.icon.size} />
+                    Create
+                  </Button.Primary>
+                </footer>
+              </section>
             </Dialog.Container>
           </Dialog.Provider>
           <header
