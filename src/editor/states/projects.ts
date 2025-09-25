@@ -72,8 +72,6 @@ export const PROJECT_ATOM = atom((get) => {
 export const ADD_PROJECT = atom(null, (get, set, args: IProject) => {
   const DATA = JSON.parse(args.data);
   const LIST_PAGES = DATA[args.mode]?.LIST;
-  console.log(args);
-  console.log(LIST_PAGES.at(0).id);
 
   set(PROJECTS_ATOM, [
     ...get(PROJECTS_ATOM),
