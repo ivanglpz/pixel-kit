@@ -1,10 +1,11 @@
-import { IProject } from "@/db/schemas/types";
 import { atom, PrimitiveAtom } from "jotai";
+import { atomWithStorage } from "jotai/utils";
 import { IShape } from "../shapes/type.shape";
 import { IStageEvents } from "./event";
 import { MODE } from "./mode";
 import { IPage, IPageJSON, IPageShapeIds } from "./pages";
 import { ALL_SHAPES, ALL_SHAPES_CHILDREN, WithInitialValue } from "./shapes";
+import { TABS_PERSIST_ATOM } from "./tabs";
 import { IKeyTool } from "./tool";
 import { UndoRedoAction } from "./undo-redo";
 
@@ -24,54 +25,37 @@ export type IEDITORPROJECT = {
   EVENT: PrimitiveAtom<IStageEvents> & WithInitialValue<IStageEvents>;
 };
 
-export const PROJECT_ID_ATOM = atom<string | null>(null);
+export const PROJECT_ID_ATOM = atomWithStorage<string | null>("pageId", null);
 
-export const PROJECTS_ATOM = atom([] as IEDITORPROJECT[]);
-
-export const PROJECT_ATOM = atom((get) => {
-  const PROJECT_ID = get(PROJECT_ID_ATOM);
-  const PROJECTS = get(PROJECTS_ATOM);
-  const FIND_PROJECT = PROJECTS?.find((p) => p?.ID === PROJECT_ID);
-  if (!FIND_PROJECT) {
-    throw new Error("PROJECT NOT FOUND");
-  }
-
-  return FIND_PROJECT;
-});
-
-export const ADD_PROJECT = atom(null, (get, set, args: IProject) => {
-  const findProjet = get(PROJECTS_ATOM).some((e) => e.ID === args?._id);
-  if (findProjet) return;
-  const DATA = JSON.parse(args.data);
-  const LIST_PAGES = DATA[args.mode]?.LIST as IPageJSON[];
-  const FIRST_PAGE = LIST_PAGES.at(0);
-  if (!FIRST_PAGE) {
-    return;
-  }
-
-  const cloneShapeRecursive = (shape: ALL_SHAPES_CHILDREN): ALL_SHAPES => {
-    return {
-      id: shape.id,
-      pageId: shape.pageId,
-      tool: shape.tool,
-      state: atom<IShape>({
-        ...shape.state,
-        children: atom(shape.state.children.map((c) => cloneShapeRecursive(c))),
-      }),
-    };
+const cloneShapeRecursive = (shape: ALL_SHAPES_CHILDREN): ALL_SHAPES => {
+  return {
+    id: shape.id,
+    pageId: shape.pageId,
+    tool: shape.tool,
+    state: atom<IShape>({
+      ...shape.state,
+      children: atom(shape.state.children.map((c) => cloneShapeRecursive(c))),
+    }),
   };
+};
 
-  set(PROJECTS_ATOM, [
-    ...get(PROJECTS_ATOM),
-    {
-      ID: args._id,
-      name: atom(args.name),
-      MODE_ATOM: atom<MODE>(args.mode),
+export const PROJECTS_ATOM = atom((get) => {
+  const PERSIST = get(TABS_PERSIST_ATOM);
+  return PERSIST?.map((project) => {
+    const DATA = JSON.parse(project.data);
+    const LIST_PAGES = DATA[project.mode]?.LIST as IPageJSON[];
+
+    const FIRST_PAGE = LIST_PAGES.at(0);
+
+    return {
+      ID: project._id,
+      name: atom(project.name),
+      MODE_ATOM: atom<MODE>(project.mode),
       TOOL: atom<IKeyTool>("MOVE"),
 
       PAUSE_MODE: atom<boolean>(false),
       MODE: {
-        [args.mode]: {
+        [project.mode]: {
           LIST: atom(
             LIST_PAGES?.map((page) => {
               const LIST = page?.SHAPES?.LIST?.map((e) =>
@@ -93,30 +77,40 @@ export const ADD_PROJECT = atom(null, (get, set, args: IProject) => {
               };
             })
           ),
-          ID: atom<string>(FIRST_PAGE.id),
+          ID: atom<string>(FIRST_PAGE?.id ?? ""),
         },
       },
 
       EVENT: atom<IStageEvents>("IDLE"),
-    },
-  ]);
-  // set(PROJECT_ID_ATOM, args?._id);
+    };
+  });
+});
+
+export const PROJECT_ATOM = atom((get) => {
+  const PROJECT_ID = get(PROJECT_ID_ATOM);
+  const PROJECTS = get(PROJECTS_ATOM);
+  const FIND_PROJECT = PROJECTS?.find((p) => p?.ID === PROJECT_ID);
+  if (!FIND_PROJECT) {
+    throw new Error("PROJECT NOT FOUND");
+  }
+
+  return FIND_PROJECT;
 });
 
 export const DELETE_PROJECT = atom(null, (get, set, id: string) => {
-  const PROJECTS = get(PROJECTS_ATOM);
-  const currentIndex = PROJECTS.findIndex((e) => e.ID === id);
-  const newList = PROJECTS.filter((e) => e.ID !== id);
+  const PROJECTS = get(TABS_PERSIST_ATOM);
+  const currentIndex = PROJECTS.findIndex((e) => e._id === id);
+  const newList = PROJECTS.filter((e) => e._id !== id);
 
   if (currentIndex === -1) return;
 
   const nextIndex =
     currentIndex < newList.length ? currentIndex : newList.length - 1;
 
-  const PAGE_ID = newList?.at?.(nextIndex)?.ID;
+  const PAGE_ID = newList?.at?.(nextIndex)?._id;
 
   if (!PAGE_ID) return;
 
   set(PROJECT_ID_ATOM, PAGE_ID);
-  set(PROJECTS_ATOM, newList);
+  set(TABS_PERSIST_ATOM, newList);
 });

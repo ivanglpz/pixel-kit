@@ -1,20 +1,21 @@
 import { Input } from "@/editor/components/input";
+import { PROJECT_ID_ATOM } from "@/editor/states/projects";
+import { ADD_TAB_ATOM } from "@/editor/states/tabs";
 import { fetchListOrgs } from "@/services/organizations";
 import { createProject } from "@/services/projects";
 import { css } from "@stylespixelkit/css";
 import { useMutation } from "@tanstack/react-query";
+import { useSetAtom } from "jotai";
 import { FileQuestion, LayoutDashboard } from "lucide-react";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import * as Yup from "yup";
 
-const validationSchema = Yup.object({
-  name: Yup.string().required("Name is required"),
-});
 const ProjectCreate = () => {
   const [orgId, setOrgId] = useState<string | null>(null);
   const router = useRouter();
+  const setSelected = useSetAtom(PROJECT_ID_ATOM);
+  const setTabs = useSetAtom(ADD_TAB_ATOM);
   const mutateOrgs = useMutation({
     mutationKey: ["create_orgs"],
     mutationFn: async () => fetchListOrgs(),
@@ -35,6 +36,9 @@ const ProjectCreate = () => {
       });
     },
     onSuccess: (data) => {
+      setTabs(data);
+      setSelected(data._id);
+      router.push(`/app/project/${data._id}`);
       toast.success("Project created successfully", {
         description: `The project "${data.name}" was added to your organization.`,
       });
