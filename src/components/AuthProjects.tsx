@@ -57,5 +57,5 @@ export const AuthProjects = ({ children }: { children: ReactNode }) => {
         </svg>
       </div>
     );
-  return children;
+  return <>{children}</>;
 };
