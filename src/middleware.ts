@@ -39,6 +39,11 @@ export async function middleware(request: NextRequest) {
 // ✅ Función que valida el token con tu endpoint
 async function validateWithApi(token: string, request: NextRequest) {
   try {
+    console.log(
+      `${request.nextUrl.origin}/api/users/me`,
+      "`${request.nextUrl.origin}/api/users/me`"
+    );
+
     const res = await fetch(`${request.nextUrl.origin}/api/users/me`, {
       method: "GET",
       headers: {
