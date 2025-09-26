@@ -277,21 +277,23 @@ export const Nodes = ({
           }}
         >
           {show ? (
-            <Input.Text
-              value={shape?.label}
-              onChange={(e) => setShape({ ...shape, label: e })}
-              style={{
-                width: "auto",
-                border: "none",
-                backgroundColor: "transparent",
-                color: "text",
-                paddingLeft: "0px",
-                padding: "sm",
-                height: "15px",
-                borderRadius: "0px",
-                fontSize: "x-small",
-              }}
-            />
+            <Input.withPause>
+              <Input.Text
+                value={shape?.label}
+                onChange={(e) => setShape({ ...shape, label: e })}
+                style={{
+                  width: "auto",
+                  border: "none",
+                  backgroundColor: "transparent",
+                  color: "text",
+                  paddingLeft: "0px",
+                  padding: "sm",
+                  height: "15px",
+                  borderRadius: "0px",
+                  fontSize: "x-small",
+                }}
+              />
+            </Input.withPause>
           ) : (
             <p
               className={css({

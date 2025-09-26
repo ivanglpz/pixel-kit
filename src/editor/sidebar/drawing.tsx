@@ -220,19 +220,21 @@ export const Drawing = () => {
                     W
                   </p>
                 </Input.IconContainer>
-                <Input.Number
-                  min={0}
-                  max={9999}
-                  step={1}
-                  value={shape.strokeWidth || 0}
-                  onChange={(v) =>
-                    setShape({
-                      ...shape,
+                <Input.withPause>
+                  <Input.Number
+                    min={0}
+                    max={9999}
+                    step={1}
+                    value={shape.strokeWidth || 0}
+                    onChange={(v) =>
+                      setShape({
+                        ...shape,
 
-                      strokeWidth: v,
-                    })
-                  }
-                />
+                        strokeWidth: v,
+                      })
+                    }
+                  />
+                </Input.withPause>
               </Input.Grid>
             </Input.Container>
             {/* Line Style Buttons */}
@@ -352,18 +354,20 @@ export const Drawing = () => {
               <Input.IconContainer>
                 <SquareDashed size={constants.icon.size} />
               </Input.IconContainer>
-              <Input.Number
-                min={0}
-                step={1}
-                onChange={(e) =>
-                  setShape({
-                    ...shape,
+              <Input.withPause>
+                <Input.Number
+                  min={0}
+                  step={1}
+                  onChange={(e) =>
+                    setShape({
+                      ...shape,
 
-                    dash: e,
-                  })
-                }
-                value={shape.dash || 0}
-              />
+                      dash: e,
+                    })
+                  }
+                  value={shape.dash || 0}
+                />
+              </Input.withPause>
             </Input.Grid>
           </Input.Container>
         </>
@@ -446,13 +450,15 @@ export const Drawing = () => {
                   X
                 </p>
               </Input.IconContainer>
-              <Input.Number
-                step={1}
-                value={shape.shadowOffsetX || 0}
-                onChange={(v) => {
-                  setShape({ ...shape, shadowOffsetX: v });
-                }}
-              />
+              <Input.withPause>
+                <Input.Number
+                  step={1}
+                  value={shape.shadowOffsetX || 0}
+                  onChange={(v) => {
+                    setShape({ ...shape, shadowOffsetX: v });
+                  }}
+                />
+              </Input.withPause>
             </Input.Grid>
           </Input.Container>
           <Input.Container>
@@ -467,13 +473,15 @@ export const Drawing = () => {
                   Y
                 </p>
               </Input.IconContainer>
-              <Input.Number
-                step={1}
-                value={shape.shadowOffsetY}
-                onChange={(e) => {
-                  setShape({ ...shape, shadowOffsetY: e });
-                }}
-              />
+              <Input.withPause>
+                <Input.Number
+                  step={1}
+                  value={shape.shadowOffsetY}
+                  onChange={(e) => {
+                    setShape({ ...shape, shadowOffsetY: e });
+                  }}
+                />
+              </Input.withPause>
             </Input.Grid>
           </Input.Container>
           <Input.Container>
@@ -484,13 +492,15 @@ export const Drawing = () => {
                   strokeWidth={constants.icon.strokeWidth}
                 />
               </Input.IconContainer>
-              <Input.Number
-                step={1}
-                onChange={(e) => {
-                  setShape({ ...shape, shadowBlur: e });
-                }}
-                value={shape.shadowBlur}
-              />
+              <Input.withPause>
+                <Input.Number
+                  step={1}
+                  onChange={(e) => {
+                    setShape({ ...shape, shadowBlur: e });
+                  }}
+                  value={shape.shadowBlur}
+                />
+              </Input.withPause>
             </Input.Grid>
           </Input.Container>
           <Input.Container>
@@ -501,13 +511,15 @@ export const Drawing = () => {
                   strokeWidth={constants.icon.strokeWidth}
                 />
               </Input.IconContainer>
-              <Input.Number
-                step={1}
-                onChange={(e) => {
-                  setShape({ ...shape, shadowOpacity: e });
-                }}
-                value={shape.shadowOpacity}
-              />
+              <Input.withPause>
+                <Input.Number
+                  step={1}
+                  onChange={(e) => {
+                    setShape({ ...shape, shadowOpacity: e });
+                  }}
+                  value={shape.shadowOpacity}
+                />
+              </Input.withPause>
             </Input.Grid>
           </Input.Container>
         </div>

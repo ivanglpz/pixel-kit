@@ -620,14 +620,16 @@ export const LayoutShapeConfig = () => {
                 </p>
                 {/* <MoveHorizontal size={constants.icon.size} /> */}
               </Input.IconContainer>
-              <Input.Number
-                step={1}
-                value={shape.x}
-                onChange={(v) => {
-                  shapeUpdate({ x: v });
-                  execute(); // Ejecutar después del cambio
-                }}
-              />
+              <Input.withPause>
+                <Input.Number
+                  step={1}
+                  value={shape.x}
+                  onChange={(v) => {
+                    shapeUpdate({ x: v });
+                    execute(); // Ejecutar después del cambio
+                  }}
+                />
+              </Input.withPause>
             </Input.Grid>
           </Input.Container>
           <Input.Container>
@@ -643,14 +645,16 @@ export const LayoutShapeConfig = () => {
                 </p>
                 {/* <MoveHorizontal size={constants.icon.size} /> */}
               </Input.IconContainer>
-              <Input.Number
-                step={1}
-                value={shape.y}
-                onChange={(v) => {
-                  shapeUpdate({ y: v });
-                  execute(); // Ejecutar después del cambio
-                }}
-              />
+              <Input.withPause>
+                <Input.Number
+                  step={1}
+                  value={shape.y}
+                  onChange={(v) => {
+                    shapeUpdate({ y: v });
+                    execute(); // Ejecutar después del cambio
+                  }}
+                />
+              </Input.withPause>
             </Input.Grid>
           </Input.Container>
         </div>
@@ -676,15 +680,17 @@ export const LayoutShapeConfig = () => {
                     </p>
                     {/* <MoveHorizontal size={constants.icon.size} /> */}
                   </Input.IconContainer>
-                  <Input.Number
-                    step={1}
-                    min={0}
-                    value={Number(shape.width) || 0}
-                    onChange={(v) => {
-                      shapeUpdate({ width: v });
-                      execute(); // Ejecutar después del cambio
-                    }}
-                  />
+                  <Input.withPause>
+                    <Input.Number
+                      step={1}
+                      min={0}
+                      value={Number(shape.width) || 0}
+                      onChange={(v) => {
+                        shapeUpdate({ width: v });
+                        execute(); // Ejecutar después del cambio
+                      }}
+                    />
+                  </Input.withPause>
                 </Input.Grid>
               </Input.Container>
 
@@ -740,15 +746,17 @@ export const LayoutShapeConfig = () => {
                     </p>
                     {/* <MoveHorizontal size={constants.icon.size} /> */}
                   </Input.IconContainer>
-                  <Input.Number
-                    step={1}
-                    min={0}
-                    value={Number(shape.height) || 0}
-                    onChange={(v) => {
-                      shapeUpdate({ height: v });
-                      execute(); // Ejecutar después del cambio
-                    }}
-                  />
+                  <Input.withPause>
+                    <Input.Number
+                      step={1}
+                      min={0}
+                      value={Number(shape.height) || 0}
+                      onChange={(v) => {
+                        shapeUpdate({ height: v });
+                        execute(); // Ejecutar después del cambio
+                      }}
+                    />
+                  </Input.withPause>
                 </Input.Grid>
               </Input.Container>
 
@@ -808,14 +816,16 @@ export const LayoutShapeConfig = () => {
                   </p>
                   {/* <MoveHorizontal size={constants.icon.size} /> */}
                 </Input.IconContainer>
-                <Input.Number
-                  step={1}
-                  value={Number(shape.width) || 0}
-                  onChange={(v) => {
-                    shapeUpdate({ width: v });
-                    execute(); // Ejecutar después del cambio
-                  }}
-                />
+                <Input.withPause>
+                  <Input.Number
+                    step={1}
+                    value={Number(shape.width) || 0}
+                    onChange={(v) => {
+                      shapeUpdate({ width: v });
+                      execute(); // Ejecutar después del cambio
+                    }}
+                  />
+                </Input.withPause>
               </Input.Grid>
             </Input.Container>
             <Input.Container>
@@ -831,14 +841,16 @@ export const LayoutShapeConfig = () => {
                   </p>
                   {/* <MoveHorizontal size={constants.icon.size} /> */}
                 </Input.IconContainer>
-                <Input.Number
-                  step={1}
-                  value={Number(shape.height) || 0}
-                  onChange={(v) => {
-                    shapeUpdate({ height: v });
-                    execute(); // Ejecutar después del cambio
-                  }}
-                />
+                <Input.withPause>
+                  <Input.Number
+                    step={1}
+                    value={Number(shape.height) || 0}
+                    onChange={(v) => {
+                      shapeUpdate({ height: v });
+                      execute(); // Ejecutar después del cambio
+                    }}
+                  />
+                </Input.withPause>
               </Input.Grid>
             </Input.Container>
           </div>
@@ -862,16 +874,18 @@ export const LayoutShapeConfig = () => {
                 </p>
                 {/* <MoveHorizontal size={constants.icon.size} /> */}
               </Input.IconContainer>
-              <Input.Number
-                min={0}
-                max={9999}
-                step={1}
-                value={shape.minWidth}
-                onChange={(e) => {
-                  shapeUpdate({ minWidth: e });
-                  execute();
-                }}
-              />
+              <Input.withPause>
+                <Input.Number
+                  min={0}
+                  max={9999}
+                  step={1}
+                  value={shape.minWidth}
+                  onChange={(e) => {
+                    shapeUpdate({ minWidth: e });
+                    execute();
+                  }}
+                />
+              </Input.withPause>
             </Input.Grid>
           </Input.Container>
           <Input.Container>
@@ -886,16 +900,18 @@ export const LayoutShapeConfig = () => {
                   H
                 </p>
               </Input.IconContainer>
-              <Input.Number
-                min={0}
-                max={9999}
-                step={1}
-                value={shape.minHeight || 0}
-                onChange={(v) => {
-                  shapeUpdate({ minHeight: v });
-                  execute();
-                }}
-              />
+              <Input.withPause>
+                <Input.Number
+                  min={0}
+                  max={9999}
+                  step={1}
+                  value={shape.minHeight || 0}
+                  onChange={(v) => {
+                    shapeUpdate({ minHeight: v });
+                    execute();
+                  }}
+                />
+              </Input.withPause>
             </Input.Grid>
           </Input.Container>
         </div>
@@ -913,16 +929,18 @@ export const LayoutShapeConfig = () => {
                   W
                 </p>
               </Input.IconContainer>
-              <Input.Number
-                min={0}
-                max={9999}
-                step={1}
-                value={shape.maxWidth || 0}
-                onChange={(v) => {
-                  shapeUpdate({ maxWidth: v });
-                  execute();
-                }}
-              />
+              <Input.withPause>
+                <Input.Number
+                  min={0}
+                  max={9999}
+                  step={1}
+                  value={shape.maxWidth || 0}
+                  onChange={(v) => {
+                    shapeUpdate({ maxWidth: v });
+                    execute();
+                  }}
+                />
+              </Input.withPause>
             </Input.Grid>
           </Input.Container>
           <Input.Container>
@@ -937,16 +955,18 @@ export const LayoutShapeConfig = () => {
                   H
                 </p>
               </Input.IconContainer>
-              <Input.Number
-                min={0}
-                max={9999}
-                step={1}
-                value={shape.maxHeight || 0}
-                onChange={(v) => {
-                  shapeUpdate({ maxHeight: v });
-                  execute();
-                }}
-              />
+              <Input.withPause>
+                <Input.Number
+                  min={0}
+                  max={9999}
+                  step={1}
+                  value={shape.maxHeight || 0}
+                  onChange={(v) => {
+                    shapeUpdate({ maxHeight: v });
+                    execute();
+                  }}
+                />
+              </Input.withPause>
             </Input.Grid>
           </Input.Container>
         </div>
@@ -1124,18 +1144,20 @@ export const LayoutShapeConfig = () => {
                           <Input.IconContainer>
                             <Columns size={constants.icon.size} />
                           </Input.IconContainer>
-                          <Input.Number
-                            min={0}
-                            max={9999}
-                            step={1}
-                            value={shape.gap}
-                            onChange={(e) => {
-                              shapeUpdate({
-                                gap: e,
-                              });
-                              execute();
-                            }}
-                          />
+                          <Input.withPause>
+                            <Input.Number
+                              min={0}
+                              max={9999}
+                              step={1}
+                              value={shape.gap}
+                              onChange={(e) => {
+                                shapeUpdate({
+                                  gap: e,
+                                });
+                                execute();
+                              }}
+                            />
+                          </Input.withPause>
                         </Input.Grid>
                       </Input.Container>
                     </section>
@@ -1163,18 +1185,20 @@ export const LayoutShapeConfig = () => {
                           <Expand size={constants.icon.size} />
                         </Input.IconContainer>
                         {shape.isAllPadding ? (
-                          <Input.Number
-                            min={0}
-                            max={9999}
-                            step={1}
-                            value={shape.padding}
-                            onChange={(e) => {
-                              shapeUpdate({
-                                padding: e,
-                              });
-                              execute();
-                            }}
-                          />
+                          <Input.withPause>
+                            <Input.Number
+                              min={0}
+                              max={9999}
+                              step={1}
+                              value={shape.padding}
+                              onChange={(e) => {
+                                shapeUpdate({
+                                  padding: e,
+                                });
+                                execute();
+                              }}
+                            />
+                          </Input.withPause>
                         ) : null}
                         {!shape.isAllPadding ? (
                           <Input.Label text="Mixed" />
@@ -1237,16 +1261,18 @@ export const LayoutShapeConfig = () => {
                         <Input.IconContainer>
                           <ArrowUp size={constants.icon.size} />
                         </Input.IconContainer>
-                        <Input.Number
-                          min={0}
-                          max={9999}
-                          step={1}
-                          value={shape.paddingTop || 0}
-                          onChange={(e) => {
-                            shapeUpdate({ paddingTop: e });
-                            execute();
-                          }}
-                        />
+                        <Input.withPause>
+                          <Input.Number
+                            min={0}
+                            max={9999}
+                            step={1}
+                            value={shape.paddingTop || 0}
+                            onChange={(e) => {
+                              shapeUpdate({ paddingTop: e });
+                              execute();
+                            }}
+                          />
+                        </Input.withPause>
                       </Input.Grid>
                     </Input.Container>
                     <Input.Container>
@@ -1254,16 +1280,18 @@ export const LayoutShapeConfig = () => {
                         <Input.IconContainer>
                           <ArrowRight size={constants.icon.size} />
                         </Input.IconContainer>
-                        <Input.Number
-                          min={0}
-                          max={9999}
-                          step={1}
-                          value={shape.paddingRight || 0}
-                          onChange={(e) => {
-                            shapeUpdate({ paddingRight: e });
-                            execute();
-                          }}
-                        />
+                        <Input.withPause>
+                          <Input.Number
+                            min={0}
+                            max={9999}
+                            step={1}
+                            value={shape.paddingRight || 0}
+                            onChange={(e) => {
+                              shapeUpdate({ paddingRight: e });
+                              execute();
+                            }}
+                          />
+                        </Input.withPause>
                       </Input.Grid>
                     </Input.Container>
                     <Input.Container>
@@ -1271,16 +1299,18 @@ export const LayoutShapeConfig = () => {
                         <Input.IconContainer>
                           <ArrowDown size={constants.icon.size} />
                         </Input.IconContainer>
-                        <Input.Number
-                          min={0}
-                          max={9999}
-                          step={1}
-                          value={shape.paddingBottom || 0}
-                          onChange={(e) => {
-                            shapeUpdate({ paddingBottom: e });
-                            execute();
-                          }}
-                        />
+                        <Input.withPause>
+                          <Input.Number
+                            min={0}
+                            max={9999}
+                            step={1}
+                            value={shape.paddingBottom || 0}
+                            onChange={(e) => {
+                              shapeUpdate({ paddingBottom: e });
+                              execute();
+                            }}
+                          />
+                        </Input.withPause>
                       </Input.Grid>
                     </Input.Container>
                     <Input.Container>
@@ -1288,16 +1318,18 @@ export const LayoutShapeConfig = () => {
                         <Input.IconContainer>
                           <ArrowLeft size={constants.icon.size} />
                         </Input.IconContainer>
-                        <Input.Number
-                          min={0}
-                          max={9999}
-                          step={1}
-                          value={shape.paddingLeft || 0}
-                          onChange={(e) => {
-                            shapeUpdate({ paddingLeft: e });
-                            execute();
-                          }}
-                        />
+                        <Input.withPause>
+                          <Input.Number
+                            min={0}
+                            max={9999}
+                            step={1}
+                            value={shape.paddingLeft || 0}
+                            onChange={(e) => {
+                              shapeUpdate({ paddingLeft: e });
+                              execute();
+                            }}
+                          />
+                        </Input.withPause>
                       </Input.Grid>
                     </Input.Container>
                   </div>
@@ -1318,16 +1350,18 @@ export const LayoutShapeConfig = () => {
               <Input.IconContainer>
                 <Blend size={constants.icon.size} />
               </Input.IconContainer>
-              <Input.Number
-                min={0}
-                max={1}
-                step={0.1}
-                value={shape.opacity}
-                onChange={(e) => {
-                  shapeUpdate({ opacity: e });
-                  execute(); // Ejecutar después del cambio
-                }}
-              />
+              <Input.withPause>
+                <Input.Number
+                  min={0}
+                  max={1}
+                  step={0.1}
+                  value={shape.opacity}
+                  onChange={(e) => {
+                    shapeUpdate({ opacity: e });
+                    execute(); // Ejecutar después del cambio
+                  }}
+                />
+              </Input.withPause>
             </Input.Grid>
           </Input.Container>
         </div>
@@ -1353,18 +1387,20 @@ export const LayoutShapeConfig = () => {
                   <Expand size={constants.icon.size} />
                 </Input.IconContainer>
                 {shape.isAllBorderRadius ? (
-                  <Input.Number
-                    min={0}
-                    max={9999}
-                    step={1}
-                    value={shape.borderRadius}
-                    onChange={(e) => {
-                      shapeUpdate({
-                        borderRadius: e,
-                      });
-                      execute();
-                    }}
-                  />
+                  <Input.withPause>
+                    <Input.Number
+                      min={0}
+                      max={9999}
+                      step={1}
+                      value={shape.borderRadius}
+                      onChange={(e) => {
+                        shapeUpdate({
+                          borderRadius: e,
+                        });
+                        execute();
+                      }}
+                    />
+                  </Input.withPause>
                 ) : null}
                 {!shape.isAllBorderRadius ? <Input.Label text="Mixed" /> : null}
               </Input.Grid>
@@ -1420,16 +1456,18 @@ export const LayoutShapeConfig = () => {
                 <Input.IconContainer>
                   <CornerUpLeft size={constants.icon.size} />
                 </Input.IconContainer>
-                <Input.Number
-                  min={0}
-                  max={9999}
-                  step={1}
-                  value={shape.borderTopLeftRadius || 0}
-                  onChange={(e) => {
-                    shapeUpdate({ borderTopLeftRadius: e });
-                    execute();
-                  }}
-                />
+                <Input.withPause>
+                  <Input.Number
+                    min={0}
+                    max={9999}
+                    step={1}
+                    value={shape.borderTopLeftRadius || 0}
+                    onChange={(e) => {
+                      shapeUpdate({ borderTopLeftRadius: e });
+                      execute();
+                    }}
+                  />
+                </Input.withPause>
               </Input.Grid>
             </Input.Container>
             <Input.Container>
@@ -1437,16 +1475,18 @@ export const LayoutShapeConfig = () => {
                 <Input.IconContainer>
                   <CornerUpRight size={constants.icon.size} />
                 </Input.IconContainer>
-                <Input.Number
-                  min={0}
-                  max={9999}
-                  step={1}
-                  value={shape.borderTopRightRadius || 0}
-                  onChange={(e) => {
-                    shapeUpdate({ borderTopRightRadius: e });
-                    execute();
-                  }}
-                />
+                <Input.withPause>
+                  <Input.Number
+                    min={0}
+                    max={9999}
+                    step={1}
+                    value={shape.borderTopRightRadius || 0}
+                    onChange={(e) => {
+                      shapeUpdate({ borderTopRightRadius: e });
+                      execute();
+                    }}
+                  />
+                </Input.withPause>
               </Input.Grid>
             </Input.Container>
             <Input.Container>
@@ -1454,16 +1494,18 @@ export const LayoutShapeConfig = () => {
                 <Input.IconContainer>
                   <CornerDownLeft size={constants.icon.size} />
                 </Input.IconContainer>
-                <Input.Number
-                  min={0}
-                  max={9999}
-                  step={1}
-                  value={shape.borderBottomLeftRadius || 0}
-                  onChange={(e) => {
-                    shapeUpdate({ borderBottomLeftRadius: e });
-                    execute();
-                  }}
-                />
+                <Input.withPause>
+                  <Input.Number
+                    min={0}
+                    max={9999}
+                    step={1}
+                    value={shape.borderBottomLeftRadius || 0}
+                    onChange={(e) => {
+                      shapeUpdate({ borderBottomLeftRadius: e });
+                      execute();
+                    }}
+                  />
+                </Input.withPause>
               </Input.Grid>
             </Input.Container>
             <Input.Container>
@@ -1471,16 +1513,18 @@ export const LayoutShapeConfig = () => {
                 <Input.IconContainer>
                   <CornerDownRight size={constants.icon.size} />
                 </Input.IconContainer>
-                <Input.Number
-                  min={0}
-                  max={9999}
-                  step={1}
-                  value={shape.borderBottomRightRadius || 0}
-                  onChange={(e) => {
-                    shapeUpdate({ borderBottomRightRadius: e });
-                    execute();
-                  }}
-                />
+                <Input.withPause>
+                  <Input.Number
+                    min={0}
+                    max={9999}
+                    step={1}
+                    value={shape.borderBottomRightRadius || 0}
+                    onChange={(e) => {
+                      shapeUpdate({ borderBottomRightRadius: e });
+                      execute();
+                    }}
+                  />
+                </Input.withPause>
               </Input.Grid>
             </Input.Container>
           </div>
@@ -1523,16 +1567,18 @@ export const LayoutShapeConfig = () => {
                 <Input.IconContainer>
                   <Scaling size={constants.icon.size} />
                 </Input.IconContainer>
-                <Input.Number
-                  min={4}
-                  max={180}
-                  step={4}
-                  onChange={(e) => {
-                    shapeUpdate({ fontSize: e });
-                    execute(); // Ejecutar después del cambio
-                  }}
-                  value={shape.fontSize || 0}
-                />
+                <Input.withPause>
+                  <Input.Number
+                    min={4}
+                    max={180}
+                    step={4}
+                    onChange={(e) => {
+                      shapeUpdate({ fontSize: e });
+                      execute(); // Ejecutar después del cambio
+                    }}
+                    value={shape.fontSize || 0}
+                  />
+                </Input.withPause>
               </Input.Grid>
             </Input.Container>
 
@@ -1540,13 +1586,15 @@ export const LayoutShapeConfig = () => {
           </div>
           <div className={css({ gridColumn: 2, gridRow: 3 })}>
             <Input.Container>
-              <Input.TextArea
-                onChange={(e) => {
-                  shapeUpdate({ text: e });
-                  execute(); // Ejecutar después del cambio
-                }}
-                value={shape.text || ""}
-              />
+              <Input.withPause>
+                <Input.TextArea
+                  onChange={(e) => {
+                    shapeUpdate({ text: e });
+                    execute(); // Ejecutar después del cambio
+                  }}
+                  value={shape.text || ""}
+                />
+              </Input.withPause>
             </Input.Container>
           </div>
         </section>
@@ -1722,16 +1770,18 @@ export const LayoutShapeConfig = () => {
                       W
                     </p>
                   </Input.IconContainer>
-                  <Input.Number
-                    min={0}
-                    max={9999}
-                    step={1}
-                    value={shape.strokeWidth || 0}
-                    onChange={(v) => {
-                      shapeUpdate({ strokeWidth: v });
-                      execute(); // Ejecutar después del cambio
-                    }}
-                  />
+                  <Input.withPause>
+                    <Input.Number
+                      min={0}
+                      max={9999}
+                      step={1}
+                      value={shape.strokeWidth || 0}
+                      onChange={(v) => {
+                        shapeUpdate({ strokeWidth: v });
+                        execute(); // Ejecutar después del cambio
+                      }}
+                    />
+                  </Input.withPause>
                 </Input.Grid>
               </Input.Container>
               {/* Line Style Buttons */}
@@ -1852,15 +1902,17 @@ export const LayoutShapeConfig = () => {
                 <Input.IconContainer>
                   <SquareDashed size={constants.icon.size} />
                 </Input.IconContainer>
-                <Input.Number
-                  min={0}
-                  step={1}
-                  onChange={(e) => {
-                    shapeUpdate({ dash: e });
-                    execute(); // Ejecutar después del cambio
-                  }}
-                  value={shape.dash || 0}
-                />
+                <Input.withPause>
+                  <Input.Number
+                    min={0}
+                    step={1}
+                    onChange={(e) => {
+                      shapeUpdate({ dash: e });
+                      execute(); // Ejecutar después del cambio
+                    }}
+                    value={shape.dash || 0}
+                  />
+                </Input.withPause>
               </Input.Grid>
             </Input.Container>
             {/* <InputNumber
@@ -1952,14 +2004,16 @@ export const LayoutShapeConfig = () => {
                   X
                 </p>
               </Input.IconContainer>
-              <Input.Number
-                step={1}
-                value={shape.shadowOffsetX || 0}
-                onChange={(v) => {
-                  shapeUpdate({ shadowOffsetX: v });
-                  execute(); // Ejecutar después del cambio
-                }}
-              />
+              <Input.withPause>
+                <Input.Number
+                  step={1}
+                  value={shape.shadowOffsetX || 0}
+                  onChange={(v) => {
+                    shapeUpdate({ shadowOffsetX: v });
+                    execute(); // Ejecutar después del cambio
+                  }}
+                />
+              </Input.withPause>
             </Input.Grid>
           </Input.Container>
           <Input.Container>
@@ -1974,14 +2028,16 @@ export const LayoutShapeConfig = () => {
                   Y
                 </p>
               </Input.IconContainer>
-              <Input.Number
-                step={1}
-                value={shape.shadowOffsetY}
-                onChange={(e) => {
-                  shapeUpdate({ shadowOffsetY: e });
-                  execute(); // Ejecutar después del cambio
-                }}
-              />
+              <Input.withPause>
+                <Input.Number
+                  step={1}
+                  value={shape.shadowOffsetY}
+                  onChange={(e) => {
+                    shapeUpdate({ shadowOffsetY: e });
+                    execute(); // Ejecutar después del cambio
+                  }}
+                />
+              </Input.withPause>
             </Input.Grid>
           </Input.Container>
           <Input.Container>
@@ -1992,15 +2048,17 @@ export const LayoutShapeConfig = () => {
                   strokeWidth={constants.icon.strokeWidth}
                 />
               </Input.IconContainer>
-              <Input.Number
-                min={0}
-                step={1}
-                onChange={(e) => {
-                  shapeUpdate({ shadowBlur: e });
-                  execute(); // Ejecutar después del cambio
-                }}
-                value={shape.shadowBlur}
-              />
+              <Input.withPause>
+                <Input.Number
+                  min={0}
+                  step={1}
+                  onChange={(e) => {
+                    shapeUpdate({ shadowBlur: e });
+                    execute(); // Ejecutar después del cambio
+                  }}
+                  value={shape.shadowBlur}
+                />
+              </Input.withPause>
             </Input.Grid>
           </Input.Container>
           <Input.Container>
@@ -2011,16 +2069,18 @@ export const LayoutShapeConfig = () => {
                   strokeWidth={constants.icon.strokeWidth}
                 />
               </Input.IconContainer>
-              <Input.Number
-                min={0}
-                max={1}
-                step={0.1}
-                onChange={(e) => {
-                  shapeUpdate({ shadowOpacity: e });
-                  execute(); // Ejecutar después del cambio
-                }}
-                value={shape.shadowOpacity}
-              />
+              <Input.withPause>
+                <Input.Number
+                  min={0}
+                  max={1}
+                  step={0.1}
+                  onChange={(e) => {
+                    shapeUpdate({ shadowOpacity: e });
+                    execute(); // Ejecutar después del cambio
+                  }}
+                  value={shape.shadowOpacity}
+                />
+              </Input.withPause>
             </Input.Grid>
           </Input.Container>
         </div>

@@ -8,11 +8,13 @@ export const StageMode = () => {
   return (
     <>
       <Input.Container>
-        <Input.Select
-          onChange={(value) => change(value)}
-          options={OPTIONS_CONFIG}
-          value={config?.export_mode ?? "EDIT_IMAGE"}
-        />
+        <Input.withPause>
+          <Input.Select
+            onChange={(value) => change(value)}
+            options={OPTIONS_CONFIG}
+            value={config?.export_mode ?? "EDIT_IMAGE"}
+          />
+        </Input.withPause>
       </Input.Container>
     </>
   );

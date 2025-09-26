@@ -1,3 +1,4 @@
+import { Input } from "@/editor/components/input";
 import { ICON_MODES_TABS } from "@/editor/icons/mode";
 import {
   DELETE_PROJECT,
@@ -68,20 +69,39 @@ const Tab = ({
         {ICON_MODES_TABS[mode]}
       </div>
       {show ? (
-        <input
-          type="text"
-          value={text}
-          onChange={(e) => {
-            setText(e?.target?.value);
-          }}
-          className={css({
-            backgroundColor: "transparent",
-            fontSize: "x-small",
-          })}
-          onFocus={() => setPause(true)} // Inicia pausa al entrar en el input
-          onBlur={() => setPause(false)} // Quita pausa al salir del input
-        />
+        <Input.withPause>
+          <Input.Text
+            value={text}
+            onChange={(e) => {
+              setText(e);
+            }}
+            style={{
+              width: "auto",
+              border: "none",
+              backgroundColor: "transparent",
+              color: "text",
+              paddingLeft: "0px",
+              padding: "sm",
+              height: "15px",
+              borderRadius: "0px",
+              fontSize: "x-small",
+            }}
+          />
+        </Input.withPause>
       ) : (
+        // <input
+        //   type="text"
+        //   value={text}
+        //   onChange={(e) => {
+        //     setText(e?.target?.value);
+        //   }}
+        //   className={css({
+        //     backgroundColor: "transparent",
+        //     fontSize: "x-small",
+        //   })}
+        //   onFocus={() => setPause(true)} // Inicia pausa al entrar en el input
+        //   onBlur={() => setPause(false)} // Quita pausa al salir del input
+        // />
         <span
           className={css({
             fontSize: "x-small",
