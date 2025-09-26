@@ -2,12 +2,13 @@
 import { Button } from "@/editor/components/button";
 import { Input } from "@/editor/components/input";
 import { constants } from "@/editor/constants/color";
-import { ADD_PROJECT, PROJECT_ID_ATOM } from "@/editor/states/projects";
+import { PROJECT_ID_ATOM } from "@/editor/states/projects";
+import { ADD_TAB_ATOM } from "@/editor/states/tabs";
 import { fetchListOrgs } from "@/services/organizations";
 import { createProject, fetchListProjects } from "@/services/projects";
 import { css } from "@stylespixelkit/css";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { useAtom, useSetAtom } from "jotai";
+import { useSetAtom } from "jotai";
 import { Building, LayoutDashboard, Plus } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -17,7 +18,8 @@ import { toast } from "sonner";
 const App = () => {
   const [orgId, setOrgId] = useState<string | null>(null);
   const router = useRouter();
-  const [selected, setSelected] = useAtom(PROJECT_ID_ATOM);
+  const setSelected = useSetAtom(PROJECT_ID_ATOM);
+  const setTabs = useSetAtom(ADD_TAB_ATOM);
 
   const mutateOrgs = useMutation({
     mutationKey: ["orgs_user"],
@@ -27,7 +29,6 @@ const App = () => {
     },
   });
 
-  const setAdd = useSetAtom(ADD_PROJECT);
   const QueryProjects = useQuery({
     queryKey: ["projects_orgs", orgId],
     queryFn: async () => {
@@ -51,6 +52,9 @@ const App = () => {
       });
     },
     onSuccess: (data) => {
+      setTabs(data);
+      setSelected(data._id);
+      router.push(`/app/project/${data._id}`);
       toast.success("Project created successfully", {
         description: `The project "${data.name}" was added to your organization.`,
       });
@@ -196,7 +200,7 @@ const App = () => {
                 <div
                   key={project?._id}
                   onClick={() => {
-                    setAdd(project);
+                    setTabs(project);
                     setSelected(project._id);
                     router.push(`/app/project/${project._id}`);
                   }}
