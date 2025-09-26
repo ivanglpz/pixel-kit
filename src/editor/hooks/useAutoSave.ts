@@ -24,7 +24,6 @@ export const useAutoSave = () => {
     },
     onSuccess: (data) => {
       SET_TAB_PROJECT(data);
-      console.log("Canvas saved");
     },
     onError: (err) => console.error("Error saving canvas:", err),
   });
@@ -32,7 +31,7 @@ export const useAutoSave = () => {
     callback: () => {
       mutation.mutate();
     },
-    timer: 1000, // opcional
+    timer: 3000, // opcional
   });
   return {
     debounce,
