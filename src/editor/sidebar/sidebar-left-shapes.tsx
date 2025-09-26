@@ -9,6 +9,7 @@ import { Reorder, useDragControls } from "framer-motion";
 import { useAtom, useSetAtom } from "jotai";
 import { Folders, Trash } from "lucide-react";
 import { ContextMenu, useContextMenu } from "../components/context-menu";
+import { useAutoSave } from "../hooks/useAutoSave";
 
 // ✅ Componente wrapper para elementos de nivel superior
 const DraggableRootItem = ({ item }: { item: any }) => {
@@ -39,9 +40,12 @@ export const SidebarLeftShapes = () => {
   const [ALL_SHAPES, SET_ALL_SHAPES] = useAtom(ALL_SHAPES_ATOM);
   const setUpdateUndoRedo = useSetAtom(UPDATE_UNDO_REDO);
   const setmove = useSetAtom(MOVE_SHAPES_TO_ROOT);
+  const { debounce } = useAutoSave();
+
   const handleReorder = (newOrder: typeof ALL_SHAPES) => {
     SET_ALL_SHAPES(newOrder);
     setUpdateUndoRedo();
+    debounce.execute();
   };
   const clearAll = useSetAtom(DELETE_ALL_SHAPES_ATOM);
 

@@ -3,6 +3,7 @@ import Konva from "konva";
 import { useEffect, useRef } from "react";
 import { Layer, Rect, Transformer } from "react-konva";
 import { constants } from "../constants/color";
+import { useAutoSave } from "../hooks/useAutoSave";
 import { Shapes } from "../shapes/shapes";
 import { FCShapeWEvents } from "../shapes/type.shape";
 import { RECTANGLE_SELECTION_ATOM } from "../states/rectangle-selection";
@@ -27,6 +28,7 @@ export const LayerShapes = () => {
   const selectedIds = useAtomValue(SHAPE_IDS_ATOM);
   const selection = useAtomValue(RECTANGLE_SELECTION_ATOM);
   const setUpdateUndoRedo = useSetAtom(UPDATE_UNDO_REDO);
+  const { debounce } = useAutoSave();
 
   useEffect(() => {
     const allShapes = lyRef.current ? getAllShapes(lyRef.current) : [];
@@ -61,9 +63,11 @@ export const LayerShapes = () => {
           keepRatio={false}
           onTransformEnd={() => {
             setUpdateUndoRedo();
+            debounce.execute();
           }}
           onDragEnd={() => {
             setUpdateUndoRedo();
+            debounce.execute();
           }}
           anchorStroke={constants.theme.colors.primary}
           boundBoxFunc={(oldBox, newBox) => {

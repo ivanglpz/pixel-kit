@@ -7,6 +7,14 @@ type ResponseData =
   | { message: string; data: IProject | null }
   | { error: string };
 
+export const config = {
+  api: {
+    bodyParser: {
+      sizeLimit: "50mb", // por ejemplo 50MB
+    },
+  },
+};
+
 async function handler(
   req: NextApiRequest & { userId: string },
   res: NextApiResponse<ResponseData>

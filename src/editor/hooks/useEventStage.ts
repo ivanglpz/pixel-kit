@@ -22,6 +22,7 @@ import {
   EVENT_UP_SHAPES,
 } from "../states/shapes";
 import { REDO_ATOM, UNDO_ATOM } from "../states/undo-redo";
+import { useAutoSave } from "./useAutoSave";
 import { useConfiguration } from "./useConfiguration";
 import { useReference } from "./useReference";
 
@@ -37,6 +38,7 @@ export const useEventStage = () => {
   const PAUSE = useAtomValue(PAUSE_MODE_ATOM);
 
   const { config } = useConfiguration();
+  const { debounce } = useAutoSave();
 
   // ===== SETTERS =====
   const SET_CREATE = useSetAtom(CREATE_SHAPE_ATOM);
@@ -144,6 +146,7 @@ export const useEventStage = () => {
 
     if (EVENT_STAGE === "CREATING" || EVENT_STAGE === "COPYING") {
       SET_EVENT_UP();
+      debounce.execute();
     }
   };
 
@@ -265,6 +268,7 @@ export const useEventStage = () => {
       if (DELETE_KEYS.includes(KEY)) {
         DELETE_SHAPE();
         setTool("MOVE");
+        debounce.execute();
       }
 
       // Handle Alt key for copy mode
