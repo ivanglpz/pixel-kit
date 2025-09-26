@@ -11,19 +11,16 @@ import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { Home, Plus, X } from "lucide-react";
 import { useRouter } from "next/router";
 import { useRef, useState } from "react";
-import { Valid } from "./valid";
 
 const Tab = ({
   project,
   onClick,
   onDelete,
-  isEnable,
   isSelected,
 }: {
   project: IEDITORPROJECT;
   onClick: VoidFunction;
   onDelete: VoidFunction;
-  isEnable: boolean;
   isSelected: boolean;
 }) => {
   const [text, setText] = useAtom(project.name);
@@ -102,22 +99,20 @@ const Tab = ({
           display: "flex",
         })}
       >
-        <Valid isValid={hover && isEnable}>
-          <button
-            className={css({
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              flex: 1,
-            })}
-            onClick={(e) => {
-              e.stopPropagation();
-              onDelete();
-            }}
-          >
-            <X size={16} />
-          </button>
-        </Valid>
+        <button
+          className={css({
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            flex: 1,
+          })}
+          onClick={(e) => {
+            e.stopPropagation();
+            onDelete();
+          }}
+        >
+          <X size={16} />
+        </button>
       </div>
     </button>
   );
@@ -173,7 +168,6 @@ export const TabsProjects = () => {
               key={e?.ID}
               isSelected={e?.ID === selected}
               project={e}
-              isEnable={listProjects?.length > 1}
               onClick={() => {
                 setSelected(e.ID);
                 router.push(`/app/project/${e.ID}`);

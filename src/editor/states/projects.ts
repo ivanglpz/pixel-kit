@@ -39,6 +39,35 @@ const cloneShapeRecursive = (shape: ALL_SHAPES_CHILDREN): ALL_SHAPES => {
   };
 };
 
+export const MOCKUP_PROJECT: IEDITORPROJECT = {
+  ID: "mockup-id",
+  EVENT: atom<IStageEvents>("IDLE"),
+  TOOL: atom<IKeyTool>("MOVE"),
+  PAUSE_MODE: atom<boolean>(false),
+  name: atom<string>("mockup-project-name"),
+  MODE_ATOM: atom<MODE>("DESIGN_MODE"),
+  MODE: {
+    DESIGN_MODE: {
+      LIST: atom([
+        {
+          id: "mockup-page-one",
+          color: atom("black"),
+          isVisible: atom(true),
+          name: atom("Project One"),
+          SHAPES: {
+            ID: atom<IPageShapeIds[]>([]),
+            LIST: atom<ALL_SHAPES[]>([]),
+          },
+          UNDOREDO: {
+            COUNT_UNDO_REDO: atom<number>(0),
+            LIST_UNDO_REDO: atom<UndoRedoAction[]>([]),
+          },
+        },
+      ] as IPage[]),
+      ID: atom<string>("mockup-page-one"),
+    },
+  },
+};
 export const PROJECTS_ATOM = atom((get) => {
   const PERSIST = get(TABS_PERSIST_ATOM);
   return PERSIST?.map((project) => {
@@ -90,11 +119,11 @@ export const PROJECT_ATOM = atom((get) => {
   const PROJECT_ID = get(PROJECT_ID_ATOM);
   const PROJECTS = get(PROJECTS_ATOM);
   const FIND_PROJECT = PROJECTS?.find((p) => p?.ID === PROJECT_ID);
-  if (!FIND_PROJECT) {
-    throw new Error("PROJECT NOT FOUND");
-  }
+  // if (!FIND_PROJECT) {
+  //   throw new Error("PROJECT NOT FOUND");
+  // }
 
-  return FIND_PROJECT;
+  return FIND_PROJECT ?? MOCKUP_PROJECT;
 });
 
 export const DELETE_PROJECT = atom(null, (get, set, id: string) => {
@@ -102,14 +131,17 @@ export const DELETE_PROJECT = atom(null, (get, set, id: string) => {
   const currentIndex = PROJECTS.findIndex((e) => e._id === id);
   const newList = PROJECTS.filter((e) => e._id !== id);
 
-  if (currentIndex === -1) return;
-
   const nextIndex =
     currentIndex < newList.length ? currentIndex : newList.length - 1;
 
   const PAGE_ID = newList?.at?.(nextIndex)?._id;
 
-  if (!PAGE_ID) return;
+  if (!PAGE_ID) {
+    set(TABS_PERSIST_ATOM, []);
+    set(PROJECT_ID_ATOM, null);
+
+    return;
+  }
 
   set(PROJECT_ID_ATOM, PAGE_ID);
   set(TABS_PERSIST_ATOM, newList);
