@@ -166,6 +166,7 @@ const NumberComponent = ({
   max,
   min,
   step,
+  ...rest
 }: InputNumberProps) => {
   // const setPause = useSetAtom(PAUSE_MODE_ATOM);
   const handleNumberChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -176,14 +177,13 @@ const NumberComponent = ({
   };
   return (
     <input
+      {...rest}
       type="number"
       min={min}
       max={max}
       step={step}
       value={value}
       onChange={handleNumberChange}
-      // onFocus={() => setPause(true)} // Inicia pausa al entrar en el input
-      // onBlur={() => setPause(false)} // Quita pausa al salir del input
       className={css({
         color: "text",
         backgroundColor: "transparent",
@@ -207,16 +207,13 @@ type InputTextProps = {
   placeholder?: string;
 };
 
-const TextComponent = ({ onChange, value, style }: InputTextProps) => {
-  // const setPause = useSetAtom(PAUSE_MODE_ATOM);
-
+const TextComponent = ({ onChange, value, style, ...rest }: InputTextProps) => {
   return (
     <input
+      {...rest}
       type="text"
       value={value}
       onChange={(event) => onChange(event.target.value)}
-      // onFocus={() => setPause(true)} // Inicia pausa al entrar en el input
-      // onBlur={() => setPause(false)} // Quita pausa al salir del input
       className={css({
         width: "auto",
         borderWidth: 1,
@@ -242,11 +239,13 @@ export const TextArea = ({
   value,
   style,
   placeholder,
+  ...rest
 }: InputTextProps) => {
   // const setPause = useSetAtom(PAUSE_MODE_ATOM);
 
   return (
     <textarea
+      {...rest}
       value={value}
       onChange={(event) => onChange(event.target.value)}
       // onFocus={() => setPause(true)} // Inicia pausa al entrar en el input
@@ -277,9 +276,10 @@ type Props = {
   onChange: (value: string) => void;
 };
 
-const Select = ({ options, value, onChange }: Props) => {
+const Select = ({ options, value, onChange, ...rest }: Props) => {
   return (
     <select
+      {...rest}
       value={value}
       className={css({
         width: "100%",
