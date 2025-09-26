@@ -10,7 +10,7 @@ import { useEventStage } from "./hooks/useEventStage";
 import { useReference } from "./hooks/useReference";
 import { Tools } from "./sidebar/Tools";
 import { RESET_SHAPES_IDS_ATOM } from "./states/shape";
-import TOOL_ATOM from "./states/tool";
+import TOOL_ATOM, { PAUSE_MODE_ATOM } from "./states/tool";
 
 type Props = {
   children: ReactNode;
@@ -20,8 +20,9 @@ const PxStage: FC<Props> = ({ children }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const stageRef = useRef<Konva.Stage>(null);
   const [tool, setTool] = useAtom(TOOL_ATOM);
-
+  const [pause, setPause] = useAtom(PAUSE_MODE_ATOM);
   const { config } = useConfiguration(); // ✅ Ahora usamos config.expand2K
+  console.log({ pause });
 
   const resetShapesIds = useSetAtom(RESET_SHAPES_IDS_ATOM);
   const { handleMouseDown, handleMouseUp, handleMouseMove } = useEventStage();
@@ -40,6 +41,7 @@ const PxStage: FC<Props> = ({ children }) => {
         targetId
       )
     ) {
+      setPause(false);
       resetShapesIds();
       setTool("MOVE");
     }

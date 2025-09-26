@@ -97,21 +97,23 @@ const DraggableRootItem = ({
         </div>
         <File size={14} />
         {show ? (
-          <Input.Text
-            value={name}
-            onChange={(e) => setName(e)}
-            style={{
-              width: "auto",
-              border: "none",
-              backgroundColor: "transparent",
-              color: "text",
-              paddingLeft: "0px",
-              padding: "sm",
-              height: "15px",
-              borderRadius: "0px",
-              fontSize: "x-small",
-            }}
-          />
+          <Input.withPause>
+            <Input.Text
+              value={name}
+              onChange={(e) => setName(e)}
+              style={{
+                width: "auto",
+                border: "none",
+                backgroundColor: "transparent",
+                color: "text",
+                paddingLeft: "0px",
+                padding: "sm",
+                height: "15px",
+                borderRadius: "0px",
+                fontSize: "x-small",
+              }}
+            />
+          </Input.withPause>
         ) : (
           <span
             className={css({
