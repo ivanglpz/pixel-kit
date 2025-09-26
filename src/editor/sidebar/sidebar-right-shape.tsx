@@ -40,6 +40,7 @@ import { Dialog } from "../components/dialog";
 import { Input } from "../components/input";
 import { ListIcons } from "../components/list-icons";
 import { constants } from "../constants/color";
+import { useAutoSave } from "../hooks/useAutoSave";
 import { useDelayedExecutor } from "../hooks/useDelayExecutor";
 import { AlignItems, JustifyContent } from "../shapes/layout-flex";
 import { UPDATE_UNDO_REDO } from "../states/undo-redo";
@@ -292,9 +293,13 @@ export const LayoutShapeConfig = () => {
   const inputRef = useRef<HTMLInputElement>(null);
   const shapeUpdate = useSetAtom(SHAPE_UPDATE_ATOM);
   const setUpdateUndoRedo = useSetAtom(UPDATE_UNDO_REDO);
+
+  const { debounce } = useAutoSave();
+
   const { execute, isRunning } = useDelayedExecutor({
     callback: () => {
       setUpdateUndoRedo();
+      debounce.execute();
     },
     timer: 500, // opcional
   });
