@@ -22,7 +22,6 @@ const PxStage: FC<Props> = ({ children }) => {
   const [tool, setTool] = useAtom(TOOL_ATOM);
   const [pause, setPause] = useAtom(PAUSE_MODE_ATOM);
   const { config } = useConfiguration(); // ✅ Ahora usamos config.expand2K
-  console.log({ pause });
 
   const resetShapesIds = useSetAtom(RESET_SHAPES_IDS_ATOM);
   const { handleMouseDown, handleMouseUp, handleMouseMove } = useEventStage();

@@ -11,10 +11,10 @@ import { PAUSE_MODE_ATOM } from "../states/tool";
 // HOC para inyectar pausa
 
 type PauseWrapperProps = {
-  children: ReactNode;
+  children: JSX.Element;
 };
 
-export const PauseWrapper = ({ children }: PauseWrapperProps) => {
+export const PauseWrapper = ({ children }: PauseWrapperProps): ReactElement => {
   const setPause = useSetAtom(PAUSE_MODE_ATOM);
 
   const handleFocus = (
@@ -45,8 +45,7 @@ export const PauseWrapper = ({ children }: PauseWrapperProps) => {
     });
   };
 
-  // Soporta múltiples hijos
-  return React.Children.map(children, enhanceChild);
+  return <>{React.Children.map(children, enhanceChild)}</>;
 };
 
 const Label = ({ text }: { text: string }) => {
