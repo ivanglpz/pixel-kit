@@ -53,13 +53,15 @@ async function validateWithApi(token: string, request: NextRequest) {
     });
     console.log(token, "token");
 
-    console.log(JSON.stringify(res));
-
     if (!res.ok) {
+      console.log("no esta ok");
+
       return false;
     }
 
     const data = await res.json();
+    console.log(data, "data");
+
     console.log("✅ Usuario validado:", data.user.email);
     return true;
   } catch (err) {
