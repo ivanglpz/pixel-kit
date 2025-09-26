@@ -15,21 +15,22 @@ async function handler(
     return res.status(405).json({ error: "Method not allowed" });
   }
 
-  const { id } = req.query;
-  if (!id || typeof id !== "string") {
-    return res.status(400).json({ error: "Invalid or missing project id" });
-  }
+  // const { id } = req.query;
 
   const {
+    _id,
     name,
     // organization,
     data,
     // members
   } = req.body;
+  if (!_id || typeof _id !== "string") {
+    return res.status(400).json({ error: "Invalid or missing project id" });
+  }
 
   try {
     const updatedProject = await Project.findOneAndUpdate(
-      { _id: id },
+      { _id: _id },
       {
         ...(name && { name }),
         // ...(organization && { organization }),
