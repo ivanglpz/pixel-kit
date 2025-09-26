@@ -50,8 +50,6 @@ export const CURRENT_PAGE = atom((get) => {
 
 export const PAGES_ATOM = atom(
   (get) => {
-    console.log(get(GET_MODE));
-
     return get(get(GET_MODE).LIST);
   },
   (_get, _set, newTool: IPage[]) => {

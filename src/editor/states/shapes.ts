@@ -458,11 +458,8 @@ export const EVENT_MOVING_SHAPE = atom(
 
 export const CREATE_SHAPE_ATOM = atom(null, (get, set, args: IShape) => {
   if (!args || !args?.id) return;
-  console.log(args, "ENTRANDO");
 
   if (args.parentId) {
-    console.log("ENTRANDO AQUI");
-
     const FIND_SHAPE = get(PLANE_SHAPES_ATOM).find(
       (e) => e.id === args.parentId
     );

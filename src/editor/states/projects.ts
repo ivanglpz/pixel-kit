@@ -68,6 +68,7 @@ export const MOCKUP_PROJECT: IEDITORPROJECT = {
     },
   },
 };
+
 export const PROJECTS_ATOM = atom((get) => {
   const PERSIST = get(TABS_PERSIST_ATOM);
   return PERSIST?.map((project) => {
@@ -126,6 +127,43 @@ export const PROJECT_ATOM = atom((get) => {
   return FIND_PROJECT ?? MOCKUP_PROJECT;
 });
 
+export const JSON_PROJECTS_ATOM = atom(null, (get, set) => {
+  const project = get(PROJECT_ATOM);
+
+  const cloneShapeJson = (shape: ALL_SHAPES): ALL_SHAPES_CHILDREN => {
+    return {
+      id: shape.id,
+      pageId: shape.pageId,
+      tool: shape.tool,
+      state: {
+        ...get(shape.state),
+        children: get(get(shape.state).children).map((c) => cloneShapeJson(c)),
+      },
+    };
+  };
+  const LIST = get(project.MODE[get(project.MODE_ATOM)].LIST)?.map(
+    (element) => {
+      return {
+        id: element.id,
+        name: get(element.name),
+        color: get(element.color),
+        isVisible: get(element.isVisible),
+        SHAPES: {
+          LIST: get(element.SHAPES.LIST).map((e) => cloneShapeJson(e)),
+        },
+      };
+    }
+  );
+
+  return {
+    projectId: project.ID,
+    data: JSON.stringify({
+      [get(project.MODE_ATOM)]: {
+        LIST: LIST,
+      },
+    }),
+  };
+});
 export const DELETE_PROJECT = atom(null, (get, set, id: string) => {
   const PROJECTS = get(TABS_PERSIST_ATOM);
   const currentIndex = PROJECTS.findIndex((e) => e._id === id);

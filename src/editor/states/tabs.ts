@@ -10,3 +10,15 @@ export const ADD_TAB_ATOM = atom(null, (get, set, args: IProject) => {
 
   set(TABS_PERSIST_ATOM, [...FIND_TAB, args]);
 });
+
+export const UPDATE_TAB_ATOM = atom(
+  null,
+  (get, set, args: Pick<IProject, "_id" | "name" | "data">) => {
+    set(
+      TABS_PERSIST_ATOM,
+      get(TABS_PERSIST_ATOM).map((el) =>
+        el._id === args._id ? { ...el, ...args } : el
+      )
+    );
+  }
+);

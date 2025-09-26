@@ -11,6 +11,7 @@ import { useAtom, useSetAtom } from "jotai";
 import { File, GripVertical, Plus } from "lucide-react";
 import { useRef, useState } from "react";
 import { Input } from "../components/input";
+import { useAutoSave } from "../hooks/useAutoSave";
 
 const DraggableRootItem = ({
   page,
@@ -133,10 +134,13 @@ export const SidebarLeftPages = () => {
   const newPage = useSetAtom(NEW_PAGE);
   const [selectedPage, setSelectedPage] = useAtom(PAGE_ID_ATOM);
   const ListRef = useRef<HTMLDivElement>(null);
+  const { debounce } = useAutoSave();
 
   const handleReorder = (newOrder: typeof pages) => {
     setPages(newOrder);
+    debounce.execute();
   };
+
   return (
     <section
       className={css({
@@ -174,6 +178,7 @@ export const SidebarLeftPages = () => {
             setTimeout(() => {
               ListRef.current?.scrollIntoView({ behavior: "smooth" });
             }, 100);
+            debounce.execute();
           }}
         >
           <Plus size={14} />

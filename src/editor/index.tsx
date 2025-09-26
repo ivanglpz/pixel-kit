@@ -11,7 +11,6 @@ import PxStage from "./stage";
 const PixelEditor = () => {
   useStopZoom();
   useBrowser();
-
   return (
     <div
       id="pixel-app"

@@ -14,3 +14,9 @@ export const createProject = async (
 ): Promise<IProject> => {
   return api.post(`/projects/create`, payload).then((e) => e.data?.data);
 };
+
+export const updateProject = async (
+  payload: Pick<IProject, "_id" | "name" | "data">
+) => {
+  return api.put(`/projects/update`, payload).then((e) => e.data?.data);
+};
