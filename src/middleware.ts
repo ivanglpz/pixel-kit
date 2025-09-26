@@ -51,7 +51,9 @@ async function validateWithApi(token: string, request: NextRequest) {
       },
       cache: "no-store",
     });
-    console.log(JSON.stringify(res, null, 2));
+    console.log(token, "token");
+
+    console.log(JSON.stringify(res));
 
     if (!res.ok) {
       return false;
