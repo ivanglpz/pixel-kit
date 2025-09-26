@@ -116,6 +116,7 @@ const ProjectCreate = () => {
             if (index > 0) {
               return (
                 <div
+                  key={`static-${index}`}
                   className={css({
                     padding: "lg",
                     display: "flex",
