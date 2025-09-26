@@ -40,7 +40,10 @@ const Tab = ({
         gap: "md",
         alignContent: "center",
         alignItems: "center",
-        backgroundColor: isSelected ? "bg.muted" : "transparent",
+        _dark: {
+          backgroundColor: isSelected ? "gray.700" : "transparent",
+        },
+        backgroundColor: isSelected ? "gray.150" : "transparent",
         height: "100%",
         width: "190px",
         minWidth: "190px",
