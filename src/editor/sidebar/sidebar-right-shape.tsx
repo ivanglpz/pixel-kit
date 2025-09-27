@@ -214,10 +214,14 @@ const LayoutGrid: React.FC<LayoutGridProps> = ({
         gap: "sm",
         aspectRatio: "1",
         border: "1px solid",
-        borderColor: "border.muted",
         borderRadius: "md",
         padding: "md",
-        backgroundColor: "gray.900",
+        _dark: {
+          borderColor: "gray.700", // ← usa el semantic token
+          backgroundColor: "gray.800", // Fondo más claro para el selector
+        },
+        backgroundColor: "gray.100",
+        borderColor: "gray.200", // ← usa el semantic token
       })}
     >
       {Array.from({ length: 9 }, (_, index) => {
@@ -231,10 +235,15 @@ const LayoutGrid: React.FC<LayoutGridProps> = ({
             className={css({
               borderRadius: "4",
               border: "1px solid",
-              borderColor: "border.elevated",
               cursor: "pointer",
               aspectRatio: "1",
               transition: "all 0.2s ease",
+              _dark: {
+                borderColor: "gray.600", // ← usa el semantic token
+                backgroundColor: "gray.800", // Fondo más claro para el selector
+              },
+              backgroundColor: "gray.100",
+              borderColor: "gray.200", // ← usa el semantic token
             })}
             style={{
               backgroundColor: getSquareColor(row, col),
