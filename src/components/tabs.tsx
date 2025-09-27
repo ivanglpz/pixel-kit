@@ -1,4 +1,5 @@
 import { Input } from "@/editor/components/input";
+import { useAutoSave } from "@/editor/hooks/useAutoSave";
 import { ICON_MODES_TABS } from "@/editor/icons/mode";
 import {
   DELETE_PROJECT,
@@ -6,7 +7,6 @@ import {
   PROJECT_ID_ATOM,
   PROJECTS_ATOM,
 } from "@/editor/states/projects";
-import { PAUSE_MODE_ATOM } from "@/editor/states/tool";
 import { css } from "@stylespixelkit/css";
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { Home, Plus, X } from "lucide-react";
@@ -25,10 +25,9 @@ const Tab = ({
   isSelected: boolean;
 }) => {
   const [text, setText] = useAtom(project.name);
-  const [hover, sethover] = useState(false);
   const mode = useAtomValue(project.MODE_ATOM);
   const [show, setShow] = useState(false);
-  const setPause = useSetAtom(PAUSE_MODE_ATOM);
+  const { debounce } = useAutoSave();
 
   return (
     <button
@@ -49,9 +48,7 @@ const Tab = ({
         paddingRight: "md",
       })}
       onClick={onClick}
-      onMouseEnter={() => sethover(true)}
       onMouseLeave={() => {
-        sethover(false);
         setShow(false);
       }}
       onDoubleClick={() => {
@@ -74,6 +71,7 @@ const Tab = ({
             value={text}
             onChange={(e) => {
               setText(e);
+              debounce.execute();
             }}
             style={{
               width: "auto",
@@ -89,19 +87,6 @@ const Tab = ({
           />
         </Input.withPause>
       ) : (
-        // <input
-        //   type="text"
-        //   value={text}
-        //   onChange={(e) => {
-        //     setText(e?.target?.value);
-        //   }}
-        //   className={css({
-        //     backgroundColor: "transparent",
-        //     fontSize: "x-small",
-        //   })}
-        //   onFocus={() => setPause(true)} // Inicia pausa al entrar en el input
-        //   onBlur={() => setPause(false)} // Quita pausa al salir del input
-        // />
         <span
           className={css({
             fontSize: "x-small",

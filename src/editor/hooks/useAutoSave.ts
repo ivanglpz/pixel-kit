@@ -26,8 +26,8 @@ export const useAutoSave = () => {
       const PAYLOAD: Pick<IProject, "_id" | "name" | "data" | "previewUrl"> = {
         _id: JSON_.projectId,
         data: JSON_.data,
-        name: "kepedo",
-        previewUrl: previewUrl ?? "./placeholder.svg",
+        name: JSON_.projectName,
+        previewUrl: previewUrl ?? JSON_?.previewUrl ?? "./placeholder.svg",
       };
       updateProject(PAYLOAD);
       return PAYLOAD;

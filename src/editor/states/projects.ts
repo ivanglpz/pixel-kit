@@ -21,7 +21,7 @@ export type IEDITORPROJECT = {
       ID: PrimitiveAtom<string> & WithInitialValue<string>;
     };
   };
-
+  PREVIEW_URL: string;
   EVENT: PrimitiveAtom<IStageEvents> & WithInitialValue<IStageEvents>;
 };
 
@@ -46,6 +46,7 @@ export const MOCKUP_PROJECT: IEDITORPROJECT = {
   PAUSE_MODE: atom<boolean>(false),
   name: atom<string>("mockup-project-name"),
   MODE_ATOM: atom<MODE>("DESIGN_MODE"),
+  PREVIEW_URL: "./placeholder.svg",
   MODE: {
     DESIGN_MODE: {
       LIST: atom([
@@ -82,7 +83,7 @@ export const PROJECTS_ATOM = atom((get) => {
       name: atom(project.name),
       MODE_ATOM: atom<MODE>(project.mode),
       TOOL: atom<IKeyTool>("MOVE"),
-
+      PREVIEW_URL: project?.previewUrl ?? "./placeholder.svg",
       PAUSE_MODE: atom<boolean>(false),
       MODE: {
         [project.mode]: {
@@ -157,6 +158,8 @@ export const JSON_PROJECTS_ATOM = atom(null, (get, set) => {
 
   return {
     projectId: project.ID,
+    projectName: get(project.name),
+    previewUrl: project?.PREVIEW_URL ?? "./placeholder.svg",
     data: JSON.stringify({
       [get(project.MODE_ATOM)]: {
         LIST: LIST,
