@@ -31,7 +31,7 @@ export const useAutoSave = () => {
     callback: () => {
       mutation.mutate();
     },
-    timer: 3000, // opcional
+    timer: 1000, // opcional
   });
   return {
     debounce,
