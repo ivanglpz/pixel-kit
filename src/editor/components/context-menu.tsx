@@ -76,9 +76,13 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({ options, id }) => {
             flexDirection: "column",
             backgroundColor: "bg",
             borderRadius: "lg",
-            border: "container",
             width: 120,
             height: "auto",
+            borderWidth: 1,
+            borderColor: "gray.150",
+            _dark: {
+              borderColor: "gray.700",
+            },
           })}
           onClick={(e) => e.stopPropagation()}
         >
