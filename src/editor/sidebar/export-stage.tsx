@@ -5,7 +5,7 @@ import Konva from "konva";
 import { File } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import { Layer, Stage as StageContainer } from "react-konva";
+import { Layer, Rect, Stage as StageContainer } from "react-konva";
 import { toast } from "sonner";
 import { v4 as uuidv4 } from "uuid";
 import { Button } from "../components/button";
@@ -13,7 +13,9 @@ import { Dialog } from "../components/dialog";
 import { Input } from "../components/input";
 import { Loading } from "../components/loading";
 import { constants } from "../constants/color";
+import { useReference } from "../hooks/useReference";
 import { Shapes } from "../shapes/shapes";
+import STAGE_CANVAS_BACKGROUND from "../states/canvas";
 import { typeExportAtom } from "../states/export";
 import ALL_SHAPES_ATOM from "../states/shapes";
 
@@ -64,8 +66,14 @@ export const ExportStage = () => {
   const { config } = useConfiguration();
   const [loading, setLoading] = useState(false);
   const [format, setFormat] = useAtom(typeExportAtom);
+  const background = useAtomValue(STAGE_CANVAS_BACKGROUND);
 
   const stageRef = useRef<Konva.Stage>(null);
+
+  const { handleSetRef } = useReference({
+    type: "STAGE_PREVIEW",
+    ref: stageRef,
+  });
 
   const handleExport = () => {
     if (!config.expand_stage_resolution) return;
@@ -116,6 +124,14 @@ export const ExportStage = () => {
     stage.batchDraw();
   }, [config.export_mode, ALL_SHAPES]);
 
+  useEffect(() => {
+    if (stageRef?.current) {
+      handleSetRef({
+        type: "STAGE_PREVIEW",
+        ref: stageRef,
+      });
+    }
+  }, [, stageRef, config.expand_stage]);
   return (
     <>
       {/* Export Dialog */}
@@ -194,6 +210,13 @@ export const ExportStage = () => {
           _dark: { backgroundColor: "gray.800" },
         })}
       >
+        <Layer id="layer-background-color">
+          <Rect
+            width={config.expand_stage_resolution?.width}
+            height={config.expand_stage_resolution?.height}
+            fill={background}
+          />
+        </Layer>
         <Layer>
           {ALL_SHAPES.map((e) => {
             const Component = Shapes?.[e.tool];

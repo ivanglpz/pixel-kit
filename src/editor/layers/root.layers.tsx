@@ -1,4 +1,3 @@
-import { Valid } from "@/components/valid";
 import { useConfiguration } from "../hooks/useConfiguration";
 import { LayerBackground } from "./layer.background";
 import { LayerPipe } from "./layer.pipe";
@@ -9,9 +8,9 @@ export const AllLayers = () => {
 
   return (
     <>
-      <Valid isValid={config?.show_layer_background}>
-        <LayerBackground />
-      </Valid>
+      {/* <Valid isValid={config?.show_layer_background}> */}
+      <LayerBackground />
+      {/* </Valid> */}
 
       <LayerShapes />
       <LayerPipe />

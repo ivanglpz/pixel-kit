@@ -5,19 +5,29 @@ import { useSetAtom } from "jotai";
 import { JSON_PROJECTS_ATOM } from "../states/projects";
 import { UPDATE_TAB_ATOM } from "../states/tabs";
 import { useDelayedExecutor } from "./useDelayExecutor";
+import { useReference } from "./useReference";
 
 export const useAutoSave = () => {
   const GET_JSON = useSetAtom(JSON_PROJECTS_ATOM);
   const SET_TAB_PROJECT = useSetAtom(UPDATE_TAB_ATOM);
+
+  const { ref } = useReference({
+    type: "STAGE_PREVIEW",
+  });
   const mutation = useMutation({
     mutationKey: ["auto_save"],
     mutationFn: async () => {
       const JSON_ = GET_JSON();
+      const previewUrl = ref?.current?.toDataURL({
+        quality: 0.1,
+        pixelRatio: 1,
+      });
 
-      const PAYLOAD: Pick<IProject, "_id" | "name" | "data"> = {
+      const PAYLOAD: Pick<IProject, "_id" | "name" | "data" | "previewUrl"> = {
         _id: JSON_.projectId,
         data: JSON_.data,
         name: "kepedo",
+        previewUrl: previewUrl ?? "./placeholder.svg",
       };
       updateProject(PAYLOAD);
       return PAYLOAD;
