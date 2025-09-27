@@ -117,8 +117,10 @@ const Header = ({ children }: HeaderProps) => {
 };
 type ContainerProps = {
   children: ReactNode;
+  fullWidth?: boolean;
+  fullHeight?: boolean;
 };
-const Container = ({ children }: ContainerProps) => {
+const Container = ({ children, fullWidth, fullHeight }: ContainerProps) => {
   return (
     <div
       className={css({
@@ -132,9 +134,9 @@ const Container = ({ children }: ContainerProps) => {
         borderColor: "gray.250",
         maxWidth: 600,
         minWidth: 300,
-        width: "auto",
+        width: fullWidth ? "100%" : "auto",
         maxHeight: 520,
-        height: "auto",
+        height: fullHeight ? "100%" : "auto",
         gridAutoRows: "60px",
         transition: "opacity 0.3s ease, transform 0.3s ease",
         _dark: {
