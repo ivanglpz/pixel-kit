@@ -577,7 +577,7 @@ export const LayoutShapeConfig = () => {
       })} scrollbar_container`}
     >
       <Dialog.Provider visible={showIcons} onClose={() => setshowIcons(false)}>
-        <Dialog.Container>
+        <Dialog.Container fullWidth fullHeight>
           <Dialog.Header>
             <p
               className={css({
