@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { css } from "@stylespixelkit/css";
-import { useAtom, useSetAtom } from "jotai";
+import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import Konva from "konva";
 import { KonvaEventObject } from "konva/lib/Node";
 import { FC, ReactNode, useEffect, useRef } from "react";
@@ -9,6 +9,7 @@ import { useConfiguration } from "./hooks/useConfiguration";
 import { useEventStage } from "./hooks/useEventStage";
 import { useReference } from "./hooks/useReference";
 import { Tools } from "./sidebar/Tools";
+import { EVENT_ATOM, IStageEvents } from "./states/event";
 import { RESET_SHAPES_IDS_ATOM } from "./states/shape";
 import TOOL_ATOM, { PAUSE_MODE_ATOM } from "./states/tool";
 
@@ -22,7 +23,7 @@ const PxStage: FC<Props> = ({ children }) => {
   const [tool, setTool] = useAtom(TOOL_ATOM);
   const [pause, setPause] = useAtom(PAUSE_MODE_ATOM);
   const { config } = useConfiguration(); // ✅ Ahora usamos config.expand2K
-
+  const event = useAtomValue(EVENT_ATOM);
   const resetShapesIds = useSetAtom(RESET_SHAPES_IDS_ATOM);
   const { handleMouseDown, handleMouseUp, handleMouseMove } = useEventStage();
 
@@ -169,10 +170,19 @@ const PxStage: FC<Props> = ({ children }) => {
     }
   }, [, stageRef, config.expand_stage]);
 
+  const cursorByEvent: { [key in IStageEvents]: string } = {
+    CREATE: "custom-cursor-crosshair",
+    COPY: "custom-cursor-arrow-duplicate",
+    COPYING: "custom-cursor-arrow-duplicate",
+    CREATING: "custom-cursor-crosshair",
+    IDLE: "CursorDefault",
+    MULTI_SELECT: "CursorDefault",
+  };
+
   return (
     <div
       ref={containerRef}
-      className={`CursorDefault ${css({
+      className={`${cursorByEvent[event]} ${css({
         display: "flex",
         flexDirection: "column",
         alignItems: "center",

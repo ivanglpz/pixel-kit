@@ -9,10 +9,10 @@ export type IKeyTool =
   | "IMAGE"
   | "TEXT"
   | "FRAME"
-  | "DRAW"
-  // | "CODE"
-  // | "GROUP"
-  | "CLIP";
+  | "DRAW";
+// | "CODE"
+// | "GROUP"
+// | "CLIP";
 
 export type IKeyMethods = Exclude<
   IKeyTool,
