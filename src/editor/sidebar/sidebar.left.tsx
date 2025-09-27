@@ -30,9 +30,13 @@ export const SidebarLeft: FC = () => {
 
         <div
           className={css({
-            backgroundColor: "gray.600",
             width: "100%",
             height: 1,
+            _dark: {
+              backgroundColor: "gray.700",
+            },
+
+            backgroundColor: "gray.150",
           })}
         ></div>
 
