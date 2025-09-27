@@ -1,5 +1,4 @@
 import SeoComponent from "@/components/seo";
-import PixelEditor from "@/editor";
 import { NextOnlyPage } from "next";
 
 const PageEditor: NextOnlyPage = () => {
@@ -12,7 +11,7 @@ const PageEditor: NextOnlyPage = () => {
         description="Transform and refine your photos effortlessly with Pixel Kit's Image Editing Mode. Unlock a range of powerful editing tools and elevate your images to the next level. Try it now!"
         url="https://pixel-kit.vercel.app/editor"
       />
-      <PixelEditor />
+      <p>hello world</p>
     </>
   );
 };
