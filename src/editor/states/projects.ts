@@ -176,22 +176,18 @@ export const JSON_PROJECTS_ATOM = atom(null, (get, set) => {
   };
 });
 export const DELETE_PROJECT = atom(null, (get, set, id: string) => {
-  const PROJECTS = get(TABS_PERSIST_ATOM);
-  const currentIndex = PROJECTS.findIndex((e) => e._id === id);
-  const newList = PROJECTS.filter((e) => e._id !== id);
+  const persistProjects = get(TABS_PERSIST_ATOM);
+  const projects = get(PROJECTS_ATOM);
 
-  const nextIndex =
-    currentIndex < newList.length ? currentIndex : newList.length - 1;
+  // Filtrar proyecto a borrar
+  const newPersistList = persistProjects.filter((e) => e._id !== id);
+  const newProjectsList = projects.filter((e) => e.ID !== id);
 
-  const PAGE_ID = newList?.at?.(nextIndex)?._id;
+  // Actualizar los átomos
+  set(TABS_PERSIST_ATOM, newPersistList); // Persistente
+  set(PROJECTS_ATOM, newProjectsList); // En memoria
 
-  if (!PAGE_ID) {
-    set(TABS_PERSIST_ATOM, []);
-    set(PROJECT_ID_ATOM, null);
-
-    return;
-  }
-
-  set(PROJECT_ID_ATOM, PAGE_ID);
-  set(TABS_PERSIST_ATOM, newList);
+  // Actualizar el proyecto activo
+  const nextProject = newPersistList[0]?._id || null;
+  set(PROJECT_ID_ATOM, nextProject);
 });
