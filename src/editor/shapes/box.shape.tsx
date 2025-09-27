@@ -1,8 +1,7 @@
-import { PrimitiveAtom, useAtom, useSetAtom } from "jotai";
+import { PrimitiveAtom, useAtom } from "jotai";
 import { Rect } from "react-konva";
 import { useConfiguration } from "../hooks/useConfiguration";
 import { SHAPE_IDS_ATOM } from "../states/shape";
-import { GET_ALL_SHAPES_BY_ID } from "../states/shapes";
 import { coordinatesShapeMove, shapeEventDragMove } from "./events.shape";
 import { IShape, IShapeWithEvents, WithInitialValue } from "./type.shape";
 
@@ -16,7 +15,6 @@ const ShapeBox = ({ shape: item }: IShapeWithEvents) => {
 
   const [shapeId, setShapeId] = useAtom(SHAPE_IDS_ATOM);
   const isSelected = shapeId.some((w) => w.id === box.id);
-  const GET_ALL = useSetAtom(GET_ALL_SHAPES_BY_ID);
   // Calcular la posición ajustada para la rotación
 
   const shadow = box?.effects
@@ -78,8 +76,6 @@ const ShapeBox = ({ shape: item }: IShapeWithEvents) => {
         draggable={isSelected}
         // 8. Eventos
         onClick={() => {
-          const SHAPES = GET_ALL(box.id);
-          console.log(SHAPES);
           setShapeId({
             id: box?.id,
             parentId: box.parentId,

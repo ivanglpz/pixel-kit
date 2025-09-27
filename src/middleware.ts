@@ -46,18 +46,14 @@ async function validateWithApi(token: string, request: NextRequest) {
       },
       cache: "no-store",
     });
-    console.log(token, "token");
 
     if (!res.ok) {
-      console.log("no esta ok");
-
       return false;
     }
 
     const data = await res.json();
-    console.log(data, "data");
 
-    console.log("✅ Usuario validado:", data.user.email);
+    // console.log("✅ Usuario validado:", data.user.email);
     return true;
   } catch (err) {
     console.error("❌ Error validando con la API:", err);
