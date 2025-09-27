@@ -6,7 +6,7 @@ export type IStageEvents =
   | "COPY"
   | "IDLE"
   | "CREATING"
-  | "CLIPING"
+  // | "CLIPING"
   | "COPYING"
   | "COPY"
   | "MULTI_SELECT";
