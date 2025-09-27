@@ -18,7 +18,7 @@ export type IEDITORPROJECT = {
   MODE: {
     [key in MODE]: {
       LIST: PrimitiveAtom<IPage[]> & WithInitialValue<IPage[]>;
-      ID: PrimitiveAtom<string> & WithInitialValue<string>;
+      ID: PrimitiveAtom<string | null> & WithInitialValue<string | null>;
     };
   };
   PREVIEW_URL: string;
@@ -72,7 +72,7 @@ export const MOCKUP_PROJECT: IEDITORPROJECT = {
           },
         },
       ] as IPage[]),
-      ID: atom<string>("mockup-page-one"),
+      ID: atom<string | null>("mockup-page-one"),
     },
   },
 };
@@ -115,7 +115,7 @@ export const SET_PROJECTS_FROM_TABS = atom(null, (get, set) => {
               };
             })
           ),
-          ID: atom<string>(FIRST_PAGE?.id ?? ""),
+          ID: atom<string | null>(FIRST_PAGE?.id ?? null),
         },
       },
 

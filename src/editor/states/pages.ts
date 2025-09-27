@@ -104,9 +104,9 @@ export const NEW_PAGE = atom(null, (get, set) => {
 
 export const DELETE_PAGE = atom(null, (get, set, id: string) => {
   const pages = get(PAGES_ATOM);
-  if (pages.length === 1) return; // at least one page
-  set(
-    PAGES_ATOM,
-    pages.filter((p) => p.id !== id)
-  );
+  const newPages = pages.filter((p) => p.id !== id);
+  if (newPages.length === 0) return; // at least one page
+
+  set(get(GET_MODE).ID, newPages.at(0)?.id ?? null);
+  set(PAGES_ATOM, newPages);
 });

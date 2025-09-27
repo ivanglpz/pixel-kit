@@ -1,15 +1,16 @@
 import {
+  DELETE_PAGE,
   IPage,
   NEW_PAGE,
   PAGE_ID_ATOM,
   PAGES_ATOM,
 } from "@/editor/states/pages";
-import { PAUSE_MODE_ATOM } from "@/editor/states/tool";
 import { css } from "@stylespixelkit/css";
 import { Reorder, useDragControls } from "framer-motion";
 import { useAtom, useSetAtom } from "jotai";
-import { File, GripVertical, Plus } from "lucide-react";
+import { File, FolderCog, GripVertical, Plus, Trash } from "lucide-react";
 import { useRef, useState } from "react";
+import { ContextMenu, useContextMenu } from "../components/context-menu";
 import { Input } from "../components/input";
 import { useAutoSave } from "../hooks/useAutoSave";
 
@@ -18,22 +19,25 @@ const DraggableRootItem = ({
   isSelected,
   onClick,
   onDebounce,
+  lengthPage,
 }: {
   page: IPage;
   isSelected: boolean;
   onClick: () => void;
   onDebounce: VoidFunction;
+  lengthPage: number;
 }) => {
   const [show, setShow] = useState(false);
   const [name, setName] = useAtom(page.name);
-  const setPause = useSetAtom(PAUSE_MODE_ATOM);
   const rootDragControls = useDragControls();
-
+  const { open } = useContextMenu();
+  const SET = useSetAtom(DELETE_PAGE);
   const handleDragStart = (e: React.PointerEvent) => {
     e.stopPropagation(); // Prevenir que el evento se propague al padre
     rootDragControls.start(e);
   };
   const [isHovered, setIsHovered] = useState(false);
+  const { debounce } = useAutoSave();
 
   return (
     <Reorder.Item
@@ -51,9 +55,37 @@ const DraggableRootItem = ({
         zIndex: 1000,
       }}
     >
-      <li
+      <ContextMenu
+        id={page.id}
+        options={[
+          {
+            label: "Rename",
+            icon: <FolderCog size={14} />,
+
+            onClick: () => setShow(true),
+            isEnabled: true,
+          },
+          {
+            label: "Delete",
+            icon: <Trash size={14} />,
+
+            onClick: () => {
+              // setTool("MOVE");
+              SET(page.id);
+              debounce.execute();
+            },
+            isEnabled: lengthPage > 1,
+          },
+        ]}
+      />
+      <div
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
+        onContextMenu={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          open(page.id, e.clientX, e.clientY);
+        }}
         key={`page-${page.id}`}
         className={css({
           padding: "md",
@@ -79,7 +111,6 @@ const DraggableRootItem = ({
           onClick();
         }}
         onBlur={() => {
-          setPause(false);
           setShow(false);
         }}
       >
@@ -129,7 +160,7 @@ const DraggableRootItem = ({
             {name}
           </span>
         )}
-      </li>
+      </div>
     </Reorder.Item>
   );
 };
@@ -212,6 +243,7 @@ export const SidebarLeftPages = () => {
             isSelected={selectedPage === item.id}
             onClick={() => setSelectedPage(item.id)}
             onDebounce={() => debounce.execute()}
+            lengthPage={pages.length}
           />
         ))}
         <div ref={ListRef} />
