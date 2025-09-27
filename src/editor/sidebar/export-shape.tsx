@@ -66,7 +66,6 @@ export const ExportShape = () => {
   const [loading, setLoading] = useState(false);
   const [format, setFormat] = useAtom(typeExportAtom);
   const [showExportDialog, setShowExportDialog] = useState(false);
-  const [showImageDialog, setShowImageDialog] = useState(false);
 
   const stageRef = useRef<Konva.Stage>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -171,37 +170,6 @@ export const ExportShape = () => {
         </Dialog.Container>
       </Dialog.Provider>
 
-      {/* Image Dialog */}
-      <Dialog.Provider
-        visible={showImageDialog}
-        onClose={() => setShowImageDialog(false)}
-      >
-        <Dialog.Container>
-          <Dialog.Header>
-            <p className={css({ fontWeight: "bold" })}>Image</p>
-            <Dialog.Close onClose={() => setShowImageDialog(false)} />
-          </Dialog.Header>
-          <p className={css({ fontSize: "sm", color: "text" })}>
-            Please upload an image here to edit it.
-          </p>
-          <footer
-            className={css({
-              display: "flex",
-              flexDirection: "row",
-              gap: "lg",
-              justifyContent: "end",
-            })}
-          >
-            <Button.Secondary onClick={() => setShowImageDialog(false)}>
-              Cancel
-            </Button.Secondary>
-            <Button.Primary onClick={() => inputRef.current?.click()}>
-              <File size={constants.icon.size} /> Upload
-            </Button.Primary>
-          </footer>
-        </Dialog.Container>
-      </Dialog.Provider>
-
       {/* Preview */}
       <p
         className={css({
@@ -251,9 +219,6 @@ export const ExportShape = () => {
           gap: "md",
         })}
       >
-        <Button.Secondary onClick={() => setShowImageDialog(true)}>
-          Change
-        </Button.Secondary>
         <Button.Primary onClick={() => setShowExportDialog(true)}>
           <File size={constants.icon.size} /> Export
         </Button.Primary>

@@ -69,13 +69,19 @@ export const SidebarLeftShapes = () => {
           {
             label: "Move to root",
             icon: <Folders size={14} />,
-            onClick: () => setmove(),
+            onClick: () => {
+              setmove();
+              debounce.execute();
+            },
             isEnabled: true,
           },
           {
             label: "Clear All",
             icon: <Trash size={14} />,
-            onClick: clearAll,
+            onClick: () => {
+              clearAll();
+              debounce.execute();
+            },
             isEnabled: true,
           },
         ]}

@@ -157,7 +157,10 @@ export const Nodes = ({
           {
             label: "Move to Group",
             icon: <Group size={14} />,
-            onClick: () => setMove(shape.id),
+            onClick: () => {
+              setMove(shape.id);
+              debounce.execute();
+            },
             isEnabled: true,
           },
           {
@@ -174,6 +177,7 @@ export const Nodes = ({
             onClick: () => {
               setTool("MOVE");
               DELETE_SHAPE();
+              debounce.execute();
             },
             isEnabled: true,
           },
@@ -283,7 +287,10 @@ export const Nodes = ({
             <Input.withPause>
               <Input.Text
                 value={shape?.label}
-                onChange={(e) => setShape({ ...shape, label: e })}
+                onChange={(e) => {
+                  setShape({ ...shape, label: e });
+                  debounce.execute();
+                }}
                 style={{
                   width: "auto",
                   border: "none",

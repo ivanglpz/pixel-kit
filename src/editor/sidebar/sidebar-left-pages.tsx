@@ -17,10 +17,12 @@ const DraggableRootItem = ({
   page,
   isSelected,
   onClick,
+  onDebounce,
 }: {
   page: IPage;
   isSelected: boolean;
   onClick: () => void;
+  onDebounce: VoidFunction;
 }) => {
   const [show, setShow] = useState(false);
   const [name, setName] = useAtom(page.name);
@@ -101,7 +103,10 @@ const DraggableRootItem = ({
           <Input.withPause>
             <Input.Text
               value={name}
-              onChange={(e) => setName(e)}
+              onChange={(e) => {
+                setName(e);
+                onDebounce();
+              }}
               style={{
                 width: "auto",
                 border: "none",
@@ -206,6 +211,7 @@ export const SidebarLeftPages = () => {
             page={item}
             isSelected={selectedPage === item.id}
             onClick={() => setSelectedPage(item.id)}
+            onDebounce={() => debounce.execute()}
           />
         ))}
         <div ref={ListRef} />
