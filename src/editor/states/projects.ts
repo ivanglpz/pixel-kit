@@ -1,5 +1,5 @@
 import { atom, PrimitiveAtom } from "jotai";
-import { atomWithStorage } from "jotai/utils";
+import { atomWithDefault } from "jotai/utils";
 import { IShape } from "../shapes/type.shape";
 import { IStageEvents } from "./event";
 import { MODE } from "./mode";
@@ -25,8 +25,15 @@ export type IEDITORPROJECT = {
   EVENT: PrimitiveAtom<IStageEvents> & WithInitialValue<IStageEvents>;
 };
 
-export const PROJECT_ID_ATOM = atomWithStorage<string | null>("pageId", null);
+export const PROJECT_ID_ATOM = atomWithDefault<string | null>(() => {
+  if (typeof window === "undefined" || !window.location) {
+    return null;
+  }
 
+  const ID = window.location.pathname.split("/").at(-1);
+
+  return ID ?? null;
+});
 const cloneShapeRecursive = (shape: ALL_SHAPES_CHILDREN): ALL_SHAPES => {
   return {
     id: shape.id,
@@ -70,7 +77,7 @@ export const MOCKUP_PROJECT: IEDITORPROJECT = {
   },
 };
 
-export const PROJECTS_ATOM = atom((get) => {
+export const PROJECTS_ATOM = atomWithDefault((get) => {
   const PERSIST = get(TABS_PERSIST_ATOM);
   return PERSIST?.map((project) => {
     const DATA = JSON.parse(project.data);
