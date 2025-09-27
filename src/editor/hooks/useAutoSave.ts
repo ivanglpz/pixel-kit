@@ -19,8 +19,7 @@ export const useAutoSave = () => {
     mutationFn: async () => {
       const JSON_ = GET_JSON();
       const previewUrl = ref?.current?.toDataURL({
-        quality: 0.1,
-        pixelRatio: 1,
+        quality: 0.5,
       });
 
       const PAYLOAD: Pick<IProject, "_id" | "name" | "data" | "previewUrl"> = {
