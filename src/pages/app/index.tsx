@@ -6,6 +6,7 @@ import { PROJECT_ID_ATOM } from "@/editor/states/projects";
 import { ADD_TAB_ATOM } from "@/editor/states/tabs";
 import { fetchListOrgs } from "@/services/organizations";
 import { createProject, fetchListProjects } from "@/services/projects";
+import { getTimeAgoString } from "@/utils/edited";
 import { css } from "@stylespixelkit/css";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useSetAtom } from "jotai";
@@ -263,7 +264,7 @@ const App = () => {
                           fontSize: "11px",
                         })}
                       >
-                        {new Date(project?.updatedAt).toDateString()}
+                        {getTimeAgoString(project.updatedAt)}
                       </p>
                     </div>
                   </div>
