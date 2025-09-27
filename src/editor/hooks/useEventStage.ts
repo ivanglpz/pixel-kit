@@ -250,6 +250,8 @@ export const useEventStage = () => {
       if (meta && !event.shiftKey && key === "z") {
         event.preventDefault();
         setUndo();
+        debounce.execute();
+
         // set(UNDO_ATOM);
         return;
       }
@@ -258,6 +260,8 @@ export const useEventStage = () => {
       if (meta && event.shiftKey && key === "z") {
         event.preventDefault();
         setRedo();
+        debounce.execute();
+
         // set(REDO_ATOM);
         return;
       }
