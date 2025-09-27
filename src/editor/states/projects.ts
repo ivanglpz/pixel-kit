@@ -76,10 +76,10 @@ export const MOCKUP_PROJECT: IEDITORPROJECT = {
     },
   },
 };
-
-export const PROJECTS_ATOM = atomWithDefault((get) => {
+export const PROJECTS_ATOM = atom<IEDITORPROJECT[]>([]);
+export const SET_PROJECTS_FROM_TABS = atom(null, (get, set) => {
   const PERSIST = get(TABS_PERSIST_ATOM);
-  return PERSIST?.map((project) => {
+  const projects = PERSIST?.map((project) => {
     const DATA = JSON.parse(project.data);
     const LIST_PAGES = DATA[project.mode]?.LIST as IPageJSON[];
 
@@ -122,6 +122,7 @@ export const PROJECTS_ATOM = atomWithDefault((get) => {
       EVENT: atom<IStageEvents>("IDLE"),
     };
   });
+  set(PROJECTS_ATOM, projects);
 });
 
 export const PROJECT_ATOM = atom((get) => {

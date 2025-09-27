@@ -1,10 +1,15 @@
+import { SET_PROJECTS_FROM_TABS } from "@/editor/states/projects";
 import { TABS_PERSIST_ATOM } from "@/editor/states/tabs";
 import { css } from "@stylespixelkit/css";
-import { useAtomValue } from "jotai";
-import { ReactNode } from "react";
+import { useAtomValue, useSetAtom } from "jotai";
+import { ReactNode, useEffect } from "react";
 
 export const AuthProjects = ({ children }: { children: ReactNode }) => {
   const PROJECTS = useAtomValue(TABS_PERSIST_ATOM);
+  const SET = useSetAtom(SET_PROJECTS_FROM_TABS);
+  useEffect(() => {
+    SET();
+  }, []);
   if (!PROJECTS.length)
     return (
       <div
