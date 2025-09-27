@@ -28,6 +28,7 @@ async function handler(
   const {
     _id,
     name,
+    previewUrl,
     // organization,
     data,
     // members
@@ -41,6 +42,7 @@ async function handler(
       { _id: _id },
       {
         ...(name && { name }),
+        ...(previewUrl && { previewUrl }),
         // ...(organization && { organization }),
         ...(data && { data }),
         // ...(members && { members }),
