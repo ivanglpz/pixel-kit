@@ -13,7 +13,7 @@ export const Tools = () => {
     <div
       className={css({
         display: "flex",
-        flexDirection: "row",
+        flexDirection: "column",
         gap: "lg",
         alignItems: "center",
       })}

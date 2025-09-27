@@ -180,57 +180,70 @@ const PxStage: FC<Props> = ({ children }) => {
   };
 
   return (
-    <div
-      ref={containerRef}
-      className={`${cursorByEvent[event]} ${css({
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        maxWidth: "100%",
+    <section
+      className={css({
+        display: "grid",
+        gridTemplateColumns: "auto 1fr",
         position: "relative",
-      })}`}
-      style={{
-        overflow: config.expand_stage ? "scroll" : "hidden",
-      }}
+        overflow: "hidden",
+      })}
     >
-      <Stage
-        id="pixel-kit-stage"
-        ref={stageRef}
-        width={Number(dimension?.width)}
-        height={Number(dimension?.height)}
-        onMouseDown={handleMouseDown}
-        onMousemove={handleMouseMove}
-        onWheel={handleWheel} // 👈 Zoom real en HD
-        onMouseup={handleMouseUp}
-        onClick={handleClear}
-        style={{
-          width: "100%",
-          height: "100%",
-        }}
-      >
-        {children}
-      </Stage>
       <section
         className={css({
           display: "flex",
           flexDirection: "row",
           alignItems: "center",
           justifyContent: "center",
-          position: "fixed",
+          position: "absolute",
           gap: "md",
-          bottom: 15,
+          left: -1,
+          top: -2,
           backgroundColor: "bg",
           padding: "md",
-          borderRadius: "lg",
+          // borderRadius: "lg",
+          borderTopRightRadius: "lg",
+          borderBottomRightRadius: "lg",
           borderWidth: "1.5px",
           borderStyle: "solid",
+          zIndex: "10",
           borderColor: "border", // ← usa el semantic token
         })}
       >
         <Tools />
       </section>
-    </div>
+      <div
+        ref={containerRef}
+        className={`${cursorByEvent[event]} ${css({
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          maxWidth: "100%",
+          position: "relative",
+        })}`}
+        style={{
+          overflow: config.expand_stage ? "scroll" : "hidden",
+        }}
+      >
+        <Stage
+          id="pixel-kit-stage"
+          ref={stageRef}
+          width={Number(dimension?.width)}
+          height={Number(dimension?.height)}
+          onMouseDown={handleMouseDown}
+          onMousemove={handleMouseMove}
+          onWheel={handleWheel} // 👈 Zoom real en HD
+          onMouseup={handleMouseUp}
+          onClick={handleClear}
+          style={{
+            width: "100%",
+            height: "100%",
+          }}
+        >
+          {children}
+        </Stage>
+      </div>
+    </section>
   );
 };
 
