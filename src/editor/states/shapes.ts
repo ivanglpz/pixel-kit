@@ -28,7 +28,7 @@ export type WithInitialValue<Value> = {
 export type ALL_SHAPES = {
   id: string;
   tool: IShapesKeys;
-  pageId: string;
+  pageId: string | null;
   state: PrimitiveAtom<IShape> & WithInitialValue<IShape>;
 };
 
