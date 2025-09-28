@@ -18,7 +18,7 @@ export const SHAPE_FRAME = (props: IShapeWithEvents) => {
     item.state as PrimitiveAtom<IShape> & WithInitialValue<IShape>
   );
   const shapeId = useAtomValue(SHAPE_IDS_ATOM);
-  const isSelected = shapeId.some((w) => w.id === box.id);
+  // const isSelected = shapeId.some((w) => w.id === box.id);
   const { x, y, height, width, rotation } = box;
 
   const childrens = useAtomValue(box.children);
