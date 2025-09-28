@@ -15,7 +15,7 @@ import {
   Trash,
   Unlock,
 } from "lucide-react";
-import { useCallback, useState } from "react";
+import { useState } from "react";
 import { constants } from "../constants/color";
 import { useAutoSave } from "../hooks/useAutoSave";
 import { SHAPE_IDS_ATOM } from "../states/shape";
@@ -112,14 +112,11 @@ export const Nodes = ({
   const [children, setChildren] = useAtom(shape.children);
   const { debounce } = useAutoSave();
 
-  const handleReorder = useCallback(
-    (newOrder: typeof children) => {
-      setChildren(newOrder);
-      setUpdateUndoRedo();
-      debounce.execute();
-    },
-    [setChildren, setUpdateUndoRedo]
-  );
+  const handleReorder = (newOrder: typeof children) => {
+    setChildren(newOrder);
+    setUpdateUndoRedo();
+    debounce.execute();
+  };
 
   // Función para manejar el toggle de isLocked
   const handleLockToggle = (e: React.MouseEvent) => {
