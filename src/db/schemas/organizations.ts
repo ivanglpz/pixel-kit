@@ -28,7 +28,7 @@ const OrganizationMemberSchema = new Schema<IOrganizationMember>({
 });
 
 const OrganizationSchema: Schema<IOrganization> = new Schema({
-  name: { type: String, required: true, unique: true },
+  name: { type: String, required: true },
   members: { type: [OrganizationMemberSchema], default: [] },
 });
 
