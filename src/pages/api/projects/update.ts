@@ -1,6 +1,7 @@
 import { withAuth } from "@/db/middleware/auth";
 import { Project } from "@/db/schemas/projects";
 import { IProject } from "@/db/schemas/types";
+import { sanitizeInput } from "@/utils/sanitize";
 import type { NextApiRequest, NextApiResponse } from "next";
 
 type ResponseData =
@@ -24,11 +25,11 @@ async function handler(
   }
 
   // const { id } = req.query;
-
+  const { _id, name, previewUrl } = sanitizeInput(req.body);
   const {
-    _id,
-    name,
-    previewUrl,
+    // _id,
+    // name,
+    // previewUrl,
     // organization,
     data,
     // members
