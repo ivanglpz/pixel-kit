@@ -198,6 +198,7 @@ const LoginPage = () => {
               id="email"
               value={formik.values.email}
               onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
               placeholder="whil@example.com"
               className={css({
                 backgroundColor: "transparent",
@@ -207,13 +208,32 @@ const LoginPage = () => {
                 fontSize: "sm",
                 width: "100%",
                 borderWidth: 1,
-                borderColor: "gray.150",
+                borderColor:
+                  formik.touched.email && formik.errors.email
+                    ? "red"
+                    : "gray.150",
                 _dark: {
-                  borderColor: "gray.450",
+                  borderColor:
+                    formik.touched.email && formik.errors.email
+                      ? "red"
+                      : "gray.450",
                 },
               })}
             />
+            {formik.touched.email && formik.errors.email && (
+              <span
+                className={css({
+                  color: "red",
+                  fontSize: "x-small",
+                  marginTop: "xs",
+                  fontWeight: "bold",
+                })}
+              >
+                {formik.errors.email}
+              </span>
+            )}
           </section>
+
           <section
             className={css({
               display: "flex",
@@ -236,6 +256,7 @@ const LoginPage = () => {
               id="password"
               value={formik.values.password}
               onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
               className={css({
                 border: "container",
                 backgroundColor: "transparent",
@@ -245,13 +266,32 @@ const LoginPage = () => {
                 width: "100%",
                 fontSize: "sm",
                 borderWidth: 1,
-                borderColor: "gray.150",
+                borderColor:
+                  formik.touched.password && formik.errors.password
+                    ? "red"
+                    : "gray.150",
                 _dark: {
-                  borderColor: "gray.450",
+                  borderColor:
+                    formik.touched.password && formik.errors.password
+                      ? "red"
+                      : "gray.450",
                 },
               })}
             />
+            {formik.touched.password && formik.errors.password && (
+              <span
+                className={css({
+                  color: "red",
+                  fontSize: "x-small",
+                  marginTop: "xs",
+                  fontWeight: "bold",
+                })}
+              >
+                {formik.errors.password}
+              </span>
+            )}
           </section>
+
           <button
             className={
               "login-button " +
