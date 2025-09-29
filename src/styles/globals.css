@@ -187,3 +187,17 @@ body {
     image-set(var(--cursor-zoom-out) 2x) 16 16,
     zoom-out;
 }
+
+.login-button {
+  svg {
+    fill: white;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  .login-button {
+    svg {
+      fill: red;
+    }
+  }
+}
