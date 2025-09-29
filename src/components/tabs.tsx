@@ -6,12 +6,13 @@ import {
   IEDITORPROJECT,
   PROJECT_ID_ATOM,
   PROJECTS_ATOM,
+  SET_PROJECTS_FROM_TABS,
 } from "@/editor/states/projects";
 import { css } from "@stylespixelkit/css";
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { Home, Plus, X } from "lucide-react";
 import { useRouter } from "next/router";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const Tab = ({
   project,
@@ -128,7 +129,10 @@ export const TabsProjects = () => {
   const [selected, setSelected] = useAtom(PROJECT_ID_ATOM);
   const setDelete = useSetAtom(DELETE_PROJECT);
   const containerRef = useRef<HTMLDivElement>(null);
-
+  const SET = useSetAtom(SET_PROJECTS_FROM_TABS);
+  useEffect(() => {
+    SET();
+  }, []);
   return (
     <header
       className={css({

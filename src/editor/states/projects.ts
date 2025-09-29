@@ -5,7 +5,7 @@ import { IStageEvents } from "./event";
 import { MODE } from "./mode";
 import { IPage, IPageJSON, IPageShapeIds } from "./pages";
 import { ALL_SHAPES, ALL_SHAPES_CHILDREN, WithInitialValue } from "./shapes";
-import { TABS_PERSIST_ATOM } from "./tabs";
+import { GET_PROJECTS, TABS_PERSIST_ATOM } from "./tabs";
 import { IKeyTool } from "./tool";
 import { UndoRedoAction } from "./undo-redo";
 
@@ -78,8 +78,9 @@ export const MOCKUP_PROJECT: IEDITORPROJECT = {
 };
 export const PROJECTS_ATOM = atom<IEDITORPROJECT[]>([]);
 export const SET_PROJECTS_FROM_TABS = atom(null, (get, set) => {
-  const PERSIST = get(TABS_PERSIST_ATOM);
-  const projects = PERSIST?.map((project) => {
+  const DATA = GET_PROJECTS();
+  // const PERSIST = get(TABS_PERSIST_ATOM);
+  const projects = DATA?.map((project) => {
     const DATA = JSON.parse(project.data);
     const LIST_PAGES = DATA[project.mode]?.LIST as IPageJSON[];
 
