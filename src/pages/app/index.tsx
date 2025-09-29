@@ -209,11 +209,15 @@ const App = () => {
                     display: "grid",
                     gridTemplateRows: "160px 1fr",
                     borderRadius: "lg",
-                    borderWidth: 1,
-                    borderColor: "bg.elevated",
                     backgroundColor: "gray.50",
+                    // _dark: {
+                    //   backgroundColor: "gray.600",
+                    // },
+                    borderWidth: 1,
+                    borderColor: "gray.150",
                     _dark: {
-                      backgroundColor: "gray.600",
+                      borderColor: "gray.450",
+                      backgroundColor: "gray.700",
                     },
                   })}
                 >
