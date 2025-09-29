@@ -63,7 +63,7 @@ const LoginPage = () => {
         className={css({
           display: "flex",
           flexDirection: "row",
-          gap: "lg",
+          gap: "sm",
           alignItems: "center",
         })}
       >
@@ -119,6 +119,7 @@ const LoginPage = () => {
         <p
           className={css({
             fontWeight: "bold",
+            fontSize: "sm",
           })}
         >
           Pixel kit
