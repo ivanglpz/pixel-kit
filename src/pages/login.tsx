@@ -1,3 +1,4 @@
+import { Loading } from "@/editor/components/loading";
 import { loginUser } from "@/services/users";
 import { css } from "@stylespixelkit/css";
 import { useMutation } from "@tanstack/react-query";
@@ -252,27 +253,34 @@ const LoginPage = () => {
             />
           </section>
           <button
-            className={css({
-              backgroundColor: "gray.800",
-              color: "gray.50",
-              padding: "md",
-              borderRadius: "md",
-              fontSize: "sm",
-              fontWeight: "bold",
-              width: "100%",
-              cursor: "pointer",
-              marginTop: "lg",
-              borderWidth: 1,
-              borderColor: "gray.150",
-              _dark: {
-                backgroundColor: "gray.50",
-                color: "gray.800",
-                borderColor: "gray.750",
-              },
-            })}
+            className={
+              "login-button " +
+              css({
+                backgroundColor: "gray.800",
+                color: "gray.50",
+                padding: "md",
+                borderRadius: "md",
+                fontSize: "sm",
+                fontWeight: "bold",
+                width: "100%",
+                cursor: "pointer",
+                marginTop: "lg",
+                borderWidth: 1,
+                borderColor: "gray.150",
+
+                _dark: {
+                  backgroundColor: "gray.50",
+                  color: "gray.800",
+                  borderColor: "gray.750",
+                },
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              })
+            }
             onClick={() => formik.submitForm()}
           >
-            Login
+            {mutation.isPending ? <Loading color="black" /> : "Login"}
           </button>
         </div>
         <footer
