@@ -1,6 +1,7 @@
 import { withAuth } from "@/db/middleware/auth";
 import { IOrganizationMember, Organization } from "@/db/schemas/organizations";
 import { Project } from "@/db/schemas/projects";
+import { sanitizeInput } from "@/utils/sanitize";
 import type { NextApiRequest, NextApiResponse } from "next";
 
 type ResponseData = { message: string; data: any | null } | { error: string };
@@ -13,7 +14,7 @@ async function handler(
     return res.status(405).json({ error: "Method not allowed" });
   }
 
-  const { id } = req.query;
+  const { id } = sanitizeInput(req.query);
   if (!id || typeof id !== "string") {
     return res.status(400).json({ error: "Invalid or missing project id" });
   }

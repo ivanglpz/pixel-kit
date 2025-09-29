@@ -2,6 +2,7 @@ import { withAuth } from "@/db/middleware/auth";
 import { IOrganizationMember, Organization } from "@/db/schemas/organizations";
 import { Project } from "@/db/schemas/projects";
 import { canvasTheme } from "@/editor/states/canvas";
+import { sanitizeInput } from "@/utils/sanitize";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { v4 as uuidv4 } from "uuid";
 
@@ -15,7 +16,7 @@ async function handler(
     return res.status(405).json({ error: "Method not allowed" });
   }
 
-  const { name, organization } = req.body;
+  const { name, organization } = sanitizeInput(req.body);
 
   if (!name || !organization) {
     return res.status(400).json({ error: "Missing required fields" });
