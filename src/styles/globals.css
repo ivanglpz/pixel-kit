@@ -197,7 +197,7 @@ body {
 @media (prefers-color-scheme: dark) {
   .login-button {
     svg {
-      fill: red;
+      fill: black;
     }
   }
 }
