@@ -4,6 +4,7 @@ import { Valid } from "@/components/valid";
 import { IShape } from "@/editor/shapes/type.shape";
 import { SHAPE_SELECTED_ATOM, SHAPE_UPDATE_ATOM } from "@/editor/states/shape";
 import { css } from "@stylespixelkit/css";
+import { useMutation } from "@tanstack/react-query";
 import { useAtomValue, useSetAtom } from "jotai";
 import {
   ArrowDown,
@@ -545,6 +546,14 @@ export const LayoutShapeConfig = () => {
     execute(); // Ejecutar después del cambio
   };
 
+  const mutation = useMutation({
+    mutationKey: ["upload_image"],
+    mutationFn: async () => {
+      console.log("test");
+      return 1;
+    },
+  });
+
   // Manejadores para layouts (agregar con los demás manejadores)
 
   return (
@@ -604,8 +613,20 @@ export const LayoutShapeConfig = () => {
                 gap: "lg",
               })}
             >
-              <Button.Secondary onClick={() => {}}>Upload</Button.Secondary>
-              <Button.Secondary onClick={() => {}}>Choose</Button.Secondary>
+              <Button.Secondary
+                onClick={() => {
+                  setType("UPLOAD");
+                }}
+              >
+                Upload
+              </Button.Secondary>
+              <Button.Secondary
+                onClick={() => {
+                  setType("CHOOSE");
+                }}
+              >
+                Choose
+              </Button.Secondary>
             </header>
 
             <section
