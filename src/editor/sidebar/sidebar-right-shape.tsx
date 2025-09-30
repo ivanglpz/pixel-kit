@@ -628,51 +628,63 @@ export const LayoutShapeConfig = () => {
                 Choose
               </Button.Secondary>
             </header>
-
-            <section
-              className={css({
-                display: "grid",
-                gridTemplateRows: "1fr",
-                gridTemplateColumns: "1fr",
-                flex: 1,
-                minHeight: 0, // evita colapso
-              })}
-            >
-              <div
+            {type === "UPLOAD" ? (
+              <section
                 className={css({
-                  backgroundColor: "gray.150",
-                  display: "flex",
+                  display: "grid",
+                  gridTemplateRows: "1fr",
+                  gridTemplateColumns: "1fr",
                   flex: 1,
-                  minHeight: 0,
-                  position: "relative",
-                  justifyContent: "center",
-                  alignItems: "center",
+                  minHeight: 0, // evita colapso
                 })}
               >
-                {images?.[0] ? (
-                  <img
-                    src={getObjectUrl(images?.[0])}
-                    alt="preview-app"
-                    className={css({
-                      width: "100%",
-                      height: "100%",
-                      objectFit: "contain",
-                    })}
-                  />
-                ) : null}
-                <Button.Secondary
-                  style={{
-                    position: "absolute",
-                    backgroundColor: "black",
-                  }}
-                  onClick={() => {
-                    inputRef.current?.click();
-                  }}
+                <div
+                  className={css({
+                    backgroundColor: "gray.150",
+                    display: "flex",
+                    flex: 1,
+                    minHeight: 0,
+                    position: "relative",
+                    justifyContent: "center",
+                    alignItems: "center",
+                  })}
                 >
-                  Choose
-                </Button.Secondary>
-              </div>
-            </section>
+                  {images?.[0] ? (
+                    <img
+                      src={getObjectUrl(images?.[0])}
+                      alt="preview-app"
+                      className={css({
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "contain",
+                      })}
+                    />
+                  ) : null}
+                  <Button.Secondary
+                    style={{
+                      position: "absolute",
+                      backgroundColor: "black",
+                    }}
+                    onClick={() => {
+                      inputRef.current?.click();
+                    }}
+                  >
+                    {images?.[0] ? "Change image" : "Choose from device"}
+                  </Button.Secondary>
+                </div>
+              </section>
+            ) : null}
+            {type === "CHOOSE" ? (
+              <section
+                className={css({
+                  display: "grid",
+                  gridTemplateRows: "1fr",
+                  gridTemplateColumns: "1fr",
+                  flex: 1,
+                  minHeight: 0, // evita colapso
+                })}
+              ></section>
+            ) : null}
 
             <footer
               className={css({
