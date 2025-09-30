@@ -10,6 +10,7 @@ interface Photo extends Document {
 
   createdBy: Types.ObjectId;
   width: number;
+  name: string;
   height: number;
 }
 
@@ -20,6 +21,10 @@ const PSchema = new Schema<Photo>(
       ref: "projects",
       required: true,
       index: true,
+    },
+    name: {
+      type: String,
+      required: true,
     },
     url: {
       type: String,
