@@ -583,7 +583,7 @@ export const LayoutShapeConfig = () => {
         const myImage = photoUpload;
 
         if (!myImage) {
-          throw new Error("Upload a photo");
+          throw new Error("Choose a photo");
         }
 
         const formData = new FormData();
