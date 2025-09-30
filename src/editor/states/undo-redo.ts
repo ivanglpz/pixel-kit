@@ -71,7 +71,7 @@ const convertUndoShapeToAllShapes = (undoShape: UndoShape): ALL_SHAPES => {
 
   return {
     id: undoShape.id,
-    pageId: undoShape.pageId,
+    // pageId: undoShape.pageId,
     tool: undoShape.tool,
     state: atom<IShape>({
       ...cloneDeep(undoShape.state),

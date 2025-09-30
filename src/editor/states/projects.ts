@@ -37,7 +37,7 @@ export const PROJECT_ID_ATOM = atomWithDefault<string | null>(() => {
 const cloneShapeRecursive = (shape: ALL_SHAPES_CHILDREN): ALL_SHAPES => {
   return {
     id: shape.id,
-    pageId: shape.pageId,
+    // pageId: shape.pageId,
     tool: shape.tool,
     state: atom<IShape>({
       ...shape.state,
@@ -143,7 +143,7 @@ export const JSON_PROJECTS_ATOM = atom(null, (get, set) => {
   const cloneShapeJson = (shape: ALL_SHAPES): ALL_SHAPES_CHILDREN => {
     return {
       id: shape.id,
-      pageId: shape.pageId,
+      // pageId: shape.pageId,
       tool: shape.tool,
       state: {
         ...get(shape.state),

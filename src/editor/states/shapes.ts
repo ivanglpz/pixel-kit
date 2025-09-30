@@ -28,7 +28,7 @@ export type WithInitialValue<Value> = {
 export type ALL_SHAPES = {
   id: string;
   tool: IShapesKeys;
-  pageId: string | null;
+  // pageId: string | null;
   state: PrimitiveAtom<IShape> & WithInitialValue<IShape>;
 };
 
@@ -174,7 +174,7 @@ export const MOVE_SHAPES_BY_ID = atom(null, (get, set, args: string) => {
   ): ALL_SHAPES => {
     return {
       id: shape.id,
-      pageId: shape.pageId,
+      // pageId: shape.pageId,
       tool: shape.tool,
       state: atom<IShape>({
         ...get(shape.state),
@@ -239,7 +239,7 @@ export const MOVE_SHAPES_TO_ROOT = atom(null, (get, set) => {
   const cloneShapeRecursive = (shape: ALL_SHAPES): ALL_SHAPES => {
     return {
       id: shape.id,
-      pageId: shape.pageId,
+      // pageId: shape.pageId,
       tool: shape.tool,
       state: atom<IShape>({
         ...get(shape.state),
@@ -491,7 +491,7 @@ export const CREATE_SHAPE_ATOM = atom(null, (get, set, args: IShape) => {
         {
           ...FIND_SHAPE,
           state: atom(newElement),
-          pageId: get(PAGE_ID_ATOM),
+          // pageId: get(PAGE_ID_ATOM),
         },
       ],
       type: "CREATE",
@@ -508,7 +508,7 @@ export const CREATE_SHAPE_ATOM = atom(null, (get, set, args: IShape) => {
       ...args,
       children: atom(result),
     }),
-    pageId: get(PAGE_ID_ATOM),
+    // pageId: get(PAGE_ID_ATOM),
   };
   set(ALL_SHAPES_ATOM, [...get(ALL_SHAPES_ATOM), newAllShape]);
   set(NEW_UNDO_REDO, {
