@@ -9,6 +9,8 @@ interface Photo extends Document {
   folder: string;
 
   createdBy: Types.ObjectId;
+  width: number;
+  height: number;
 }
 
 const PSchema = new Schema<Photo>(
@@ -32,6 +34,14 @@ const PSchema = new Schema<Photo>(
       required: true,
     },
     size: {
+      type: Number,
+      required: true,
+    },
+    width: {
+      type: Number,
+      required: true,
+    },
+    height: {
       type: Number,
       required: true,
     },
