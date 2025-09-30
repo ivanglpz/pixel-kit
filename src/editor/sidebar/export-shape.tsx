@@ -203,7 +203,7 @@ export const ExportShape = () => {
                   key={`pixel-kit-preview-${shape.id}`}
                   shape={{
                     id: "1",
-                    pageId: "one",
+                    // pageId: "one",
                     state: atom({ ...shape, x: 0, y: 0 }),
                     tool: shape.tool,
                   }}

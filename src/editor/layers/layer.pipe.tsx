@@ -25,7 +25,7 @@ export const LayerPipe = () => {
                     ? item.children
                     : atom([] as ALL_SHAPES[]),
                 }),
-                pageId: "main-image-render-stage",
+                // pageId: "main-image-render-stage",
                 tool: item.tool,
               }}
               key={`pixel-kit-temporal-shape-${item.id}`}
