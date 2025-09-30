@@ -41,4 +41,7 @@ export type IPhoto = {
   createdAt: string;
   folder: string;
   createdBy: string;
+  name: string;
+  width: number;
+  height: number;
 };

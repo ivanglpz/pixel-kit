@@ -72,7 +72,6 @@ async function handler(
           resource_type: "image",
         };
         const result = await cloudinary.uploader.upload(file.filepath, payload);
-        console.log(result, "result");
 
         // Crear documento en MongoDB
         const newPhoto = await PhotoSchema.create({
@@ -84,11 +83,17 @@ async function handler(
           createdBy: req.userId,
           width: result.width,
           height: result.height,
+          name: file.originalFilename,
         });
 
         return res.status(201).json({
           message: "Image uploaded successfully",
-          data: newPhoto,
+          data: {
+            url: newPhoto.url,
+            width: newPhoto.width,
+            height: newPhoto.height,
+            name: newPhoto.name,
+          },
         });
       } catch (uploadError) {
         console.error(uploadError);

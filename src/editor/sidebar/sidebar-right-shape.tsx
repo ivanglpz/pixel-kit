@@ -553,32 +553,39 @@ export const LayoutShapeConfig = () => {
     execute(); // Ejecutar después del cambio
   };
 
+  const handleResetDialogImage = () => {
+    setType("UPLOAD");
+    setPhotoUpload(null);
+    setPhotocChoose(null);
+    setShowImage(false);
+  };
+
   const mutation = useMutation({
-    mutationKey: ["upload_image", type, photoUpload],
-    mutationFn: async () => {
+    mutationKey: ["upload_image", type, photoUpload, photoChoose],
+    mutationFn: async (): Promise<
+      Pick<IPhoto, "name" | "width" | "height" | "url">
+    > => {
       if (type === "UPLOAD") {
         const myImage = photoUpload;
 
-        if (!myImage) return;
-        console.log(myImage);
+        if (!myImage) {
+          throw new Error("Upload a photo");
+        }
 
         const formData = new FormData();
         formData.append("image", myImage); // usar el mismo nombre 'images'
         formData.append("projectId", `${PROJECT_ID}`); // usar el mismo nombre 'images'
 
-        console.log(formData);
-
         const response = await uploadPhoto(formData);
         return response;
       }
-      return 1;
+      if (!photoChoose) {
+        throw new Error("Choose a exist photo");
+      }
+      return photoChoose;
     },
     onSuccess: (values) => {
-      console.log("entrando aqui");
-      console.log(type, "type");
-
       if (type === "UPLOAD") {
-        console.log(values);
         const scale: number = calculateScale(
           values.width,
           values.height,
@@ -601,15 +608,48 @@ export const LayoutShapeConfig = () => {
                 src: values?.url,
                 width: values.width,
                 height: values.height,
-                name: values?._id,
+                name: values?.name,
               },
             },
             ...(shape.fills || []),
           ],
         });
         execute(); // Ejecutar después del cambio
-        setShowImage(false);
+        handleResetDialogImage();
+        return;
       }
+
+      const scale: number = calculateScale(
+        values.width,
+        values.height,
+        shape.width ?? 500,
+        shape.height ?? 500
+      );
+      const newWidth: number = values.width * scale;
+      const newHeight: number = values.height * scale;
+      shapeUpdate({
+        width: newWidth,
+        height: newHeight,
+        fills: [
+          {
+            id: uuidv4(),
+            color: "#ffffff",
+            opacity: 1,
+            visible: true,
+            type: "image",
+            image: {
+              src: values?.url,
+              width: values.width,
+              height: values.height,
+              name: values?.name,
+            },
+          },
+          ...(shape.fills || []),
+        ],
+      });
+
+      execute(); // Ejecutar después del cambio
+      handleResetDialogImage();
     },
   });
 
@@ -643,7 +683,13 @@ export const LayoutShapeConfig = () => {
           />
         </Dialog.Container>
       </Dialog.Provider>
-      <Dialog.Provider visible={showImage} onClose={() => setShowImage(false)}>
+      <Dialog.Provider
+        visible={showImage}
+        onClose={() => {
+          if (mutation.isPending) return;
+          setShowImage(false);
+        }}
+      >
         <Dialog.Container fullWidth fullHeight>
           <Dialog.Header>
             <p
@@ -653,7 +699,12 @@ export const LayoutShapeConfig = () => {
             >
               Image
             </p>
-            <Dialog.Close onClose={() => setShowImage(false)} />
+            <Dialog.Close
+              onClose={() => {
+                if (mutation.isPending) return;
+                setShowImage(false);
+              }}
+            />
           </Dialog.Header>
 
           <section
@@ -700,6 +751,9 @@ export const LayoutShapeConfig = () => {
                 <div
                   className={css({
                     backgroundColor: "gray.150",
+                    _dark: {
+                      backgroundColor: "gray.750",
+                    },
                     display: "flex",
                     flex: 1,
                     minHeight: 0,
@@ -753,9 +807,17 @@ export const LayoutShapeConfig = () => {
                 justifyContent: "end",
               })}
             >
-              <Button.Secondary onClick={() => {}}>Cancel</Button.Secondary>
+              <Button.Secondary
+                onClick={() => {
+                  if (mutation.isPending) return;
+                  handleResetDialogImage();
+                }}
+              >
+                Cancel
+              </Button.Secondary>
               <Button.Primary
                 onClick={() => {
+                  if (mutation.isPending) return;
                   mutation.mutate();
                 }}
               >
