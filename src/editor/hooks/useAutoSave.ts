@@ -20,6 +20,7 @@ export const useAutoSave = () => {
       const JSON_ = GET_JSON();
       const previewUrl = ref?.current?.toDataURL({
         quality: 0.5,
+        pixelRatio: 1,
       });
 
       const PAYLOAD: Pick<IProject, "_id" | "name" | "data" | "previewUrl"> = {
