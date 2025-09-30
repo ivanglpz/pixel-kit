@@ -583,7 +583,7 @@ export const LayoutShapeConfig = () => {
         const myImage = photoUpload;
 
         if (!myImage) {
-          throw new Error("Choose a photo");
+          throw new Error("Please upload a photo from your device");
         }
 
         const formData = new FormData();
@@ -594,7 +594,7 @@ export const LayoutShapeConfig = () => {
         return response;
       }
       if (!photoChoose) {
-        throw new Error("Choose a exist photo");
+        throw new Error("Please choose an existing photo");
       }
       return photoChoose;
     },
