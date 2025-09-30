@@ -1,11 +1,12 @@
 import { css } from "@stylespixelkit/css";
-import { ReactNode } from "react";
+import { CSSProperties, ReactNode } from "react";
 import { constants } from "../constants/color";
 
 type ButtonProps = {
   onClick: VoidFunction;
   children: ReactNode;
   variant?: "primary" | "secondary";
+  style?: CSSProperties;
 };
 
 const baseStyle = css({
@@ -42,13 +43,14 @@ const ButtonBase = ({
   onClick,
   children,
   variant = "primary",
+  style: PropsStyle,
 }: ButtonProps) => {
   const className = `${baseStyle} ${variantStyles[variant]}`;
 
   const style =
     variant === "primary"
       ? { backgroundColor: constants.theme.colors.primary }
-      : {};
+      : (PropsStyle ?? {});
 
   return (
     <button type="button" className={className} style={style} onClick={onClick}>

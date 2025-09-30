@@ -632,35 +632,21 @@ export const LayoutShapeConfig = () => {
             <section
               className={css({
                 display: "grid",
-                gridTemplateRows: "50px 1fr",
+                gridTemplateRows: "1fr",
                 gridTemplateColumns: "1fr",
                 flex: 1,
                 minHeight: 0, // evita colapso
               })}
             >
-              <header
-                className={css({
-                  display: "flex",
-                  flexDir: "row",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                })}
-              >
-                <p>{images.at(0)?.name}</p>
-                <Button.Secondary
-                  onClick={() => {
-                    inputRef.current?.click();
-                  }}
-                >
-                  Choose
-                </Button.Secondary>
-              </header>
               <div
                 className={css({
                   backgroundColor: "gray.150",
                   display: "flex",
                   flex: 1,
                   minHeight: 0,
+                  position: "relative",
+                  justifyContent: "center",
+                  alignItems: "center",
                 })}
               >
                 {images?.[0] ? (
@@ -674,6 +660,17 @@ export const LayoutShapeConfig = () => {
                     })}
                   />
                 ) : null}
+                <Button.Secondary
+                  style={{
+                    position: "absolute",
+                    backgroundColor: "black",
+                  }}
+                  onClick={() => {
+                    inputRef.current?.click();
+                  }}
+                >
+                  Choose
+                </Button.Secondary>
               </div>
             </section>
 
