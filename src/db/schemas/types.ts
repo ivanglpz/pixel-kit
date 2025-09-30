@@ -34,6 +34,7 @@ export type IProject = {
   updatedAt: string;
 };
 export type IPhoto = {
+  _id: string;
   projectId: string;
   url: string;
   mimeType: string;

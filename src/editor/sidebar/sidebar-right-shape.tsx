@@ -5,8 +5,9 @@ import { IPhoto } from "@/db/schemas/types";
 import { IShape } from "@/editor/shapes/type.shape";
 import { SHAPE_SELECTED_ATOM, SHAPE_UPDATE_ATOM } from "@/editor/states/shape";
 import { uploadPhoto } from "@/services/photo";
+import { fetchListPhotosProject } from "@/services/photos";
 import { css } from "@stylespixelkit/css";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useAtomValue, useSetAtom } from "jotai";
 import {
   ArrowDown,
@@ -318,13 +319,26 @@ export const LayoutShapeConfig = () => {
   const { debounce } = useAutoSave();
   const PROJECT_ID = useAtomValue(PROJECT_ID_ATOM);
   const [photoUpload, setPhotoUpload] = useState<File | null>(null);
-  const [photoChoose, setPhotocChoose] = useState<IPhoto | null>(null);
+  const [photoChoose, setPhotocChoose] = useState<Omit<
+    IPhoto,
+    "createdBy" | "folder" | "projectId"
+  > | null>(null);
   const { execute, isRunning } = useDelayedExecutor({
     callback: () => {
       setUpdateUndoRedo();
       debounce.execute();
     },
     timer: 500, // opcional
+  });
+
+  const QueryListPhotos = useQuery({
+    queryKey: ["list_photos_project", PROJECT_ID],
+    queryFn: async () => {
+      if (!PROJECT_ID) {
+        throw new Error("Project ID is require to get List photos");
+      }
+      return fetchListPhotosProject(PROJECT_ID);
+    },
   });
 
   // Si no hay shape seleccionado, no renderizar nada
@@ -616,6 +630,8 @@ export const LayoutShapeConfig = () => {
         });
         execute(); // Ejecutar después del cambio
         handleResetDialogImage();
+        QueryListPhotos.refetch();
+
         return;
       }
 
@@ -791,12 +807,58 @@ export const LayoutShapeConfig = () => {
               <section
                 className={css({
                   display: "grid",
-                  gridTemplateRows: "1fr",
-                  gridTemplateColumns: "1fr",
+                  gridTemplateColumns: "repeat(4, 1fr)", // válido en PandaCSS
+                  gap: "4", // usa tokens definidos en tu config
                   flex: 1,
-                  minHeight: 0, // evita colapso
+                  minHeight: 0,
+                  overflowY: "auto",
+                  overflowX: "hidden",
+                  gridAutoRows: "120px",
                 })}
-              ></section>
+              >
+                {QueryListPhotos?.data?.map((e) => {
+                  return (
+                    <button
+                      className={css({
+                        backgroundColor: "gray.50",
+                        // _dark: {
+                        //   backgroundColor: "gray.600",
+                        // },
+                        display: "flex",
+                        flexDirection: "column",
+                        borderWidth: 2,
+                        // borderColor: "gray.150",
+                        _dark: {
+                          borderColor:
+                            photoChoose?._id === e?._id
+                              ? "primary"
+                              : "gray.450",
+                          // borderColor: "gray.450",
+                          backgroundColor: "gray.700",
+                        },
+                        borderRadius: "lg",
+                        cursor: "pointer",
+                        borderColor:
+                          photoChoose?._id === e?._id ? "primary" : "gray.150",
+                      })}
+                      onClick={() => {
+                        setPhotocChoose(e);
+                      }}
+                    >
+                      <img
+                        src={e?.url}
+                        alt={e?.name}
+                        className={css({
+                          height: "100%",
+                          width: "100%",
+                          objectFit: "cover",
+                          borderRadius: "lg",
+                        })}
+                      />
+                    </button>
+                  );
+                })}
+              </section>
             ) : null}
 
             <footer
