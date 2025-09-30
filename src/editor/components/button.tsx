@@ -7,6 +7,7 @@ type ButtonProps = {
   children: ReactNode;
   variant?: "primary" | "secondary";
   style?: CSSProperties;
+  disabled?: boolean;
 };
 
 const baseStyle = css({
@@ -39,7 +40,7 @@ const variantStyles = {
   }),
 };
 
-const ButtonBase = ({
+export const ButtonBase = ({
   onClick,
   children,
   variant = "primary",

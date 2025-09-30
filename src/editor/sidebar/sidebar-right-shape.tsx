@@ -42,7 +42,7 @@ import {
 import React, { ChangeEvent, useRef, useState } from "react";
 import { toast } from "sonner";
 import { v4 as uuidv4 } from "uuid";
-import { Button } from "../components/button";
+import { Button, ButtonBase } from "../components/button";
 import { Dialog } from "../components/dialog";
 import { Input } from "../components/input";
 import { ListIcons } from "../components/list-icons";
@@ -667,6 +667,9 @@ export const LayoutShapeConfig = () => {
       execute(); // Ejecutar después del cambio
       handleResetDialogImage();
     },
+    onError: (error) => {
+      toast.error(error.message);
+    },
   });
 
   // Manejadores para layouts (agregar con los demás manejadores)
@@ -739,20 +742,22 @@ export const LayoutShapeConfig = () => {
                 gap: "lg",
               })}
             >
-              <Button.Secondary
+              <ButtonBase
+                variant={type === "UPLOAD" ? "primary" : "secondary"}
                 onClick={() => {
                   setType("UPLOAD");
                 }}
               >
                 Upload
-              </Button.Secondary>
-              <Button.Secondary
+              </ButtonBase>
+              <ButtonBase
+                variant={type === "CHOOSE" ? "primary" : "secondary"}
                 onClick={() => {
                   setType("CHOOSE");
                 }}
               >
                 Choose
-              </Button.Secondary>
+              </ButtonBase>
             </header>
             {type === "UPLOAD" ? (
               <section
@@ -793,6 +798,7 @@ export const LayoutShapeConfig = () => {
                     style={{
                       position: "absolute",
                       backgroundColor: "black",
+                      color: "white",
                     }}
                     onClick={() => {
                       inputRef.current?.click();
