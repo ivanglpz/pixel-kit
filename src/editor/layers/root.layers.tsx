@@ -1,24 +1,17 @@
-import { Valid } from "@/components/valid";
 import { useConfiguration } from "../hooks/useConfiguration";
 import { LayerBackground } from "./layer.background";
-import { LayerClip } from "./layer.clip";
-import { LayerImage } from "./layer.image";
 import { LayerPipe } from "./layer.pipe";
 import { LayerShapes } from "./layer.shapes";
 
 export const AllLayers = () => {
   const { config } = useConfiguration();
+
   return (
     <>
-      <Valid isValid={config?.showBackgroundColor}>
-        <LayerBackground />
-      </Valid>
-      <Valid isValid={config?.showPreviewImage}>
-        <LayerImage />
-      </Valid>
-      <Valid isValid={config.showClipImage}>
-        <LayerClip />
-      </Valid>
+      {/* <Valid isValid={config?.show_layer_background}> */}
+      <LayerBackground />
+      {/* </Valid> */}
+
       <LayerShapes />
       <LayerPipe />
     </>

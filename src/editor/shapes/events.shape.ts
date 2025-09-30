@@ -1,21 +1,17 @@
 import { KonvaEventObject } from "konva/lib/Node";
 import { IShape } from "./type.shape";
 
-type Drag = (shape: IShape) => void;
-type Click = Drag;
-
 export const ShapeEventDragStart =
-  (evt: KonvaEventObject<DragEvent>, onDragStart: Drag) => (prev: IShape) => {
+  (evt: KonvaEventObject<DragEvent>) => (prev: IShape) => {
     const payload = {
       ...prev,
       x: evt.target.x(),
       y: evt.target.y(),
     };
-    onDragStart(payload);
     return payload;
   };
 
-const coordinatesShapeMove = (
+export const coordinatesShapeMove = (
   prev: IShape,
   stageWidth: number,
   stageHeight: number,
@@ -52,46 +48,36 @@ const coordinatesShapeMove = (
 export const shapeEventDragMove =
   (
     evt: KonvaEventObject<DragEvent> | KonvaEventObject<Event>,
-    onDragMove: Drag,
     stageWidth: number,
     stageHeight: number
   ) =>
   (prev: IShape) => {
     const payload = coordinatesShapeMove(prev, stageWidth, stageHeight, evt);
-    onDragMove({
-      ...payload,
-    });
 
     return payload;
   };
 export const shapeEventDragStop =
-  (evt: KonvaEventObject<DragEvent>, onDragStop: Drag) => (prev: IShape) => {
+  (evt: KonvaEventObject<DragEvent>) => (prev: IShape) => {
     const payload = {
       ...prev,
       x: evt.target.x(),
       y: evt.target.y(),
     };
-    onDragStop(payload);
     return payload;
   };
 export const shapeEventClick =
-  (
-    evt: KonvaEventObject<MouseEvent> | KonvaEventObject<Event>,
-    onClick: Click
-  ) =>
+  (evt: KonvaEventObject<MouseEvent> | KonvaEventObject<Event>) =>
   (prev: IShape) => {
-    onClick(prev);
     return prev;
   };
 
 export const shapeEventDoubleClick =
-  (evt: KonvaEventObject<MouseEvent>, onClick: Click) => (prev: IShape) => {
-    onClick(prev);
+  (evt: KonvaEventObject<MouseEvent>) => (prev: IShape) => {
     return prev;
   };
 
 export const shapeTransformEnd =
-  (evt: KonvaEventObject<Event>, onDragStop: Drag) => (prev: IShape) => {
+  (evt: KonvaEventObject<Event>) => (prev: IShape) => {
     const scaleX = evt.target.scaleX();
     const scaleY = evt.target.scaleY();
     evt.target.scaleX(1);
@@ -100,11 +86,10 @@ export const shapeTransformEnd =
       ...prev,
       x: evt.target.x(),
       y: evt.target.y(),
-      rotate: prev.rotate,
+      rotate: evt.target.rotation(),
       width: Math.max(5, evt.target.width() * scaleX),
       height: Math.max(evt.target.height() * scaleY),
     };
-    onDragStop(payload);
 
     return payload;
   };

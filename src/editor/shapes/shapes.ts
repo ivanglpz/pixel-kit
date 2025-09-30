@@ -1,26 +1,21 @@
-import { MemoExoticComponent } from "react";
-import ShapeBox from "./box.shape";
-import { IShapeWithEvents } from "./type.shape";
-import { ShapeImage } from "./image.shape";
-import { ShapeCircle } from "./circle.shape";
+import { IShapesKeys } from "../states/tool";
 import { ShapeDraw } from "./drawn.shape";
+import { SHAPE_FRAME } from "./frame.shape";
+import { ShapeImage } from "./image.shape";
 import { ShapeText } from "./text.shape";
-import { ShapeLine } from "./line.shape";
-import { IKeyTool } from "../states/tool";
-import { ShapeGroup } from "./group.shape";
+import { IShapeWithEvents } from "./type.shape";
 
 export type IMapperElements = {
-  [key in IKeyTool]?: MemoExoticComponent<
-    (item: IShapeWithEvents) => JSX.Element
-  >;
+  [key in IShapesKeys]: (item: IShapeWithEvents) => JSX.Element | null;
 };
 
 export const Shapes: IMapperElements = {
-  BOX: ShapeBox,
+  // BOX: ShapeGroup,
+  FRAME: SHAPE_FRAME,
   TEXT: ShapeText,
-  CIRCLE: ShapeCircle,
-  LINE: ShapeLine,
+  // CIRCLE: ShapeCircle,
+  // LINE: ShapeLine,
   IMAGE: ShapeImage,
   DRAW: ShapeDraw,
-  GROUP: ShapeGroup,
+  // GROUP: ShapeGroup,
 };

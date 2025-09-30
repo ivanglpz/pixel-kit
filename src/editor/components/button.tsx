@@ -1,77 +1,70 @@
-import { Valid } from "@/components/valid";
 import { css } from "@stylespixelkit/css";
-import { ReactNode } from "react";
+import { CSSProperties, ReactNode } from "react";
+import { constants } from "../constants/color";
 
-type Props = {
-  text?: string;
-  onClick: () => void;
-  isLoading?: boolean;
-  children?: ReactNode;
-  type?: "normal" | "danger" | "success" | "dangerfill";
-  fullWidth?: boolean;
+type ButtonProps = {
+  onClick: VoidFunction;
+  children: ReactNode;
+  variant?: "primary" | "secondary";
+  style?: CSSProperties;
+  disabled?: boolean;
 };
 
-const stylesType = {
-  normal: "rgb(0, 153, 255)",
-  danger: "#bb2124",
-  success: "#5cb85c",
-  dangerfill: "#bb2124",
-};
-
-const defaultStyles = {
+const baseStyle = css({
+  padding: "md",
+  borderWidth: 1,
+  borderRadius: "md",
+  py: "5",
+  px: "10",
+  height: "35px",
+  fontSize: "x-small",
+  fontWeight: 700,
+  cursor: "pointer",
   display: "flex",
+  flexDirection: "row",
   alignItems: "center",
   justifyContent: "center",
-  borderWidth: 1,
-  borderStyle: "solid",
-  borderRadius: "md",
-  padding: "md",
-  color: "text",
-  textAlign: "center",
-  fontSize: "x-small",
-  fontWeight: "bold",
+  gap: "sm",
+});
+
+const variantStyles = {
+  primary: css({
+    borderColor: "border",
+    color: "white",
+    _dark: { color: "black" },
+  }),
+  secondary: css({
+    borderColor: "gray.150",
+    color: "black",
+    _dark: { color: "white", borderColor: "gray.700" },
+  }),
 };
-export const Button = ({
+
+export const ButtonBase = ({
   onClick,
-  text,
-  isLoading = false,
   children,
-  fullWidth = true,
-  type = "normal",
-}: Props) => {
+  variant = "primary",
+  style: PropsStyle,
+}: ButtonProps) => {
+  const className = `${baseStyle} ${variantStyles[variant]}`;
+
+  const style =
+    variant === "primary"
+      ? { backgroundColor: constants.theme.colors.primary }
+      : (PropsStyle ?? {});
+
   return (
-    <button
-      type="button"
-      className={css({
-        ...defaultStyles,
-        width: fullWidth ? "100%" : "max-content",
-        _hover: {
-          backgroundColor: stylesType[type],
-          cursor: "pointer",
-          opacity: 0.8,
-        },
-        _active: {
-          backgroundColor: "primary",
-          opacity: 1,
-          scale: 0.95,
-        },
-      })}
-      disabled={isLoading}
-      style={{
-        borderColor: stylesType[type],
-        backgroundColor: stylesType[type],
-      }}
-      onClick={onClick}
-    >
-      <Valid isValid={!isLoading}>{text ?? children}</Valid>
-      <Valid isValid={isLoading}>
-        <div className="lds-ring">
-          <div></div>
-          <div></div>
-          <div></div>
-          <div></div>
-        </div>
-      </Valid>
+    <button type="button" className={className} style={style} onClick={onClick}>
+      {children}
     </button>
   );
+};
+
+export const Button = {
+  Primary: (props: Omit<ButtonProps, "variant">) => (
+    <ButtonBase {...props} variant="primary" />
+  ),
+  Secondary: (props: Omit<ButtonProps, "variant">) => (
+    <ButtonBase {...props} variant="secondary" />
+  ),
 };
