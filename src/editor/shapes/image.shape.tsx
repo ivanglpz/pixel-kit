@@ -73,6 +73,8 @@ export const ShapeImage = (props: IShapeWithEvents) => {
     const img = new Image();
     if (!fill) return img;
     img.src = fill?.image?.src;
+    img.crossOrigin = "Anonymous";
+
     img.width = fill?.image?.width;
     img.height = fill?.image?.height;
     return img;

@@ -131,7 +131,7 @@ export const ExportStage = () => {
         ref: stageRef,
       });
     }
-  }, [, stageRef, config.expand_stage]);
+  }, [stageRef, config.expand_stage]);
   return (
     <>
       {/* Export Dialog */}
