@@ -35,7 +35,9 @@ import {
   SquareDashed,
 } from "lucide-react";
 import React, { ChangeEvent, useRef, useState } from "react";
+import { toast } from "sonner";
 import { v4 as uuidv4 } from "uuid";
+import { Button } from "../components/button";
 import { Dialog } from "../components/dialog";
 import { Input } from "../components/input";
 import { ListIcons } from "../components/list-icons";
@@ -106,7 +108,6 @@ export const commonStyles = {
     height: "29px",
   }),
   addButton: css({
-    color: "white",
     border: "none",
     padding: "sm",
     cursor: "pointer",
@@ -295,16 +296,21 @@ export const SectionHeader = ({
   </div>
 );
 
+export function getObjectUrl(obj: File): string {
+  return URL.createObjectURL(obj);
+}
+
 export const LayoutShapeConfig = () => {
   // Hooks de estado
   const [showIcons, setshowIcons] = useState(false);
+  const [showImage, setShowImage] = useState(false);
   const shape = useAtomValue(SHAPE_SELECTED_ATOM);
   const inputRef = useRef<HTMLInputElement>(null);
   const shapeUpdate = useSetAtom(SHAPE_UPDATE_ATOM);
   const setUpdateUndoRedo = useSetAtom(UPDATE_UNDO_REDO);
-
+  const [type, setType] = useState<"UPLOAD" | "CHOOSE">("UPLOAD");
   const { debounce } = useAutoSave();
-
+  const [images, setImages] = useState<File[]>([]);
   const { execute, isRunning } = useDelayedExecutor({
     callback: () => {
       setUpdateUndoRedo();
@@ -400,44 +406,17 @@ export const LayoutShapeConfig = () => {
     const file = event.target.files?.[0];
     if (!file) return;
 
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      const image = new Image();
-      image.onload = () => {
-        const scale: number = calculateScale(
-          image.width,
-          image.height,
-          shape.width ?? 500,
-          shape.height ?? 500
-        );
-        const newWidth: number = image.width * scale;
-        const newHeight: number = image.height * scale;
+    const maxSizeInBytes = 1 * 1024 * 1024;
+    if (file.size > maxSizeInBytes) {
+      toast.error(`The image ${file.name} cannot be larger than 1MB.`);
+      event.target.value = ""; // resetear aquí
+      return;
+    }
 
-        shapeUpdate({
-          width: newWidth,
-          height: newHeight,
-          fills: [
-            {
-              id: uuidv4(),
-              color: "#ffffff",
-              opacity: 1,
-              visible: true,
-              type: "image",
-              image: {
-                src: reader?.result as string,
-                width: image.width,
-                height: image.height,
-                name: file.name,
-              },
-            },
-            ...(shape.fills || []),
-          ],
-        });
-        execute(); // Ejecutar después del cambio
-      };
-      image.src = reader?.result as string;
-    };
-    reader.readAsDataURL(file);
+    setImages([file]);
+
+    event.target.value = ""; // resetear después también
+    // procesar archivo
   };
 
   // Manejadores para fills
@@ -594,6 +573,110 @@ export const LayoutShapeConfig = () => {
               setshowIcons(false);
             }}
           />
+        </Dialog.Container>
+      </Dialog.Provider>
+      <Dialog.Provider visible={showImage} onClose={() => setShowImage(false)}>
+        <Dialog.Container fullWidth fullHeight>
+          <Dialog.Header>
+            <p
+              className={css({
+                fontWeight: "bold",
+              })}
+            >
+              Image
+            </p>
+            <Dialog.Close onClose={() => setShowImage(false)} />
+          </Dialog.Header>
+
+          <section
+            className={css({
+              display: "flex",
+              flexDirection: "column",
+              gap: "lg",
+              flex: 1, // este section ocupa todo el alto
+              minHeight: 0, // clave: evita que el flex se rompa
+            })}
+          >
+            <header
+              className={css({
+                display: "grid",
+                gridTemplateColumns: "repeat(2, 1fr)", // corregido
+                gap: "lg",
+              })}
+            >
+              <Button.Secondary onClick={() => {}}>Upload</Button.Secondary>
+              <Button.Secondary onClick={() => {}}>Choose</Button.Secondary>
+            </header>
+
+            <section
+              className={css({
+                display: "grid",
+                gridTemplateRows: "50px 1fr",
+                gridTemplateColumns: "1fr",
+                flex: 1,
+                minHeight: 0, // evita colapso
+              })}
+            >
+              <header
+                className={css({
+                  display: "flex",
+                  flexDir: "row",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                })}
+              >
+                <p>{images.at(0)?.name}</p>
+                <Button.Secondary
+                  onClick={() => {
+                    inputRef.current?.click();
+                  }}
+                >
+                  Choose
+                </Button.Secondary>
+              </header>
+              <div
+                className={css({
+                  backgroundColor: "gray.150",
+                  display: "flex",
+                  flex: 1,
+                  minHeight: 0,
+                })}
+              >
+                {images?.[0] ? (
+                  <img
+                    src={getObjectUrl(images?.[0])}
+                    alt="preview-app"
+                    className={css({
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "contain",
+                    })}
+                  />
+                ) : null}
+              </div>
+            </section>
+
+            <footer
+              className={css({
+                display: "flex",
+                flexDirection: "row",
+                gap: "lg",
+                justifyContent: "end",
+              })}
+            >
+              <Button.Secondary onClick={() => {}}>Cancel</Button.Secondary>
+              <Button.Primary onClick={() => {}}>
+                Upload
+                {/* {loading ? (
+                    <Loading color={constants.theme.colors.black} />
+                  ) : (
+                    <>
+                      <File size={constants.icon.size} /> Export
+                    </>
+                  )} */}
+              </Button.Primary>
+            </footer>
+          </section>
         </Dialog.Container>
       </Dialog.Provider>
 
@@ -1623,7 +1706,7 @@ export const LayoutShapeConfig = () => {
           onImage={
             shape.tool === "IMAGE"
               ? () => {
-                  inputRef.current?.click();
+                  setShowImage(true);
                 }
               : undefined
           }

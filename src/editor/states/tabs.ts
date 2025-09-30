@@ -29,6 +29,6 @@ export const UPDATE_TAB_ATOM = atom(
         el._id === args._id ? { ...el, ...args } : el
       )
     );
-    set(SET_PROJECTS_FROM_TABS);
+    // set(SET_PROJECTS_FROM_TABS);
   }
 );
