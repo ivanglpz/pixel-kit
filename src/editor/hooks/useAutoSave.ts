@@ -22,10 +22,6 @@ export const useAutoSave = () => {
         quality: 0.5,
       });
 
-      console.log(previewUrl, "<--- previewUrl");
-
-      console.log(ref?.current?.toDataURL, "previewUrl");
-
       const PAYLOAD: Pick<IProject, "_id" | "name" | "data" | "previewUrl"> = {
         _id: JSON_.projectId,
         data: JSON_.data,

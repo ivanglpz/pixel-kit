@@ -32,8 +32,6 @@ async function handler(
     const form = new IncomingForm({ keepExtensions: true });
 
     form.parse(req, async (err, fields, files) => {
-      console.log(files.image, "MYFILES");
-
       if (err) {
         console.error(err);
         return res.status(500).json({ error: "Error parsing form data" });
