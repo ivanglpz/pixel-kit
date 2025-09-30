@@ -1,15 +1,17 @@
-import { atomWithStorage } from "jotai/utils";
+import { atom } from "jotai";
+import { CURRENT_PAGE } from "./pages";
 
-export type IStageConfig = {
-  backgroundColor?: string;
-  graphicMapped?: boolean;
+export const canvasTheme: { [key in "dark" | "light"]: string } = {
+  dark: "#242424",
+  light: "#dcdce0",
 };
 
-const StageConfigAtom = atomWithStorage<IStageConfig>(
-  "pixel-kit-canvas-config",
-  {
-    backgroundColor: "#FFFFFF",
-    graphicMapped: true,
+const STAGE_CANVAS_BACKGROUND = atom(
+  (get) => {
+    return get(get(CURRENT_PAGE).color);
+  },
+  (_get, _set, newTool: string) => {
+    _set(_get(CURRENT_PAGE).color, newTool);
   }
 );
-export default StageConfigAtom;
+export default STAGE_CANVAS_BACKGROUND;

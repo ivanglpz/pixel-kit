@@ -3,39 +3,35 @@ import { Layer } from "react-konva";
 import { Shapes } from "../shapes/shapes";
 import { FCShapeWEvents } from "../shapes/type.shape";
 import CURRENT_ITEM_ATOM from "../states/currentItem";
-import { STAGE_DIMENSION_ATOM } from "../states/dimension";
-import { SHAPES_NODES } from "../states/shapes";
+import { ALL_SHAPES } from "../states/shapes";
 
 export const LayerPipe = () => {
-  const CURRENT_ITEM = useAtomValue(CURRENT_ITEM_ATOM);
+  const CURRENT_ITEMS = useAtomValue(CURRENT_ITEM_ATOM);
 
-  const { height, width } = useAtomValue(STAGE_DIMENSION_ATOM);
-
-  if (!CURRENT_ITEM?.id) return null;
-  const Component = Shapes?.[CURRENT_ITEM?.tool] as FCShapeWEvents;
+  if (CURRENT_ITEMS?.length === 0) return null;
 
   return (
     <>
       <Layer id="layer-pipe-shapes">
-        <Component
-          item={{
-            id: "1",
-            childrens: atom<SHAPES_NODES[]>([]),
-            state: atom(CURRENT_ITEM),
-            tool: CURRENT_ITEM.tool,
-          }}
-          screenHeight={height}
-          screenWidth={width}
-          key={`pixel-kit-temporal-shape-${CURRENT_ITEM.id}`}
-          shape={atom(CURRENT_ITEM)}
-          draggable={false}
-          isSelected={CURRENT_ITEM?.tool === "TEXT"}
-          onClick={() => {}}
-          onDragMove={() => {}}
-          onDragStart={() => {}}
-          onDragStop={() => {}}
-          onTransformStop={() => {}}
-        />
+        {CURRENT_ITEMS?.map((item) => {
+          const Component = Shapes?.[item?.tool] as FCShapeWEvents;
+          return (
+            <Component
+              shape={{
+                id: "1",
+                state: atom({
+                  ...item,
+                  children: item.children
+                    ? item.children
+                    : atom([] as ALL_SHAPES[]),
+                }),
+                // pageId: "main-image-render-stage",
+                tool: item.tool,
+              }}
+              key={`pixel-kit-temporal-shape-${item.id}`}
+            />
+          );
+        })}
       </Layer>
     </>
   );

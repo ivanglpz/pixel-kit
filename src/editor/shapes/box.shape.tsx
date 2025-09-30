@@ -1,117 +1,117 @@
-import { Valid } from "@/components/valid";
 import { PrimitiveAtom, useAtom } from "jotai";
-import Konva from "konva";
-import { memo, MutableRefObject, useEffect, useRef } from "react";
 import { Rect } from "react-konva";
-import { PortalConfigShape } from "./config.shape";
-import {
-  shapeEventClick,
-  shapeEventDragMove,
-  ShapeEventDragStart,
-  shapeEventDragStop,
-  shapeTransformEnd,
-} from "./events.shape";
-import { Transform } from "./transformer";
+import { useConfiguration } from "../hooks/useConfiguration";
+import { SHAPE_IDS_ATOM } from "../states/shape";
+import { coordinatesShapeMove, shapeEventDragMove } from "./events.shape";
 import { IShape, IShapeWithEvents, WithInitialValue } from "./type.shape";
 
 // eslint-disable-next-line react/display-name
-const ShapeBox = memo((item: IShapeWithEvents) => {
-  const {
-    draggable,
-    isSelected,
-    onClick,
-    onDragMove,
-    onDragStart,
-    onDragStop,
-    screenHeight,
-    screenWidth,
-  } = item;
-
+const ShapeBox = ({ shape: item }: IShapeWithEvents) => {
   const [box, setBox] = useAtom(
-    item.shape as PrimitiveAtom<IShape> & WithInitialValue<IShape>
+    item.state as PrimitiveAtom<IShape> & WithInitialValue<IShape>
   );
+  const { config } = useConfiguration();
+  const rotation = Number(box.rotation) || 0;
 
-  const {
-    width,
-    height,
-    shadowColor,
-    shadowOpacity,
-    rotate,
-    x,
-    y,
-    shadowOffsetY,
-    shadowOffsetX,
-    shadowBlur,
-    stroke,
-    strokeWidth,
-    backgroundColor,
-    borderRadius,
-    fillEnabled,
-    shadowEnabled,
-    strokeEnabled,
-    dash,
-    dashEnabled,
-  } = box;
+  const [shapeId, setShapeId] = useAtom(SHAPE_IDS_ATOM);
+  const isSelected = shapeId.some((w) => w.id === box.id);
+  // Calcular la posición ajustada para la rotación
 
-  const shapeRef = useRef<Konva.Rect>();
-  const trRef = useRef<Konva.Transformer>();
+  const shadow = box?.effects
+    ?.filter((e) => e?.visible && e?.type === "shadow")
+    .at(0);
 
-  useEffect(() => {
-    if (isSelected) {
-      if (trRef.current && shapeRef.current) {
-        trRef.current.nodes([shapeRef.current]);
-        trRef.current?.getLayer()?.batchDraw();
-      }
-    }
-  }, [isSelected, trRef, shapeRef]);
+  if (!box.visible) return null;
 
   return (
     <>
-      <Valid isValid={isSelected}>
-        <PortalConfigShape
-          isSelected={isSelected}
-          setShape={setBox}
-          shape={box}
-        />
-      </Valid>
       <Rect
+        // 1. Identificación y referencia
         id={box?.id}
-        x={x}
-        y={y}
-        width={width}
-        fillEnabled={fillEnabled ?? true}
-        height={height}
-        rotationDeg={rotate}
-        shadowColor={shadowColor}
-        shadowOpacity={shadowOpacity}
-        shadowOffsetX={shadowOffsetX}
-        shadowOffsetY={shadowOffsetY}
-        shadowBlur={shadowBlur}
-        strokeEnabled={strokeEnabled ?? true}
-        shadowEnabled={shadowEnabled ?? true}
-        dashEnabled={dashEnabled ?? true}
-        dash={[dash, dash, dash, dash]}
-        cornerRadius={borderRadius}
-        fill={backgroundColor}
-        ref={shapeRef as MutableRefObject<Konva.Rect>}
-        draggable={draggable}
-        stroke={stroke}
-        strokeWidth={strokeWidth}
-        onTap={(e) => setBox(shapeEventClick(e, onClick))}
-        onClick={(e) => setBox(shapeEventClick(e, onClick))}
-        onDragStart={(e) => setBox(ShapeEventDragStart(e, onDragStart))}
-        onDragMove={(e) =>
-          setBox(shapeEventDragMove(e, onDragMove, screenWidth, screenHeight))
+        parentId={box?.parentId}
+        // 2. Posición y tamaño - calculada manualmente para rotación
+        x={box.x}
+        y={box.y}
+        width={box.width}
+        height={box.height}
+        rotation={rotation}
+        // Sin offset - calculamos todo manualmente
+        // offsetX={width / 2}
+        // offsetY={height / 2}
+        // Sin offset - calculamos todo manualmente
+        listening={!box.isLocked}
+        // 3. Relleno y color
+        fillEnabled
+        fill={
+          box?.fills?.filter((e) => e?.type === "fill" && e?.visible)?.at(0)
+            ?.color
         }
-        onDragEnd={(e) => setBox(shapeEventDragStop(e, onDragStop))}
-        onTransform={(e) => {
-          setBox(shapeEventDragMove(e, onDragMove, screenWidth, screenHeight));
+        // 4. Bordes y trazos
+        stroke={box?.strokes?.filter((e) => e?.visible)?.at(0)?.color}
+        strokeWidth={box.strokeWidth}
+        strokeEnabled={box.strokeWidth > 0}
+        // dash={[dash, dash, dash, dash]}
+        dash={[box.dash]}
+        dashEnabled={box?.dash > 0}
+        cornerRadius={
+          !box?.isAllBorderRadius
+            ? [
+                box.borderTopLeftRadius,
+                box.borderTopRightRadius,
+                box.borderBottomRightRadius,
+                box.borderBottomLeftRadius,
+              ]
+            : box.borderRadius
+        }
+        // 5. Sombras
+        shadowColor={shadow?.color}
+        shadowOpacity={box.shadowOpacity}
+        shadowOffsetX={box?.shadowOffsetX}
+        shadowOffsetY={box?.shadowOffsetY}
+        shadowBlur={box?.shadowBlur}
+        shadowEnabled={Boolean(shadow)}
+        // 6. Apariencia y opacidad
+        opacity={box?.opacity ?? 1}
+        // 7. Interactividad y arrastre
+        draggable={isSelected}
+        // 8. Eventos
+        onClick={() => {
+          setShapeId({
+            id: box?.id,
+            parentId: box.parentId,
+          });
         }}
-        onTransformEnd={(e) => setBox(shapeTransformEnd(e, onDragStop))}
+        onDragMove={(e) =>
+          setBox(
+            shapeEventDragMove(
+              e,
+              Number(config.expand_stage_resolution?.width),
+              Number(config.expand_stage_resolution?.height)
+            )
+          )
+        }
+        onTransform={(e) => {
+          const scaleX = e.target.scaleX();
+          const scaleY = e.target.scaleY();
+          e.target.scaleX(1);
+          e.target.scaleY(1);
+          const payload = coordinatesShapeMove(
+            box,
+            Number(config.expand_stage_resolution?.width),
+            Number(config.expand_stage_resolution?.height),
+            e
+          );
+
+          setBox({
+            ...payload,
+            rotation: e.target.rotation(),
+            width: Math.max(5, e.target.width() * scaleX),
+            height: Math.max(e.target.height() * scaleY),
+          });
+        }}
       />
-      <Transform isSelected={isSelected} ref={trRef} />
     </>
   );
-});
+};
 
 export default ShapeBox;

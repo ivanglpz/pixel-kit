@@ -1,343 +1,369 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { IShape } from "@/editor/shapes/type.shape";
-import { showClipAtom } from "@/editor/states/clipImage";
-import { IKeyMethods, IKeyTool } from "@/editor/states/tool";
-import { useAtom, useSetAtom } from "jotai";
+import TOOL_ATOM, { IKeyTool, PAUSE_MODE_ATOM } from "@/editor/states/tool";
+import { useAtom, useAtomValue, useSetAtom } from "jotai";
+import Konva from "konva";
 import { KonvaEventObject } from "konva/lib/Node";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
+import { v4 as uuidv4 } from "uuid";
 import stageAbsolutePosition from "../helpers/position";
-import { shapeProgressEvent } from "../helpers/progressEvent";
-import { shapeStart } from "../helpers/startEvent";
-import CURRENT_ITEM_ATOM, {
-  CLEAR_CURRENT_ITEM_ATOM,
-  CREATE_CURRENT_ITEM_ATOM,
-} from "../states/currentItem";
-import { CREATE_SHAPE_ATOM, DELETE_SHAPE_ATOM } from "../states/shapes";
+import { CreateShapeSchema } from "../helpers/shape-schema";
+import { CLEAR_CURRENT_ITEM_ATOM } from "../states/currentItem";
+import { EVENT_ATOM } from "../states/event";
+import { RECTANGLE_SELECTION_ATOM } from "../states/rectangle-selection";
+import { SHAPE_IDS_ATOM, UPDATE_SHAPES_IDS_ATOM } from "../states/shape";
+import {
+  CREATE_SHAPE_ATOM,
+  DELETE_KEYS,
+  DELETE_SHAPES_ATOM,
+  EVENT_COPYING_SHAPES,
+  EVENT_DOWN_COPY,
+  EVENT_DOWN_SHAPES,
+  EVENT_MOVING_SHAPE,
+  EVENT_UP_SHAPES,
+} from "../states/shapes";
+import { REDO_ATOM, UNDO_ATOM } from "../states/undo-redo";
+import { useAutoSave } from "./useAutoSave";
 import { useConfiguration } from "./useConfiguration";
-import useSelectedShape from "./useSelectedShape";
-import { useStartDrawing } from "./useStartDrawing";
-import useTool from "./useTool";
+import { useReference } from "./useReference";
 
-export type IRelativePosition = {
-  x: number;
-  y: number;
-};
+// ===== CONSTANTS =====
 
-export type IStartEvent = (
-  event: IRelativePosition,
-  params?: {
-    text?: string;
-    image?: string;
-    width?: number;
-    height?: number;
-  }
-) => IShape;
+export const useEventStage = () => {
+  // ===== STATE HOOKS =====
+  const [tool, setTool] = useAtom(TOOL_ATOM);
+  const shapeId = useAtomValue(SHAPE_IDS_ATOM);
+  const [EVENT_STAGE, SET_EVENT_STAGE] = useAtom(EVENT_ATOM);
 
-export type IEndEvent = (event: IRelativePosition, element: IShape) => IShape;
-
-export type IEventElement = {
-  [key in IKeyTool]?: {
-    start: IStartEvent;
-    progress: IEndEvent;
-  };
-};
-
-export type IShapeProgressEvent = {
-  [key in IKeyMethods]: (x: number, y: number, element: IShape) => IShape;
-};
-
-export type IStageEvents =
-  | "COPY_IMAGE_SHAPE"
-  | "IDLE"
-  | "CREATING_SHAPE"
-  | "UPDATING_SHAPE"
-  | "COPY_TEXT_SHAPE"
-  | "COPY_SHAPE_SVG"
-  | "DELETE_SHAPES"
-  | "COPY_SHAPE"
-  | "IS_DRAWING_NOW"
-  | "CREATING_LINE";
-
-const useEventStage = () => {
-  const { isGoingToCreateAShape, tool, setTool, isNotWriting, isDrawing } =
-    useTool();
-
-  const SET_CREATE = useSetAtom(CREATE_SHAPE_ATOM);
-  const DELETE_SHAPE = useSetAtom(DELETE_SHAPE_ATOM);
-  const { shapeSelected, handleCleanShapeSelected, handleSetShapeSelected } =
-    useSelectedShape();
-  const { state } = useStartDrawing();
-
-  const SET_CREATE_CITEM = useSetAtom(CREATE_CURRENT_ITEM_ATOM);
-  const SET_CLEAR_CITEM = useSetAtom(CLEAR_CURRENT_ITEM_ATOM);
-  const [CURRENT_ITEM, SET_UPDATE_CITEM] = useAtom(CURRENT_ITEM_ATOM);
+  // ===== READ-ONLY STATE =====
+  const PAUSE = useAtomValue(PAUSE_MODE_ATOM);
 
   const { config } = useConfiguration();
+  const { debounce } = useAutoSave();
 
-  const setshowClip = useSetAtom(showClipAtom);
+  // ===== SETTERS =====
+  const SET_CREATE = useSetAtom(CREATE_SHAPE_ATOM);
+  const DELETE_SHAPE = useSetAtom(DELETE_SHAPES_ATOM);
+  const SET_UPDATE_SHAPES_IDS = useSetAtom(UPDATE_SHAPES_IDS_ATOM);
+  const SET_CLEAR_CITEM = useSetAtom(CLEAR_CURRENT_ITEM_ATOM);
+  const [selection, setSelection] = useAtom(RECTANGLE_SELECTION_ATOM);
+  const setRedo = useSetAtom(REDO_ATOM);
+  const setUndo = useSetAtom(UNDO_ATOM);
+  const SET_EVENT_UP = useSetAtom(EVENT_UP_SHAPES);
+  const SET_EVENT_MOVING_SHAPE = useSetAtom(EVENT_MOVING_SHAPE);
+  const SET_EVENT_COPYING = useSetAtom(EVENT_COPYING_SHAPES);
+  const SET_EVENT_DOWN = useSetAtom(EVENT_DOWN_SHAPES);
+  const SET_EVENT_DOWN_COPY = useSetAtom(EVENT_DOWN_COPY);
+  const { ref: Stage } = useReference({ type: "STAGE" });
 
-  const [eventStage, setEventStage] = useState<IStageEvents>("IDLE");
-
+  // ===== MOUSE EVENT HANDLERS =====
   const handleMouseDown = (event: KonvaEventObject<MouseEvent>) => {
-    if (tool === "LINE") {
-      setEventStage("CREATING_LINE");
-      const { x, y } = stageAbsolutePosition(event);
-      const createStartElement = shapeStart({
-        tool,
-        x: 0,
-        y: 0,
-        ...state,
-        strokeWidth: state.thickness,
-        stroke: state.color,
-        points: [x, y],
-        isWritingNow: false,
-      });
+    const { x, y } = stageAbsolutePosition(event);
 
-      SET_CREATE_CITEM(createStartElement);
-      return;
-    }
-
-    if (isGoingToCreateAShape) {
-      setEventStage("CREATING_SHAPE");
-      const { x, y } = stageAbsolutePosition(event);
-      const createStartElement = shapeStart({
-        tool,
+    if (
+      EVENT_STAGE === "IDLE" &&
+      [null, undefined, "main-image-render-stage", "pixel-kit-stage"].includes(
+        event.target?.attrs?.id
+      ) &&
+      tool === "MOVE" &&
+      shapeId?.length === 0
+    ) {
+      setSelection({
         x,
         y,
-        isWritingNow: false,
+        width: 0,
+        height: 0,
+        visible: true,
       });
-
-      SET_CREATE_CITEM(createStartElement);
     }
-    if (isDrawing) {
-      setEventStage("IS_DRAWING_NOW");
-      const { x: XStage, y: YStage } = stageAbsolutePosition(event);
-      const x = XStage ?? 0;
-      const y = YStage ?? 0;
-      const createStartElement = shapeStart({
-        tool,
-        x: 0,
-        y: 0,
-        ...state,
-        strokeWidth: state.thickness,
-        stroke: state.color,
-        points: [x, y, x, y],
-        bezier: false,
-      });
 
-      SET_CREATE_CITEM(createStartElement);
+    if (EVENT_STAGE === "CREATE") {
+      SET_EVENT_DOWN({ x, y });
+    }
+    if (EVENT_STAGE === "COPY") {
+      SET_EVENT_DOWN_COPY({ x, y });
     }
   };
 
   const handleMouseMove = (event: KonvaEventObject<MouseEvent>) => {
-    if (!CURRENT_ITEM?.tool) return;
+    const { x, y } = stageAbsolutePosition(event);
 
-    if (eventStage === "CREATING_SHAPE") {
-      const { x, y } = stageAbsolutePosition(event);
-      const updateProgressElement = shapeProgressEvent[CURRENT_ITEM.tool];
-
-      const updateShape = updateProgressElement(x, y, CURRENT_ITEM);
-      SET_UPDATE_CITEM(updateShape);
+    if (
+      selection.visible &&
+      EVENT_STAGE === "IDLE" &&
+      tool === "MOVE" &&
+      shapeId?.length === 0
+    ) {
+      setSelection({
+        x: Math.min(selection.x, x),
+        y: Math.min(selection.y, y),
+        width: Math.abs(x - selection.x),
+        height: Math.abs(y - selection.y),
+        visible: true,
+      });
     }
 
-    if (eventStage === "IS_DRAWING_NOW") {
-      const updateProgressElement = shapeProgressEvent[CURRENT_ITEM.tool];
-      const { x: XStage, y: YStage } = stageAbsolutePosition(event);
-      const x = XStage ?? 0;
-      const y = YStage ?? 0;
-      const updateShape = updateProgressElement(x, y, {
-        ...CURRENT_ITEM,
-        points: CURRENT_ITEM.points?.concat([x, y]),
-      });
-      SET_UPDATE_CITEM(updateShape);
+    if (EVENT_STAGE === "CREATING") {
+      SET_EVENT_MOVING_SHAPE({ x, y });
     }
-    if (eventStage === "CREATING_LINE") {
-      const { x, y } = stageAbsolutePosition(event);
-      const updateProgressElement = shapeProgressEvent[CURRENT_ITEM.tool];
-
-      const updateShape = updateProgressElement(x, y, {
-        ...CURRENT_ITEM,
-        points: [
-          CURRENT_ITEM?.points?.[0] ?? 0,
-          CURRENT_ITEM?.points?.[1] ?? 0,
-          x,
-          y,
-        ],
-      });
-
-      SET_UPDATE_CITEM(updateShape);
+    if (EVENT_STAGE === "COPYING") {
+      SET_EVENT_COPYING({ x, y });
     }
   };
 
-  const handleMouseUp = () => {
-    if (!CURRENT_ITEM?.id) return;
+  const handleMouseUp = async () => {
+    if (selection.visible && EVENT_STAGE === "IDLE" && tool === "MOVE") {
+      const childrens = Stage?.current?.getStage?.()?.children;
 
-    if (eventStage === "CREATING_SHAPE") {
-      const payload: IShape = {
-        ...CURRENT_ITEM,
-        isWritingNow: true,
-        dashEnabled: false,
-        shadowEnabled: false,
-        strokeEnabled: false,
-      };
-      handleSetShapeSelected(payload);
-      SET_CREATE(payload);
-      SET_CLEAR_CITEM();
-      setEventStage("IDLE");
-      setTool("MOVE");
-    }
-    if (eventStage === "IS_DRAWING_NOW") {
-      SET_CREATE({
-        ...CURRENT_ITEM,
-        bezier: true,
-      });
-      SET_CLEAR_CITEM();
+      if (!childrens) return;
+      const layer = childrens?.find((e) => e?.attrs?.id === "layer-shapes");
+      const nodes = layer?.children?.filter?.(
+        (child) =>
+          child?.attrs?.id !== "transformer-editable" && child?.attrs?.listening
+      );
+      if (!nodes) return;
+      const selected = nodes.filter((shape) =>
+        Konva.Util.haveIntersection(selection, shape.getClientRect())
+      );
+
+      setTimeout(() => {
+        SET_UPDATE_SHAPES_IDS(
+          selected
+            ?.map((e) => ({
+              id: e?.attrs?.id,
+              parentId: e?.attrs?.parentId,
+            }))
+            ?.filter((e) => typeof e?.id === "string")
+        );
+        setSelection({
+          x: 0,
+          y: 0,
+          width: 0,
+          height: 0,
+          visible: false,
+        });
+      }, 10);
     }
 
-    if (eventStage === "CREATING_LINE") {
-      SET_CREATE(CURRENT_ITEM);
-      SET_CLEAR_CITEM();
+    if (EVENT_STAGE === "CREATING" || EVENT_STAGE === "COPYING") {
+      SET_EVENT_UP();
+      debounce.execute();
     }
   };
-  const handleResetElement = (kl: IKeyTool) => {
+
+  // ===== UTILITY FUNCTIONS =====
+  const toolKeydown = (kl: IKeyTool) => {
     setTool(kl);
     SET_CLEAR_CITEM();
-    handleCleanShapeSelected();
   };
 
+  const createImageFromFile = (file: File, dataUrl: string) => {
+    const image = new Image();
+    image.src = dataUrl;
+    image.onload = () => {
+      const createStartElement = CreateShapeSchema({
+        tool: "IMAGE",
+        x: 0,
+        y: 0,
+        width: image.width / 3,
+        height: image.height / 3,
+        fills: [
+          {
+            color: "#fff",
+            id: uuidv4(),
+            image: {
+              src: dataUrl,
+              width: image.width,
+              height: image.height,
+              name: file.name,
+            },
+            opacity: 1,
+            type: "image",
+            visible: true,
+          },
+        ],
+      });
+      SET_CREATE(createStartElement);
+    };
+  };
+
+  const createTextFromClipboard = (text: string) => {
+    const createStartElement = CreateShapeSchema({
+      tool: "TEXT",
+      x: 0,
+      y: 0,
+      text,
+    });
+    SET_CREATE(createStartElement);
+  };
+
+  const createImageFromSVG = (svgString: string) => {
+    const img = new Image();
+    img.onload = function () {
+      const canvas = document.createElement("canvas");
+      const ctx = canvas?.getContext?.("2d");
+
+      canvas.width = img.width;
+      canvas.height = img.height;
+      ctx?.drawImage(img, 0, 0);
+
+      const createStartElement = CreateShapeSchema({
+        tool: "IMAGE",
+        x: 0,
+        y: 0,
+        fills: [
+          {
+            color: "#fff",
+            id: uuidv4(),
+            image: {
+              src:
+                "data:image/svg+xml;charset=utf-8," +
+                encodeURIComponent(svgString),
+              width: img.width,
+              height: img.height,
+              name: `svg ${uuidv4().slice(0, 2)}`,
+            },
+            opacity: 1,
+            type: "image",
+            visible: true,
+          },
+        ],
+      });
+      SET_CREATE(createStartElement);
+    };
+
+    const dataImage =
+      "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svgString);
+    img.src = dataImage;
+  };
+
+  // ===== EVENT LISTENERS =====
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       const KEY = event.key?.toUpperCase();
 
-      if (isNotWriting) {
-        if (["X", "DELETE", "BACKSPACE"].includes(KEY)) {
-          if (shapeSelected?.id) {
-            DELETE_SHAPE({ id: shapeSelected?.id });
-            handleCleanShapeSelected();
-          }
-        }
-        if (KEY === "ALT") {
-          setEventStage("COPY_SHAPE");
-        }
+      const isMac = navigator.platform.toUpperCase().includes("MAC");
+      const meta = isMac ? event.metaKey : event.ctrlKey;
+      const alt = event.altKey;
+      const key = event.key.toLowerCase();
 
-        const keysActions = Object.fromEntries(
-          config.tools.map((item) => [item.keyBoard, item.keyMethod])
-        );
+      // ✅ Undo (IR HACIA ATRÁS)
+      if (meta && !event.shiftKey && key === "z") {
+        event.preventDefault();
+        setUndo();
+        debounce.execute();
 
-        if (keysActions[KEY]) {
-          setshowClip(false);
-          handleResetElement(keysActions[KEY] as IKeyMethods);
-        }
+        // set(UNDO_ATOM);
+        return;
+      }
+
+      // ✅ Redo (IR HACIA ADELANTE)
+      if (meta && event.shiftKey && key === "z") {
+        event.preventDefault();
+        setRedo();
+        debounce.execute();
+
+        // set(REDO_ATOM);
+        return;
+      }
+
+      if (PAUSE) return;
+
+      // Handle delete operations
+      if (DELETE_KEYS.includes(KEY)) {
+        DELETE_SHAPE();
+        setTool("MOVE");
+        debounce.execute();
+      }
+
+      // Handle Alt key for copy mode
+      if (KEY === "ALT") {
+        SET_EVENT_STAGE("COPY");
+      }
+      if (KEY === "SHIFT") {
+        SET_EVENT_STAGE("MULTI_SELECT");
+      }
+      // Handle tool shortcuts
+      const keysActions = Object.fromEntries(
+        config.tools.map((item) => [
+          item.keyBoard,
+          {
+            keyMethod: item.keyMethod,
+            eventStage: item.eventStage,
+            showClip: Boolean(item?.showClip),
+          },
+        ])
+      );
+
+      if (keysActions[KEY]) {
+        toolKeydown(keysActions[KEY].keyMethod);
+        SET_EVENT_STAGE(keysActions[KEY].eventStage);
       }
     };
-    const handleKeyUp = () => {
-      setEventStage("IDLE");
+
+    const handleFile = (file: File): void => {
+      const reader = new FileReader();
+      reader.onload = (data) => {
+        if (typeof data?.target?.result === "string") {
+          createImageFromFile(file, data.target.result);
+        }
+      };
+      reader.readAsDataURL(file);
     };
 
-    const handlePaste = (event: globalThis.ClipboardEvent) => {
-      const clipboardText = event?.clipboardData?.getData("text") ?? "";
+    const handleSVG = (svgText: string): void => {
+      const parser = new DOMParser();
+      const svgDOM = parser
+        .parseFromString(svgText, "image/svg+xml")
+        .querySelector("svg");
+      if (!svgDOM) return;
 
-      const file = event?.clipboardData?.files[0];
+      const serializer = new XMLSerializer();
+      createImageFromSVG(serializer.serializeToString(svgDOM));
+    };
+
+    const handlePaste = (event: ClipboardEvent): void => {
+      const clipboardText: string | null =
+        event.clipboardData?.getData("text") ?? null;
+      const file: File | undefined = event.clipboardData?.files[0];
 
       if (file) {
-        const reader = new FileReader();
-
-        reader.onload = function (data) {
-          const image = new Image();
-          image.src = data?.target?.result as string;
-          image.onload = () => {
-            if (typeof data?.target?.result !== "string") return;
-            const createStartElement = shapeStart({
-              tool: "IMAGE",
-              x: 0,
-              y: 0,
-              image: data?.target?.result,
-              width: image.width,
-              height: image.height,
-            });
-
-            SET_CREATE(createStartElement);
-          };
-        };
-        reader.readAsDataURL(file);
+        handleFile(file);
+        return;
       }
 
-      if (clipboardText && !clipboardText.trim().startsWith("<svg")) {
-        const createStartElement = shapeStart({
-          tool: "TEXT",
-          x: 0,
-          y: 0,
-          text: clipboardText,
-        });
+      if (!clipboardText) return;
 
-        SET_CREATE(createStartElement);
+      const trimmed = clipboardText.trim();
+      if (trimmed.startsWith("<svg")) {
+        handleSVG(trimmed);
+        return;
       }
 
-      if (clipboardText.trim().startsWith("<svg")) {
-        const parser = new DOMParser();
-        const svgDOM = parser
-          .parseFromString(clipboardText, "image/svg+xml")
-          .querySelector("svg");
+      if (shapeId?.length === 0) {
+        createTextFromClipboard(trimmed);
+      }
+    };
 
-        const serializer = new XMLSerializer();
-        const svgString = serializer.serializeToString(svgDOM as SVGSVGElement);
-
-        const img = new Image();
-
-        img.onload = function () {
-          const canvas = document.createElement("canvas");
-          const ctx = canvas?.getContext?.("2d");
-
-          canvas.width = img.width;
-          canvas.height = img.height;
-
-          ctx?.drawImage(img, 0, 0);
-          const createStartElement = shapeStart({
-            tool: "IMAGE",
-            x: 0,
-            y: 0,
-            image: canvas?.toDataURL(),
-            width: img.width,
-            height: img.height,
-          });
-
-          SET_CREATE(createStartElement);
-        };
-
-        const dataImage =
-          "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svgString);
-
-        img.src = dataImage;
+    const handleKeyUp = (event: KeyboardEvent): void => {
+      if (event.key === "Shift" || event.key === "Alt") {
+        SET_EVENT_STAGE("IDLE");
+        setTool("MOVE");
+        SET_CLEAR_CITEM();
       }
     };
     document.addEventListener("keydown", handleKeyDown);
-    document.addEventListener("paste", handlePaste);
     document.addEventListener("keyup", handleKeyUp);
+    document.addEventListener("paste", handlePaste);
 
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
       document.removeEventListener("paste", handlePaste);
-      document.removeEventListener("keyup", handleKeyUp);
     };
-  }, [isNotWriting, shapeSelected]);
+  }, [tool, shapeId, config.tools, PAUSE]);
 
-  useEffect(() => {
-    const handleVisibilityChange = () => {
-      setTool("MOVE");
-      setEventStage("IDLE");
-    };
-
-    document.addEventListener("visibilitychange", handleVisibilityChange);
-
-    return () => {
-      document.removeEventListener("visibilitychange", handleVisibilityChange);
-    };
-  }, []);
   return {
     handleMouseDown,
     handleMouseMove,
     handleMouseUp,
   };
 };
-
-export default useEventStage;

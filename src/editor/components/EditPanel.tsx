@@ -1,0 +1,184 @@
+import { css } from "@stylespixelkit/css";
+import { useMutation } from "@tanstack/react-query";
+import axios from "axios";
+import { atom, useAtom, useSetAtom } from "jotai";
+import { Send } from "lucide-react";
+import { useState } from "react";
+import { constants } from "../constants/color";
+import { IShapeWithEvents } from "../shapes/type.shape";
+import {
+  ALL_SHAPES,
+  ALL_SHAPES_CHILDREN,
+  GET_ALL_SHAPES_BY_ID,
+} from "../states/shapes";
+import { Input } from "./input";
+export const EditPanel = ({ shape }: IShapeWithEvents) => {
+  const [show, setShow] = useState(false);
+  const [text, setText] = useState("");
+  const [box, setBox] = useAtom(shape.state);
+  const GET_ALL = useSetAtom(GET_ALL_SHAPES_BY_ID);
+  const mutation = useMutation({
+    mutationKey: [box.id, text],
+    mutationFn: async () => {
+      const SHAPES = GET_ALL(box.id);
+      const response = await axios.post("/api/chat", {
+        inputArray: SHAPES,
+        instructions: text,
+      });
+
+      return response;
+    },
+    onSuccess: ({ data }) => {
+      const newShape: ALL_SHAPES_CHILDREN = JSON.parse(data.content);
+
+      const createAtomRecursively = (
+        shape: ALL_SHAPES_CHILDREN
+      ): ALL_SHAPES => {
+        return {
+          ...shape,
+          state: atom({
+            ...shape.state,
+            children: atom(
+              shape.state.children?.map((child) =>
+                createAtomRecursively(child)
+              ) || []
+            ),
+          }),
+        };
+      };
+      if (!newShape) return;
+
+      setBox({
+        ...newShape.state,
+        children: atom(
+          newShape.state.children.map((i) => createAtomRecursively(i))
+        ),
+      });
+      setText("");
+    },
+  });
+  return (
+    <div
+      className={css({
+        display: "flex",
+        flexDirection: "row",
+        alignItems: "start",
+        gap: "lg",
+      })}
+    >
+      <button
+        className={css({
+          padding: "md",
+          borderRadius: "md",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        })}
+        style={{
+          backgroundColor: show
+            ? constants.theme.colors.primary
+            : "transparent",
+          border: `1px solid ${constants.theme.colors.primary}`,
+          width: 30,
+          height: 30,
+        }}
+        onClick={() => {
+          if (mutation?.isPending) return;
+          setShow(true);
+        }}
+      >
+        {mutation.isPending ? (
+          <svg
+            fill={constants.theme.colors.primary}
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path d="M12,4a8,8,0,0,1,7.89,6.7A1.53,1.53,0,0,0,21.38,12h0a1.5,1.5,0,0,0,1.48-1.75,11,11,0,0,0-21.72,0A1.5,1.5,0,0,0,2.62,12h0a1.53,1.53,0,0,0,1.49-1.3A8,8,0,0,1,12,4Z">
+              <animateTransform
+                attributeName="transform"
+                type="rotate"
+                dur="0.75s"
+                values="0 12 12;360 12 12"
+                repeatCount="indefinite"
+              />
+            </path>
+          </svg>
+        ) : (
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 550 515"
+            width="20"
+            height="20"
+          >
+            <path
+              fill={
+                show
+                  ? constants.theme.colors.white
+                  : constants.theme.colors.primary
+              }
+              d="M184 41h2l.52 1.723a408635.066 408635.066 0 0 0 3.493 11.573c1.786 5.919 3.574 11.837 5.363 17.755 3.178 10.51 6.355 21.019 9.478 31.545 1.15 3.875 2.306 7.748 3.462 11.621.532 1.79 1.061 3.58 1.588 5.371 8.456 28.78 22.06 53.371 49.268 68.455 10.671 5.587 22.546 8.901 34.031 12.363l4.844 1.478c4.212 1.286 8.427 2.564 12.643 3.84 4.238 1.285 8.475 2.575 12.712 3.866a1098382.042 1098382.042 0 0 0 7.434 2.264l7.212 2.194c10.674 3.246 21.33 6.542 31.952 9.952-1 2-1 2-3.39 2.926l-3.227.962-3.665 1.107-4.023 1.189c-1.384.415-2.768.83-4.151 1.247-2.943.884-5.887 1.763-8.832 2.64a3944.62 3944.62 0 0 0-13.731 4.12c-10.75 3.24-21.503 6.476-32.264 9.682-30.613 9.108-30.613 9.108-56.717 27.127l-2.129 1.887c-14.613 13.64-21.624 32.084-27.309 50.738l-1.493 4.807c-5.358 17.279-10.546 34.612-15.725 51.945l-1.008 3.363c-.623 2.08-1.244 4.162-1.863 6.244-1.63 5.429-3.415 10.734-5.473 16.016-2.654-2.654-3.268-5.588-4.303-9.098l-.672-2.22c-.735-2.436-1.462-4.875-2.19-7.315a7064.747 7064.747 0 0 1-5.632-18.727c-8.592-28.905-8.592-28.905-17.707-57.648l-.903-2.77C148.893 299.22 141.508 288.252 131 278l-2.395-2.422c-4.596-4.42-9.502-8.002-14.917-11.328l-1.72-1.07c-11.337-6.667-24.516-10.014-37.027-13.778a7102.23 7102.23 0 0 0-15.906-4.814 9107.476 9107.476 0 0 1-13.658-4.13c-4.395-1.333-8.79-2.663-13.186-3.993l-2.478-.75C19.832 232.726 9.937 229.8 0 227l1-3c1.843-.88 1.843-.88 4.296-1.603l2.8-.844 3.084-.889 3.209-.957c2.293-.681 4.588-1.358 6.884-2.029 3.615-1.057 7.224-2.129 10.833-3.205a6721.06 6721.06 0 0 1 28.346-8.365c4.87-1.427 9.735-2.865 14.6-4.31 2.613-.773 5.231-1.529 7.85-2.284C98.192 195.026 112.607 189.246 125 179l2.574-2.082c13.105-11.138 22.064-25.972 27.304-42.231l.771-2.354c2.561-7.872 4.982-15.787 7.369-23.714.771-2.562 1.546-5.122 2.322-7.683 1.64-5.415 3.275-10.832 4.91-16.249 1.912-6.33 3.825-12.661 5.742-18.991.76-2.515 1.518-5.03 2.276-7.546l1.397-4.616.63-2.098c1.079-3.554 2.264-7.012 3.705-10.436ZM420 257h2l.726 2.387a14094.84 14094.84 0 0 0 6.838 22.416c1.174 3.84 2.347 7.68 3.514 11.52a4307.95 4307.95 0 0 0 3.404 11.147c.43 1.407.86 2.815 1.285 4.224 6.375 21.05 14.197 39.795 34.046 51.298C495.683 372.057 524.438 377.49 550 385v2c-10.795 3.682-21.609 7.242-32.55 10.465l-2.925.866a2001.276 2001.276 0 0 1-11.818 3.469c-22.558 6.541-42.995 14.066-55.065 35.625-4.224 8.096-7.01 16.388-9.568 25.114a2827.867 2827.867 0 0 0-4.7 15.763c-1.373 4.64-2.76 9.277-4.148 13.913-1.076 3.6-2.15 7.2-3.217 10.803l-.592 1.994c-.527 1.774-1.053 3.548-1.578 5.323C423 513 423 513 422 515h-2l-.75-2.487c-2.355-7.8-4.721-15.595-7.101-23.386-1.223-4.004-2.441-8.01-3.649-12.018-1.169-3.88-2.35-7.758-3.54-11.632a756.491 756.491 0 0 1-1.33-4.403c-5.983-19.989-14.606-37.792-33.738-48.223-6.076-3.136-12.13-5.43-18.665-7.41l-3.042-.944a2594.41 2594.41 0 0 0-9.56-2.935c-2.098-.648-4.196-1.297-6.293-1.947a2648.068 2648.068 0 0 0-32.298-9.779c-5.819-1.728-5.819-1.728-8.034-2.836v-2l1.616-.478a10872.572 10872.572 0 0 0 47.757-14.234c4.133-1.241 8.257-2.505 12.377-3.788l2.777-.838C367.813 362.085 376.651 356.32 385 348l1.934-1.863c9.55-9.934 13.546-23.696 17.343-36.598.46-1.527.92-3.054 1.383-4.58 1.196-3.966 2.378-7.935 3.555-11.906 1.212-4.073 2.437-8.14 3.662-12.21A7464.112 7464.112 0 0 0 420 257ZM420 0h2l.747 2.472c.936 3.088 1.878 6.174 2.824 9.259.404 1.324.807 2.648 1.207 3.974 4.966 19.393 4.966 19.393 17.636 33.748 8.128 4.165 16.393 6.813 25.149 9.234 2.03.565 4.059 1.133 6.085 1.713 1.813.52 3.63 1.024 5.448 1.528 2.775 1.024 4.083 1.797 5.904 4.072l-3.162.93a2627.185 2627.185 0 0 0-11.724 3.495 1156.61 1156.61 0 0 1-5.054 1.498C449.142 76.708 449.142 76.708 436 89c-4.215 8.739-7.017 17.989-9.813 27.25A3081.69 3081.69 0 0 0 422 130h-1.999l-.839-2.87c-1.043-3.563-2.1-7.122-3.159-10.68-.454-1.531-.905-3.063-1.352-4.596C409.335 92.87 409.335 92.87 396 79c-4.516-2.15-9.222-3.562-14-5l-6.684-2.082c-6.43-2-12.87-3.967-19.316-5.918v-2l3.054-.915c3.788-1.138 7.57-2.294 11.35-3.455a851.61 851.61 0 0 1 4.888-1.478c17.323-4.861 17.323-4.861 30.353-16.609C412.49 28.701 415.91 13.876 420 0Z"
+            />
+          </svg>
+        )}
+      </button>
+      {show ? (
+        <section
+          className={css({
+            backgroundColor: "white",
+            padding: "lg",
+            width: 320,
+            height: 160,
+            borderRadius: "lg",
+            display: "grid",
+            gridTemplateRows: "1fr 25px",
+            gap: "lg",
+            borderWidth: "1px",
+            borderStyle: "solid",
+            zIndex: 9999999999,
+
+            borderColor: "#e3e3e3ff", // ← usa el semantic token
+          })}
+        >
+          <Input.TextArea
+            placeholder="Describe your edit"
+            style={{
+              color: "black",
+              resize: "none",
+              outline: "none",
+            }}
+            onChange={(e) => {
+              setText(e);
+            }}
+            value={text}
+          />
+          <div
+            className={css({
+              display: "flex",
+              flexDirection: "row",
+              justifyContent: "end",
+            })}
+          >
+            <button
+              className={css({
+                padding: "md",
+                borderRadius: "md",
+              })}
+              style={{
+                backgroundColor: show
+                  ? constants.theme.colors.primary
+                  : "transparent",
+                border: `1px solid ${constants.theme.colors.primary}`,
+              }}
+              onClick={() => {
+                setShow(false);
+                mutation.mutate();
+              }}
+            >
+              <Send size={constants.icon.size} />
+            </button>
+          </div>
+        </section>
+      ) : null}
+    </div>
+  );
+};

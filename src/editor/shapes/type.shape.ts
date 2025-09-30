@@ -1,73 +1,132 @@
-import { FC } from "react";
+import { PrimitiveAtom } from "jotai";
 import { LineCap, LineJoin } from "konva/lib/Shape";
-import { Atom } from "jotai";
-import { IKeyMethods } from "../states/tool";
-import { SHAPES_NODES } from "../states/shapes";
+import { FC } from "react";
+import { ALL_SHAPES, ALL_SHAPES_CHILDREN } from "../states/shapes";
+import { IShapesKeys } from "../states/tool";
+import {
+  AlignItems,
+  FlexDirection,
+  FlexWrap,
+  JustifyContent,
+} from "./layout-flex";
 
 export type WithInitialValue<Value> = {
   init: Value;
 };
 
-export type IShape = {
+type FillImage = {
+  src: string;
+  width: number;
+  height: number;
+  name: string;
+};
+export type Fill = {
   id: string;
-  tool: IKeyMethods;
+  color: string;
+  opacity: number;
+  visible: boolean;
+  type: "fill" | "image";
+  image: FillImage;
+};
+
+export type Stroke = {
+  id: string;
+  color: string;
+  visible: boolean;
+};
+
+export type Effect = {
+  id: string;
+  type: "shadow" | "blur" | "glow";
+  visible: boolean;
+  color: string;
+};
+
+export type IShape = {
+  // Identity
+  id: string;
+  label: string;
+  tool: IShapesKeys;
+  parentId: string | null;
+
+  // Position & Transform
   x: number;
   y: number;
-  width?: number;
-  height?: number;
-  text?: string;
+  offsetX: number;
+  offsetY: number;
+  rotation: number;
+  width: number;
+  height: number;
+  points: number[];
+
+  // Visibility & Lock
   visible: boolean;
-  isWritingNow: boolean;
-  resolution?: "portrait" | "landscape";
-  isBlocked: boolean;
-  points?: number[];
-  src?: string;
-  closed?: boolean;
-  rotate?: number;
-  lineCap?: LineCap;
-  lineJoin?: LineJoin;
-  fillEnabled?: boolean;
-  dashEnabled?: boolean;
-  strokeEnabled?: boolean;
-  shadowEnabled?: boolean;
+  isLocked: boolean;
+  opacity: number;
+
+  // Fill & Stroke
+  fills: Fill[];
+  strokes: Stroke[];
+  strokeWidth: number;
+  lineCap: LineCap;
+  lineJoin: LineJoin;
   dash: number;
-  backgroundColor?: string;
-  fontSize?: number;
-  fontStyle?: string;
-  fontFamily?: string;
+
+  // Effects
+  effects: Effect[];
+  shadowBlur: number;
+  shadowOffsetX: number;
+  shadowOffsetY: number;
+  shadowOpacity: number;
+
+  // Typography
+  text: string;
+  fontFamily: string;
+  fontSize: number;
+  fontStyle: string;
+  fontWeight: "bold" | "normal" | "lighter" | "bolder" | "100" | "900";
   textDecoration?: string;
-  fontWeight?: "bold" | "normal" | "lighter" | "bolder" | "100" | "900";
-  shadowBlur?: number;
-  shadowColor?: string;
-  shadowOffsetX?: number;
-  shadowOffsetY?: number;
-  shadowOpacity?: number;
-  borderRadius?: number;
-  isAllBorderRadius?: boolean;
-  borderRadiusTopLeft?: number;
-  zIndex?: number;
-  borderRadiusTopRight?: number;
-  borderRadiusBottomRight?: number;
-  borderRadiusBottomLeft?: number;
-  colorText?: string;
-  stroke?: string;
-  strokeWidth?: number;
-  bezier: boolean;
+  align: "left" | "center" | "right" | "justify";
+  verticalAlign: "top" | "middle" | "bottom";
+
+  // Layout
+  isLayout: boolean;
+  flexDirection: FlexDirection;
+  justifyContent: JustifyContent;
+  alignItems: AlignItems;
+  flexWrap: FlexWrap;
+  // visible: boolean;
+  gap: number;
+  fillContainerWidth: boolean;
+  fillContainerHeight: boolean;
+
+  // Border Radius
+  borderRadius: number;
+  isAllBorderRadius: boolean;
+  borderTopLeftRadius: number;
+  borderTopRightRadius: number;
+  borderBottomRightRadius: number;
+  borderBottomLeftRadius: number;
+  minWidth: number;
+  minHeight: number;
+  maxWidth: number;
+  maxHeight: number;
+  isAllPadding: boolean;
+  paddingTop: number;
+  paddingRight: number;
+  paddingBottom: number;
+  paddingLeft: number;
+  padding: number;
+  // Children
+  children: PrimitiveAtom<ALL_SHAPES[]> & WithInitialValue<ALL_SHAPES[]>;
+};
+
+export type IShapeChildren = Omit<IShape, "children"> & {
+  children: ALL_SHAPES_CHILDREN[];
 };
 
 export type IShapeWithEvents = {
-  item: SHAPES_NODES;
-  shape: Atom<IShape>;
-  draggable: boolean;
-  isSelected: boolean;
-  onDragStart: (item: IShape) => void;
-  onDragMove: (item: IShape) => void;
-  onDragStop: (item: IShape) => void;
-  onTransformStop: (item: IShape) => void;
-  onClick: (item: IShape) => void;
-  onDbClick?: (item: IShape) => void;
-  screenWidth: number;
-  screenHeight: number;
+  shape: ALL_SHAPES;
 };
 
 export type FCShapeWEvents = FC<IShapeWithEvents>;
