@@ -33,3 +33,12 @@ export type IProject = {
   createdAt: string;
   updatedAt: string;
 };
+export type IPhoto = {
+  projectId: string;
+  url: string;
+  mimeType: string;
+  size: number;
+  createdAt: string;
+  folder: string;
+  createdBy: string;
+};

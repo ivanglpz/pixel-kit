@@ -1,8 +1,10 @@
 /* eslint-disable @next/next/no-img-element */
 /* eslint-disable jsx-a11y/alt-text */
 import { Valid } from "@/components/valid";
+import { IPhoto } from "@/db/schemas/types";
 import { IShape } from "@/editor/shapes/type.shape";
 import { SHAPE_SELECTED_ATOM, SHAPE_UPDATE_ATOM } from "@/editor/states/shape";
+import { uploadPhoto } from "@/services/photo";
 import { css } from "@stylespixelkit/css";
 import { useMutation } from "@tanstack/react-query";
 import { useAtomValue, useSetAtom } from "jotai";
@@ -22,6 +24,7 @@ import {
   Expand,
   Eye,
   EyeOff,
+  File,
   ImageIcon,
   Minus,
   MoveHorizontal,
@@ -42,10 +45,12 @@ import { Button } from "../components/button";
 import { Dialog } from "../components/dialog";
 import { Input } from "../components/input";
 import { ListIcons } from "../components/list-icons";
+import { Loading } from "../components/loading";
 import { constants } from "../constants/color";
 import { useAutoSave } from "../hooks/useAutoSave";
 import { useDelayedExecutor } from "../hooks/useDelayExecutor";
 import { AlignItems, JustifyContent } from "../shapes/layout-flex";
+import { PROJECT_ID_ATOM } from "../states/projects";
 import { UPDATE_UNDO_REDO } from "../states/undo-redo";
 import { ExportShape } from "./export-shape";
 
@@ -311,7 +316,9 @@ export const LayoutShapeConfig = () => {
   const setUpdateUndoRedo = useSetAtom(UPDATE_UNDO_REDO);
   const [type, setType] = useState<"UPLOAD" | "CHOOSE">("UPLOAD");
   const { debounce } = useAutoSave();
-  const [images, setImages] = useState<File[]>([]);
+  const PROJECT_ID = useAtomValue(PROJECT_ID_ATOM);
+  const [photoUpload, setPhotoUpload] = useState<File | null>(null);
+  const [photoChoose, setPhotocChoose] = useState<IPhoto | null>(null);
   const { execute, isRunning } = useDelayedExecutor({
     callback: () => {
       setUpdateUndoRedo();
@@ -414,7 +421,7 @@ export const LayoutShapeConfig = () => {
       return;
     }
 
-    setImages([file]);
+    setPhotoUpload(file);
 
     event.target.value = ""; // resetear después también
     // procesar archivo
@@ -547,10 +554,62 @@ export const LayoutShapeConfig = () => {
   };
 
   const mutation = useMutation({
-    mutationKey: ["upload_image"],
+    mutationKey: ["upload_image", type, photoUpload],
     mutationFn: async () => {
-      console.log("test");
+      if (type === "UPLOAD") {
+        const myImage = photoUpload;
+
+        if (!myImage) return;
+        console.log(myImage);
+
+        const formData = new FormData();
+        formData.append("image", myImage); // usar el mismo nombre 'images'
+        formData.append("projectId", `${PROJECT_ID}`); // usar el mismo nombre 'images'
+
+        console.log(formData);
+
+        const response = await uploadPhoto(formData);
+        return response;
+      }
       return 1;
+    },
+    onSuccess: (values) => {
+      console.log("entrando aqui");
+      console.log(type, "type");
+
+      if (type === "UPLOAD") {
+        console.log(values);
+        const scale: number = calculateScale(
+          values.width,
+          values.height,
+          shape.width ?? 500,
+          shape.height ?? 500
+        );
+        const newWidth: number = values.width * scale;
+        const newHeight: number = values.height * scale;
+        shapeUpdate({
+          width: newWidth,
+          height: newHeight,
+          fills: [
+            {
+              id: uuidv4(),
+              color: "#ffffff",
+              opacity: 1,
+              visible: true,
+              type: "image",
+              image: {
+                src: values?.url,
+                width: values.width,
+                height: values.height,
+                name: values?._id,
+              },
+            },
+            ...(shape.fills || []),
+          ],
+        });
+        execute(); // Ejecutar después del cambio
+        setShowImage(false);
+      }
     },
   });
 
@@ -649,9 +708,9 @@ export const LayoutShapeConfig = () => {
                     alignItems: "center",
                   })}
                 >
-                  {images?.[0] ? (
+                  {photoUpload ? (
                     <img
-                      src={getObjectUrl(images?.[0])}
+                      src={getObjectUrl(photoUpload)}
                       alt="preview-app"
                       className={css({
                         width: "100%",
@@ -669,7 +728,7 @@ export const LayoutShapeConfig = () => {
                       inputRef.current?.click();
                     }}
                   >
-                    {images?.[0] ? "Change image" : "Choose from device"}
+                    {photoUpload ? "Change image" : "Choose from device"}
                   </Button.Secondary>
                 </div>
               </section>
@@ -695,15 +754,18 @@ export const LayoutShapeConfig = () => {
               })}
             >
               <Button.Secondary onClick={() => {}}>Cancel</Button.Secondary>
-              <Button.Primary onClick={() => {}}>
-                Upload
-                {/* {loading ? (
-                    <Loading color={constants.theme.colors.black} />
-                  ) : (
-                    <>
-                      <File size={constants.icon.size} /> Export
-                    </>
-                  )} */}
+              <Button.Primary
+                onClick={() => {
+                  mutation.mutate();
+                }}
+              >
+                {mutation.isPending ? (
+                  <Loading color={constants.theme.colors.black} />
+                ) : (
+                  <>
+                    <File size={constants.icon.size} /> Upload
+                  </>
+                )}
               </Button.Primary>
             </footer>
           </section>

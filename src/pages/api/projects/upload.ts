@@ -2,7 +2,7 @@ import { withAuth } from "@/db/middleware/auth";
 import { PhotoSchema } from "@/db/schemas/photos";
 import { Project } from "@/db/schemas/projects";
 import { v2 as cloudinary, UploadApiOptions } from "cloudinary";
-import { File, IncomingForm } from "formidable";
+import { IncomingForm } from "formidable";
 import type { NextApiRequest, NextApiResponse } from "next";
 
 // ⛔️ Desactiva bodyParser de Next.js
@@ -29,17 +29,17 @@ async function handler(
   }
 
   try {
-    const form = new IncomingForm({ keepExtensions: true, multiples: false });
+    const form = new IncomingForm({ keepExtensions: true });
 
     form.parse(req, async (err, fields, files) => {
+      console.log(files.image, "MYFILES");
+
       if (err) {
         console.error(err);
         return res.status(500).json({ error: "Error parsing form data" });
       }
 
-      const file = Array.isArray(files.image)
-        ? (files.image[0] as File)
-        : (files.image as File | undefined);
+      const file = files.image?.[0];
 
       if (!file) {
         return res.status(400).json({ error: "No image file found" });
@@ -62,7 +62,6 @@ async function handler(
           error: "Image exceeds maximum size of 1MB",
         });
       }
-
       try {
         // Subida a Cloudinary
         const payload: UploadApiOptions = {
@@ -73,6 +72,7 @@ async function handler(
           resource_type: "image",
         };
         const result = await cloudinary.uploader.upload(file.filepath, payload);
+        console.log(result, "result");
 
         // Crear documento en MongoDB
         const newPhoto = await PhotoSchema.create({
@@ -82,6 +82,8 @@ async function handler(
           size: file.size || 0,
           folder: payload.folder,
           createdBy: req.userId,
+          width: result.width,
+          height: result.height,
         });
 
         return res.status(201).json({
