@@ -5,7 +5,7 @@
 import { useMemo } from "react";
 
 // Estado global (jotai)
-import { PrimitiveAtom, useAtom } from "jotai";
+import { PrimitiveAtom, useAtom, useSetAtom } from "jotai";
 import { SHAPE_IDS_ATOM } from "../states/shape";
 
 // Konva
@@ -17,6 +17,7 @@ import { IShape, IShapeWithEvents, WithInitialValue } from "./type.shape";
 // Eventos de shape
 import { useConfiguration } from "../hooks/useConfiguration";
 import { coordinatesShapeMove, shapeEventDragMove } from "./events.shape";
+import { flexLayoutAtom } from "./layout-flex";
 
 // Transformer
 
@@ -67,6 +68,7 @@ export const ShapeImage = (props: IShapeWithEvents) => {
     ?.filter((e) => e?.visible && e?.type === "image")
     .at(0);
   const { width, height, x, y, strokeWidth, dash, rotation } = box;
+  const applyLayout = useSetAtom(flexLayoutAtom);
 
   // Memoización de la imagen base
   const Imagee = useMemo(() => {
@@ -180,6 +182,10 @@ export const ShapeImage = (props: IShapeWithEvents) => {
             )
           )
         }
+        onDragEnd={() => {
+          if (!box.parentId) return;
+          applyLayout({ id: box.parentId });
+        }}
         onTransform={(e) => {
           const scaleX = e.target.scaleX();
           const scaleY = e.target.scaleY();
