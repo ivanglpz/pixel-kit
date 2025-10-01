@@ -1,8 +1,9 @@
-import { PrimitiveAtom, useAtom } from "jotai";
+import { PrimitiveAtom, useAtom, useSetAtom } from "jotai";
 import { Rect } from "react-konva";
 import { useConfiguration } from "../hooks/useConfiguration";
 import { SHAPE_IDS_ATOM } from "../states/shape";
 import { coordinatesShapeMove, shapeEventDragMove } from "./events.shape";
+import { flexLayoutAtom } from "./layout-flex";
 import { IShape, IShapeWithEvents, WithInitialValue } from "./type.shape";
 
 // eslint-disable-next-line react/display-name
@@ -12,6 +13,7 @@ const ShapeBox = ({ shape: item }: IShapeWithEvents) => {
   );
   const { config } = useConfiguration();
   const rotation = Number(box.rotation) || 0;
+  const applyLayout = useSetAtom(flexLayoutAtom);
 
   const [shapeId, setShapeId] = useAtom(SHAPE_IDS_ATOM);
   const isSelected = shapeId.some((w) => w.id === box.id);
@@ -90,6 +92,10 @@ const ShapeBox = ({ shape: item }: IShapeWithEvents) => {
             )
           )
         }
+        onDragEnd={() => {
+          if (!box.parentId) return;
+          applyLayout({ id: box.parentId });
+        }}
         onTransform={(e) => {
           const scaleX = e.target.scaleX();
           const scaleY = e.target.scaleY();

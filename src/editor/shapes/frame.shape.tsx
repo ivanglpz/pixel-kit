@@ -1,7 +1,6 @@
 import { PrimitiveAtom, useAtomValue, useSetAtom } from "jotai";
 import { useEffect } from "react";
 import { Group } from "react-konva";
-import { SHAPE_IDS_ATOM } from "../states/shape";
 import ShapeBox from "./box.shape";
 import { flexLayoutAtom } from "./layout-flex";
 import { Shapes } from "./shapes";
@@ -18,7 +17,7 @@ export const SHAPE_FRAME = (props: IShapeWithEvents) => {
   const box = useAtomValue(
     item.state as PrimitiveAtom<IShape> & WithInitialValue<IShape>
   );
-  const shapeId = useAtomValue(SHAPE_IDS_ATOM);
+  // const shapeId = useAtomValue(SHAPE_IDS_ATOM);
   // const isSelected = shapeId.some((w) => w.id === box.id);
   const { x, y, height, width, rotation } = box;
 
