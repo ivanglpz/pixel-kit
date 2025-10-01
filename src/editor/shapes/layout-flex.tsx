@@ -1,5 +1,6 @@
-import { atom, PrimitiveAtom, useAtom } from "jotai";
-import React, { useEffect } from "react";
+import { atom, PrimitiveAtom } from "jotai";
+import React from "react";
+import { PLANE_SHAPES_ATOM } from "../states/shapes";
 import { IShape, WithInitialValue } from "./type.shape";
 
 export type JustifyContent =
@@ -30,181 +31,173 @@ export type LayoutFlexProps = {
   shape: IShape; // contenedor padre
 };
 
-const flexLayoutAtom = atom(
-  null,
-  (
-    get,
-    set,
-    {
-      children,
-      flexDirection,
+export const flexLayoutAtom = atom(null, (get, set, { id }: { id: string }) => {
+  const FIND_SHAPE = get(PLANE_SHAPES_ATOM).find((s) => s.id === id);
+  if (!FIND_SHAPE) return;
+  const shape = get(
+    FIND_SHAPE.state as PrimitiveAtom<IShape> & WithInitialValue<IShape>
+  );
+
+  if (!shape.isLayout) return;
+
+  const children = get(shape.children);
+  if (children.length === 0) return;
+
+  const {
+    flexDirection,
+    justifyContent,
+    alignItems,
+    flexWrap,
+    gap,
+    width: containerWidth,
+    height: containerHeight,
+  } = shape;
+
+  if (containerWidth === 0 || containerHeight === 0) return;
+
+  // Calcular padding del contenedor
+  const paddingTop = shape.isAllPadding ? shape.padding : shape.paddingTop;
+  const paddingRight = shape.isAllPadding ? shape.padding : shape.paddingRight;
+  const paddingBottom = shape.isAllPadding
+    ? shape.padding
+    : shape.paddingBottom;
+  const paddingLeft = shape.isAllPadding ? shape.padding : shape.paddingLeft;
+
+  const effectiveWidth = containerWidth - paddingLeft - paddingRight;
+  const effectiveHeight = containerHeight - paddingTop - paddingBottom;
+
+  const childrenStates = children.map((child) => {
+    const state = get(
+      child.state as PrimitiveAtom<IShape> & WithInitialValue<IShape>
+    );
+    return { state, atom: child.state };
+  });
+
+  const lines = groupIntoLines(
+    childrenStates.map(({ state }) => state),
+    flexDirection,
+    flexWrap,
+    effectiveWidth,
+    effectiveHeight,
+    gap
+  );
+
+  let totalCrossSize = 0;
+  lines.forEach((line, index) => {
+    const maxCrossSize = Math.max(
+      ...line.map((child) =>
+        flexDirection === "row" ? child.height : child.width
+      )
+    );
+    totalCrossSize += maxCrossSize + (index > 0 ? gap : 0);
+  });
+
+  let initialCrossOffset = 0;
+  if (flexWrap === "wrap" && lines.length > 1) {
+    const availableCrossSpace =
+      (flexDirection === "row" ? effectiveHeight : effectiveWidth) -
+      totalCrossSize;
+    switch (alignItems) {
+      case "center":
+        initialCrossOffset = availableCrossSpace / 2;
+        break;
+      case "flex-end":
+        initialCrossOffset = availableCrossSpace;
+        break;
+    }
+  }
+
+  let crossOffset = initialCrossOffset;
+
+  lines.forEach((line, lineIndex) => {
+    const { startMain, spacing } = computeMainLayout(
       justifyContent,
-      alignItems,
-      flexWrap,
-      width: containerWidth,
-      height: containerHeight,
-      gap,
-      shape, // el shape padre con nuevas props
-    }: Pick<
-      LayoutFlexProps,
-      | "children"
-      | "flexDirection"
-      | "justifyContent"
-      | "alignItems"
-      | "flexWrap"
-      | "width"
-      | "height"
-      | "gap"
-      | "shape"
-    >
-  ) => {
-    // Calcular padding del contenedor
-    const paddingTop = shape.isAllPadding ? shape.padding : shape.paddingTop;
-    const paddingRight = shape.isAllPadding
-      ? shape.padding
-      : shape.paddingRight;
-    const paddingBottom = shape.isAllPadding
-      ? shape.padding
-      : shape.paddingBottom;
-    const paddingLeft = shape.isAllPadding ? shape.padding : shape.paddingLeft;
-
-    const effectiveWidth = containerWidth - paddingLeft - paddingRight;
-    const effectiveHeight = containerHeight - paddingTop - paddingBottom;
-
-    const childrenStates = children.map((child) => {
-      const state = get(
-        child.props.shape.state as PrimitiveAtom<IShape> &
-          WithInitialValue<IShape>
-      );
-      return { state, atom: child.props.shape.state };
-    });
-
-    const lines = groupIntoLines(
-      childrenStates.map(({ state }) => state),
       flexDirection,
-      flexWrap,
       effectiveWidth,
       effectiveHeight,
+      line,
       gap
     );
 
-    let totalCrossSize = 0;
-    lines.forEach((line, index) => {
-      const maxCrossSize = Math.max(
-        ...line.map((child) =>
-          flexDirection === "row" ? child.height : child.width
-        )
-      );
-      totalCrossSize += maxCrossSize + (index > 0 ? gap : 0);
-    });
+    const maxCrossSize = Math.max(
+      ...line.map((child) =>
+        flexDirection === "row" ? child.height : child.width
+      )
+    );
 
-    let initialCrossOffset = 0;
-    if (flexWrap === "wrap" && lines.length > 1) {
-      const availableCrossSpace =
-        (flexDirection === "row" ? effectiveHeight : effectiveWidth) -
-        totalCrossSize;
-      switch (alignItems) {
-        case "center":
-          initialCrossOffset = availableCrossSpace / 2;
-          break;
-        case "flex-end":
-          initialCrossOffset = availableCrossSpace;
-          break;
+    let accumulatedMain = startMain;
+
+    line.forEach((childState) => {
+      const cross =
+        flexWrap === "wrap" && lines.length > 1
+          ? computeCross(
+              "flex-start",
+              flexDirection,
+              effectiveWidth,
+              effectiveHeight,
+              childState
+            )
+          : computeCross(
+              alignItems,
+              flexDirection,
+              effectiveWidth,
+              effectiveHeight,
+              childState
+            );
+
+      // Ajustar width y height con min/max de los hijos
+      let newWidth = childState.fillContainerWidth
+        ? flexDirection === "row"
+          ? (effectiveWidth - gap * (line.length - 1)) / line.length
+          : effectiveWidth
+        : childState.width;
+
+      let newHeight = childState.fillContainerHeight
+        ? flexDirection === "column"
+          ? (effectiveHeight - gap * (line.length - 1)) / line.length
+          : effectiveHeight
+        : childState.height;
+
+      if (childState.minWidth > 0)
+        newWidth = Math.max(newWidth, childState.minWidth);
+      if (childState.maxWidth > 0)
+        newWidth = Math.min(newWidth, childState.maxWidth);
+      if (childState.minHeight > 0)
+        newHeight = Math.max(newHeight, childState.minHeight);
+      if (childState.maxHeight > 0)
+        newHeight = Math.min(newHeight, childState.maxHeight);
+
+      const x =
+        flexDirection === "row"
+          ? accumulatedMain + paddingLeft
+          : cross + crossOffset + paddingLeft;
+
+      const y =
+        flexDirection === "row"
+          ? cross + crossOffset + paddingTop
+          : accumulatedMain + paddingTop;
+
+      const childAtom = childrenStates.find(
+        ({ state }) => state.id === childState.id
+      )?.atom;
+
+      if (childAtom) {
+        set(childAtom, (prev: IShape) => ({
+          ...prev,
+          x,
+          y,
+          width: newWidth,
+          height: newHeight,
+        }));
       }
-    }
 
-    let crossOffset = initialCrossOffset;
-
-    lines.forEach((line, lineIndex) => {
-      const { startMain, spacing } = computeMainLayout(
-        justifyContent,
-        flexDirection,
-        effectiveWidth,
-        effectiveHeight,
-        line,
-        gap
-      );
-
-      const maxCrossSize = Math.max(
-        ...line.map((child) =>
-          flexDirection === "row" ? child.height : child.width
-        )
-      );
-
-      let accumulatedMain = startMain;
-
-      line.forEach((childState) => {
-        const cross =
-          flexWrap === "wrap" && lines.length > 1
-            ? computeCross(
-                "flex-start",
-                flexDirection,
-                effectiveWidth,
-                effectiveHeight,
-                childState
-              )
-            : computeCross(
-                alignItems,
-                flexDirection,
-                effectiveWidth,
-                effectiveHeight,
-                childState
-              );
-
-        // Ajustar width y height con min/max de los hijos
-        let newWidth = childState.fillContainerWidth
-          ? flexDirection === "row"
-            ? (effectiveWidth - gap * (line.length - 1)) / line.length
-            : effectiveWidth
-          : childState.width;
-
-        let newHeight = childState.fillContainerHeight
-          ? flexDirection === "column"
-            ? (effectiveHeight - gap * (line.length - 1)) / line.length
-            : effectiveHeight
-          : childState.height;
-
-        if (childState.minWidth > 0)
-          newWidth = Math.max(newWidth, childState.minWidth);
-        if (childState.maxWidth > 0)
-          newWidth = Math.min(newWidth, childState.maxWidth);
-        if (childState.minHeight > 0)
-          newHeight = Math.max(newHeight, childState.minHeight);
-        if (childState.maxHeight > 0)
-          newHeight = Math.min(newHeight, childState.maxHeight);
-
-        const x =
-          flexDirection === "row"
-            ? accumulatedMain + paddingLeft
-            : cross + crossOffset + paddingLeft;
-
-        const y =
-          flexDirection === "row"
-            ? cross + crossOffset + paddingTop
-            : accumulatedMain + paddingTop;
-
-        const childAtom = childrenStates.find(
-          ({ state }) => state.id === childState.id
-        )?.atom;
-
-        if (childAtom) {
-          set(childAtom, (prev: IShape) => ({
-            ...prev,
-            x,
-            y,
-            width: newWidth,
-            height: newHeight,
-          }));
-        }
-
-        accumulatedMain +=
-          (flexDirection === "row" ? newWidth : newHeight) + spacing;
-      });
-
-      crossOffset += maxCrossSize + (lineIndex < lines.length - 1 ? gap : 0);
+      accumulatedMain +=
+        (flexDirection === "row" ? newWidth : newHeight) + spacing;
     });
-  }
-);
+
+    crossOffset += maxCrossSize + (lineIndex < lines.length - 1 ? gap : 0);
+  });
+});
 
 // --- helpers ---
 const groupIntoLines = (
@@ -319,60 +312,4 @@ const computeCross = (
     default:
       return 0;
   }
-};
-
-export const LayoutFlex: React.FC<LayoutFlexProps> = ({
-  width,
-  height,
-  display,
-  flexDirection = "row",
-  justifyContent = "flex-start",
-  alignItems = "flex-start",
-  flexWrap = "nowrap",
-  gap = 10,
-  children,
-  shape,
-}) => {
-  const [, applyLayout] = useAtom(flexLayoutAtom);
-
-  // Aplicar el layout cada vez que cambien las props o children
-  useEffect(() => {
-    if (display === "flex" && children.length > 0) {
-      applyLayout({
-        children,
-        flexDirection,
-        justifyContent,
-        alignItems,
-        flexWrap,
-        width,
-        height,
-        gap,
-        shape,
-      });
-    }
-  }, [
-    // children,
-    flexDirection,
-    justifyContent,
-    alignItems,
-    flexWrap,
-    width,
-    height,
-    gap,
-    display,
-    shape.isAllPadding,
-    shape.padding,
-    shape.paddingTop,
-    shape.paddingRight,
-    shape.paddingBottom,
-    shape.paddingLeft,
-    children.length,
-    // shape,
-  ]);
-
-  // Si no es flex, retornar children sin modificar
-  if (display !== "flex") return <>{children}</>;
-
-  // Retornar children sin modificar ya que las posiciones se actualizan via Jotai
-  return <>{children}</>;
 };

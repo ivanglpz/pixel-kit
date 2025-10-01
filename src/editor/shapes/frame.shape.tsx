@@ -1,8 +1,9 @@
-import { PrimitiveAtom, useAtomValue } from "jotai";
+import { PrimitiveAtom, useAtomValue, useSetAtom } from "jotai";
+import { useEffect } from "react";
 import { Group } from "react-konva";
 import { SHAPE_IDS_ATOM } from "../states/shape";
 import ShapeBox from "./box.shape";
-import { LayoutFlex } from "./layout-flex";
+import { flexLayoutAtom } from "./layout-flex";
 import { Shapes } from "./shapes";
 import {
   FCShapeWEvents,
@@ -22,6 +23,32 @@ export const SHAPE_FRAME = (props: IShapeWithEvents) => {
   const { x, y, height, width, rotation } = box;
 
   const childrens = useAtomValue(box.children);
+
+  const applyLayout = useSetAtom(flexLayoutAtom);
+
+  // Aplicar el layout cada vez que cambien las props o children
+  useEffect(() => {
+    if (box.isLayout) {
+      applyLayout({ id: box.id });
+    }
+  }, [
+    box.isLayout,
+    box.justifyContent,
+    box.alignItems,
+    box.flexDirection,
+    box.flexWrap,
+    box.width,
+    box.height,
+    box.gap,
+    box.id,
+    box.isAllPadding,
+    box.padding,
+    box.paddingTop,
+    box.paddingRight,
+    box.paddingBottom,
+    box.paddingLeft,
+  ]);
+
   if (!box.visible) return null;
 
   const children = childrens?.map((item) => {
@@ -33,6 +60,7 @@ export const SHAPE_FRAME = (props: IShapeWithEvents) => {
       />
     );
   });
+
   return (
     <>
       <ShapeBox shape={item} />
@@ -53,23 +81,7 @@ export const SHAPE_FRAME = (props: IShapeWithEvents) => {
           height: height,
         }}
       >
-        {box.isLayout ? (
-          <LayoutFlex
-            width={width}
-            height={height}
-            display="flex"
-            alignItems={box.alignItems}
-            flexDirection={box.flexDirection}
-            flexWrap={box.flexWrap}
-            gap={box.gap}
-            justifyContent={box.justifyContent}
-            shape={box}
-          >
-            {children}
-          </LayoutFlex>
-        ) : (
-          children
-        )}
+        {children}
       </Group>
     </>
   );
