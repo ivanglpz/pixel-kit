@@ -1,5 +1,6 @@
-import { Nodes } from "@/editor/components/Nodes";
+import { Nodes, withStableIcon } from "@/editor/components/Nodes";
 import ALL_SHAPES_ATOM, {
+  ALL_SHAPES,
   DELETE_ALL_SHAPES_ATOM,
   MOVE_SHAPES_TO_ROOT,
 } from "@/editor/states/shapes";
@@ -12,7 +13,7 @@ import { ContextMenu, useContextMenu } from "../components/context-menu";
 import { useAutoSave } from "../hooks/useAutoSave";
 
 // ✅ Componente wrapper para elementos de nivel superior
-const DraggableRootItem = ({ item }: { item: any }) => {
+const DraggableRootItem = withStableIcon(({ item }: { item: ALL_SHAPES }) => {
   const rootDragControls = useDragControls();
 
   return (
@@ -34,7 +35,7 @@ const DraggableRootItem = ({ item }: { item: any }) => {
       <Nodes shape={item} dragControls={rootDragControls} />
     </Reorder.Item>
   );
-};
+});
 
 export const SidebarLeftShapes = () => {
   const [ALL_SHAPES, SET_ALL_SHAPES] = useAtom(ALL_SHAPES_ATOM);

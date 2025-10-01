@@ -351,7 +351,7 @@ export const LayoutFlex: React.FC<LayoutFlexProps> = ({
       });
     }
   }, [
-    children,
+    // children,
     flexDirection,
     justifyContent,
     alignItems,
@@ -360,8 +360,14 @@ export const LayoutFlex: React.FC<LayoutFlexProps> = ({
     height,
     gap,
     display,
-    applyLayout,
-    shape,
+    shape.isAllPadding,
+    shape.padding,
+    shape.paddingTop,
+    shape.paddingRight,
+    shape.paddingBottom,
+    shape.paddingLeft,
+    children.length,
+    // shape,
   ]);
 
   // Si no es flex, retornar children sin modificar
