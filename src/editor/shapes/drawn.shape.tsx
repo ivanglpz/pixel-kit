@@ -1,5 +1,5 @@
 /* eslint-disable react/display-name */
-import { PrimitiveAtom, useAtom } from "jotai";
+import { PrimitiveAtom, useAtom, useSetAtom } from "jotai";
 import { Line } from "react-konva";
 import { IShape, IShapeWithEvents, WithInitialValue } from "./type.shape";
 
@@ -8,6 +8,7 @@ import { SHAPE_IDS_ATOM } from "../states/shape";
 
 import { useConfiguration } from "../hooks/useConfiguration";
 import { coordinatesShapeMove, shapeEventDragMove } from "./events.shape";
+import { flexLayoutAtom } from "./layout-flex";
 
 export const ShapeDraw = ({ shape: item }: IShapeWithEvents) => {
   const [box, setBox] = useAtom(
@@ -15,6 +16,7 @@ export const ShapeDraw = ({ shape: item }: IShapeWithEvents) => {
   );
 
   const { x, y, strokeWidth, dash, rotation } = box;
+  const applyLayout = useSetAtom(flexLayoutAtom);
 
   const { config } = useConfiguration();
 
@@ -93,6 +95,10 @@ export const ShapeDraw = ({ shape: item }: IShapeWithEvents) => {
             )
           )
         }
+        onDragEnd={() => {
+          if (!box.parentId) return;
+          applyLayout({ id: box.parentId });
+        }}
         onTransform={(e) => {
           const scaleX = e.target.scaleX();
           const scaleY = e.target.scaleY();
