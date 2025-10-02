@@ -214,7 +214,7 @@ export const useEventStage = () => {
     },
   });
 
-  const createImageFromFile = (file: File, dataUrl: string) => {
+  const createImageFromFile = (file: File) => {
     toast.info("Uploading image...", {
       duration: 6000,
     });
@@ -341,7 +341,7 @@ export const useEventStage = () => {
       const reader = new FileReader();
       reader.onload = (data) => {
         if (typeof data?.target?.result === "string") {
-          createImageFromFile(file, data.target.result);
+          createImageFromFile(file);
         }
       };
       reader.readAsDataURL(file);
