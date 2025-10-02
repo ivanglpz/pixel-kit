@@ -2,6 +2,7 @@ import { IProject } from "@/db/schemas/types";
 import { updateProject } from "@/services/projects";
 import { useMutation } from "@tanstack/react-query";
 import { useSetAtom } from "jotai";
+import { toast } from "sonner";
 import { JSON_PROJECTS_ATOM } from "../states/projects";
 import { UPDATE_TAB_ATOM } from "../states/tabs";
 import { useDelayedExecutor } from "./useDelayExecutor";
@@ -33,6 +34,7 @@ export const useAutoSave = () => {
       return PAYLOAD;
     },
     onSuccess: (data) => {
+      toast.success("Project auto-saved");
       SET_TAB_PROJECT(data);
     },
     onError: (err) => console.error("Error saving canvas:", err),
