@@ -161,6 +161,7 @@ export const useEventStage = () => {
     image.src = dataUrl;
     image.onload = () => {
       const createStartElement = CreateShapeSchema({
+        id: uuidv4(),
         tool: "IMAGE",
         x: 0,
         y: 0,
@@ -188,6 +189,7 @@ export const useEventStage = () => {
 
   const createTextFromClipboard = (text: string) => {
     const createStartElement = CreateShapeSchema({
+      id: uuidv4(),
       tool: "TEXT",
       x: 0,
       y: 0,
@@ -207,6 +209,7 @@ export const useEventStage = () => {
       ctx?.drawImage(img, 0, 0);
 
       const createStartElement = CreateShapeSchema({
+        id: uuidv4(),
         tool: "IMAGE",
         x: 0,
         y: 0,
