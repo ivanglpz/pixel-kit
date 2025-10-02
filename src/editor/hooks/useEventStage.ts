@@ -215,7 +215,9 @@ export const useEventStage = () => {
   });
 
   const createImageFromFile = (file: File, dataUrl: string) => {
-    toast.info("Uploading image...");
+    toast.info("Uploading image...", {
+      duration: 6000,
+    });
     mutation.mutate(file);
   };
 
