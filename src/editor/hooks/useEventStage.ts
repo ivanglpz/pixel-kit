@@ -216,7 +216,7 @@ export const useEventStage = () => {
 
   const createImageFromFile = (file: File) => {
     if (
-      !["IMAGE/JPEG", "IMAGE/PNG", "IMAGE/GIF", "IMAGE/SVG+XML", ""].includes(
+      !["IMAGE/JPEG", "IMAGE/PNG", "IMAGE/GIF", "IMAGE/SVG+XML"].includes(
         file.type.toUpperCase()
       )
     ) {
