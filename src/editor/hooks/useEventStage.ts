@@ -215,6 +215,14 @@ export const useEventStage = () => {
   });
 
   const createImageFromFile = (file: File) => {
+    if (
+      !["IMAGE/JPEG", "IMAGE/PNG", "IMAGE/GIF", "IMAGE/SVG+XML", ""].includes(
+        file.type.toUpperCase()
+      )
+    ) {
+      toast.error("Invalid image format.");
+      return;
+    }
     toast.info("Uploading image...", {
       duration: 6000,
     });
@@ -337,16 +345,6 @@ export const useEventStage = () => {
       }
     };
 
-    const handleFile = (file: File): void => {
-      const reader = new FileReader();
-      reader.onload = (data) => {
-        if (typeof data?.target?.result === "string") {
-          createImageFromFile(file);
-        }
-      };
-      reader.readAsDataURL(file);
-    };
-
     const handleSVG = (svgText: string): void => {
       const parser = new DOMParser();
       const svgDOM = parser
@@ -364,7 +362,7 @@ export const useEventStage = () => {
       const file: File | undefined = event.clipboardData?.files[0];
 
       if (file) {
-        handleFile(file);
+        createImageFromFile(file);
         return;
       }
 
