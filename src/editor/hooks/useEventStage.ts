@@ -1,14 +1,19 @@
 /* eslint-disable react-hooks/exhaustive-deps */
+import { IPhoto } from "@/db/schemas/types";
 import TOOL_ATOM, { IKeyTool, PAUSE_MODE_ATOM } from "@/editor/states/tool";
+import { uploadPhoto } from "@/services/photo";
+import { useMutation } from "@tanstack/react-query";
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import Konva from "konva";
 import { KonvaEventObject } from "konva/lib/Node";
 import { useEffect } from "react";
+import { toast } from "sonner";
 import { v4 as uuidv4 } from "uuid";
 import stageAbsolutePosition from "../helpers/position";
 import { CreateShapeSchema } from "../helpers/shape-schema";
 import { CLEAR_CURRENT_ITEM_ATOM } from "../states/currentItem";
 import { EVENT_ATOM } from "../states/event";
+import { PROJECT_ID_ATOM } from "../states/projects";
 import { RECTANGLE_SELECTION_ATOM } from "../states/rectangle-selection";
 import { SHAPE_IDS_ATOM, UPDATE_SHAPES_IDS_ATOM } from "../states/shape";
 import {
@@ -39,6 +44,7 @@ export const useEventStage = () => {
 
   const { config } = useConfiguration();
   const { debounce } = useAutoSave();
+  const PROJECT_ID = useAtomValue(PROJECT_ID_ATOM);
 
   // ===== SETTERS =====
   const SET_CREATE = useSetAtom(CREATE_SHAPE_ATOM);
@@ -156,26 +162,41 @@ export const useEventStage = () => {
     SET_CLEAR_CITEM();
   };
 
-  const createImageFromFile = (file: File, dataUrl: string) => {
-    const image = new Image();
-    image.src = dataUrl;
-    image.onload = () => {
+  const mutation = useMutation({
+    mutationKey: ["upload_event_image", PROJECT_ID],
+    mutationFn: async (
+      photoUpload: File
+    ): Promise<Pick<IPhoto, "name" | "width" | "height" | "url">> => {
+      const myImage = photoUpload;
+
+      if (!myImage) {
+        throw new Error("Please upload a photo from your device");
+      }
+
+      const formData = new FormData();
+      formData.append("image", myImage); // usar el mismo nombre 'images'
+      formData.append("projectId", `${PROJECT_ID}`); // usar el mismo nombre 'images'
+
+      const response = await uploadPhoto(formData);
+      return response;
+    },
+    onSuccess: (values) => {
       const createStartElement = CreateShapeSchema({
         id: uuidv4(),
         tool: "IMAGE",
         x: 0,
         y: 0,
-        width: image.width / 3,
-        height: image.height / 3,
+        width: values.width / 3,
+        height: values.height / 3,
         fills: [
           {
             color: "#fff",
             id: uuidv4(),
             image: {
-              src: dataUrl,
-              width: image.width,
-              height: image.height,
-              name: file.name,
+              src: values.url,
+              width: values.width,
+              height: values.height,
+              name: values.name,
             },
             opacity: 1,
             type: "image",
@@ -184,7 +205,18 @@ export const useEventStage = () => {
         ],
       });
       SET_CREATE(createStartElement);
-    };
+
+      debounce.execute();
+      toast.success("Image uploaded successfully!");
+    },
+    onError: (error) => {
+      toast.error(error.message);
+    },
+  });
+
+  const createImageFromFile = (file: File, dataUrl: string) => {
+    toast.info("Uploading image...");
+    mutation.mutate(file);
   };
 
   const createTextFromClipboard = (text: string) => {
