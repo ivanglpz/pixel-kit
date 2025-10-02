@@ -56,7 +56,7 @@ import { UPDATE_UNDO_REDO } from "../states/undo-redo";
 import { ExportShape } from "./export-shape";
 
 // Función utilitaria para calcular la escala de imagen
-const calculateScale = (
+export const calculateScale = (
   originalWidth: number,
   originalHeight: number,
   containerWidth: number,
