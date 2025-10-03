@@ -39,7 +39,7 @@ export const Profile = () => {
             alt="Avatar"
             className="w-8 h-8 rounded-full"
           />
-          <span className="text-sm font-medium">
+          <span className="text-sm font-bold line-clamp-1">
             {QueryProfile.data?.user?.fullName}
           </span>
         </div>
