@@ -25,7 +25,7 @@ export const AuthProjects = ({ children }: { children: ReactNode }) => {
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
         >
-          <g clip-path="url(#clip0_2552_519)">
+          <g clipPath="url(#clip0_2552_519)">
             <path
               d="M42.7068 0.210449H49.7896V21.4586H42.7068V7.29322H7.29322V42.7068H21.4586V49.7896H0.210449V0.210449H42.7068ZM28.5414 35.6242V28.5414H49.7896V35.6242H42.7068V42.7068H35.6242V49.7896H28.5414V35.6242ZM42.7068 42.7068V49.7896H49.7896V42.7068H42.7068Z"
               fill="black"
