@@ -10,13 +10,13 @@ import { getTimeAgoString } from "@/utils/edited";
 import { css } from "@stylespixelkit/css";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useSetAtom } from "jotai";
-import { Building, LayoutDashboard, Plus } from "lucide-react";
-import Link from "next/link";
+import { LayoutDashboard, Plus } from "lucide-react";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { NextPageWithLayout } from "../_app";
 
-const App = () => {
+const App: NextPageWithLayout = () => {
   const [orgId, setOrgId] = useState<string | null>(null);
   const router = useRouter();
   const setSelected = useSetAtom(PROJECT_ID_ATOM);
@@ -76,209 +76,156 @@ const App = () => {
   }, []);
 
   return (
-    <div
+    <section
       className={css({
-        backgroundColor: "bg",
-        height: "100dvh",
-        width: "100%",
-        overflow: "hidden",
+        _dark: {
+          backgroundColor: "gray.700",
+        },
+        backgroundColor: "gray.100",
+
+        padding: "lg",
+        gap: "xlg",
         display: "flex",
         flexDirection: "column",
+        overflow: "hidden",
       })}
     >
-      <div
+      <header
         className={css({
-          backgroundColor: "black",
-          overflowY: "hidden",
-          height: "100%",
-          display: "grid",
-          gridTemplateColumns: "240px 1fr",
+          display: "flex",
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "space-between",
         })}
       >
-        <aside
+        <div
           className={css({
-            padding: "lg",
-            backgroundColor: "bg",
-            borderRightWidth: "1px",
-            borderRightStyle: "solid",
-            borderRightColor: "border", // ← usa el semantic token
             display: "flex",
-            flexDirection: "column",
           })}
         >
-          <Link
-            href={"/app/organizations"}
-            className={css({
-              paddingLeft: "sm",
-              paddingTop: "sm",
-              display: "flex",
-              flexDirection: "row",
-              alignItems: "center",
-              gap: "lg",
-            })}
+          <Input.Container>
+            <Input.Select
+              options={
+                mutateOrgs?.data?.map((e) => {
+                  return {
+                    id: e?._id,
+                    label: e?.name,
+                    value: e?._id,
+                  };
+                }) || []
+              }
+              value={orgId ?? ""}
+              onChange={(e) => {
+                setOrgId(e);
+              }}
+            ></Input.Select>
+          </Input.Container>
+        </div>
+        <div>
+          <Button.Primary
+            onClick={() => {
+              mutateNewProject.mutate({
+                name: "Untitled",
+              });
+            }}
           >
-            <Building size={18} />
-            <p
-              className={css({
-                fontSize: "sm",
-                fontWeight: "600",
-              })}
-            >
-              Organizations
-            </p>
-          </Link>
-        </aside>
-        <section
-          className={css({
-            _dark: {
-              backgroundColor: "gray.700",
-            },
-            backgroundColor: "gray.100",
-
-            padding: "lg",
-            gap: "xlg",
-            display: "flex",
-            flexDirection: "column",
-            overflow: "hidden",
-          })}
-        >
-          <header
-            className={css({
-              display: "flex",
-              flexDirection: "row",
-              alignItems: "center",
-              justifyContent: "space-between",
-            })}
-          >
+            <Plus size={constants.icon.size} />
+            Create Project
+          </Button.Primary>
+        </div>
+      </header>
+      <div
+        className={css({
+          height: "100%",
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
+          gridAutoRows: "244px",
+          gap: "xlg",
+          overflowY: "scroll",
+        })}
+      >
+        {QueryProjects?.data?.map((project) => {
+          return (
             <div
+              key={project?._id}
+              onClick={() => {
+                setTabs(project);
+                setSelected(project._id);
+                router.push(`/app/project/${project._id}`);
+              }}
               className={css({
-                display: "flex",
+                display: "grid",
+                gridTemplateRows: "160px 1fr",
+                borderRadius: "lg",
+                backgroundColor: "gray.50",
+                // _dark: {
+                //   backgroundColor: "gray.600",
+                // },
+                borderWidth: 1,
+                borderColor: "gray.150",
+                _dark: {
+                  borderColor: "gray.450",
+                  backgroundColor: "gray.700",
+                },
               })}
             >
-              <Input.Container>
-                <Input.Select
-                  options={
-                    mutateOrgs?.data?.map((e) => {
-                      return {
-                        id: e?._id,
-                        label: e?.name,
-                        value: e?._id,
-                      };
-                    }) || []
-                  }
-                  value={orgId ?? ""}
-                  onChange={(e) => {
-                    setOrgId(e);
-                  }}
-                ></Input.Select>
-              </Input.Container>
-            </div>
-            <div>
-              <Button.Primary
-                onClick={() => {
-                  mutateNewProject.mutate({
-                    name: "Untitled",
-                  });
-                }}
+              <img
+                src={project?.previewUrl}
+                alt={project?.name}
+                className={css({
+                  height: "100%",
+                  width: "100%",
+                  objectFit: "cover",
+                  borderTopRadius: "lg",
+                })}
+              />
+              <div
+                className={css({
+                  padding: "lg",
+                  display: "grid",
+                  gridTemplateColumns: "30px 1fr",
+                  alignContent: "center",
+                  gap: "md",
+                })}
               >
-                <Plus size={constants.icon.size} />
-                Create Project
-              </Button.Primary>
-            </div>
-          </header>
-          <div
-            className={css({
-              height: "100%",
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
-              gridAutoRows: "244px",
-              gap: "xlg",
-              overflowY: "scroll",
-            })}
-          >
-            {QueryProjects?.data?.map((project) => {
-              return (
                 <div
-                  key={project?._id}
-                  onClick={() => {
-                    setTabs(project);
-                    setSelected(project._id);
-                    router.push(`/app/project/${project._id}`);
-                  }}
                   className={css({
-                    display: "grid",
-                    gridTemplateRows: "160px 1fr",
-                    borderRadius: "lg",
-                    backgroundColor: "gray.50",
-                    // _dark: {
-                    //   backgroundColor: "gray.600",
-                    // },
-                    borderWidth: 1,
-                    borderColor: "gray.150",
-                    _dark: {
-                      borderColor: "gray.450",
-                      backgroundColor: "gray.700",
-                    },
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "center",
                   })}
                 >
-                  <img
-                    src={project?.previewUrl}
-                    alt={project?.name}
+                  <LayoutDashboard size={25} />
+                </div>
+                <div
+                  className={css({
+                    display: "flex",
+                    flexDirection: "column",
+                  })}
+                >
+                  <p
                     className={css({
-                      height: "100%",
-                      width: "100%",
-                      objectFit: "cover",
-                      borderTopRadius: "lg",
-                    })}
-                  />
-                  <div
-                    className={css({
-                      padding: "lg",
-                      display: "grid",
-                      gridTemplateColumns: "30px 1fr",
-                      alignContent: "center",
-                      gap: "md",
+                      fontSize: "sm",
+                      fontWeight: "bold",
                     })}
                   >
-                    <div
-                      className={css({
-                        display: "flex",
-                        flexDirection: "column",
-                        justifyContent: "center",
-                      })}
-                    >
-                      <LayoutDashboard size={25} />
-                    </div>
-                    <div
-                      className={css({
-                        display: "flex",
-                        flexDirection: "column",
-                      })}
-                    >
-                      <p
-                        className={css({
-                          fontSize: "sm",
-                          fontWeight: "bold",
-                        })}
-                      >
-                        {project?.name}
-                      </p>
-                      <p
-                        className={css({
-                          fontSize: "11px",
-                        })}
-                      >
-                        {getTimeAgoString(project.updatedAt)}
-                      </p>
-                    </div>
-                  </div>
+                    {project?.name}
+                  </p>
+                  <p
+                    className={css({
+                      fontSize: "11px",
+                    })}
+                  >
+                    {getTimeAgoString(project.updatedAt)}
+                  </p>
                 </div>
-              );
-            })}
-          </div>
-        </section>
+              </div>
+            </div>
+          );
+        })}
       </div>
-    </div>
+    </section>
   );
 };
+App.layout = "App";
 export default App;
