@@ -19,6 +19,12 @@
       "@stylespixelkit/*": ["./styled-system/*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "styled-system"],
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    "styled-system",
+    "global.d.ts"
+  ],
   "exclude": ["node_modules"]
 }
