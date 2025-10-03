@@ -1,12 +1,6 @@
+import { Profile } from "@/components/Profile";
 import { TabsProjects } from "@/components/tabs";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+
 import { css } from "@stylespixelkit/css";
 import { Building } from "lucide-react";
 import Link from "next/link";
@@ -42,8 +36,10 @@ const App: React.FC<LayoutProps> = ({ children }) => (
           borderRightColor: "border", // ← usa el semantic token
           display: "flex",
           flexDirection: "column",
+          gap: "lg",
         })}
       >
+        <Profile />
         <Link
           href={"/app/organizations"}
           className={css({
@@ -65,18 +61,6 @@ const App: React.FC<LayoutProps> = ({ children }) => (
             Organizations
           </p>
         </Link>
-
-        <DropdownMenu>
-          <DropdownMenuTrigger className="bg-red-400">Open</DropdownMenuTrigger>
-          <DropdownMenuContent className="w-56">
-            <DropdownMenuLabel>My Account</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>Profile</DropdownMenuItem>
-            <DropdownMenuItem>Billing</DropdownMenuItem>
-            <DropdownMenuItem>Team</DropdownMenuItem>
-            <DropdownMenuItem>Subscription</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
       </aside>
       {children}
     </div>

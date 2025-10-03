@@ -63,6 +63,8 @@ export default async function handler(
       email,
       password: hashedPassword,
       fullName,
+      photoUrl:
+        "https://res.cloudinary.com/whil/image/upload/v1759465443/app/pixelkit/profile/i5aos6iqnm6eifuryrls.jpg",
     });
 
     await newUser.save();
