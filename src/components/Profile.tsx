@@ -33,18 +33,18 @@ export const Profile = () => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger>
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center justify-center">
           <img
             src="https://res.cloudinary.com/whil/image/upload/v1759465443/app/pixelkit/profile/i5aos6iqnm6eifuryrls.jpg"
             alt="Avatar"
             className="w-8 h-8 rounded-full"
           />
-          <span className="text-sm font-bold line-clamp-1">
+          {/* <span className="text-sm font-bold line-clamp-1">
             {QueryProfile.data?.user?.fullName}
-          </span>
+          </span> */}
         </div>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-56">
+      <DropdownMenuContent className="w-56" align="end">
         <DropdownMenuLabel className="opacity-50 flex flex-row gap-2">
           <User2 size={18} />
           {QueryProfile.data?.user?.email}

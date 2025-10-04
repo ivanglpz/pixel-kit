@@ -4,11 +4,12 @@ import { Input } from "@/editor/components/input";
 import { constants } from "@/editor/constants/color";
 import { PROJECT_ID_ATOM } from "@/editor/states/projects";
 import { ADD_TAB_ATOM } from "@/editor/states/tabs";
+import { useCachedQuery } from "@/hooks/useCacheQuery";
 import { fetchListOrgs } from "@/services/organizations";
 import { createProject, fetchListProjects } from "@/services/projects";
 import { getTimeAgoString } from "@/utils/edited";
 import { css } from "@stylespixelkit/css";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { useSetAtom } from "jotai";
 import { LayoutDashboard, Plus } from "lucide-react";
 import { useRouter } from "next/router";
@@ -30,7 +31,7 @@ const App: NextPageWithLayout = () => {
     },
   });
 
-  const QueryProjects = useQuery({
+  const QueryProjects = useCachedQuery({
     queryKey: ["projects_orgs", orgId],
     queryFn: async () => {
       if (!orgId) {
@@ -39,6 +40,8 @@ const App: NextPageWithLayout = () => {
       return fetchListProjects(orgId);
     },
     enabled: Boolean(orgId),
+    cacheTime: 1000 * 60 * 60, // 1 hora
+    staleTime: 1000 * 30,
   });
 
   const mutateNewProject = useMutation({
@@ -53,13 +56,13 @@ const App: NextPageWithLayout = () => {
       });
     },
     onSuccess: (data) => {
+      QueryProjects.refetch();
       setTabs(data);
       setSelected(data._id);
       router.push(`/app/project/${data._id}`);
       toast.success("Project created successfully", {
         description: `The project "${data.name}" was added to your organization.`,
       });
-      QueryProjects.refetch();
       // formik.resetForm();
     },
     onError: (error) => {
@@ -134,6 +137,13 @@ const App: NextPageWithLayout = () => {
           </Button.Primary>
         </div>
       </header>
+      <button
+        onClick={() => {
+          QueryProjects.refetch();
+        }}
+      >
+        test
+      </button>
       <div
         className={css({
           height: "100%",

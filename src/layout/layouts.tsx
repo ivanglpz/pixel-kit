@@ -1,9 +1,6 @@
-import { Profile } from "@/components/Profile";
 import { TabsProjects } from "@/components/tabs";
 
 import { css } from "@stylespixelkit/css";
-import { Building } from "lucide-react";
-import Link from "next/link";
 import React, { ReactNode } from "react";
 
 // 1. Definir los nombres de layout válidos
@@ -26,8 +23,8 @@ const App: React.FC<LayoutProps> = ({ children }) => (
     })}
   >
     <TabsProjects />
-    <div className="grid grid-cols-[240px_1fr] h-full overflow-hidden">
-      <aside
+    <div className="grid grid-cols-1 h-full overflow-hidden">
+      {/* <aside
         className={css({
           padding: "lg",
           backgroundColor: "bg",
@@ -61,7 +58,7 @@ const App: React.FC<LayoutProps> = ({ children }) => (
             Organizations
           </p>
         </Link>
-      </aside>
+      </aside> */}
       {children}
     </div>
   </header>
