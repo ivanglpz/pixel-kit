@@ -1,3 +1,4 @@
+import { IProject } from "@/db/schemas/types";
 import { api } from "@/services/axios";
 import { atom, PrimitiveAtom } from "jotai";
 import { atomWithDefault } from "jotai/utils";
@@ -81,53 +82,64 @@ export const PROJECTS_ATOM = atom<IEDITORPROJECT[]>([]);
 export const SET_PROJECTS_FROM_TABS = atom(null, async (get, set) => {
   const DATA = get(GET_PROJECTS_BY_USER);
 
-  const projects = await Promise.all(
-    DATA?.map(async (project) => {
-      const response = await api.get("/projects/byId?id=" + project._id);
+  const projectsResults = await Promise.allSettled(
+    DATA?.map(async (item): Promise<IEDITORPROJECT | null> => {
+      try {
+        const response = await api.get<{ data: IProject }>(
+          "/projects/byId?id=" + item._id
+        );
+        const project = response.data.data;
+        const DATA_JSON = JSON.parse(response.data.data.data);
+        const LIST_PAGES = DATA_JSON[item.mode]?.LIST as IPageJSON[];
+        const FIRST_PAGE = LIST_PAGES?.[0];
 
-      const DATA = JSON.parse(response.data.data.data);
-      const LIST_PAGES = DATA[project.mode]?.LIST as IPageJSON[];
-
-      const FIRST_PAGE = LIST_PAGES?.at(0);
-
-      return {
-        ID: project._id,
-        name: atom(project.name),
-        MODE_ATOM: atom<MODE>(project.mode),
-        TOOL: atom<IKeyTool>("MOVE"),
-        PREVIEW_URL: project?.previewUrl ?? "./placeholder.svg",
-        PAUSE_MODE: atom<boolean>(false),
-        MODE: {
-          [project.mode]: {
-            LIST: atom(
-              LIST_PAGES?.map((page) => {
-                const LIST = page?.SHAPES?.LIST?.map((e) =>
-                  cloneShapeRecursive(e)
-                );
-                return {
-                  id: page.id,
-                  name: atom(page.name),
-                  color: atom(page.color),
-                  isVisible: atom(page.isVisible),
-                  SHAPES: {
-                    ID: atom<IPageShapeIds[]>([]),
-                    LIST: atom<ALL_SHAPES[]>(LIST),
-                  },
-                  UNDOREDO: {
-                    COUNT_UNDO_REDO: atom<number>(0),
-                    LIST_UNDO_REDO: atom<UndoRedoAction[]>([]),
-                  },
-                };
-              })
-            ),
-            ID: atom<string | null>(FIRST_PAGE?.id ?? null),
+        return {
+          ID: item._id,
+          name: atom(project.name),
+          MODE_ATOM: atom<MODE>(item.mode),
+          TOOL: atom<IKeyTool>("MOVE"),
+          PREVIEW_URL: item?.previewUrl ?? "./placeholder.svg",
+          PAUSE_MODE: atom<boolean>(false),
+          MODE: {
+            [item.mode]: {
+              LIST: atom(
+                LIST_PAGES?.map((page) => {
+                  const LIST = page?.SHAPES?.LIST?.map(cloneShapeRecursive);
+                  return {
+                    id: page.id,
+                    name: atom(page.name),
+                    color: atom(page.color),
+                    isVisible: atom(page.isVisible),
+                    SHAPES: {
+                      ID: atom<IPageShapeIds[]>([]),
+                      LIST: atom<ALL_SHAPES[]>(LIST),
+                    },
+                    UNDOREDO: {
+                      COUNT_UNDO_REDO: atom<number>(0),
+                      LIST_UNDO_REDO: atom<UndoRedoAction[]>([]),
+                    },
+                  };
+                })
+              ),
+              ID: atom<string | null>(FIRST_PAGE?.id ?? null),
+            },
           },
-        },
-
-        EVENT: atom<IStageEvents>("IDLE"),
-      };
+          EVENT: atom<IStageEvents>("IDLE"),
+        };
+      } catch (error) {
+        // Ignorar proyecto si falla la carga
+        return null;
+      }
     })
   );
+
+  const projects = projectsResults
+    .filter(
+      (res): res is PromiseFulfilledResult<IEDITORPROJECT | null> =>
+        res.status === "fulfilled" && res.value !== null
+    )
+    .map((res) => res.value as IEDITORPROJECT);
+
   set(PROJECTS_ATOM, projects);
 });
 
