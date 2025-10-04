@@ -41,7 +41,9 @@ const App: NextPageWithLayout = () => {
     },
     enabled: Boolean(orgId),
     cacheTime: 1000 * 60 * 60, // 1 hora
-    staleTime: 1000 * 30,
+    // staleTime: 1000 * 2,
+    // cacheTime: 1000 * 60 * 60, // 1 hora
+    // staleTime: 1000 * 30,
   });
 
   const mutateNewProject = useMutation({
@@ -137,13 +139,6 @@ const App: NextPageWithLayout = () => {
           </Button.Primary>
         </div>
       </header>
-      <button
-        onClick={() => {
-          QueryProjects.refetch();
-        }}
-      >
-        test
-      </button>
       <div
         className={css({
           height: "100%",

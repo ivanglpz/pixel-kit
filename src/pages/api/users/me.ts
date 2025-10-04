@@ -45,7 +45,7 @@ export default async function handler(
     // Buscar al usuario en la base de datos
     const user = await UserSchema.findById(
       decoded.userId,
-      { password: 0, passwordUpdatedAt: 0 } // 0 significa excluir esta propiedad
+      { password: 0, passwordUpdatedAt: 0, userId: 0 } // 0 significa excluir esta propiedad
     );
     if (!user) {
       return res.status(404).json({ error: "User not found" });

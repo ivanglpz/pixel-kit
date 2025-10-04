@@ -1,3 +1,4 @@
+import { api } from "@/services/axios";
 import { atom, PrimitiveAtom } from "jotai";
 import { atomWithDefault } from "jotai/utils";
 import { IShape } from "../shapes/type.shape";
@@ -77,52 +78,56 @@ export const MOCKUP_PROJECT: IEDITORPROJECT = {
   },
 };
 export const PROJECTS_ATOM = atom<IEDITORPROJECT[]>([]);
-export const SET_PROJECTS_FROM_TABS = atom(null, (get, set) => {
+export const SET_PROJECTS_FROM_TABS = atom(null, async (get, set) => {
   const DATA = GET_PROJECTS();
-  // const PERSIST = get(TABS_PERSIST_ATOM);
-  const projects = DATA?.map((project) => {
-    const DATA = JSON.parse(project.data);
-    const LIST_PAGES = DATA[project.mode]?.LIST as IPageJSON[];
 
-    const FIRST_PAGE = LIST_PAGES.at(0);
+  const projects = await Promise.all(
+    DATA?.map(async (project) => {
+      const response = await api.get("/projects/byId?id=" + project._id);
 
-    return {
-      ID: project._id,
-      name: atom(project.name),
-      MODE_ATOM: atom<MODE>(project.mode),
-      TOOL: atom<IKeyTool>("MOVE"),
-      PREVIEW_URL: project?.previewUrl ?? "./placeholder.svg",
-      PAUSE_MODE: atom<boolean>(false),
-      MODE: {
-        [project.mode]: {
-          LIST: atom(
-            LIST_PAGES?.map((page) => {
-              const LIST = page?.SHAPES?.LIST?.map((e) =>
-                cloneShapeRecursive(e)
-              );
-              return {
-                id: page.id,
-                name: atom(page.name),
-                color: atom(page.color),
-                isVisible: atom(page.isVisible),
-                SHAPES: {
-                  ID: atom<IPageShapeIds[]>([]),
-                  LIST: atom<ALL_SHAPES[]>(LIST),
-                },
-                UNDOREDO: {
-                  COUNT_UNDO_REDO: atom<number>(0),
-                  LIST_UNDO_REDO: atom<UndoRedoAction[]>([]),
-                },
-              };
-            })
-          ),
-          ID: atom<string | null>(FIRST_PAGE?.id ?? null),
+      const DATA = JSON.parse(response.data.data.data);
+      const LIST_PAGES = DATA[project.mode]?.LIST as IPageJSON[];
+
+      const FIRST_PAGE = LIST_PAGES?.at(0);
+
+      return {
+        ID: project._id,
+        name: atom(project.name),
+        MODE_ATOM: atom<MODE>(project.mode),
+        TOOL: atom<IKeyTool>("MOVE"),
+        PREVIEW_URL: project?.previewUrl ?? "./placeholder.svg",
+        PAUSE_MODE: atom<boolean>(false),
+        MODE: {
+          [project.mode]: {
+            LIST: atom(
+              LIST_PAGES?.map((page) => {
+                const LIST = page?.SHAPES?.LIST?.map((e) =>
+                  cloneShapeRecursive(e)
+                );
+                return {
+                  id: page.id,
+                  name: atom(page.name),
+                  color: atom(page.color),
+                  isVisible: atom(page.isVisible),
+                  SHAPES: {
+                    ID: atom<IPageShapeIds[]>([]),
+                    LIST: atom<ALL_SHAPES[]>(LIST),
+                  },
+                  UNDOREDO: {
+                    COUNT_UNDO_REDO: atom<number>(0),
+                    LIST_UNDO_REDO: atom<UndoRedoAction[]>([]),
+                  },
+                };
+              })
+            ),
+            ID: atom<string | null>(FIRST_PAGE?.id ?? null),
+          },
         },
-      },
 
-      EVENT: atom<IStageEvents>("IDLE"),
-    };
-  });
+        EVENT: atom<IStageEvents>("IDLE"),
+      };
+    })
+  );
   set(PROJECTS_ATOM, projects);
 });
 
