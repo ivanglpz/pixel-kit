@@ -25,6 +25,7 @@ import {
   EVENT_DOWN_SHAPES,
   EVENT_MOVING_SHAPE,
   EVENT_UP_SHAPES,
+  GROUP_SHAPES_IN_LAYOUT,
 } from "../states/shapes";
 import { REDO_ATOM, UNDO_ATOM } from "../states/undo-redo";
 import { useAutoSave } from "./useAutoSave";
@@ -54,6 +55,7 @@ export const useEventStage = () => {
   const [selection, setSelection] = useAtom(RECTANGLE_SELECTION_ATOM);
   const setRedo = useSetAtom(REDO_ATOM);
   const setUndo = useSetAtom(UNDO_ATOM);
+  const SET_EVENT_GROUP = useSetAtom(GROUP_SHAPES_IN_LAYOUT);
   const SET_EVENT_UP = useSetAtom(EVENT_UP_SHAPES);
   const SET_EVENT_MOVING_SHAPE = useSetAtom(EVENT_MOVING_SHAPE);
   const SET_EVENT_COPYING = useSetAtom(EVENT_COPYING_SHAPES);
@@ -285,7 +287,7 @@ export const useEventStage = () => {
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       const KEY = event.key?.toUpperCase();
-
+      const shift = event.shiftKey;
       const isMac = navigator.platform.toUpperCase().includes("MAC");
       const meta = isMac ? event.metaKey : event.ctrlKey;
       const alt = event.altKey;
@@ -298,6 +300,13 @@ export const useEventStage = () => {
         debounce.execute();
 
         // set(UNDO_ATOM);
+        return;
+      }
+      // ✅ Agrupar en Layout (Shift + A)
+      if (shift && key === "a" && shapeId?.length > 0) {
+        event.preventDefault();
+        SET_EVENT_GROUP();
+        debounce.execute();
         return;
       }
 
