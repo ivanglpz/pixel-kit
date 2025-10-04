@@ -6,7 +6,7 @@ import { IStageEvents } from "./event";
 import { MODE } from "./mode";
 import { IPage, IPageJSON, IPageShapeIds } from "./pages";
 import { ALL_SHAPES, ALL_SHAPES_CHILDREN, WithInitialValue } from "./shapes";
-import { GET_PROJECTS, TABS_PERSIST_ATOM } from "./tabs";
+import { GET_PROJECTS_BY_USER, TABS_PERSIST_ATOM } from "./tabs";
 import { IKeyTool } from "./tool";
 import { UndoRedoAction } from "./undo-redo";
 
@@ -79,7 +79,7 @@ export const MOCKUP_PROJECT: IEDITORPROJECT = {
 };
 export const PROJECTS_ATOM = atom<IEDITORPROJECT[]>([]);
 export const SET_PROJECTS_FROM_TABS = atom(null, async (get, set) => {
-  const DATA = GET_PROJECTS();
+  const DATA = get(GET_PROJECTS_BY_USER);
 
   const projects = await Promise.all(
     DATA?.map(async (project) => {
