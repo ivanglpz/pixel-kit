@@ -4,13 +4,11 @@ import { useMutation } from "@tanstack/react-query";
 import { useSetAtom } from "jotai";
 import { toast } from "sonner";
 import { JSON_PROJECTS_ATOM } from "../states/projects";
-import { UPDATE_TAB_ATOM } from "../states/tabs";
 import { useDelayedExecutor } from "./useDelayExecutor";
 import { useReference } from "./useReference";
 
 export const useAutoSave = () => {
   const GET_JSON = useSetAtom(JSON_PROJECTS_ATOM);
-  const SET_TAB_PROJECT = useSetAtom(UPDATE_TAB_ATOM);
 
   const { ref } = useReference({
     type: "STAGE_PREVIEW",
@@ -33,9 +31,8 @@ export const useAutoSave = () => {
       updateProject({ ...PAYLOAD, data: JSON_.data });
       return PAYLOAD;
     },
-    onSuccess: (data) => {
+    onSuccess: () => {
       toast.success("Project auto-saved");
-      SET_TAB_PROJECT(data);
     },
     onError: (err) => console.error("Error saving canvas:", err),
   });
@@ -43,7 +40,7 @@ export const useAutoSave = () => {
     callback: () => {
       mutation.mutate();
     },
-    timer: 2000, // opcional
+    timer: 5000, // opcional
   });
   return {
     debounce,
