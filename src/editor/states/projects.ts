@@ -62,7 +62,7 @@ export const MOCKUP_PROJECT: IEDITORPROJECT = {
           id: "mockup-page-one",
           color: atom("black"),
           isVisible: atom(true),
-          name: atom("Project One"),
+          name: atom("Loading..."),
           SHAPES: {
             ID: atom<IPageShapeIds[]>([]),
             LIST: atom<ALL_SHAPES[]>([]),
