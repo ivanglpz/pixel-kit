@@ -147,6 +147,7 @@ export const DELETE_ALL_SHAPES_ATOM = atom(null, (get, set) => {
   const SHAPE_IDS_ = get(CURRENT_PAGE).SHAPES.ID;
 
   set(SHAPE_IDS_, []);
+  set(ALL_SHAPES_ATOM, []);
   set(NEW_UNDO_REDO, {
     type: "DELETE",
     shapes: currentShapes,
@@ -244,6 +245,9 @@ export const GROUP_SHAPES_IN_LAYOUT = atom(null, (get, set) => {
 
   if (!allHaveSameParent) return;
 
+  // Guardar estado ANTES del agrupamiento (prevShapes)
+  const prevShapes = [...selectedShapes];
+
   // Calcular el bounding box de todos los elementos seleccionados
   let minX = Infinity,
     minY = Infinity,
@@ -306,14 +310,6 @@ export const GROUP_SHAPES_IN_LAYOUT = atom(null, (get, set) => {
   );
 
   // Crear el nuevo elemento layout con los hijos
-  // const newLayoutShape: ALL_SHAPES = {
-  //   id: newLayoutId,
-  //   tool: "FRAME",
-  //   state: atom<IShape>({
-  //     ...newLayout,
-  //     children: atom(clonedChildren),
-  //   }),
-  // };
   const newLayoutShape: ALL_SHAPES = {
     id: newLayoutId,
     tool: "FRAME",
@@ -355,10 +351,11 @@ export const GROUP_SHAPES_IN_LAYOUT = atom(null, (get, set) => {
   set(RESET_SHAPES_IDS_ATOM);
   set(UPDATE_SHAPES_IDS_ATOM, [{ id: newLayoutId, parentId: firstParentId }]);
 
-  // Registrar para undo/redo
+  // Registrar para undo/redo con tipo GROUPING
   set(NEW_UNDO_REDO, {
-    type: "CREATE",
-    shapes: [newLayoutShape],
+    type: "GROUPING",
+    shapes: [newLayoutShape], // Estado DESPUÉS (el layout con los hijos)
+    prevShapes: prevShapes, // Estado ANTES (los elementos individuales)
   });
 });
 export const MOVE_SHAPES_TO_ROOT = atom(null, (get, set) => {
