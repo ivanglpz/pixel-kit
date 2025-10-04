@@ -8,6 +8,7 @@ import {
   PROJECTS_ATOM,
   SET_PROJECTS_FROM_TABS,
 } from "@/editor/states/projects";
+import { userAtom } from "@/jotai/user";
 import { css } from "@stylespixelkit/css";
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { Home, Plus, X } from "lucide-react";
@@ -131,9 +132,10 @@ export const TabsProjects = () => {
   const setDelete = useSetAtom(DELETE_PROJECT);
   const containerRef = useRef<HTMLDivElement>(null);
   const SET = useSetAtom(SET_PROJECTS_FROM_TABS);
+  const user = useAtomValue(userAtom);
   useEffect(() => {
     SET();
-  }, []);
+  }, [user.data?.user?.userId]);
   return (
     <header
       className={css({

@@ -6,8 +6,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useCachedQuery } from "@/hooks/useCacheQuery";
-import { meUser } from "@/services/users";
+import { userAtom } from "@/jotai/user";
+import { useAtom } from "jotai";
 import Cookies from "js-cookie";
 import { LogOut, Settings, Twitter, User2 } from "lucide-react";
 import Link from "next/link";
@@ -15,16 +15,12 @@ import { useRouter } from "next/router";
 
 export const Profile = () => {
   const router = useRouter();
-  const QueryProfile = useCachedQuery({
-    queryKey: ["profile"],
-    queryFn: meUser,
-    cacheTime: 1000 * 60 * 60, // 1 hora
-  });
+  const [user] = useAtom(userAtom);
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    await localStorage.clear();
     router.replace("/login");
     Cookies.remove("accessToken");
-    localStorage.clear();
     // Aquí puedes agregar la lógica para cerrar sesión
     console.log("Cerrar sesión");
   };
@@ -46,7 +42,7 @@ export const Profile = () => {
       <DropdownMenuContent className="w-56" align="end">
         <DropdownMenuLabel className="opacity-50 flex flex-row gap-2">
           <User2 size={18} />
-          {QueryProfile.data?.user?.email}
+          {user.data?.user?.email}
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem disabled>
