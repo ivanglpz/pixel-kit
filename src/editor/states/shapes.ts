@@ -282,6 +282,7 @@ export const GROUP_SHAPES_IN_LAYOUT = atom(null, (get, set) => {
     label: "Layout",
     isLayout: true,
     parentId: firstParentId,
+    fills: [],
   });
 
   // Clonar shapes y ajustar posiciones relativas al nuevo layout
