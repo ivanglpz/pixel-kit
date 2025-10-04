@@ -6,6 +6,7 @@ import {
   CreateShapeSchema,
   UpdateShapeDimension,
 } from "../helpers/shape-schema";
+import { flexLayoutAtom } from "../shapes/layout-flex";
 import { capitalize } from "../utils/capitalize";
 import CURRENT_ITEM_ATOM, {
   CLEAR_CURRENT_ITEM_ATOM,
@@ -619,6 +620,7 @@ export const CREATE_SHAPE_ATOM = atom(null, (get, set, args: IShape) => {
     };
 
     set(FIND_SHAPE.state, newElement);
+    set(flexLayoutAtom, { id: FIND_SHAPE.id }); // aplicar layout si es flex
     set(NEW_UNDO_REDO, {
       shapes: [
         {
