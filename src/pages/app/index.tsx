@@ -4,12 +4,11 @@ import { Input } from "@/editor/components/input";
 import { constants } from "@/editor/constants/color";
 import { PROJECT_ID_ATOM } from "@/editor/states/projects";
 import { ADD_TAB_ATOM } from "@/editor/states/tabs";
-import { useCachedQuery } from "@/hooks/useCacheQuery";
 import { fetchListOrgs } from "@/services/organizations";
 import { createProject, fetchListProjects } from "@/services/projects";
 import { getTimeAgoString } from "@/utils/edited";
 import { css } from "@stylespixelkit/css";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useSetAtom } from "jotai";
 import { LayoutDashboard, Plus } from "lucide-react";
 import { useRouter } from "next/router";
@@ -31,7 +30,7 @@ const App: NextPageWithLayout = () => {
     },
   });
 
-  const QueryProjects = useCachedQuery({
+  const QueryProjects = useQuery({
     queryKey: ["projects_orgs", orgId],
     queryFn: async () => {
       if (!orgId) {
@@ -40,7 +39,6 @@ const App: NextPageWithLayout = () => {
       return fetchListProjects(orgId);
     },
     enabled: Boolean(orgId),
-    cacheTime: 1000 * 60 * 60, // 1 hora
     // staleTime: 1000 * 2,
     // cacheTime: 1000 * 60 * 60, // 1 hora
     // staleTime: 1000 * 30,
