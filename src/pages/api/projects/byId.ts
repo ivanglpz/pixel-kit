@@ -1,4 +1,5 @@
 import { withAuth } from "@/db/middleware/auth";
+import { IOrganizationMember, Organization } from "@/db/schemas/organizations";
 import { Project } from "@/db/schemas/projects";
 import { IProject } from "@/db/schemas/types";
 import { sanitizeInput } from "@/utils/sanitize";
@@ -23,12 +24,29 @@ async function handler(
   }
 
   try {
-    const project = await Project.findOne({
-      _id: id,
-    }).lean<IProject>();
+    // Buscar el proyecto
+    const project = await Project.findById(id).lean<IProject>();
 
     if (!project) {
       return res.status(404).json({ error: "Project not found" });
+    }
+
+    // Obtener la organización del proyecto
+    const org = await Organization.findById(project.organization);
+    if (!org) {
+      return res.status(404).json({ error: "Organization not found" });
+    }
+
+    // Verificar que el usuario sea miembro de la organización
+    // Para consulta, permitimos cualquier rol (owner, admin, member)
+    const isMember = org.members.some(
+      (m: IOrganizationMember) => m.user.toString() === req.userId
+    );
+
+    if (!isMember) {
+      return res.status(403).json({
+        error: "Not authorized to view this project",
+      });
     }
 
     return res.status(200).json({

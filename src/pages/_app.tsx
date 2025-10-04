@@ -1,14 +1,28 @@
-import { Layout } from "@/layout/layout";
+import { Layout } from "@/layout/layouts";
 import "@/styles/globals.css";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Analytics } from "@vercel/analytics/react";
+import { NextPage } from "next";
 import { ThemeProvider } from "next-themes";
-import type { AppPropsWithLayout } from "next/app";
+import type { AppProps } from "next/app";
 import { Toaster } from "sonner";
 import { css } from "../../styled-system/css";
 
+export type LayoutKey = keyof typeof Layout;
+
+export type NextPageWithLayout<P = {}, IP = P> = NextPage<P, IP> & {
+  layout?: LayoutKey;
+};
+
+type AppPropsWithLayout = AppProps & {
+  Component: NextPageWithLayout;
+};
 const queryClient = new QueryClient();
+
 const App = ({ Component, pageProps }: AppPropsWithLayout) => {
+  const LayoutProvider =
+    Layout[Component.layout ?? "Default"] || Layout.Default;
+
   return (
     <>
       <QueryClientProvider client={queryClient}>
@@ -22,9 +36,9 @@ const App = ({ Component, pageProps }: AppPropsWithLayout) => {
               zIndex: 99999999999999,
             })}
           />
-          <Layout>
+          <LayoutProvider>
             <Component {...pageProps} />
-          </Layout>
+          </LayoutProvider>
         </ThemeProvider>
       </QueryClientProvider>
     </>

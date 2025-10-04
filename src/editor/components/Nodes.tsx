@@ -2,22 +2,24 @@ import { iconsWithTools } from "@/assets";
 import { css } from "@stylespixelkit/css";
 import { DragControls, Reorder, useDragControls } from "framer-motion";
 import { useAtom, useSetAtom } from "jotai";
-import {
-  ChevronDown,
-  ChevronRight,
-  DotIcon,
-  Eye,
-  EyeClosed,
-  FolderCog,
-  GripVertical,
-  Group,
-  Lock,
-  Trash,
-  Unlock,
-} from "lucide-react";
-import { useState } from "react";
+// import {
+//   ChevronDown,
+//   ChevronRight,
+//   DotIcon,
+//   Eye,
+//   EyeClosed,
+//   FolderCog,
+//   GripVertical,
+//   Group,
+//   Lock,
+//   Trash,
+//   Unlock,
+// } from "lucide-react";
+import * as Luicde from "lucide-react";
+import { ComponentType, memo, useMemo, useState } from "react";
 import { constants } from "../constants/color";
 import { useAutoSave } from "../hooks/useAutoSave";
+import { flexLayoutAtom } from "../shapes/layout-flex";
 import { SHAPE_IDS_ATOM } from "../states/shape";
 import {
   ALL_SHAPES,
@@ -77,8 +79,22 @@ export const DraggableNodeItem = ({
     </Reorder.Item>
   );
 };
+export function withStableIcon<T extends object>(Icon: ComponentType<T>) {
+  return memo((props: T) => <Icon {...props} />);
+}
 
-export const Nodes = ({
+const Group = withStableIcon(Luicde.Group);
+const ChevronDown = withStableIcon(Luicde.ChevronDown);
+const ChevronRight = withStableIcon(Luicde.ChevronRight);
+const DotIcon = withStableIcon(Luicde.Circle);
+const Eye = withStableIcon(Luicde.Eye);
+const EyeClosed = withStableIcon(Luicde.EyeOff);
+const FolderCog = withStableIcon(Luicde.FolderCog);
+const GripVertical = withStableIcon(Luicde.GripVertical);
+const Lock = withStableIcon(Luicde.Lock);
+const Trash = withStableIcon(Luicde.Trash);
+const Unlock = withStableIcon(Luicde.Unlock);
+export const NodesDefault = ({
   shape: item,
   options = {},
   dragControls: externalDragControls, // ✅ Recibimos controles externos
@@ -91,7 +107,7 @@ export const Nodes = ({
   const [isExpanded, setIsExpanded] = useState(true);
   const [isHovered, setIsHovered] = useState(false);
   const setUpdateUndoRedo = useSetAtom(UPDATE_UNDO_REDO);
-
+  const applyLayout = useSetAtom(flexLayoutAtom);
   const DELETE_SHAPE = useSetAtom(DELETE_SHAPES_ATOM);
   const setMove = useSetAtom(MOVE_SHAPES_BY_ID);
 
@@ -104,15 +120,22 @@ export const Nodes = ({
   const isHiddenByParent = options.isHiddenByParent || false;
 
   // Para los hijos, determinar qué propiedades heredar
-  const childOptions = {
-    isLockedByParent: isLockedByParent || shape.isLocked,
-    isHiddenByParent: isHiddenByParent || !shape.visible,
-  };
+  const childOptions = useMemo(() => {
+    return {
+      isLockedByParent: isLockedByParent || shape.isLocked,
+      isHiddenByParent: isHiddenByParent || !shape.visible,
+      id: shape.id,
+      parentId: shape.parentId,
+    };
+  }, [isLockedByParent, isHiddenByParent, shape.isLocked, shape.visible]);
 
   const [children, setChildren] = useAtom(shape.children);
   const { debounce } = useAutoSave();
 
   const handleReorder = (newOrder: typeof children) => {
+    if (!childOptions.id) return;
+
+    applyLayout({ id: childOptions.id });
     setChildren(newOrder);
     setUpdateUndoRedo();
     debounce.execute();
@@ -421,3 +444,4 @@ export const Nodes = ({
     </>
   );
 };
+export const Nodes = withStableIcon(NodesDefault);

@@ -1,8 +1,11 @@
 @layer reset, base, tokens, recipes, utilities;
-
+@import "tailwindcss";
 @import url("./fonts.css");
 @import url("./editor/fonts.css");
 @import url("./effects.css");
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
 
 #__next {
   display: flex;
@@ -24,7 +27,7 @@ body {
   display: flex;
   flex-direction: column;
   cursor: url("/cursors/default.png"), auto;
-  font-family: "Plus Jakarta Sans", sans-serif;
+  font-family: "Plus Jakarta Sans", sans-serif !important;
   max-width: 100%;
   overscroll-behavior: contain;
   background-color: var(--bg);
@@ -103,6 +106,38 @@ body {
   --cursor-zoom-in: url(data:image/webp;base64,UklGRpQFAABXRUJQVlA4TIgFAAAvP8APENXQoq3tmCO97S7EbGtsW3e8tm3b9syV7bbuxrY9Qds24/yNqqx8/9h/TfI18jfesJLVsfWsitVYEXJu2za25310H71+38+2Y9u20dlW5VRW5S7p0iU/wEZl2zae597FwG0jRd0sM969Qfsbg1E0xVBMS6WV6j9JaGkKmT3jvbN5jyc2Lk1QP1BKunaCP2HUnL2hZ5Rnytdi5WnYqTn7Jo8+N6pllqor0r60tI7u9EUhdxSASIKwAUDo3elLujqaYqmZqPsJbUjHhVcAf3lHcGjYRZmUWXVVKXoxsPC6Xyetv1AP/WVbGz8p7B+GBEfLZhDMBlYyc3OOk1UI+zt+ovaAratnx0wCng9MsJkzGMgQZpESyCBOxwhXvhAAo6ZoSaSpVeOzruUKd4UEn8xoYGVGciLMyQj791lX7UtLFfobJFyTC27ghYDghwDCqAeA+nCAB2GOwfxrcSSOMNRIu9nRRq7GkKCSYyEjAIKYTb4NkBLxbKIKI1eqUuYIg+w984Ie4DjJGyGzIHEZmZl2SGRJpPLREkH3dsiN62+I+5WkfT4dfrIsZSSQgMTZMMdAAgkYjZnMYnw8zfGALZx9s36mR9a4Q7gj4DNAPaQMAefAHI90KVGPdaxj3MHyikTheHuP8uZexKGSB4F6AMDFMDsAAPUYCEvMvbSp1iaqMy3y964Of4muinOBIOwx5+DYDuZMR3yM3QYMgbuorPBXB9QsjxXNOUJQ7PBm5XsQJmVgFsBsmsHMnGlZLx9IWVlrW766cK2oc6hN8YNbKz+EVJCcoQs6GZTcviXsdVYXxY7oRHJ5DcJe7dpSIyrSMpzTVDPzGiQPJDpFBsES069StVNmM1tU24qDspv8jircEUa3ofXwO0b5+rZCVLtae6c39VwMf9kMM6NBAiBxFlbnVqLKSKafQs/Fm9amihY5yNwsTsUeHWc/wdGST8by3lxOFPfmBPgYiZmPunYpayBT/NxuWUgVr2zHkNAEPwSktL63CRIPwG6MDvHpkbL9Sn38Iwzhe7OZ3TFNVS27Tb6t8FzI/CCAtHw36oFY5pb0VFjwtdd08i6IC0vRdrW8oj1KqP7SGSEB7pQEn0gVrMzqk2BexvycROjvd0dS5B2HNOFoV8cp06GWWp7coIDnQzOccjqDCGQWKUMYyDoT7EILllKwmG8HU+RlW9E00cpeUVO+TzO1e3RjyH8MCY9VzbF+tzOPVKNkI1sS9uuHQeLcrG8r3BKGYu/W1OH8BZMeAD+q9YfKrsqsTKqLkuv9FIDnlDXfDhJGP8IockkZShKpU4thA/bPeAkAQdgiATDt6UvH5/7As9Ia/4EUGWY7xMnzbaLO1NV1zP1bPjw57uaC9xG/GpeNu/XBibu3uE+mgVevC/4bNf2FKAeZRW4JY4FztVdb6kJdqReN8J24+dTNp3WYuLySulOf9oMqr18bFY0Bg7SbhXDmZjZFnTKGojbV3q08O7TqLKlbjSzx7Zhobmrd4tOl8MbVQf+iIOzT4AbSbzZFG79Ztxd5xpzTpvyEthVtqp1qK7PbViQYC0x5xsK2le3bUccbV1sEW8H8TYCh81T4gOg367tam9ntPc+Ya9IltYYylI6r8vFrvaIVbcu6tE2zhG+QiPz/XH9yL7BV+ADpiUcYB5mp6ZvZSE+1Jybai8oNpWVpN6+KXXKhNgFvbKCCrTLpDrV+QBy6ZQc2S0L/4rsAGLiNGnwq46In8cP0f/u2aRkLviI87LeD2nu3yvOK2jVNdZZmerdOO2RKz63nzFrh2qZtWdxmts2haT9FkIrdm6gNtaS7teQ7pzu6dl3TfhLcEqY81/KONT4VxsJycpfanwZsKC6PYwhZ8eO8rUhPtyfqP+nPsK47tN+VRgM=);
   --cursor-zoom-out: url(data:image/webp;base64,UklGRmIFAABXRUJQVlA4TFUFAAAvP8APENXQwv7/sOP81ntiJ2vXtts7Xtu2bbu9su026Z1tuw3WthlnFkf/qT2nm9l0zyx+cfLsQexvtIjzRMi5bdvYnvexX3+2Hdu2jc62KqeyKndJly75ATYq27bxPPcuBm4bKZpmmeHgDcpfGCQpkibp+pZdpv0osUU5pD8Rfyqbf2+iZVGG/JEyUpXDvLGjZu6NOSM9k76WSE9jT83cN2H0yb7iKJPXSPnCULo7UxZF35EAEojEAgAxd6cs6W0rkiFnphZqKgM7zrsChInrwr2jXtJVusneMkMrAeZdD+2kPGfKh/aSpYyZFPsPA8MDRRsIZh1Lmbkth4haxP4dM1G5zdLkcyMnAY+GrrAbxxHMQKaTEUEIx+IC1zwWAsOnKGmkyNXi064VEjdEBB/JCGCgYRwOczpi/33aVfnCkIXnNDK9knNv4LGQ4DsAYqmLx+lMqasDbod5MeZcs5K5nyZH3pW2Mmw1BoY1nIg4VBhIVZHMBbUYtlKWOhayts+LfIBDBLdAdcKInCqy+ECByHub5Vqf08TDGlI+m45QUZ4xDKgwqhSMwA1HCT6aVnWbJVx8pXq8S8boQ7gu5ONAHVSjQh1WsYbRByuqU4XTXV3Km3URewsOAXUwoToEwypmXWpdK1z5eIO8HavjXqK35DwgknM4kVM4GT1VLM60AAPhXtIZ92q3mqRE0ZL9TAr2bZa+R+IqdUwHmEEb2IgcBUDG0rWWpOVFK0W9vS2K79la+iFkhel2TdCzU3LTltjXzl6Sq8xJ5PEKxL7aumWNqJFi90hTzbRrUDkYc6qEwCqmXKVq90x/S9Q2NvfItoYelbguMrejJoQeo3zNJmpbGzumW59YjDDRBjdGgBQYlYpaFxyhEutaV2YpgtpD7x+nYt+OM57gQMFHYvq5OQw+SGDao95dyutJF7+36xdSxcvbMTByhe/A1HN7G+zNiAifHCnfpTTQswg/N/2t7mmqat9twm2JRyLm2zH53mjPExJzvz45ndzT4sImKVsb/n6/Eqo/e0Z0iOsFwYdTCwMtPwLmJcyPCMT8fmckxd62SRFO9rbdM91qqeX+DRJ4NHKDM44lhAimkzGQYFYVsCftWEThAr4ZTLGXLElRRBv7+675gc3U7u6N0f8xMDpYtsXwve3YXw4XDaxP7K/vB4lzpbqx6Z3QFQe0pg6nLhj/APhBNu0teks36Sp7SbUpVAJ4RBryzSBhtP20Ys+UriSVOrUb9vz+qS8BIBJLAgAmP33x+KwfeFgYEjaQYoOtKnHyg5qoM3X1GnPrlg9Ojr459338r4Ylo2+9f+LGLT6TaeCF66L+Guc5U5Q99GLvhEuBR7V/W+pCXakXjQiaOGDqgGndJibVUHfq03VQzaVrjdEQPki50hQu7G+R757RFXWqDmjl16FDZ5W6rVFLgzqmujV1bAnsUnT56sh/Roj99EIDqVfqop1fqWYW+wUeadf8lM4Vnarda2tyOlekuBS45rkUdq7s2o46Xr5aL9oB5q9DDJonwwdEu1Ld2uhvdXX9Aq+kZ2oFZShtrQ301vr71Z3LerXN1ocvE0j4/0h/ck6zNIop4pH9tD30LFt/C7aszNTUzOIKXWl59pWrEhc+UK3A6xuoYIOMrUquH5AqTX8Aiz4xf/FtCARvo4bASqt5Jn6Z/uvaNts+9yviomd3UPuAVvn+fqaiyM6iwoDW2XtNeWLrSbP+92rTucza37Is9H6MKBX7NFEbarF5txR4pLs7mZqi/Ch4J1zzvMq71wRWuBRWkLPI/TiguaTCyhBy4td5Y9Nmy0zVftSfYU2rUn5TSgEA);
   --cursor-color-picker: url(data:image/webp;base64,UklGRqIFAABXRUJQVlA4TJUFAAAvP8APEPcEIZIkxVY+/8qehqeCcaf7wQcLEBpJciTF8Ud2GA6FvzfTnRAaSXIkxfFHdhgOhb83051uY9tWlbfvt0b+B1KGVumGClwiMnd35/0jNiGyyeQMOPAfsFaIGOAEweMH4Q9BEHJ4vCGc8IHwgfCG8MYRwgtzCC8ccIDwgnCEsluDWg6CgVb++PubQS1Ay4F1zrZl2XXrnA0En9249W+BILvHFq1fdmklrV922d/vw+zS8uucuAX+2aV1hWYmaAnBzKhlLW2v1+rudqvMjM1MK7vlFohbPP///czY9futH59PUMquzUyQXWuB/v33F6TrnKjF5nIZrHPILjNDdmmRXVp8AS1Ai5aBFgD88t/uxwagoL//nxLHWdbiOb8jrhd3z7m7W123pQo1SDM4kcZ1IbKb7R8LNBnq7U/fmYnoPwNJUuIsqEjIak54Q+x/buF94fg/BhwhgSfjgwSHuN+XLtgpAAiUUpEGkoHgAn5PiwBQKkopSaaUpogEkBACx+/WAKgokbTCkAYAlMmUkMDgfxfDt+K+JSvImFta39zeorA8ZyAlMOK/wxocz4V4ZOSsbLse2QmEuGzFUdO+htaIbIe85krW++69e1cuVFdNXL73/ndedsVU0imBxvloJkdoIvDObXlfPB2vbWw63watTQ01Y48/87bnkCKFKKLYHPhNURfcnTcX6lu6evoHh4cGgXS11E++2nEXVEUSo2lwNOU3b+pOdVN3/+iJs+diBNiJ0f7uJnp3yl1UiyQxOBghKJFKq/Pu1M26tr6RM4ftiAJrq7s55c4jXzMRAIIoIyu7e7euo/8Uf8SWTvbTuju7WQvJYgJbeWAiVbS13dfV7f0njt4Vgzb6ZnetVJFFgSfYoyQXz3ifTzb1ncLZFrCmC196VFVSQpzDfGUDnz8+qe8ewbowfrSbPmNrWrGcjPO4o89ou99fbOk/E8MSCi0Xvvdspkj+CliIB+PC7oc1XaMxTBkF9sEu1YpSQobD60RZ1df2HjT0nsAF62l4AGs6CoKxQEFRja39a039Z3HBoOnq/pZRoogCDilPqMQ0y92faB04hwsYZBf2s5Y/xSLlCJUQ2F6uqm04hi0MqnOepRVLeODFNCqzd3LVbUP4oFCV82ydyWKcw4Af6cPLX2gdjDKZ8DsdBW8eJnSWzV2NFnItl/WRFnksCDLSzI3cg8aeKEQPKZhacSrJYblDWMp9VNsZ5b39mC4ZGkoJmJAUKJ/d++FChO+m+SLbmzU0BY+IBFD1yq38iyjf7fP8tq2rRUmBixHMwFJzIffNBfz/xqWvcosVGpKTmN9NJjS1t/PvVLfh/rfeOti2yzVFSmQwO5ZS1DJzfu/gPs5/E/pp3SO2/4ull8i4/w3CJ0QZaYa1nJu+VdfWN3oo2ekR1l53++f8im1oSBJx//w89adIN531/PSj3+YN/pC8cX86v+5U6MUK9kg4AqLESnRrZj1fePtSfXMob7Fw3rrwbiG/PmMZqhIhcXD+kJSLVcOaWdkvfP38Ym1DU2sbsKbG2gsvvy3srx6vNEIsGR4/bcaFVBppRqWz4B4Ufvz04Y2JquoL1x9+8lPhwF1wLKMUhc7houRNKoUIjs0uufkC/BoSAOqyWccq14pl3xfno1QdIIiBlpm2M7Owmt3dz1HCYG1hxrFNI9SEDEciJv6kr6pmmDY4x2fnAebozHEbKgy9RJGlw5MmNiEIkqwgTTdMi9ngEIBKVlGua0hJi77tnxMNATkVU2mmMr3MqDApo5ToRCtBobC4P/4OhRcISUmmRYiqml5GSoExVKTIqcD7u1SvvE8fOEN1YyDFSpFMCAgB/+9Uux5atxKZUkKSokDjR3ojUxIIHMkEgBgunAk52ht5uXDxHQegoS2QP6b4D8f9qxUCAA==);
+  --radius: 0.625rem;
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.145 0 0);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  --primary: oklch(0.205 0 0);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.97 0 0);
+  --secondary-foreground: oklch(0.205 0 0);
+  --muted: oklch(0.97 0 0);
+  --muted-foreground: oklch(0.556 0 0);
+  --accent: oklch(0.97 0 0);
+  --accent-foreground: oklch(0.205 0 0);
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: oklch(0.922 0 0);
+  --input: oklch(0.922 0 0);
+  --ring: oklch(0.708 0 0);
+  --chart-1: oklch(0.646 0.222 41.116);
+  --chart-2: oklch(0.6 0.118 184.704);
+  --chart-3: oklch(0.398 0.07 227.392);
+  --chart-4: oklch(0.828 0.189 84.429);
+  --chart-5: oklch(0.769 0.188 70.08);
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-primary: oklch(0.205 0 0);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.97 0 0);
+  --sidebar-accent-foreground: oklch(0.205 0 0);
+  --sidebar-border: oklch(0.922 0 0);
+  --sidebar-ring: oklch(0.708 0 0);
 }
 @media (prefers-color-scheme: dark) {
   :root {
@@ -199,5 +234,86 @@ body {
     svg {
       fill: black;
     }
+  }
+}
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+.dark {
+  --background: oklch(0.145 0 0);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.205 0 0);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.205 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.922 0 0);
+  --primary-foreground: oklch(0.205 0 0);
+  --secondary: oklch(0.269 0 0);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.269 0 0);
+  --muted-foreground: oklch(0.708 0 0);
+  --accent: oklch(0.269 0 0);
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.704 0.191 22.216);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.556 0 0);
+  --chart-1: oklch(0.488 0.243 264.376);
+  --chart-2: oklch(0.696 0.17 162.48);
+  --chart-3: oklch(0.769 0.188 70.08);
+  --chart-4: oklch(0.627 0.265 303.9);
+  --chart-5: oklch(0.645 0.246 16.439);
+  --sidebar: oklch(0.205 0 0);
+  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.488 0.243 264.376);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.269 0 0);
+  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-ring: oklch(0.556 0 0);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
   }
 }
