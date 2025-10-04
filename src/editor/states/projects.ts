@@ -1,3 +1,5 @@
+import { IProject } from "@/db/schemas/types";
+import { api } from "@/services/axios";
 import { atom, PrimitiveAtom } from "jotai";
 import { atomWithDefault } from "jotai/utils";
 import { IShape } from "../shapes/type.shape";
@@ -5,7 +7,7 @@ import { IStageEvents } from "./event";
 import { MODE } from "./mode";
 import { IPage, IPageJSON, IPageShapeIds } from "./pages";
 import { ALL_SHAPES, ALL_SHAPES_CHILDREN, WithInitialValue } from "./shapes";
-import { GET_PROJECTS, TABS_PERSIST_ATOM } from "./tabs";
+import { GET_PROJECTS_BY_USER, TABS_PERSIST_ATOM } from "./tabs";
 import { IKeyTool } from "./tool";
 import { UndoRedoAction } from "./undo-redo";
 
@@ -61,7 +63,7 @@ export const MOCKUP_PROJECT: IEDITORPROJECT = {
           id: "mockup-page-one",
           color: atom("black"),
           isVisible: atom(true),
-          name: atom("Project One"),
+          name: atom("Loading..."),
           SHAPES: {
             ID: atom<IPageShapeIds[]>([]),
             LIST: atom<ALL_SHAPES[]>([]),
@@ -77,52 +79,67 @@ export const MOCKUP_PROJECT: IEDITORPROJECT = {
   },
 };
 export const PROJECTS_ATOM = atom<IEDITORPROJECT[]>([]);
-export const SET_PROJECTS_FROM_TABS = atom(null, (get, set) => {
-  const DATA = GET_PROJECTS();
-  // const PERSIST = get(TABS_PERSIST_ATOM);
-  const projects = DATA?.map((project) => {
-    const DATA = JSON.parse(project.data);
-    const LIST_PAGES = DATA[project.mode]?.LIST as IPageJSON[];
+export const SET_PROJECTS_FROM_TABS = atom(null, async (get, set) => {
+  const DATA = get(GET_PROJECTS_BY_USER);
 
-    const FIRST_PAGE = LIST_PAGES.at(0);
+  const projectsResults = await Promise.allSettled(
+    DATA?.map(async (item): Promise<IEDITORPROJECT | null> => {
+      try {
+        const response = await api.get<{ data: IProject }>(
+          "/projects/byId?id=" + item._id
+        );
+        const project = response.data.data;
+        const DATA_JSON = JSON.parse(response.data.data.data);
+        const LIST_PAGES = DATA_JSON[item.mode]?.LIST as IPageJSON[];
+        const FIRST_PAGE = LIST_PAGES?.[0];
 
-    return {
-      ID: project._id,
-      name: atom(project.name),
-      MODE_ATOM: atom<MODE>(project.mode),
-      TOOL: atom<IKeyTool>("MOVE"),
-      PREVIEW_URL: project?.previewUrl ?? "./placeholder.svg",
-      PAUSE_MODE: atom<boolean>(false),
-      MODE: {
-        [project.mode]: {
-          LIST: atom(
-            LIST_PAGES?.map((page) => {
-              const LIST = page?.SHAPES?.LIST?.map((e) =>
-                cloneShapeRecursive(e)
-              );
-              return {
-                id: page.id,
-                name: atom(page.name),
-                color: atom(page.color),
-                isVisible: atom(page.isVisible),
-                SHAPES: {
-                  ID: atom<IPageShapeIds[]>([]),
-                  LIST: atom<ALL_SHAPES[]>(LIST),
-                },
-                UNDOREDO: {
-                  COUNT_UNDO_REDO: atom<number>(0),
-                  LIST_UNDO_REDO: atom<UndoRedoAction[]>([]),
-                },
-              };
-            })
-          ),
-          ID: atom<string | null>(FIRST_PAGE?.id ?? null),
-        },
-      },
+        return {
+          ID: item._id,
+          name: atom(project.name),
+          MODE_ATOM: atom<MODE>(item.mode),
+          TOOL: atom<IKeyTool>("MOVE"),
+          PREVIEW_URL: item?.previewUrl ?? "./placeholder.svg",
+          PAUSE_MODE: atom<boolean>(false),
+          MODE: {
+            [item.mode]: {
+              LIST: atom(
+                LIST_PAGES?.map((page) => {
+                  const LIST = page?.SHAPES?.LIST?.map(cloneShapeRecursive);
+                  return {
+                    id: page.id,
+                    name: atom(page.name),
+                    color: atom(page.color),
+                    isVisible: atom(page.isVisible),
+                    SHAPES: {
+                      ID: atom<IPageShapeIds[]>([]),
+                      LIST: atom<ALL_SHAPES[]>(LIST),
+                    },
+                    UNDOREDO: {
+                      COUNT_UNDO_REDO: atom<number>(0),
+                      LIST_UNDO_REDO: atom<UndoRedoAction[]>([]),
+                    },
+                  };
+                })
+              ),
+              ID: atom<string | null>(FIRST_PAGE?.id ?? null),
+            },
+          },
+          EVENT: atom<IStageEvents>("IDLE"),
+        };
+      } catch (error) {
+        // Ignorar proyecto si falla la carga
+        return null;
+      }
+    })
+  );
 
-      EVENT: atom<IStageEvents>("IDLE"),
-    };
-  });
+  const projects = projectsResults
+    .filter(
+      (res): res is PromiseFulfilledResult<IEDITORPROJECT | null> =>
+        res.status === "fulfilled" && res.value !== null
+    )
+    .map((res) => res.value as IEDITORPROJECT);
+
   set(PROJECTS_ATOM, projects);
 });
 

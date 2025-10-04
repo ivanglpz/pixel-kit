@@ -8,11 +8,13 @@ import {
   PROJECTS_ATOM,
   SET_PROJECTS_FROM_TABS,
 } from "@/editor/states/projects";
+import { userAtom } from "@/jotai/user";
 import { css } from "@stylespixelkit/css";
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { Home, Plus, X } from "lucide-react";
 import { useRouter } from "next/router";
 import { useEffect, useRef, useState } from "react";
+import { Profile } from "./Profile";
 
 const Tab = ({
   project,
@@ -130,9 +132,10 @@ export const TabsProjects = () => {
   const setDelete = useSetAtom(DELETE_PROJECT);
   const containerRef = useRef<HTMLDivElement>(null);
   const SET = useSetAtom(SET_PROJECTS_FROM_TABS);
+  const user = useAtomValue(userAtom);
   useEffect(() => {
     SET();
-  }, []);
+  }, [user.data?.user?.userId]);
   return (
     <header
       className={css({
@@ -142,24 +145,26 @@ export const TabsProjects = () => {
         borderBottomWidth: "1px",
         borderBottomStyle: "solid",
         borderBottomColor: "border", // ← usa el semantic token
-        gridTemplateColumns: "25px 1fr",
+        gridTemplateColumns: "20px 1fr 40px",
         gap: "lg",
         paddingLeft: "lg",
         paddingRight: "lg",
       })}
     >
-      <button
-        onClick={() => {
-          router.push("/app");
-        }}
-        className={css({
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-        })}
-      >
-        <Home size={16} />
-      </button>
+      <section className="flex flex-row items-center justify-center gap-4">
+        <button
+          onClick={() => {
+            router.push("/app");
+          }}
+          className={css({
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          })}
+        >
+          <Home size={16} />
+        </button>
+      </section>
       <div
         className={css({
           display: "flex",
@@ -189,13 +194,6 @@ export const TabsProjects = () => {
         })}
         <button
           onClick={() => {
-            // setNew();
-            // setTimeout(() => {
-            //   containerRef.current?.scrollTo({
-            //     left: containerRef.current.scrollWidth,
-            //     behavior: "smooth",
-            //   });
-            // }, 10);
             router.push("/app/project/create");
           }}
           className={css({
@@ -208,6 +206,7 @@ export const TabsProjects = () => {
           <Plus size={16} />
         </button>
       </div>
+      <Profile />
     </header>
   );
 };

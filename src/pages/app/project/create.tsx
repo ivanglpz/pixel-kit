@@ -1,6 +1,7 @@
 import { Input } from "@/editor/components/input";
 import { PROJECT_ID_ATOM } from "@/editor/states/projects";
 import { ADD_TAB_ATOM } from "@/editor/states/tabs";
+import { NextPageWithLayout } from "@/pages/_app";
 import { fetchListOrgs } from "@/services/organizations";
 import { createProject } from "@/services/projects";
 import { css } from "@stylespixelkit/css";
@@ -11,7 +12,7 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
-const ProjectCreate = () => {
+const ProjectCreate: NextPageWithLayout = () => {
   const [orgId, setOrgId] = useState<string | null>(null);
   const router = useRouter();
   const setSelected = useSetAtom(PROJECT_ID_ATOM);
@@ -212,4 +213,7 @@ const ProjectCreate = () => {
     </section>
   );
 };
+
+ProjectCreate.layout = "Editor";
+
 export default ProjectCreate;

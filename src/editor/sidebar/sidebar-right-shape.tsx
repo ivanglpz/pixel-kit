@@ -56,7 +56,7 @@ import { UPDATE_UNDO_REDO } from "../states/undo-redo";
 import { ExportShape } from "./export-shape";
 
 // Función utilitaria para calcular la escala de imagen
-const calculateScale = (
+export const calculateScale = (
   originalWidth: number,
   originalHeight: number,
   containerWidth: number,
@@ -341,6 +341,104 @@ export const LayoutShapeConfig = () => {
     },
   });
 
+  const mutation = useMutation({
+    mutationKey: ["upload_image", type, photoUpload, photoChoose],
+    mutationFn: async (): Promise<
+      Pick<IPhoto, "name" | "width" | "height" | "url">
+    > => {
+      if (type === "UPLOAD") {
+        const myImage = photoUpload;
+
+        if (!myImage) {
+          throw new Error("Please upload a photo from your device");
+        }
+
+        const formData = new FormData();
+        formData.append("image", myImage); // usar el mismo nombre 'images'
+        formData.append("projectId", `${PROJECT_ID}`); // usar el mismo nombre 'images'
+
+        const response = await uploadPhoto(formData);
+        return response;
+      }
+      if (!photoChoose) {
+        throw new Error("Please choose an existing photo");
+      }
+      return photoChoose;
+    },
+    onSuccess: (values) => {
+      if (type === "UPLOAD") {
+        if (!shape) return;
+        const scale: number = calculateScale(
+          values.width,
+          values.height,
+          shape.width ?? 500,
+          shape.height ?? 500
+        );
+        const newWidth: number = values.width * scale;
+        const newHeight: number = values.height * scale;
+        shapeUpdate({
+          width: newWidth,
+          height: newHeight,
+          fills: [
+            {
+              id: uuidv4(),
+              color: "#ffffff",
+              opacity: 1,
+              visible: true,
+              type: "image",
+              image: {
+                src: values?.url,
+                width: values.width,
+                height: values.height,
+                name: values?.name,
+              },
+            },
+            ...(shape.fills || []),
+          ],
+        });
+        execute(); // Ejecutar después del cambio
+        handleResetDialogImage();
+        QueryListPhotos.refetch();
+
+        return;
+      }
+      if (!shape) return;
+      const scale: number = calculateScale(
+        values.width,
+        values.height,
+        shape.width ?? 500,
+        shape.height ?? 500
+      );
+      const newWidth: number = values.width * scale;
+      const newHeight: number = values.height * scale;
+      shapeUpdate({
+        width: newWidth,
+        height: newHeight,
+        fills: [
+          {
+            id: uuidv4(),
+            color: "#ffffff",
+            opacity: 1,
+            visible: true,
+            type: "image",
+            image: {
+              src: values?.url,
+              width: values.width,
+              height: values.height,
+              name: values?.name,
+            },
+          },
+          ...(shape.fills || []),
+        ],
+      });
+
+      execute(); // Ejecutar después del cambio
+      handleResetDialogImage();
+    },
+    onError: (error) => {
+      toast.error(error.message);
+    },
+  });
   // Si no hay shape seleccionado, no renderizar nada
   if (shape === null) return null;
 
@@ -573,104 +671,6 @@ export const LayoutShapeConfig = () => {
     setPhotocChoose(null);
     setShowImage(false);
   };
-
-  const mutation = useMutation({
-    mutationKey: ["upload_image", type, photoUpload, photoChoose],
-    mutationFn: async (): Promise<
-      Pick<IPhoto, "name" | "width" | "height" | "url">
-    > => {
-      if (type === "UPLOAD") {
-        const myImage = photoUpload;
-
-        if (!myImage) {
-          throw new Error("Please upload a photo from your device");
-        }
-
-        const formData = new FormData();
-        formData.append("image", myImage); // usar el mismo nombre 'images'
-        formData.append("projectId", `${PROJECT_ID}`); // usar el mismo nombre 'images'
-
-        const response = await uploadPhoto(formData);
-        return response;
-      }
-      if (!photoChoose) {
-        throw new Error("Please choose an existing photo");
-      }
-      return photoChoose;
-    },
-    onSuccess: (values) => {
-      if (type === "UPLOAD") {
-        const scale: number = calculateScale(
-          values.width,
-          values.height,
-          shape.width ?? 500,
-          shape.height ?? 500
-        );
-        const newWidth: number = values.width * scale;
-        const newHeight: number = values.height * scale;
-        shapeUpdate({
-          width: newWidth,
-          height: newHeight,
-          fills: [
-            {
-              id: uuidv4(),
-              color: "#ffffff",
-              opacity: 1,
-              visible: true,
-              type: "image",
-              image: {
-                src: values?.url,
-                width: values.width,
-                height: values.height,
-                name: values?.name,
-              },
-            },
-            ...(shape.fills || []),
-          ],
-        });
-        execute(); // Ejecutar después del cambio
-        handleResetDialogImage();
-        QueryListPhotos.refetch();
-
-        return;
-      }
-
-      const scale: number = calculateScale(
-        values.width,
-        values.height,
-        shape.width ?? 500,
-        shape.height ?? 500
-      );
-      const newWidth: number = values.width * scale;
-      const newHeight: number = values.height * scale;
-      shapeUpdate({
-        width: newWidth,
-        height: newHeight,
-        fills: [
-          {
-            id: uuidv4(),
-            color: "#ffffff",
-            opacity: 1,
-            visible: true,
-            type: "image",
-            image: {
-              src: values?.url,
-              width: values.width,
-              height: values.height,
-              name: values?.name,
-            },
-          },
-          ...(shape.fills || []),
-        ],
-      });
-
-      execute(); // Ejecutar después del cambio
-      handleResetDialogImage();
-    },
-    onError: (error) => {
-      toast.error(error.message);
-    },
-  });
 
   // Manejadores para layouts (agregar con los demás manejadores)
 

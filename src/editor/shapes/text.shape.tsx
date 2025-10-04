@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react/display-name */
-import { PrimitiveAtom, useAtom } from "jotai";
+import { PrimitiveAtom, useAtom, useSetAtom } from "jotai";
 import { Text } from "react-konva";
 import { IShape, IShapeWithEvents, WithInitialValue } from "./type.shape";
 /* eslint-disable react/display-name */
@@ -8,6 +8,7 @@ import { SHAPE_IDS_ATOM } from "../states/shape";
 
 import { useConfiguration } from "../hooks/useConfiguration";
 import { coordinatesShapeMove, shapeEventDragMove } from "./events.shape";
+import { flexLayoutAtom } from "./layout-flex";
 export const ShapeText = (props: IShapeWithEvents) => {
   const { shape: item } = props;
   const [box, setBox] = useAtom(
@@ -16,6 +17,7 @@ export const ShapeText = (props: IShapeWithEvents) => {
   const { width, height, x, y, strokeWidth, dash, rotation } = box;
 
   const { config } = useConfiguration();
+  const applyLayout = useSetAtom(flexLayoutAtom);
 
   const [shapeId, setShapeId] = useAtom(SHAPE_IDS_ATOM);
   const isSelected = shapeId.some((w) => w.id === box.id);
@@ -88,6 +90,10 @@ export const ShapeText = (props: IShapeWithEvents) => {
             parentId: box.parentId,
           })
         }
+        onDragEnd={() => {
+          if (!box.parentId) return;
+          applyLayout({ id: box.parentId });
+        }}
         onDragMove={(e) =>
           setBox(
             shapeEventDragMove(

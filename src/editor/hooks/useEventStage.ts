@@ -1,14 +1,19 @@
 /* eslint-disable react-hooks/exhaustive-deps */
+import { IPhoto } from "@/db/schemas/types";
 import TOOL_ATOM, { IKeyTool, PAUSE_MODE_ATOM } from "@/editor/states/tool";
+import { uploadPhoto } from "@/services/photo";
+import { useMutation } from "@tanstack/react-query";
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import Konva from "konva";
 import { KonvaEventObject } from "konva/lib/Node";
 import { useEffect } from "react";
+import { toast } from "sonner";
 import { v4 as uuidv4 } from "uuid";
 import stageAbsolutePosition from "../helpers/position";
 import { CreateShapeSchema } from "../helpers/shape-schema";
 import { CLEAR_CURRENT_ITEM_ATOM } from "../states/currentItem";
 import { EVENT_ATOM } from "../states/event";
+import { PROJECT_ID_ATOM } from "../states/projects";
 import { RECTANGLE_SELECTION_ATOM } from "../states/rectangle-selection";
 import { SHAPE_IDS_ATOM, UPDATE_SHAPES_IDS_ATOM } from "../states/shape";
 import {
@@ -20,6 +25,7 @@ import {
   EVENT_DOWN_SHAPES,
   EVENT_MOVING_SHAPE,
   EVENT_UP_SHAPES,
+  GROUP_SHAPES_IN_LAYOUT,
 } from "../states/shapes";
 import { REDO_ATOM, UNDO_ATOM } from "../states/undo-redo";
 import { useAutoSave } from "./useAutoSave";
@@ -39,6 +45,7 @@ export const useEventStage = () => {
 
   const { config } = useConfiguration();
   const { debounce } = useAutoSave();
+  const PROJECT_ID = useAtomValue(PROJECT_ID_ATOM);
 
   // ===== SETTERS =====
   const SET_CREATE = useSetAtom(CREATE_SHAPE_ATOM);
@@ -48,6 +55,7 @@ export const useEventStage = () => {
   const [selection, setSelection] = useAtom(RECTANGLE_SELECTION_ATOM);
   const setRedo = useSetAtom(REDO_ATOM);
   const setUndo = useSetAtom(UNDO_ATOM);
+  const SET_EVENT_GROUP = useSetAtom(GROUP_SHAPES_IN_LAYOUT);
   const SET_EVENT_UP = useSetAtom(EVENT_UP_SHAPES);
   const SET_EVENT_MOVING_SHAPE = useSetAtom(EVENT_MOVING_SHAPE);
   const SET_EVENT_COPYING = useSetAtom(EVENT_COPYING_SHAPES);
@@ -156,25 +164,41 @@ export const useEventStage = () => {
     SET_CLEAR_CITEM();
   };
 
-  const createImageFromFile = (file: File, dataUrl: string) => {
-    const image = new Image();
-    image.src = dataUrl;
-    image.onload = () => {
+  const mutation = useMutation({
+    mutationKey: ["upload_event_image", PROJECT_ID],
+    mutationFn: async (
+      photoUpload: File
+    ): Promise<Pick<IPhoto, "name" | "width" | "height" | "url">> => {
+      const myImage = photoUpload;
+
+      if (!myImage) {
+        throw new Error("Please upload a photo from your device");
+      }
+
+      const formData = new FormData();
+      formData.append("image", myImage); // usar el mismo nombre 'images'
+      formData.append("projectId", `${PROJECT_ID}`); // usar el mismo nombre 'images'
+
+      const response = await uploadPhoto(formData);
+      return response;
+    },
+    onSuccess: (values) => {
       const createStartElement = CreateShapeSchema({
+        id: uuidv4(),
         tool: "IMAGE",
         x: 0,
         y: 0,
-        width: image.width / 3,
-        height: image.height / 3,
+        width: values.width / 3,
+        height: values.height / 3,
         fills: [
           {
             color: "#fff",
             id: uuidv4(),
             image: {
-              src: dataUrl,
-              width: image.width,
-              height: image.height,
-              name: file.name,
+              src: values.url,
+              width: values.width,
+              height: values.height,
+              name: values.name,
             },
             opacity: 1,
             type: "image",
@@ -183,11 +207,33 @@ export const useEventStage = () => {
         ],
       });
       SET_CREATE(createStartElement);
-    };
+
+      debounce.execute();
+      toast.success("Image uploaded successfully!");
+    },
+    onError: (error) => {
+      toast.error(error.message);
+    },
+  });
+
+  const createImageFromFile = (file: File) => {
+    if (
+      !["IMAGE/JPEG", "IMAGE/PNG", "IMAGE/GIF", "IMAGE/SVG+XML"].includes(
+        file.type.toUpperCase()
+      )
+    ) {
+      toast.error("Invalid image format.");
+      return;
+    }
+    toast.info("Uploading image...", {
+      duration: 6000,
+    });
+    mutation.mutate(file);
   };
 
   const createTextFromClipboard = (text: string) => {
     const createStartElement = CreateShapeSchema({
+      id: uuidv4(),
       tool: "TEXT",
       x: 0,
       y: 0,
@@ -207,6 +253,7 @@ export const useEventStage = () => {
       ctx?.drawImage(img, 0, 0);
 
       const createStartElement = CreateShapeSchema({
+        id: uuidv4(),
         tool: "IMAGE",
         x: 0,
         y: 0,
@@ -240,7 +287,7 @@ export const useEventStage = () => {
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       const KEY = event.key?.toUpperCase();
-
+      const shift = event.shiftKey;
       const isMac = navigator.platform.toUpperCase().includes("MAC");
       const meta = isMac ? event.metaKey : event.ctrlKey;
       const alt = event.altKey;
@@ -253,6 +300,13 @@ export const useEventStage = () => {
         debounce.execute();
 
         // set(UNDO_ATOM);
+        return;
+      }
+      // ✅ Agrupar en Layout (Shift + A)
+      if (shift && key === "a" && shapeId?.length > 0) {
+        event.preventDefault();
+        SET_EVENT_GROUP();
+        debounce.execute();
         return;
       }
 
@@ -300,16 +354,6 @@ export const useEventStage = () => {
       }
     };
 
-    const handleFile = (file: File): void => {
-      const reader = new FileReader();
-      reader.onload = (data) => {
-        if (typeof data?.target?.result === "string") {
-          createImageFromFile(file, data.target.result);
-        }
-      };
-      reader.readAsDataURL(file);
-    };
-
     const handleSVG = (svgText: string): void => {
       const parser = new DOMParser();
       const svgDOM = parser
@@ -327,7 +371,7 @@ export const useEventStage = () => {
       const file: File | undefined = event.clipboardData?.files[0];
 
       if (file) {
-        handleFile(file);
+        createImageFromFile(file);
         return;
       }
 

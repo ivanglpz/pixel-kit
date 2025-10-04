@@ -1,4 +1,5 @@
 import { withAuth } from "@/db/middleware/auth";
+import { IOrganizationMember, Organization } from "@/db/schemas/organizations";
 import { Project } from "@/db/schemas/projects";
 import { IProject } from "@/db/schemas/types";
 import { sanitizeInput } from "@/utils/sanitize";
@@ -21,9 +22,32 @@ async function handler(
   }
 
   try {
-    const projects = await Project.find({
-      organization: new Types.ObjectId(organizationId),
-    });
+    // Obtener la organización
+    const org = await Organization.findById(organizationId);
+    if (!org) {
+      return res.status(404).json({ error: "Organization not found" });
+    }
+
+    // Verificar que el usuario sea miembro de la organización
+    const isMember = org.members.some(
+      (m: IOrganizationMember) => m.user.toString() === req.userId
+    );
+
+    if (!isMember) {
+      return res.status(403).json({
+        error: "Not authorized to view projects from this organization",
+      });
+    }
+
+    // Obtener los proyectos de la organización
+    const projects = await Project.find(
+      {
+        organization: new Types.ObjectId(organizationId),
+      },
+      {
+        data: 0,
+      }
+    );
 
     return res.status(200).json({
       message: "Projects retrieved successfully",

@@ -17,7 +17,8 @@ export type ActionType =
   | "DELETE"
   | "INITIAL"
   | "CLEAR_ALL"
-  | "MOVE";
+  | "MOVE"
+  | "GROUPING";
 
 export type UndoRedoAction = {
   id: string;
@@ -71,7 +72,6 @@ const convertUndoShapeToAllShapes = (undoShape: UndoShape): ALL_SHAPES => {
 
   return {
     id: undoShape.id,
-    // pageId: undoShape.pageId,
     tool: undoShape.tool,
     state: atom<IShape>({
       ...cloneDeep(undoShape.state),
@@ -212,6 +212,25 @@ const handleRedoMove =
     });
   };
 
+const handleRedoGrouping =
+  (get: Getter, set: Setter) =>
+  (shapes: UndoShape[], prevShapes?: UndoShape[]): void => {
+    if (!prevShapes) return;
+
+    const remover = removeShapeCompletely(get, set);
+    const adder = addShapeToContainer(get, set);
+
+    // Remover los elementos originales (prevShapes)
+    prevShapes.forEach((shape) => {
+      remover(shape.id);
+    });
+
+    // Agregar el nuevo layout con los hijos agrupados (shapes)
+    shapes.forEach((shape) => {
+      adder(shape, shape.state.parentId ?? null);
+    });
+  };
+
 const handleUndoCreate =
   (get: Getter, set: Setter) =>
   (shapes: UndoShape[]): void => {
@@ -240,6 +259,25 @@ const handleUndoMove =
       if (!currentShape || !prevShape) return;
       remover(currentShape.id);
       adder(prevShape, prevShape.state.parentId ?? null);
+    });
+  };
+
+const handleUndoGrouping =
+  (get: Getter, set: Setter) =>
+  (shapes: UndoShape[], prevShapes?: UndoShape[]): void => {
+    if (!prevShapes) return;
+
+    const remover = removeShapeCompletely(get, set);
+    const adder = addShapeToContainer(get, set);
+
+    // Remover el layout agrupado (shapes)
+    shapes.forEach((shape) => {
+      remover(shape.id);
+    });
+
+    // Restaurar los elementos originales sin agrupar (prevShapes)
+    prevShapes.forEach((shape) => {
+      adder(shape, shape.state.parentId ?? null);
     });
   };
 
@@ -295,12 +333,14 @@ export const REDO_ATOM = atom(null, (get, set) => {
     UPDATE: handleRedoUpdate(get, set),
     MOVE: (shapes: UndoShape[], prevShapes?: UndoShape[]) =>
       handleRedoMove(get, set)(shapes, prevShapes),
+    GROUPING: (shapes: UndoShape[], prevShapes?: UndoShape[]) =>
+      handleRedoGrouping(get, set)(shapes, prevShapes),
     INITIAL: () => {},
     CLEAR_ALL: () => {},
   };
 
   const handler = actionHandlers[action.type];
-  if (action.type === "MOVE") {
+  if (action.type === "MOVE" || action.type === "GROUPING") {
     handler(action.shapes, action.prevShapes);
   } else {
     handler(action.shapes);
@@ -318,15 +358,17 @@ export const UNDO_ATOM = atom(null, (get, set) => {
   const actionHandlers = {
     CREATE: handleUndoCreate(get, set),
     DELETE: handleUndoDelete(get, set),
-    UPDATE: handleRedoUpdate(get, set), // simétrico
+    UPDATE: handleRedoUpdate(get, set),
     MOVE: (shapes: UndoShape[], prevShapes?: UndoShape[]) =>
       handleUndoMove(get, set)(shapes, prevShapes),
+    GROUPING: (shapes: UndoShape[], prevShapes?: UndoShape[]) =>
+      handleUndoGrouping(get, set)(shapes, prevShapes),
     INITIAL: () => {},
     CLEAR_ALL: () => {},
   };
 
   const handler = actionHandlers[action.type];
-  if (action.type === "MOVE") {
+  if (action.type === "MOVE" || action.type === "GROUPING") {
     handler(action.shapes, action.prevShapes);
   } else {
     handler(action.shapes);
