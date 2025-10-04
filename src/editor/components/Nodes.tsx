@@ -19,6 +19,7 @@ import * as Luicde from "lucide-react";
 import { ComponentType, memo, useMemo, useState } from "react";
 import { constants } from "../constants/color";
 import { useAutoSave } from "../hooks/useAutoSave";
+import { flexLayoutAtom } from "../shapes/layout-flex";
 import { SHAPE_IDS_ATOM } from "../states/shape";
 import {
   ALL_SHAPES,
@@ -106,7 +107,7 @@ export const NodesDefault = ({
   const [isExpanded, setIsExpanded] = useState(true);
   const [isHovered, setIsHovered] = useState(false);
   const setUpdateUndoRedo = useSetAtom(UPDATE_UNDO_REDO);
-
+  const applyLayout = useSetAtom(flexLayoutAtom);
   const DELETE_SHAPE = useSetAtom(DELETE_SHAPES_ATOM);
   const setMove = useSetAtom(MOVE_SHAPES_BY_ID);
 
@@ -123,6 +124,8 @@ export const NodesDefault = ({
     return {
       isLockedByParent: isLockedByParent || shape.isLocked,
       isHiddenByParent: isHiddenByParent || !shape.visible,
+      id: shape.id,
+      parentId: shape.parentId,
     };
   }, [isLockedByParent, isHiddenByParent, shape.isLocked, shape.visible]);
 
@@ -130,6 +133,9 @@ export const NodesDefault = ({
   const { debounce } = useAutoSave();
 
   const handleReorder = (newOrder: typeof children) => {
+    if (!childOptions.id) return;
+
+    applyLayout({ id: childOptions.id });
     setChildren(newOrder);
     setUpdateUndoRedo();
     debounce.execute();
