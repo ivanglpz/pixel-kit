@@ -21,9 +21,14 @@ async function handler(
   }
 
   try {
-    const projects = await Project.find({
-      organization: new Types.ObjectId(organizationId),
-    });
+    const projects = await Project.find(
+      {
+        organization: new Types.ObjectId(organizationId),
+      },
+      {
+        data: 0,
+      }
+    );
 
     return res.status(200).json({
       message: "Projects retrieved successfully",

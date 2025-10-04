@@ -5,7 +5,10 @@ import { SET_PROJECTS_FROM_TABS } from "./projects";
 
 export const TABS_ID = "tabs_app";
 
-export const TABS_PERSIST_ATOM = atomWithStorage<IProject[]>(TABS_ID, []);
+export const TABS_PERSIST_ATOM = atomWithStorage<Omit<IProject, "data">[]>(
+  TABS_ID,
+  []
+);
 
 export const GET_PROJECTS = (): IProject[] => {
   const response = localStorage.getItem(TABS_ID);
@@ -22,7 +25,7 @@ export const ADD_TAB_ATOM = atom(null, (get, set, args: IProject) => {
 
 export const UPDATE_TAB_ATOM = atom(
   null,
-  (get, set, args: Pick<IProject, "_id" | "name" | "data">) => {
+  (get, set, args: Pick<IProject, "_id" | "name">) => {
     set(
       TABS_PERSIST_ATOM,
       get(TABS_PERSIST_ATOM).map((el) =>

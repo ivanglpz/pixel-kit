@@ -24,13 +24,13 @@ export const useAutoSave = () => {
         pixelRatio: 1,
       });
 
-      const PAYLOAD: Pick<IProject, "_id" | "name" | "data" | "previewUrl"> = {
+      const PAYLOAD: Pick<IProject, "_id" | "name" | "previewUrl"> = {
         _id: JSON_.projectId,
-        data: JSON_.data,
+        // data: JSON_.data,
         name: JSON_.projectName,
         previewUrl: previewUrl ?? JSON_?.previewUrl ?? "./placeholder.svg",
       };
-      updateProject(PAYLOAD);
+      updateProject({ ...PAYLOAD, data: JSON_.data });
       return PAYLOAD;
     },
     onSuccess: (data) => {
@@ -43,7 +43,7 @@ export const useAutoSave = () => {
     callback: () => {
       mutation.mutate();
     },
-    timer: 5000, // opcional
+    timer: 2000, // opcional
   });
   return {
     debounce,

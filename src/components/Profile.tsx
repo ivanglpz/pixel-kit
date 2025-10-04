@@ -6,9 +6,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { TABS_ID } from "@/editor/states/tabs";
+import { useCachedQuery } from "@/hooks/useCacheQuery";
 import { meUser } from "@/services/users";
-import { useQuery } from "@tanstack/react-query";
 import Cookies from "js-cookie";
 import { LogOut, Settings, Twitter, User2 } from "lucide-react";
 import Link from "next/link";
@@ -16,19 +15,19 @@ import { useRouter } from "next/router";
 
 export const Profile = () => {
   const router = useRouter();
-  const QueryProfile = useQuery({
+  const QueryProfile = useCachedQuery({
     queryKey: ["profile"],
     queryFn: meUser,
+    cacheTime: 1000 * 60 * 60, // 1 hora
   });
 
   const handleLogout = () => {
     router.replace("/login");
     Cookies.remove("accessToken");
-    localStorage.removeItem(TABS_ID);
+    localStorage.clear();
     // Aquí puedes agregar la lógica para cerrar sesión
     console.log("Cerrar sesión");
   };
-  console.log(QueryProfile.data);
 
   return (
     <DropdownMenu>
