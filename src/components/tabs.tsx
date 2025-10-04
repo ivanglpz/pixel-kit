@@ -13,6 +13,7 @@ import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { Home, Plus, X } from "lucide-react";
 import { useRouter } from "next/router";
 import { useEffect, useRef, useState } from "react";
+import { Profile } from "./Profile";
 
 const Tab = ({
   project,
@@ -142,24 +143,26 @@ export const TabsProjects = () => {
         borderBottomWidth: "1px",
         borderBottomStyle: "solid",
         borderBottomColor: "border", // ← usa el semantic token
-        gridTemplateColumns: "25px 1fr",
+        gridTemplateColumns: "20px 1fr 40px",
         gap: "lg",
         paddingLeft: "lg",
         paddingRight: "lg",
       })}
     >
-      <button
-        onClick={() => {
-          router.push("/app");
-        }}
-        className={css({
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-        })}
-      >
-        <Home size={16} />
-      </button>
+      <section className="flex flex-row items-center justify-center gap-4">
+        <button
+          onClick={() => {
+            router.push("/app");
+          }}
+          className={css({
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          })}
+        >
+          <Home size={16} />
+        </button>
+      </section>
       <div
         className={css({
           display: "flex",
@@ -208,6 +211,7 @@ export const TabsProjects = () => {
           <Plus size={16} />
         </button>
       </div>
+      <Profile />
     </header>
   );
 };
