@@ -226,6 +226,141 @@ export const MOVE_SHAPES_BY_ID = atom(null, (get, set, args: string) => {
   });
 });
 
+export const GROUP_SHAPES_IN_LAYOUT = atom(null, (get, set) => {
+  const PLANE_SHAPES = get(PLANE_SHAPES_ATOM);
+  const SELECTED = get(SHAPE_IDS_ATOM);
+
+  if (SELECTED.length === 0) return;
+
+  const selectedShapes = PLANE_SHAPES.filter((w) =>
+    SELECTED.some((e) => e.id === w.id)
+  );
+
+  // Verificar que todos tengan el mismo parentId
+  const firstParentId = get(selectedShapes[0].state).parentId;
+  const allHaveSameParent = selectedShapes.every(
+    (shape) => get(shape.state).parentId === firstParentId
+  );
+
+  if (!allHaveSameParent) return;
+
+  // Calcular el bounding box de todos los elementos seleccionados
+  let minX = Infinity,
+    minY = Infinity,
+    maxX = -Infinity,
+    maxY = -Infinity;
+
+  selectedShapes.forEach((shape) => {
+    const state = get(shape.state);
+    const x1 = state.x;
+    const y1 = state.y;
+    const x2 = x1 + (state.width || 0);
+    const y2 = y1 + (state.height || 0);
+
+    minX = Math.min(minX, x1);
+    minY = Math.min(minY, y1);
+    maxX = Math.max(maxX, x2);
+    maxY = Math.max(maxY, y2);
+  });
+
+  const layoutWidth = maxX - minX;
+  const layoutHeight = maxY - minY;
+
+  // Crear el nuevo elemento layout
+  const newLayoutId = uuidv4();
+  const newLayout = CreateShapeSchema({
+    tool: "FRAME",
+    x: minX,
+    y: minY,
+    width: layoutWidth,
+    height: layoutHeight,
+    id: newLayoutId,
+    label: "Layout",
+    isLayout: true,
+    parentId: firstParentId,
+  });
+
+  // Clonar shapes y ajustar posiciones relativas al nuevo layout
+  const cloneShapeRecursive = (
+    shape: ALL_SHAPES,
+    parentId: string
+  ): ALL_SHAPES => {
+    const state = get(shape.state);
+    return {
+      id: shape.id,
+      tool: shape.tool,
+      state: atom<IShape>({
+        ...state,
+        x: state.x - minX,
+        y: state.y - minY,
+        parentId,
+        children: atom(
+          get(state.children).map((c) => cloneShapeRecursive(c, shape.id))
+        ),
+      }),
+    };
+  };
+
+  const clonedChildren = selectedShapes.map((s) =>
+    cloneShapeRecursive(s, newLayoutId)
+  );
+
+  // Crear el nuevo elemento layout con los hijos
+  // const newLayoutShape: ALL_SHAPES = {
+  //   id: newLayoutId,
+  //   tool: "FRAME",
+  //   state: atom<IShape>({
+  //     ...newLayout,
+  //     children: atom(clonedChildren),
+  //   }),
+  // };
+  const newLayoutShape: ALL_SHAPES = {
+    id: newLayoutId,
+    tool: "FRAME",
+    state: atom<IShape>({
+      ...newLayout,
+      children: atom(clonedChildren),
+    }),
+  };
+
+  // Si tienen parent, agregar al parent. Si no, agregar al root
+  if (firstParentId) {
+    const parentShape = PLANE_SHAPES.find((s) => s.id === firstParentId);
+    if (!parentShape) return;
+
+    // Remover los elementos seleccionados del parent
+    const filteredChildren = get(get(parentShape.state).children).filter(
+      (child) => !SELECTED.some((sel) => sel.id === child.id)
+    );
+
+    // Agregar el nuevo layout al parent
+    set(parentShape.state, {
+      ...get(parentShape.state),
+      children: atom([...filteredChildren, newLayoutShape]),
+    });
+  } else {
+    // Remover elementos seleccionados del root
+    set(
+      ALL_SHAPES_ATOM,
+      get(ALL_SHAPES_ATOM).filter(
+        (s) => !SELECTED.some((sel) => sel.id === s.id)
+      )
+    );
+
+    // Agregar el nuevo layout al root
+    set(ALL_SHAPES_ATOM, [...get(ALL_SHAPES_ATOM), newLayoutShape]);
+  }
+
+  // Actualizar selección al nuevo layout
+  set(RESET_SHAPES_IDS_ATOM);
+  set(UPDATE_SHAPES_IDS_ATOM, [{ id: newLayoutId, parentId: firstParentId }]);
+
+  // Registrar para undo/redo
+  set(NEW_UNDO_REDO, {
+    type: "CREATE",
+    shapes: [newLayoutShape],
+  });
+});
 export const MOVE_SHAPES_TO_ROOT = atom(null, (get, set) => {
   const PLANE_SHAPES = get(PLANE_SHAPES_ATOM);
   const SELECTED = get(SHAPE_IDS_ATOM);
