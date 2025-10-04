@@ -170,6 +170,21 @@ const PxStage: FC<Props> = ({ children }) => {
     }
   }, [, stageRef, config.expand_stage]);
 
+  useEffect(() => {
+    const container = containerRef.current;
+    const stage = stageRef.current;
+    if (!container || !stage) return;
+
+    // Esperar a que el layout se calcule
+    requestAnimationFrame(() => {
+      const scrollX = (container.scrollWidth - container.clientWidth) / 2;
+      const scrollY = (container.scrollHeight - container.clientHeight) / 2;
+
+      container.scrollLeft = scrollX;
+      container.scrollTop = scrollY;
+    });
+  }, [config.expand_stage, dimension]);
+
   const cursorByEvent: { [key in IStageEvents]: string } = {
     CREATE: "custom-cursor-crosshair",
     COPY: "custom-cursor-arrow-duplicate",
