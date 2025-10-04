@@ -73,6 +73,8 @@ export const DELETE_SHAPES_ATOM = atom(null, (get, set) => {
       const FIND_SHAPE = currentShapes.find((w) => w.id === element.parentId);
 
       if (!FIND_SHAPE) continue;
+      set(flexLayoutAtom, { id: FIND_SHAPE.id }); // aplicar layout si es flex
+
       set(FIND_SHAPE.state, {
         ...get(FIND_SHAPE.state),
         children: atom(
