@@ -22,14 +22,13 @@ export const useAutoSave = () => {
         pixelRatio: 1,
       });
 
-      const PAYLOAD: Pick<IProject, "_id" | "name" | "previewUrl"> = {
+      const PAYLOAD: Pick<IProject, "_id" | "name" | "previewUrl" | "data"> = {
         _id: JSON_.projectId,
-        // data: JSON_.data,
+        data: JSON_.data,
         name: JSON_.projectName,
         previewUrl: previewUrl ?? JSON_?.previewUrl ?? "./placeholder.svg",
       };
-      updateProject({ ...PAYLOAD, data: JSON_.data });
-      return PAYLOAD;
+      updateProject(PAYLOAD);
     },
     onSuccess: () => {
       toast.success("Project auto-saved");

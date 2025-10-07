@@ -21,7 +21,7 @@ const PxStage: FC<Props> = ({ children }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const stageRef = useRef<Konva.Stage>(null);
   const [tool, setTool] = useAtom(TOOL_ATOM);
-  const [pause, setPause] = useAtom(PAUSE_MODE_ATOM);
+  const setPause = useSetAtom(PAUSE_MODE_ATOM);
   const { config } = useConfiguration(); // ✅ Ahora usamos config.expand2K
   const event = useAtomValue(EVENT_ATOM);
   const resetShapesIds = useSetAtom(RESET_SHAPES_IDS_ATOM);
