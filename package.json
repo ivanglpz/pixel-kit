@@ -36,7 +36,7 @@
     "jotai-tanstack-query": "0.11.0",
     "js-cookie": "3.0.5",
     "jsonwebtoken": "9.0.2",
-    "konva": "10.0.2",
+    "konva": "9.3.22",
     "lucide-react": "0.525.0",
     "lucide-static": "0.541.0",
     "mongoose": "8.19.1",
