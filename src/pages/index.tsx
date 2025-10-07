@@ -15,5 +15,13 @@ const PageEditor: NextOnlyPage = () => {
     </>
   );
 };
-
+// Redirección con SSR hacia /app
+export const getServerSideProps = async () => {
+  return {
+    redirect: {
+      destination: "/app",
+      permanent: false, // cambiar a true si quieres que sea redirección permanente
+    },
+  };
+};
 export default PageEditor;
