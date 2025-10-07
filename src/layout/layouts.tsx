@@ -23,44 +23,7 @@ const App: React.FC<LayoutProps> = ({ children }) => (
     })}
   >
     <TabsProjects />
-    <div className="grid grid-cols-1 h-full overflow-hidden">
-      {/* <aside
-        className={css({
-          padding: "lg",
-          backgroundColor: "bg",
-          borderRightWidth: "1px",
-          borderRightStyle: "solid",
-          borderRightColor: "border", // ← usa el semantic token
-          display: "flex",
-          flexDirection: "column",
-          gap: "lg",
-        })}
-      >
-        <Profile />
-        <Link
-          href={"/app/organizations"}
-          className={css({
-            paddingLeft: "sm",
-            paddingTop: "sm",
-            display: "flex",
-            flexDirection: "row",
-            alignItems: "center",
-            gap: "lg",
-          })}
-        >
-          <Building size={18} />
-          <p
-            className={css({
-              fontSize: "sm",
-              fontWeight: "600",
-            })}
-          >
-            Organizations
-          </p>
-        </Link>
-      </aside> */}
-      {children}
-    </div>
+    <div className="grid grid-cols-1 h-full overflow-hidden">{children}</div>
   </header>
 );
 const Editor: React.FC<LayoutProps> = ({ children }) => (
