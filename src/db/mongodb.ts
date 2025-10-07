@@ -12,6 +12,6 @@ export const DB_CONNECT = async (): Promise<void> => {
 
     console.log("DATABASE MONGO CONNECTED SUCCESSFULLY.");
   } catch (error) {
-    process.exit(1); // Exit process with failure
+    process.exit(1);
   }
 };
