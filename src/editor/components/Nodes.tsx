@@ -1,4 +1,4 @@
-import { iconsWithTools } from "@/assets";
+import { iconsWithTools } from "@/editor/icons/tool-icons";
 import { css } from "@stylespixelkit/css";
 import { DragControls, Reorder, useDragControls } from "framer-motion";
 import { useAtom, useSetAtom } from "jotai";

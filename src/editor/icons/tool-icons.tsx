@@ -15,7 +15,7 @@ import {
 
 const size = 14;
 
-const icons = {
+export const icons = {
   cursor: (
     <MousePointer2
       size={size}
@@ -248,4 +248,3 @@ export const iconsWithTools: { [key in IShapesKeys]: JSX.Element } = {
   // LINE: icons.line,
   // CLIP: icons.clip,
 };
-export default icons;
