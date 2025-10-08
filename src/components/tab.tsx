@@ -21,7 +21,7 @@ export const Tab = ({ project, onClick, onDelete, isSelected }: TabProps) => {
   const { debounce } = useAutoSave();
 
   return (
-    <button
+    <div
       className={css({
         display: "grid",
         gridTemplateColumns: "20px 1fr 20px",
@@ -110,6 +110,6 @@ export const Tab = ({ project, onClick, onDelete, isSelected }: TabProps) => {
           <X size={16} />
         </button>
       </div>
-    </button>
+    </div>
   );
 };
