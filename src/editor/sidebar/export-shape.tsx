@@ -68,7 +68,6 @@ export const ExportShape = () => {
   const [showExportDialog, setShowExportDialog] = useState(false);
 
   const stageRef = useRef<Konva.Stage>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
 
   const handleExport = () => {
     toast.success("Thank you very much for using pixel kit!", {

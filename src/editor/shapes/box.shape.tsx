@@ -2,8 +2,9 @@ import { PrimitiveAtom, useAtom, useSetAtom } from "jotai";
 import { Rect } from "react-konva";
 import { useConfiguration } from "../hooks/useConfiguration";
 import { SHAPE_IDS_ATOM } from "../states/shape";
-import { coordinatesShapeMove, shapeEventDragMove } from "./events.shape";
+import { shapeEventDragMove } from "./events.shape";
 import { flexLayoutAtom } from "./layout-flex";
+import { TransformDimension } from "./transform";
 import { IShape, IShapeWithEvents, WithInitialValue } from "./type.shape";
 
 // eslint-disable-next-line react/display-name
@@ -97,24 +98,12 @@ const ShapeBox = ({ shape: item }: IShapeWithEvents) => {
           applyLayout({ id: box.parentId });
         }}
         onTransform={(e) => {
-          const scaleX = e.target.scaleX();
-          const scaleY = e.target.scaleY();
-          e.target.scaleX(1);
-          e.target.scaleY(1);
-          const payload = coordinatesShapeMove(
+          const dimension = TransformDimension(
+            e,
             box,
-            Number(config.expand_stage_resolution?.width),
-            Number(config.expand_stage_resolution?.height),
-            e
+            config.expand_stage_resolution
           );
-
-          setBox({
-            ...payload,
-            rotation: e.target.rotation(),
-            width: Math.max(5, e.target.width() * scaleX),
-            height: Math.max(e.target.height() * scaleY),
-          });
-
+          setBox(dimension);
           if (box?.parentId) {
             applyLayout({ id: box.parentId });
           }
