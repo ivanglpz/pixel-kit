@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import icons from "@/assets";
+import { icons } from "@/editor/icons/tool-icons";
 import { atom } from "jotai";
 import { IStageEvents } from "../states/event";
 import { PROJECT_ATOM } from "../states/projects";
