@@ -117,6 +117,9 @@ export const ShapeDraw = ({ shape: item }: IShapeWithEvents) => {
             width: Math.max(5, e.target.width() * scaleX),
             height: Math.max(e.target.height() * scaleY),
           });
+          if (box?.parentId) {
+            applyLayout({ id: box.parentId });
+          }
         }}
       />
     </>

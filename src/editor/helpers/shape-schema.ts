@@ -111,9 +111,5 @@ export const UpdateShapeDimension = (
     ...element,
     width: isHeight,
     height: isWidth,
-    // borderRadius:
-    //   element?.tool === "CIRCLE"
-    //     ? isNotNegative(Number(element?.width) / 2)
-    //     : 0,
   });
 };
