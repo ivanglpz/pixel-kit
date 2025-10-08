@@ -18,14 +18,14 @@ export const Tools = () => {
         alignItems: "center",
       })}
     >
-      {config.tools?.map((item, index) => {
+      {config.tools?.map((item) => {
         const isSelected = item?.keyMethod === tool;
 
         return (
           <button
             key={`sidebar-methods-key-${item.keyMethod}`}
             className={`${css({
-              backgroundColor: isSelected ? "primary" : "",
+              backgroundColor: isSelected ? "primary" : "transparent",
               borderRadius: "6px",
               width: "30px",
               height: "30px",

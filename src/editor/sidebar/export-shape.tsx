@@ -7,58 +7,19 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { Layer, Stage as StageContainer } from "react-konva";
 import { toast } from "sonner";
-import { v4 as uuidv4 } from "uuid";
 import { Button } from "../components/button";
 import { Dialog } from "../components/dialog";
 import { Input } from "../components/input";
 import { Loading } from "../components/loading";
 import { constants } from "../constants/color";
+import { formats } from "../constants/formats";
+import { stagePreview } from "../constants/stage-preview";
 import { Shapes } from "../shapes/shapes";
-import { FCShapeWEvents, IShape } from "../shapes/type.shape";
+import { FCShapeWEvents } from "../shapes/type.shape";
 import { typeExportAtom } from "../states/export";
 import { SHAPE_SELECTED_ATOM } from "../states/shape";
-
-const formats = {
-  LOW: 0.8,
-  MEDIUM: 1,
-  HIGH: 1.8,
-  BIG_HIGH: 2.6,
-  ULTRA_HIGH: 3.5,
-};
-
-const stageWidth = 210;
-const stageHeight = 210;
-
-function downloadBase64Image(base64: string) {
-  const link = document.createElement("a");
-  link.download = `pixel-kit-edition-${uuidv4().slice(0, 4)}.jpg`;
-  link.href = base64;
-  document.body.appendChild(link);
-  link.click();
-  link.remove();
-}
-
-function computeStageTransform(shape: IShape | null) {
-  const contentWidth = Number(shape?.width) || 0;
-  const contentHeight = Number(shape?.height) || 0;
-  if (!contentWidth || !contentHeight)
-    return { scale: 1, offsetX: 0, offsetY: 0 };
-
-  const scale = Math.min(
-    stageWidth / contentWidth,
-    stageHeight / contentHeight
-  );
-  const offsetX = (stageWidth - contentWidth * scale) / 2;
-  const offsetY = (stageHeight - contentHeight * scale) / 2;
-
-  return {
-    scale,
-    offsetX,
-    offsetY,
-    width: contentWidth * scale,
-    height: contentHeight * scale,
-  };
-}
+import { downloadBase64Image } from "../utils/downloadBase64";
+import { computeStageTransform } from "../utils/stageTransform";
 
 export const ExportShape = () => {
   const { config } = useConfiguration();
@@ -87,7 +48,10 @@ export const ExportShape = () => {
 
     setLoading(true);
 
-    const { offsetX, offsetY, width, height } = computeStageTransform(shape);
+    const { offsetX, offsetY, width, height } = computeStageTransform({
+      width: shape?.width || 0,
+      height: shape?.height || 0,
+    });
     const image = stageRef.current?.toDataURL({
       quality: 1,
       pixelRatio: formats[format as keyof typeof formats],
@@ -106,8 +70,8 @@ export const ExportShape = () => {
     const stage = stageRef.current;
     const { scale, offsetX, offsetY } = computeStageTransform(shape);
 
-    stage.width(stageWidth);
-    stage.height(stageHeight);
+    stage.width(stagePreview.width);
+    stage.height(stagePreview.height);
     stage.scale({ x: scale, y: scale });
     stage.position({ x: offsetX, y: offsetY });
     stage.batchDraw();
@@ -183,8 +147,8 @@ export const ExportShape = () => {
       <StageContainer
         id="preview-shape"
         ref={stageRef}
-        width={stageWidth}
-        height={stageHeight}
+        width={stagePreview.width}
+        height={stagePreview.height}
         listening={false}
         className={css({
           backgroundColor: "gray.100",

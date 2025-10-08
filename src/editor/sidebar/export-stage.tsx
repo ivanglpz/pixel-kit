@@ -7,59 +7,21 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { Layer, Rect, Stage as StageContainer } from "react-konva";
 import { toast } from "sonner";
-import { v4 as uuidv4 } from "uuid";
 import { Button } from "../components/button";
 import { Dialog } from "../components/dialog";
 import { Input } from "../components/input";
 import { Loading } from "../components/loading";
 import { constants } from "../constants/color";
+import { formats } from "../constants/formats";
+import { stagePreview } from "../constants/stage-preview";
 import { useReference } from "../hooks/useReference";
 import { Shapes } from "../shapes/shapes";
 import STAGE_CANVAS_BACKGROUND from "../states/canvas";
 import { typeExportAtom } from "../states/export";
 import ALL_SHAPES_ATOM from "../states/shapes";
+import { downloadBase64Image } from "../utils/downloadBase64";
+import { computeStageTransform } from "../utils/stageTransform";
 
-const formats = {
-  LOW: 0.8,
-  MEDIUM: 1,
-  HIGH: 1.8,
-  BIG_HIGH: 2.6,
-  ULTRA_HIGH: 3.5,
-};
-
-function downloadBase64Image(base64: string) {
-  const link = document.createElement("a");
-  link.download = `pixel-kit-edition-${uuidv4().slice(0, 4)}.jpg`;
-  link.href = base64;
-  document.body.appendChild(link);
-  link.click();
-  link.remove();
-}
-
-function computeStageTransform(config: { width: number; height: number }) {
-  const contentWidth = Number(config?.width) || 0;
-  const contentHeight = Number(config?.height) || 0;
-  if (!contentWidth || !contentHeight)
-    return { scale: 1, offsetX: 0, offsetY: 0 };
-
-  const scale = Math.min(
-    stageWidth / contentWidth,
-    stageHeight / contentHeight
-  );
-  const offsetX = (stageWidth - contentWidth * scale) / 2;
-  const offsetY = (stageHeight - contentHeight * scale) / 2;
-
-  return {
-    scale,
-    offsetX,
-    offsetY,
-    width: contentWidth * scale,
-    height: contentHeight * scale,
-  };
-}
-
-const stageWidth = 210;
-const stageHeight = 210;
 export const ExportStage = () => {
   const ALL_SHAPES = useAtomValue(ALL_SHAPES_ATOM);
   const [showExportDialog, setShowExportDialog] = useState(false);
@@ -117,8 +79,8 @@ export const ExportStage = () => {
       config.expand_stage_resolution
     );
 
-    stage.width(stageWidth);
-    stage.height(stageHeight);
+    stage.width(stagePreview.width);
+    stage.height(stagePreview.height);
     stage.scale({ x: scale, y: scale });
     stage.position({ x: offsetX, y: offsetY });
     stage.batchDraw();
@@ -200,8 +162,8 @@ export const ExportStage = () => {
       <StageContainer
         id="preview-stage"
         ref={stageRef}
-        width={stageWidth}
-        height={stageHeight}
+        width={stagePreview.width}
+        height={stagePreview.height}
         listening={false}
         className={css({
           backgroundColor: "gray.100",
