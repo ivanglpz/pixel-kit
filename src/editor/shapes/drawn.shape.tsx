@@ -7,8 +7,9 @@ import { IShape, IShapeWithEvents, WithInitialValue } from "./type.shape";
 import { SHAPE_IDS_ATOM } from "../states/shape";
 
 import { useConfiguration } from "../hooks/useConfiguration";
-import { coordinatesShapeMove, shapeEventDragMove } from "./events.shape";
+import { shapeEventDragMove } from "./events.shape";
 import { flexLayoutAtom } from "./layout-flex";
+import { TransformDimension } from "./transform";
 
 export const ShapeDraw = ({ shape: item }: IShapeWithEvents) => {
   const [box, setBox] = useAtom(
@@ -100,23 +101,13 @@ export const ShapeDraw = ({ shape: item }: IShapeWithEvents) => {
           applyLayout({ id: box.parentId });
         }}
         onTransform={(e) => {
-          const scaleX = e.target.scaleX();
-          const scaleY = e.target.scaleY();
-          e.target.scaleX(1);
-          e.target.scaleY(1);
-          const payload = coordinatesShapeMove(
+          const dimension = TransformDimension(
+            e,
             box,
-            Number(config.expand_stage_resolution?.width),
-            Number(config.expand_stage_resolution?.height),
-            e
+            config.expand_stage_resolution
           );
+          setBox(dimension);
 
-          setBox({
-            ...payload,
-            rotation: e.target.rotation(),
-            width: Math.max(5, e.target.width() * scaleX),
-            height: Math.max(e.target.height() * scaleY),
-          });
           if (box?.parentId) {
             applyLayout({ id: box.parentId });
           }

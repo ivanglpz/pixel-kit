@@ -7,7 +7,7 @@ import { IKeyTool } from "../states/tool";
 
 export type MODE = "DESIGN_MODE";
 
-type Config = {
+export type Config = {
   show_layer_image: boolean;
   export_mode: MODE;
   mode: MODE;
