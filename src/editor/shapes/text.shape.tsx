@@ -111,6 +111,8 @@ export const ShapeText = (props: IShapeWithEvents) => {
             config.expand_stage_resolution
           );
           setBox(dimension);
+        }}
+        onTransformEnd={() => {
           if (box?.parentId) {
             applyLayout({ id: box.parentId });
           }
