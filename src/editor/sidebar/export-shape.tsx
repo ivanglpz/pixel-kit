@@ -1,10 +1,9 @@
 import { useConfiguration } from "@/editor/hooks/useConfiguration";
 import { css } from "@stylespixelkit/css";
 import { atom, useAtom, useAtomValue } from "jotai";
-import Konva from "konva";
 import { File } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { Layer, Stage as StageContainer } from "react-konva";
 import { toast } from "sonner";
 import { Button } from "../components/button";
@@ -14,6 +13,7 @@ import { Loading } from "../components/loading";
 import { constants } from "../constants/color";
 import { formats } from "../constants/formats";
 import { stagePreview } from "../constants/stage-preview";
+import { useStagePreview } from "../hooks/useStagePreview";
 import { Shapes } from "../shapes/shapes";
 import { FCShapeWEvents } from "../shapes/type.shape";
 import { typeExportAtom } from "../states/export";
@@ -28,7 +28,10 @@ export const ExportShape = () => {
   const [format, setFormat] = useAtom(typeExportAtom);
   const [showExportDialog, setShowExportDialog] = useState(false);
 
-  const stageRef = useRef<Konva.Stage>(null);
+  const { stageRef } = useStagePreview({
+    width: shape?.width || 0,
+    height: shape?.height || 0,
+  });
 
   const handleExport = () => {
     toast.success("Thank you very much for using pixel kit!", {
@@ -64,18 +67,6 @@ export const ExportShape = () => {
     if (image) downloadBase64Image(image);
     setLoading(false);
   };
-
-  useEffect(() => {
-    if (!stageRef.current || !shape) return;
-    const stage = stageRef.current;
-    const { scale, offsetX, offsetY } = computeStageTransform(shape);
-
-    stage.width(stagePreview.width);
-    stage.height(stagePreview.height);
-    stage.scale({ x: scale, y: scale });
-    stage.position({ x: offsetX, y: offsetY });
-    stage.batchDraw();
-  }, [config.export_mode, shape]);
 
   return (
     <>

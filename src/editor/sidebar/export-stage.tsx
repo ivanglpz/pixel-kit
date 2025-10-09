@@ -1,10 +1,9 @@
 import { useConfiguration } from "@/editor/hooks/useConfiguration";
 import { css } from "@stylespixelkit/css";
 import { useAtom, useAtomValue } from "jotai";
-import Konva from "konva";
 import { File } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { Layer, Rect, Stage as StageContainer } from "react-konva";
 import { toast } from "sonner";
 import { Button } from "../components/button";
@@ -15,6 +14,7 @@ import { constants } from "../constants/color";
 import { formats } from "../constants/formats";
 import { stagePreview } from "../constants/stage-preview";
 import { useReference } from "../hooks/useReference";
+import { useStagePreview } from "../hooks/useStagePreview";
 import { Shapes } from "../shapes/shapes";
 import STAGE_CANVAS_BACKGROUND from "../states/canvas";
 import { typeExportAtom } from "../states/export";
@@ -30,7 +30,7 @@ export const ExportStage = () => {
   const [format, setFormat] = useAtom(typeExportAtom);
   const background = useAtomValue(STAGE_CANVAS_BACKGROUND);
 
-  const stageRef = useRef<Konva.Stage>(null);
+  const { stageRef } = useStagePreview();
 
   const { handleSetRef } = useReference({
     type: "STAGE_PREVIEW",
@@ -71,20 +71,6 @@ export const ExportStage = () => {
     if (image) downloadBase64Image(image);
     setLoading(false);
   };
-
-  useEffect(() => {
-    if (!stageRef.current || !config.expand_stage_resolution) return;
-    const stage = stageRef.current;
-    const { scale, offsetX, offsetY } = computeStageTransform(
-      config.expand_stage_resolution
-    );
-
-    stage.width(stagePreview.width);
-    stage.height(stagePreview.height);
-    stage.scale({ x: scale, y: scale });
-    stage.position({ x: offsetX, y: offsetY });
-    stage.batchDraw();
-  }, [config.export_mode, ALL_SHAPES]);
 
   useEffect(() => {
     if (stageRef?.current) {
