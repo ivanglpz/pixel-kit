@@ -28,20 +28,20 @@ export const coordinatesShapeMove = (
 
   const newPos: IShape = { ...prev, x, y };
 
-  if (box.x < 0) {
-    newPos.x = x - box.x;
-  }
-  if (box.y < 0) {
-    newPos.y = y - box.y;
-  }
-  if (box.x + (box.width ?? 0) > stageWidth) {
-    newPos.x = x - (box.x + box.width - stageWidth);
-  }
-  if (box.y + (box.height ?? 0) > stageHeight) {
-    newPos.y = y - (box.y + box.height - stageHeight);
-  }
+  // if (box.x < 0) {
+  //   newPos.x = x - box.x;
+  // }
+  // if (box.y < 0) {
+  //   newPos.y = y - box.y;
+  // }
+  // if (box.x + (box.width ?? 0) > stageWidth) {
+  //   newPos.x = x - (box.x + box.width - stageWidth);
+  // }
+  // if (box.y + (box.height ?? 0) > stageHeight) {
+  //   newPos.y = y - (box.y + box.height - stageHeight);
+  // }
 
-  shape.setPosition({ x: newPos.x, y: newPos.y });
+  // shape.setPosition({ x: newPos.x, y: newPos.y });
   return newPos;
 };
 
