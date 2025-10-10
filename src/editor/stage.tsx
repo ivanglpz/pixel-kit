@@ -11,6 +11,7 @@ import { useReference } from "./hooks/useReference";
 import { Tools } from "./sidebar/Tools";
 import STAGE_CANVAS_BACKGROUND from "./states/canvas";
 import { EVENT_ATOM, IStageEvents } from "./states/event";
+import { MOVING_MOUSE_BUTTON_ATOM } from "./states/moving";
 import { RESET_SHAPES_IDS_ATOM } from "./states/shape";
 import TOOL_ATOM, { PAUSE_MODE_ATOM } from "./states/tool";
 
@@ -28,7 +29,7 @@ const PxStage: FC<Props> = ({ children }) => {
   const event = useAtomValue(EVENT_ATOM);
   const resetShapesIds = useSetAtom(RESET_SHAPES_IDS_ATOM);
   const background = useAtomValue(STAGE_CANVAS_BACKGROUND);
-
+  const MOVING = useAtomValue(MOVING_MOUSE_BUTTON_ATOM);
   const { config } = useConfiguration();
   const { handleMouseDown, handleMouseUp, handleMouseMove } = useEventStage();
   const { handleSetRef } = useReference({ type: "STAGE", ref: stageRef });
@@ -151,6 +152,7 @@ const PxStage: FC<Props> = ({ children }) => {
         <Stage
           id="pixel-kit-stage"
           ref={stageRef}
+          draggable={MOVING}
           width={containerSize.width}
           height={containerSize.height}
           onMouseDown={handleMouseDown}

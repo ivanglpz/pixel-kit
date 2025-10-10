@@ -4,7 +4,6 @@ import TOOL_ATOM, { IKeyTool, PAUSE_MODE_ATOM } from "@/editor/states/tool";
 import { uploadPhoto } from "@/services/photo";
 import { useMutation } from "@tanstack/react-query";
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
-import Konva from "konva";
 import { KonvaEventObject } from "konva/lib/Node";
 import { useEffect } from "react";
 import { toast } from "sonner";
@@ -13,6 +12,7 @@ import stageAbsolutePosition from "../helpers/position";
 import { CreateShapeSchema } from "../helpers/shape-schema";
 import { CLEAR_CURRENT_ITEM_ATOM } from "../states/currentItem";
 import { EVENT_ATOM } from "../states/event";
+import { MOVING_MOUSE_BUTTON_ATOM } from "../states/moving";
 import { PROJECT_ID_ATOM } from "../states/projects";
 import { RECTANGLE_SELECTION_ATOM } from "../states/rectangle-selection";
 import { SHAPE_IDS_ATOM, UPDATE_SHAPES_IDS_ATOM } from "../states/shape";
@@ -34,12 +34,18 @@ import { useReference } from "./useReference";
 
 // ===== CONSTANTS =====
 
+const MOUSE = {
+  LEFT: 0,
+  WHEEL: 1,
+  RIGHT: 2,
+};
+
 export const useEventStage = () => {
   // ===== STATE HOOKS =====
   const [tool, setTool] = useAtom(TOOL_ATOM);
   const shapeId = useAtomValue(SHAPE_IDS_ATOM);
   const [EVENT_STAGE, SET_EVENT_STAGE] = useAtom(EVENT_ATOM);
-
+  const SET_MOVING = useSetAtom(MOVING_MOUSE_BUTTON_ATOM);
   // ===== READ-ONLY STATE =====
   const PAUSE = useAtomValue(PAUSE_MODE_ATOM);
 
@@ -65,97 +71,88 @@ export const useEventStage = () => {
 
   // ===== MOUSE EVENT HANDLERS =====
   const handleMouseDown = (event: KonvaEventObject<MouseEvent>) => {
+    const mouse_button = event.evt.button;
     const { x, y } = stageAbsolutePosition(event);
 
-    if (
-      EVENT_STAGE === "IDLE" &&
-      [null, undefined, "main-image-render-stage", "pixel-kit-stage"].includes(
-        event.target?.attrs?.id
-      ) &&
-      tool === "MOVE" &&
-      shapeId?.length === 0
-    ) {
-      setSelection({
-        x,
-        y,
-        width: 0,
-        height: 0,
-        visible: true,
-      });
-    }
-
-    if (EVENT_STAGE === "CREATE") {
-      SET_EVENT_DOWN({ x, y });
-    }
-    if (EVENT_STAGE === "COPY") {
-      SET_EVENT_DOWN_COPY({ x, y });
+    if (mouse_button === MOUSE.LEFT) {
+      if (EVENT_STAGE === "CREATE") {
+        SET_EVENT_DOWN({ x, y });
+      }
+      if (EVENT_STAGE === "COPY") {
+        SET_EVENT_DOWN_COPY({ x, y });
+      }
+      SET_MOVING(false);
     }
   };
 
   const handleMouseMove = (event: KonvaEventObject<MouseEvent>) => {
+    const mouse_button = event.evt.button;
     const { x, y } = stageAbsolutePosition(event);
 
-    if (
-      selection.visible &&
-      EVENT_STAGE === "IDLE" &&
-      tool === "MOVE" &&
-      shapeId?.length === 0
-    ) {
-      setSelection({
-        x: Math.min(selection.x, x),
-        y: Math.min(selection.y, y),
-        width: Math.abs(x - selection.x),
-        height: Math.abs(y - selection.y),
-        visible: true,
-      });
+    if (mouse_button === MOUSE.LEFT) {
+      if (EVENT_STAGE === "CREATING") {
+        SET_EVENT_MOVING_SHAPE({ x, y });
+      }
+      if (EVENT_STAGE === "COPYING") {
+        SET_EVENT_COPYING({ x, y });
+      }
     }
 
-    if (EVENT_STAGE === "CREATING") {
-      SET_EVENT_MOVING_SHAPE({ x, y });
-    }
-    if (EVENT_STAGE === "COPYING") {
-      SET_EVENT_COPYING({ x, y });
-    }
+    // if (
+    //   selection.visible &&
+    //   EVENT_STAGE === "IDLE" &&
+    //   tool === "MOVE" &&
+    //   shapeId?.length === 0
+    // ) {
+    //   setSelection({
+    //     x: Math.min(selection.x, x),
+    //     y: Math.min(selection.y, y),
+    //     width: Math.abs(x - selection.x),
+    //     height: Math.abs(y - selection.y),
+    //     visible: true,
+    //   });
+    // }
   };
 
-  const handleMouseUp = async () => {
-    if (selection.visible && EVENT_STAGE === "IDLE" && tool === "MOVE") {
-      const childrens = Stage?.current?.getStage?.()?.children;
+  const handleMouseUp = async (event: KonvaEventObject<MouseEvent>) => {
+    // if (selection.visible && EVENT_STAGE === "IDLE" && tool === "MOVE") {
+    //   const childrens = Stage?.current?.getStage?.()?.children;
 
-      if (!childrens) return;
-      const layer = childrens?.find((e) => e?.attrs?.id === "layer-shapes");
-      const nodes = layer?.children?.filter?.(
-        (child) =>
-          child?.attrs?.id !== "transformer-editable" && child?.attrs?.listening
-      );
-      if (!nodes) return;
-      const selected = nodes.filter((shape) =>
-        Konva.Util.haveIntersection(selection, shape.getClientRect())
-      );
+    //   if (!childrens) return;
+    //   const layer = childrens?.find((e) => e?.attrs?.id === "layer-shapes");
+    //   const nodes = layer?.children?.filter?.(
+    //     (child) =>
+    //       child?.attrs?.id !== "transformer-editable" && child?.attrs?.listening
+    //   );
+    //   if (!nodes) return;
+    //   const selected = nodes.filter((shape) =>
+    //     Konva.Util.haveIntersection(selection, shape.getClientRect())
+    //   );
 
-      setTimeout(() => {
-        SET_UPDATE_SHAPES_IDS(
-          selected
-            ?.map((e) => ({
-              id: e?.attrs?.id,
-              parentId: e?.attrs?.parentId,
-            }))
-            ?.filter((e) => typeof e?.id === "string")
-        );
-        setSelection({
-          x: 0,
-          y: 0,
-          width: 0,
-          height: 0,
-          visible: false,
-        });
-      }, 10);
-    }
+    //   setTimeout(() => {
+    //     SET_UPDATE_SHAPES_IDS(
+    //       selected
+    //         ?.map((e) => ({
+    //           id: e?.attrs?.id,
+    //           parentId: e?.attrs?.parentId,
+    //         }))
+    //         ?.filter((e) => typeof e?.id === "string")
+    //     );
+    //     setSelection({
+    //       x: 0,
+    //       y: 0,
+    //       width: 0,
+    //       height: 0,
+    //       visible: false,
+    //     });
+    //   }, 10);
+    // }
 
     if (EVENT_STAGE === "CREATING" || EVENT_STAGE === "COPYING") {
       SET_EVENT_UP();
       debounce.execute();
     }
+    SET_MOVING(true);
   };
 
   // ===== UTILITY FUNCTIONS =====
@@ -401,6 +398,7 @@ export const useEventStage = () => {
 
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
+      document.removeEventListener("keyup", handleKeyUp);
       document.removeEventListener("paste", handlePaste);
     };
   }, [tool, shapeId, config.tools, PAUSE]);
