@@ -3,7 +3,7 @@ import { css } from "@stylespixelkit/css";
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import Konva from "konva";
 import { KonvaEventObject } from "konva/lib/Node";
-import { FC, ReactNode, useEffect, useRef, useState } from "react";
+import { ReactNode, useEffect, useRef, useState } from "react";
 import { Stage } from "react-konva";
 import { useConfiguration } from "./hooks/useConfiguration";
 import { useEventStage } from "./hooks/useEventStage";
@@ -15,11 +15,16 @@ import { MOVING_MOUSE_BUTTON_ATOM } from "./states/moving";
 import { RESET_SHAPES_IDS_ATOM } from "./states/shape";
 import TOOL_ATOM, { PAUSE_MODE_ATOM } from "./states/tool";
 
-type Props = {
-  children: ReactNode;
+const cursorByEvent: Record<IStageEvents, string> = {
+  CREATE: "custom-cursor-crosshair",
+  COPY: "custom-cursor-arrow-duplicate",
+  COPYING: "custom-cursor-arrow-duplicate",
+  CREATING: "custom-cursor-crosshair",
+  IDLE: "CursorDefault",
+  MULTI_SELECT: "CursorDefault",
 };
 
-const PxStage: FC<Props> = ({ children }) => {
+const PxStage = ({ children }: { children: ReactNode }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const stageRef = useRef<Konva.Stage>(null);
   const [containerSize, setContainerSize] = useState({ width: 0, height: 0 });
@@ -116,15 +121,6 @@ const PxStage: FC<Props> = ({ children }) => {
       handleSetRef({ type: "STAGE", ref: stageRef });
     }
   }, [stageRef]);
-
-  const cursorByEvent: Record<IStageEvents, string> = {
-    CREATE: "custom-cursor-crosshair",
-    COPY: "custom-cursor-arrow-duplicate",
-    COPYING: "custom-cursor-arrow-duplicate",
-    CREATING: "custom-cursor-crosshair",
-    IDLE: "CursorDefault",
-    MULTI_SELECT: "CursorDefault",
-  };
 
   return (
     <section
