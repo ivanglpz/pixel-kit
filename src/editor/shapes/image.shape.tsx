@@ -63,10 +63,11 @@ export const ShapeImage = (props: IShapeWithEvents) => {
   );
 
   // Extraer relleno de tipo imagen
-  const fill = box.fills
-    ?.filter((e) => e?.visible && e?.type === "image")
-    .at(0);
-  const { width, height, x, y, strokeWidth, dash, rotation } = box;
+  const fill = useMemo(
+    () => box.fills?.filter((e) => e?.visible && e?.type === "image").at(0),
+    [box.fills]
+  );
+  const { x, y, strokeWidth, rotation } = box;
   const applyLayout = useSetAtom(flexLayoutAtom);
 
   // Memoización de la imagen base
@@ -79,7 +80,7 @@ export const ShapeImage = (props: IShapeWithEvents) => {
     img.width = fill?.image?.width;
     img.height = fill?.image?.height;
     return img;
-  }, [fill]);
+  }, [fill?.image?.src, fill?.image?.width, fill?.image?.height]);
 
   // Configuración de crop para object-fit cover
   const cropConfig = useMemo(
@@ -90,7 +91,7 @@ export const ShapeImage = (props: IShapeWithEvents) => {
         Number(box.width),
         Number(box.height)
       ),
-    [fill, box]
+    [fill?.image?.width, fill?.image?.height, box.width, box.height]
   );
 
   // Refs para shape y transformer
