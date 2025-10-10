@@ -1,4 +1,3 @@
-import { useConfiguration } from "@/editor/hooks/useConfiguration";
 import { css } from "@stylespixelkit/css";
 import { atom, useAtom, useAtomValue } from "jotai";
 import { File } from "lucide-react";
@@ -22,7 +21,6 @@ import { downloadBase64Image } from "../utils/downloadBase64";
 import { computeStageTransform } from "../utils/stageTransform";
 
 export const ExportShape = () => {
-  const { config } = useConfiguration();
   const shape = useAtomValue(SHAPE_SELECTED_ATOM);
   const [loading, setLoading] = useState(false);
   const [format, setFormat] = useAtom(typeExportAtom);
