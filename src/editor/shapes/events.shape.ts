@@ -1,20 +1,8 @@
-import { KonvaEventObject } from "konva/lib/Node";
+import { KonvaEventObject, Node, NodeConfig } from "konva/lib/Node";
 import { IShape } from "./type.shape";
-
-export const ShapeEventDragStart =
-  (evt: KonvaEventObject<DragEvent>) => (prev: IShape) => {
-    const payload = {
-      ...prev,
-      x: evt.target.x(),
-      y: evt.target.y(),
-    };
-    return payload;
-  };
 
 export const coordinatesShapeMove = (
   prev: IShape,
-  stageWidth: number,
-  stageHeight: number,
   evt: KonvaEventObject<DragEvent> | KonvaEventObject<Event>
 ): IShape => {
   const shape = evt.target;
@@ -45,51 +33,19 @@ export const coordinatesShapeMove = (
   return newPos;
 };
 
-export const shapeEventDragMove =
-  (
-    evt: KonvaEventObject<DragEvent> | KonvaEventObject<Event>,
-    stageWidth: number,
-    stageHeight: number
-  ) =>
-  (prev: IShape) => {
-    const payload = coordinatesShapeMove(prev, stageWidth, stageHeight, evt);
-
-    return payload;
+export const TransformDimension = (
+  e: KonvaEventObject<Event, Node<NodeConfig>>,
+  box: IShape
+) => {
+  const scaleX = e.target.scaleX();
+  const scaleY = e.target.scaleY();
+  e.target.scaleX(1);
+  e.target.scaleY(1);
+  const payload = coordinatesShapeMove(box, e);
+  return {
+    ...payload,
+    rotation: e.target.rotation(),
+    width: Math.max(5, e.target.width() * scaleX),
+    height: Math.max(e.target.height() * scaleY),
   };
-export const shapeEventDragStop =
-  (evt: KonvaEventObject<DragEvent>) => (prev: IShape) => {
-    const payload = {
-      ...prev,
-      x: evt.target.x(),
-      y: evt.target.y(),
-    };
-    return payload;
-  };
-export const shapeEventClick =
-  (evt: KonvaEventObject<MouseEvent> | KonvaEventObject<Event>) =>
-  (prev: IShape) => {
-    return prev;
-  };
-
-export const shapeEventDoubleClick =
-  (evt: KonvaEventObject<MouseEvent>) => (prev: IShape) => {
-    return prev;
-  };
-
-export const shapeTransformEnd =
-  (evt: KonvaEventObject<Event>) => (prev: IShape) => {
-    const scaleX = evt.target.scaleX();
-    const scaleY = evt.target.scaleY();
-    evt.target.scaleX(1);
-    evt.target.scaleY(1);
-    const payload = {
-      ...prev,
-      x: evt.target.x(),
-      y: evt.target.y(),
-      rotate: evt.target.rotation(),
-      width: Math.max(5, evt.target.width() * scaleX),
-      height: Math.max(evt.target.height() * scaleY),
-    };
-
-    return payload;
-  };
+};

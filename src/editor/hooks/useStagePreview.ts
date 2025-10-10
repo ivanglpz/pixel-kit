@@ -30,12 +30,4 @@ export const useStagePreview = (dimensions?: {
   return {
     stageRef,
   };
-  // useEffect(() => {
-  //   if (stageRef?.current) {
-  //     handleSetRef({
-  //       type: "STAGE_PREVIEW",
-  //       ref: stageRef,
-  //     });
-  //   }
-  // }, [stageRef, config.expand_stage]);
 };

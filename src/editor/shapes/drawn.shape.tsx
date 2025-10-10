@@ -6,10 +6,8 @@ import { IShape, IShapeWithEvents, WithInitialValue } from "./type.shape";
 /* eslint-disable react/display-name */
 import { SHAPE_IDS_ATOM } from "../states/shape";
 
-import { useConfiguration } from "../hooks/useConfiguration";
-import { shapeEventDragMove } from "./events.shape";
+import { coordinatesShapeMove, TransformDimension } from "./events.shape";
 import { flexLayoutAtom } from "./layout-flex";
-import { TransformDimension } from "./transform";
 
 export const ShapeDraw = ({ shape: item }: IShapeWithEvents) => {
   const [box, setBox] = useAtom(
@@ -18,8 +16,6 @@ export const ShapeDraw = ({ shape: item }: IShapeWithEvents) => {
 
   const { x, y, strokeWidth, dash, rotation } = box;
   const applyLayout = useSetAtom(flexLayoutAtom);
-
-  const { config } = useConfiguration();
 
   const [shapeId, setShapeId] = useAtom(SHAPE_IDS_ATOM);
   const isSelected = shapeId.some((w) => w.id === box.id);
@@ -87,25 +83,13 @@ export const ShapeDraw = ({ shape: item }: IShapeWithEvents) => {
             parentId: box.parentId,
           })
         }
-        onDragMove={(e) =>
-          setBox(
-            shapeEventDragMove(
-              e,
-              Number(config.expand_stage_resolution?.width),
-              Number(config.expand_stage_resolution?.height)
-            )
-          )
-        }
+        onDragMove={(evt) => setBox((prev) => coordinatesShapeMove(prev, evt))}
         onDragEnd={() => {
           if (!box.parentId) return;
           applyLayout({ id: box.parentId });
         }}
         onTransform={(e) => {
-          const dimension = TransformDimension(
-            e,
-            box,
-            config.expand_stage_resolution
-          );
+          const dimension = TransformDimension(e, box);
           setBox(dimension);
         }}
         onTransformEnd={() => {

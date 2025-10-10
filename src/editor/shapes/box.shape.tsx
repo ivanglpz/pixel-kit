@@ -1,10 +1,8 @@
 import { PrimitiveAtom, useAtom, useSetAtom } from "jotai";
 import { Rect } from "react-konva";
-import { useConfiguration } from "../hooks/useConfiguration";
 import { SHAPE_IDS_ATOM } from "../states/shape";
-import { shapeEventDragMove } from "./events.shape";
+import { coordinatesShapeMove, TransformDimension } from "./events.shape";
 import { flexLayoutAtom } from "./layout-flex";
-import { TransformDimension } from "./transform";
 import { IShape, IShapeWithEvents, WithInitialValue } from "./type.shape";
 
 // eslint-disable-next-line react/display-name
@@ -12,7 +10,6 @@ const ShapeBox = ({ shape: item }: IShapeWithEvents) => {
   const [box, setBox] = useAtom(
     item.state as PrimitiveAtom<IShape> & WithInitialValue<IShape>
   );
-  const { config } = useConfiguration();
   const rotation = Number(box.rotation) || 0;
   const applyLayout = useSetAtom(flexLayoutAtom);
 
@@ -84,25 +81,13 @@ const ShapeBox = ({ shape: item }: IShapeWithEvents) => {
             parentId: box.parentId,
           });
         }}
-        onDragMove={(e) =>
-          setBox(
-            shapeEventDragMove(
-              e,
-              Number(config.expand_stage_resolution?.width),
-              Number(config.expand_stage_resolution?.height)
-            )
-          )
-        }
+        onDragMove={(evt) => setBox((prev) => coordinatesShapeMove(prev, evt))}
         onDragEnd={() => {
           if (!box.parentId) return;
           applyLayout({ id: box.parentId });
         }}
         onTransform={(e) => {
-          const dimension = TransformDimension(
-            e,
-            box,
-            config.expand_stage_resolution
-          );
+          const dimension = TransformDimension(e, box);
           setBox(dimension);
         }}
         onTransformEnd={() => {
