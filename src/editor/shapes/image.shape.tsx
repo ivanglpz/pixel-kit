@@ -15,10 +15,8 @@ import { Image as KonvaImage } from "react-konva";
 import { IShape, IShapeWithEvents, WithInitialValue } from "./type.shape";
 
 // Eventos de shape
-import { useConfiguration } from "../hooks/useConfiguration";
-import { shapeEventDragMove } from "./events.shape";
+import { coordinatesShapeMove, TransformDimension } from "./events.shape";
 import { flexLayoutAtom } from "./layout-flex";
-import { TransformDimension } from "./transform";
 
 // Transformer
 
@@ -97,9 +95,6 @@ export const ShapeImage = (props: IShapeWithEvents) => {
 
   // Refs para shape y transformer
 
-  // Estado global
-  const { config } = useConfiguration();
-
   const [shapeId, setShapeId] = useAtom(SHAPE_IDS_ATOM);
   const isSelected = shapeId.some((w) => w.id === box.id);
 
@@ -174,25 +169,13 @@ export const ShapeImage = (props: IShapeWithEvents) => {
             parentId: box.parentId,
           })
         }
-        onDragMove={(e) =>
-          setBox(
-            shapeEventDragMove(
-              e,
-              Number(config.expand_stage_resolution?.width),
-              Number(config.expand_stage_resolution?.height)
-            )
-          )
-        }
+        onDragMove={(evt) => setBox((prev) => coordinatesShapeMove(prev, evt))}
         onDragEnd={() => {
           if (!box.parentId) return;
           applyLayout({ id: box.parentId });
         }}
         onTransform={(e) => {
-          const dimension = TransformDimension(
-            e,
-            box,
-            config.expand_stage_resolution
-          );
+          const dimension = TransformDimension(e, box);
           setBox(dimension);
         }}
         onTransformEnd={() => {
