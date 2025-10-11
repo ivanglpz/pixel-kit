@@ -566,7 +566,7 @@ export const EVENT_UP_SHAPES = atom(null, (get, set) => {
   for (const newShape of CURRENT_ITEMS) {
     set(CREATE_SHAPE_ATOM, newShape);
   }
-  setTimeout(() => {
+  Promise.resolve().then(() => {
     set(
       UPDATE_SHAPES_IDS_ATOM,
       CURRENT_ITEMS?.map((e) => ({
@@ -574,7 +574,7 @@ export const EVENT_UP_SHAPES = atom(null, (get, set) => {
         parentId: e?.parentId,
       }))
     );
-  }, 10);
+  });
   set(TOOL_ATOM, "MOVE");
   set(EVENT_ATOM, "IDLE");
   set(CLEAR_CURRENT_ITEM_ATOM);
