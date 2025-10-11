@@ -58,7 +58,6 @@ const getStageBounds = (get: Getter) => (shapes: ALL_SHAPES[]) => {
   let minY = Infinity;
   let maxX = -Infinity;
   let maxY = -Infinity;
-  console.log(shapes.length);
 
   shapes.forEach((shape) => {
     const { x, y, width, height } = get(shape.state); // o shape.state según tu estructura

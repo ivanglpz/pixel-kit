@@ -23,7 +23,6 @@ export const useStagePreview = ({
   const { config } = useConfiguration();
   const ALL_SHAPES = useAtomValue(ALL_SHAPES_ATOM);
   const bounds = useAtomValue(GET_STAGE_BOUNDS);
-  console.log(bounds, "bounds");
 
   useEffect(() => {
     if (!stageRef.current) return;
