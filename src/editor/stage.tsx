@@ -5,7 +5,7 @@ import Konva from "konva";
 import { KonvaEventObject } from "konva/lib/Node";
 import { ReactNode, useEffect, useRef, useState } from "react";
 import { Stage } from "react-konva";
-import { cursor_event } from "./constants/stage";
+import { cursor_event, STAGE_IDS } from "./constants/stage";
 import { useEventStage } from "./hooks/useEventStage";
 import { Tools } from "./sidebar/Tools";
 import STAGE_CANVAS_BACKGROUND from "./states/canvas";
@@ -53,11 +53,7 @@ const PxStage = ({ children }: { children: ReactNode }) => {
   const handleClear = (e: KonvaEventObject<MouseEvent>) => {
     if (["DRAW", "LINE", "CLIP"].includes(tool)) return;
     const targetId = e?.target?.attrs?.id;
-    if (
-      [null, undefined, "main-image-render-stage", "pixel-kit-stage"].includes(
-        targetId
-      )
-    ) {
+    if (STAGE_IDS.includes(targetId)) {
       setPause(false);
       resetShapesIds();
       setTool("MOVE");
