@@ -4,7 +4,7 @@ import { useAtom, useAtomValue } from "jotai";
 import { File } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { Layer, Rect, Stage as StageContainer } from "react-konva";
+import { Layer, Stage as StageContainer } from "react-konva";
 import { toast } from "sonner";
 import { Button } from "../components/button";
 import { Dialog } from "../components/dialog";
@@ -16,11 +16,9 @@ import { stagePreview } from "../constants/stage-preview";
 import { useReference } from "../hooks/useReference";
 import { useStagePreview } from "../hooks/useStagePreview";
 import { Shapes } from "../shapes/shapes";
-import STAGE_CANVAS_BACKGROUND from "../states/canvas";
 import { typeExportAtom } from "../states/export";
 import ALL_SHAPES_ATOM from "../states/shapes";
 import { downloadBase64Image } from "../utils/downloadBase64";
-import { computeStageTransform } from "../utils/stageTransform";
 
 export const ExportStage = () => {
   const ALL_SHAPES = useAtomValue(ALL_SHAPES_ATOM);
@@ -28,10 +26,10 @@ export const ExportStage = () => {
   const { config } = useConfiguration();
   const [loading, setLoading] = useState(false);
   const [format, setFormat] = useAtom(typeExportAtom);
-  const background = useAtomValue(STAGE_CANVAS_BACKGROUND);
 
-  const { stageRef } = useStagePreview();
-
+  const { stageRef } = useStagePreview({
+    type: "STAGE",
+  });
   const { handleSetRef } = useReference({
     type: "STAGE_PREVIEW",
     ref: stageRef,
@@ -56,16 +54,9 @@ export const ExportStage = () => {
 
     setLoading(true);
 
-    const { offsetX, offsetY, width, height } = computeStageTransform(
-      config.expand_stage_resolution
-    );
     const image = stageRef.current?.toDataURL({
       quality: 1,
       pixelRatio: formats[format as keyof typeof formats],
-      x: offsetX,
-      y: offsetY,
-      width,
-      height,
     });
 
     if (image) downloadBase64Image(image);
@@ -143,7 +134,7 @@ export const ExportStage = () => {
           fontSize: "sm",
         })}
       >
-        Export stage
+        Stage
       </p>
       <StageContainer
         id="preview-stage"
@@ -158,13 +149,6 @@ export const ExportStage = () => {
           _dark: { backgroundColor: "gray.800" },
         })}
       >
-        <Layer id="layer-background-color">
-          <Rect
-            width={config.expand_stage_resolution?.width}
-            height={config.expand_stage_resolution?.height}
-            fill={background}
-          />
-        </Layer>
         <Layer>
           {ALL_SHAPES.map((e) => {
             const Component = Shapes?.[e.tool];
@@ -174,7 +158,7 @@ export const ExportStage = () => {
           })}
         </Layer>
       </StageContainer>
-      <div
+      {/* <div
         className={css({
           display: "grid",
           gridTemplateColumns: "2",
@@ -184,7 +168,7 @@ export const ExportStage = () => {
         <Button.Primary onClick={() => setShowExportDialog(true)}>
           <File size={constants.icon.size} /> Export
         </Button.Primary>
-      </div>
+      </div> */}
     </>
   );
 };
