@@ -27,7 +27,7 @@ const PxStage = ({ children }: { children: ReactNode }) => {
   const { handleMouseDown, handleMouseUp, handleMouseMove, stageRef } =
     useEventStage();
 
-  const MAX_SCALE = 12;
+  const MAX_SCALE = 90;
   const MIN_SCALE = 0.1;
 
   useEffect(() => {
