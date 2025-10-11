@@ -31,7 +31,7 @@ export const SELECT_AREA_SHAPES_ATOM = atom(null, (get, set) => {
   const position = normalizeRect(get(RECTANGLE_SELECTION_ATOM));
 
   const selected = SHAPES.filter((el) => intersects(get(el.state), position));
-  setTimeout(() => {
+  Promise.resolve().then(() => {
     set(
       UPDATE_SHAPES_IDS_ATOM,
       selected.map((e) => ({
@@ -39,7 +39,7 @@ export const SELECT_AREA_SHAPES_ATOM = atom(null, (get, set) => {
         parentId: get(e.state).parentId,
       }))
     );
-  }, 1);
+  });
   set(RECTANGLE_SELECTION_ATOM, {
     x: 0,
     y: 0,
