@@ -2,7 +2,7 @@ import { atom } from "jotai";
 import { IShape } from "../shapes/type.shape";
 import { EVENT_ATOM } from "./event";
 import { UPDATE_SHAPES_IDS_ATOM } from "./shape";
-import { PLANE_SHAPES_ATOM } from "./shapes";
+import ALL_SHAPES_ATOM from "./shapes";
 
 type Rect = { x: number; y: number; width: number; height: number };
 
@@ -27,12 +27,10 @@ export const RECTANGLE_SELECTION_ATOM = atom({
 });
 
 export const SELECT_AREA_SHAPES_ATOM = atom(null, (get, set) => {
-  const PLANE_SHAPES = get(PLANE_SHAPES_ATOM);
+  const SHAPES = get(ALL_SHAPES_ATOM);
   const position = normalizeRect(get(RECTANGLE_SELECTION_ATOM));
 
-  const selected = PLANE_SHAPES.filter((el) =>
-    intersects(get(el.state), position)
-  );
+  const selected = SHAPES.filter((el) => intersects(get(el.state), position));
   setTimeout(() => {
     set(
       UPDATE_SHAPES_IDS_ATOM,
