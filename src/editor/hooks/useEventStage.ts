@@ -64,11 +64,6 @@ export const useEventStage = () => {
   const SET_EVENT_DOWN = useSetAtom(EVENT_DOWN_SHAPES);
   const SET_EVENT_DOWN_COPY = useSetAtom(EVENT_DOWN_COPY);
   const SET_SELECTION = useSetAtom(SELECT_AREA_SHAPES_ATOM);
-  // const [origin, setOrigin] = useState<{ x: number; y: number } | null>(null);
-
-  // Guarda el punto inicial
-
-  console.log(EVENT_STAGE, "EVENT_STAGE");
 
   // ===== MOUSE EVENT HANDLERS =====
   const handleMouseDown = (event: KonvaEventObject<MouseEvent>) => {
