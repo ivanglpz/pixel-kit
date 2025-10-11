@@ -11,7 +11,13 @@ const intersects = (a: IShape, b: Rect) =>
   a.x + a.width > b.x &&
   a.y < b.y + b.height &&
   a.y + a.height > b.y;
-
+const normalizeRect = (rect: Rect): Rect => {
+  const x = rect.width < 0 ? rect.x + rect.width : rect.x;
+  const y = rect.height < 0 ? rect.y + rect.height : rect.y;
+  const width = Math.abs(rect.width);
+  const height = Math.abs(rect.height);
+  return { x, y, width, height };
+};
 export const RECTANGLE_SELECTION_ATOM = atom({
   visible: false,
   x: 0,
@@ -22,11 +28,11 @@ export const RECTANGLE_SELECTION_ATOM = atom({
 
 export const SELECT_AREA_SHAPES_ATOM = atom(null, (get, set) => {
   const PLANE_SHAPES = get(PLANE_SHAPES_ATOM);
-  const position = get(RECTANGLE_SELECTION_ATOM);
+  const position = normalizeRect(get(RECTANGLE_SELECTION_ATOM));
+
   const selected = PLANE_SHAPES.filter((el) =>
     intersects(get(el.state), position)
   );
-
   setTimeout(() => {
     set(
       UPDATE_SHAPES_IDS_ATOM,
