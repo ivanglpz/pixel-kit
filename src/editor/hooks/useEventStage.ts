@@ -4,8 +4,9 @@ import TOOL_ATOM, { IKeyTool, PAUSE_MODE_ATOM } from "@/editor/states/tool";
 import { uploadPhoto } from "@/services/photo";
 import { useMutation } from "@tanstack/react-query";
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
+import Konva from "konva";
 import { KonvaEventObject } from "konva/lib/Node";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { toast } from "sonner";
 import { v4 as uuidv4 } from "uuid";
 import { MOUSE } from "../constants/mouse";
@@ -30,6 +31,7 @@ import {
   EVENT_DOWN_SHAPES,
   EVENT_MOVING_SHAPE,
   EVENT_UP_SHAPES,
+  GET_STAGE_BOUNDS_ATOM,
   GROUP_SHAPES_IN_LAYOUT,
 } from "../states/shapes";
 import { REDO_ATOM, UNDO_ATOM } from "../states/undo-redo";
@@ -50,7 +52,8 @@ export const useEventStage = () => {
   const { config } = useConfiguration();
   const { debounce } = useAutoSave();
   const PROJECT_ID = useAtomValue(PROJECT_ID_ATOM);
-
+  const stageRef = useRef<Konva.Stage>(null);
+  const GET_BOUNDS = useSetAtom(GET_STAGE_BOUNDS_ATOM);
   // ===== SETTERS =====
   const SET_CREATE = useSetAtom(CREATE_SHAPE_ATOM);
   const DELETE_SHAPE = useSetAtom(DELETE_SHAPES_ATOM);
@@ -257,6 +260,24 @@ export const useEventStage = () => {
     img.src = dataImage;
   };
 
+  const zoomToFitAllShapes = () => {
+    if (!stageRef.current) return;
+    const bounds = GET_BOUNDS();
+    if (!bounds) return;
+
+    const stageWidth = stageRef.current.width();
+    const stageHeight = stageRef.current.height();
+    const scale =
+      Math.min(stageWidth / bounds.width, stageHeight / bounds.height) * 0.9;
+
+    stageRef.current.scale({ x: scale, y: scale });
+    stageRef.current.position({
+      x: -bounds.startX * scale + (stageWidth - bounds.width * scale) / 2,
+      y: -bounds.startY * scale + (stageHeight - bounds.height * scale) / 2,
+    });
+    stageRef.current.batchDraw();
+  };
+
   // ===== EVENT LISTENERS =====
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -264,8 +285,14 @@ export const useEventStage = () => {
       const shift = event.shiftKey;
       const isMac = navigator.platform.toUpperCase().includes("MAC");
       const meta = isMac ? event.metaKey : event.ctrlKey;
-      const alt = event.altKey;
       const key = event.key.toLowerCase();
+
+      // ✅ Zoom to all shapes (Shift + 1)
+      if (shift && event.code === "Digit1") {
+        event.preventDefault();
+        zoomToFitAllShapes();
+        return;
+      }
 
       // ✅ Undo (IR HACIA ATRÁS)
       if (meta && !event.shiftKey && key === "z") {
@@ -384,5 +411,6 @@ export const useEventStage = () => {
     handleMouseDown,
     handleMouseMove,
     handleMouseUp,
+    stageRef,
   };
 };

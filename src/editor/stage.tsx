@@ -16,7 +16,6 @@ import TOOL_ATOM, { PAUSE_MODE_ATOM } from "./states/tool";
 
 const PxStage = ({ children }: { children: ReactNode }) => {
   const containerRef = useRef<HTMLDivElement>(null);
-  const stageRef = useRef<Konva.Stage>(null);
   const [containerSize, setContainerSize] = useState({ width: 0, height: 0 });
 
   const [tool, setTool] = useAtom(TOOL_ATOM);
@@ -25,7 +24,8 @@ const PxStage = ({ children }: { children: ReactNode }) => {
   const resetShapesIds = useSetAtom(RESET_SHAPES_IDS_ATOM);
   const background = useAtomValue(STAGE_CANVAS_BACKGROUND);
   const MOVING = useAtomValue(MOVING_MOUSE_BUTTON_ATOM);
-  const { handleMouseDown, handleMouseUp, handleMouseMove } = useEventStage();
+  const { handleMouseDown, handleMouseUp, handleMouseMove, stageRef } =
+    useEventStage();
 
   const MAX_SCALE = 12;
   const MIN_SCALE = 0.1;

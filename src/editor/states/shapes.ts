@@ -52,7 +52,8 @@ export const ALL_SHAPES_ATOM = atom(
 );
 
 const getStageBounds = (get: Getter) => (shapes: ALL_SHAPES[]) => {
-  if (!shapes.length) return { width: 1000, height: 1000 }; // fallback
+  if (!shapes.length)
+    return { width: 1000, height: 1000, startX: 0, startY: 0 };
 
   let minX = Infinity;
   let minY = Infinity;
@@ -60,7 +61,7 @@ const getStageBounds = (get: Getter) => (shapes: ALL_SHAPES[]) => {
   let maxY = -Infinity;
 
   shapes.forEach((shape) => {
-    const { x, y, width, height } = get(shape.state); // o shape.state según tu estructura
+    const { x, y, width, height } = get(shape.state);
     minX = Math.min(minX, x);
     minY = Math.min(minY, y);
     maxX = Math.max(maxX, x + width);
@@ -70,13 +71,17 @@ const getStageBounds = (get: Getter) => (shapes: ALL_SHAPES[]) => {
   return {
     width: maxX - minX,
     height: maxY - minY,
-    startX: minX, // posición más a la izquierda
+    startX: minX,
     startY: minY,
   };
 };
 
-export const GET_STAGE_BOUNDS = atom((get) => {
+export const STAGE_BOUNDS = atom((get) => {
   return getStageBounds(get)(get(ALL_SHAPES_ATOM));
+});
+
+export const GET_STAGE_BOUNDS_ATOM = atom(null, (get, set) => {
+  return get(STAGE_BOUNDS);
 });
 
 export const PLANE_SHAPES_ATOM = atom((get) => {

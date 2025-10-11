@@ -2,7 +2,7 @@ import { useAtomValue } from "jotai";
 import Konva from "konva";
 import { useEffect, useRef } from "react";
 import { stagePreview } from "../constants/stage-preview";
-import ALL_SHAPES_ATOM, { GET_STAGE_BOUNDS } from "../states/shapes";
+import ALL_SHAPES_ATOM, { STAGE_BOUNDS } from "../states/shapes";
 import {
   computeStageBoundsTransform,
   computeStageTransform,
@@ -22,7 +22,7 @@ export const useStagePreview = ({
   const stageRef = useRef<Konva.Stage>(null);
   const { config } = useConfiguration();
   const ALL_SHAPES = useAtomValue(ALL_SHAPES_ATOM);
-  const bounds = useAtomValue(GET_STAGE_BOUNDS);
+  const bounds = useAtomValue(STAGE_BOUNDS);
 
   useEffect(() => {
     if (!stageRef.current) return;
