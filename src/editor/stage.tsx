@@ -5,23 +5,14 @@ import Konva from "konva";
 import { KonvaEventObject } from "konva/lib/Node";
 import { ReactNode, useEffect, useRef, useState } from "react";
 import { Stage } from "react-konva";
+import { cursor_event } from "./constants/stage";
 import { useEventStage } from "./hooks/useEventStage";
 import { Tools } from "./sidebar/Tools";
 import STAGE_CANVAS_BACKGROUND from "./states/canvas";
-import { EVENT_ATOM, IStageEvents } from "./states/event";
+import { EVENT_ATOM } from "./states/event";
 import { MOVING_MOUSE_BUTTON_ATOM } from "./states/moving";
 import { RESET_SHAPES_IDS_ATOM } from "./states/shape";
 import TOOL_ATOM, { PAUSE_MODE_ATOM } from "./states/tool";
-
-const cursorByEvent: Record<IStageEvents, string> = {
-  CREATE: "custom-cursor-crosshair",
-  COPY: "custom-cursor-arrow-duplicate",
-  COPYING: "custom-cursor-arrow-duplicate",
-  CREATING: "custom-cursor-crosshair",
-  IDLE: "CursorDefault",
-  MULTI_SELECT: "CursorDefault",
-  SELECT_AREA: "CursorDefault",
-};
 
 const PxStage = ({ children }: { children: ReactNode }) => {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -128,7 +119,7 @@ const PxStage = ({ children }: { children: ReactNode }) => {
 
       <div
         ref={containerRef}
-        className={`${cursorByEvent[event]} ${css({
+        className={`${cursor_event[event]} ${css({
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
