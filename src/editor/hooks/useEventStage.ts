@@ -8,14 +8,18 @@ import { KonvaEventObject } from "konva/lib/Node";
 import { useEffect } from "react";
 import { toast } from "sonner";
 import { v4 as uuidv4 } from "uuid";
+import { MOUSE } from "../constants/mouse";
 import stageAbsolutePosition from "../helpers/position";
 import { CreateShapeSchema } from "../helpers/shape-schema";
 import { CLEAR_CURRENT_ITEM_ATOM } from "../states/currentItem";
 import { EVENT_ATOM } from "../states/event";
 import { MOVING_MOUSE_BUTTON_ATOM } from "../states/moving";
 import { PROJECT_ID_ATOM } from "../states/projects";
-import { RECTANGLE_SELECTION_ATOM } from "../states/rectangle-selection";
-import { SHAPE_IDS_ATOM, UPDATE_SHAPES_IDS_ATOM } from "../states/shape";
+import {
+  RECTANGLE_SELECTION_ATOM,
+  SELECT_AREA_SHAPES_ATOM,
+} from "../states/rectangle-selection";
+import { SHAPE_IDS_ATOM } from "../states/shape";
 import {
   CREATE_SHAPE_ATOM,
   DELETE_KEYS,
@@ -30,15 +34,8 @@ import {
 import { REDO_ATOM, UNDO_ATOM } from "../states/undo-redo";
 import { useAutoSave } from "./useAutoSave";
 import { useConfiguration } from "./useConfiguration";
-import { useReference } from "./useReference";
 
 // ===== CONSTANTS =====
-
-const MOUSE = {
-  LEFT: 0,
-  WHEEL: 1,
-  RIGHT: 2,
-};
 
 export const useEventStage = () => {
   // ===== STATE HOOKS =====
@@ -56,7 +53,6 @@ export const useEventStage = () => {
   // ===== SETTERS =====
   const SET_CREATE = useSetAtom(CREATE_SHAPE_ATOM);
   const DELETE_SHAPE = useSetAtom(DELETE_SHAPES_ATOM);
-  const SET_UPDATE_SHAPES_IDS = useSetAtom(UPDATE_SHAPES_IDS_ATOM);
   const SET_CLEAR_CITEM = useSetAtom(CLEAR_CURRENT_ITEM_ATOM);
   const [selection, setSelection] = useAtom(RECTANGLE_SELECTION_ATOM);
   const setRedo = useSetAtom(REDO_ATOM);
@@ -67,14 +63,34 @@ export const useEventStage = () => {
   const SET_EVENT_COPYING = useSetAtom(EVENT_COPYING_SHAPES);
   const SET_EVENT_DOWN = useSetAtom(EVENT_DOWN_SHAPES);
   const SET_EVENT_DOWN_COPY = useSetAtom(EVENT_DOWN_COPY);
-  const { ref: Stage } = useReference({ type: "STAGE" });
+  const SET_SELECTION = useSetAtom(SELECT_AREA_SHAPES_ATOM);
+  // const [origin, setOrigin] = useState<{ x: number; y: number } | null>(null);
+
+  // Guarda el punto inicial
+
+  console.log(EVENT_STAGE, "EVENT_STAGE");
 
   // ===== MOUSE EVENT HANDLERS =====
   const handleMouseDown = (event: KonvaEventObject<MouseEvent>) => {
     const mouse_button = event.evt.button;
     const { x, y } = stageAbsolutePosition(event);
+    const targetId = event?.target?.attrs?.id;
 
     if (mouse_button === MOUSE.LEFT) {
+      if (
+        EVENT_STAGE === "IDLE" &&
+        tool === "MOVE" &&
+        targetId === "pixel-kit-stage"
+      ) {
+        setSelection({
+          x,
+          y,
+          width: 0,
+          height: 0,
+          visible: true,
+        });
+        SET_EVENT_STAGE("SELECT_AREA");
+      }
       if (EVENT_STAGE === "CREATE") {
         SET_EVENT_DOWN({ x, y });
       }
@@ -90,6 +106,15 @@ export const useEventStage = () => {
     const { x, y } = stageAbsolutePosition(event);
 
     if (mouse_button === MOUSE.LEFT) {
+      if (EVENT_STAGE === "SELECT_AREA") {
+        setSelection({
+          ...selection,
+          width: x - selection.x,
+          height: y - selection.y,
+          visible: true,
+        });
+      }
+
       if (EVENT_STAGE === "CREATING") {
         SET_EVENT_MOVING_SHAPE({ x, y });
       }
@@ -97,56 +122,12 @@ export const useEventStage = () => {
         SET_EVENT_COPYING({ x, y });
       }
     }
-
-    // if (
-    //   selection.visible &&
-    //   EVENT_STAGE === "IDLE" &&
-    //   tool === "MOVE" &&
-    //   shapeId?.length === 0
-    // ) {
-    //   setSelection({
-    //     x: Math.min(selection.x, x),
-    //     y: Math.min(selection.y, y),
-    //     width: Math.abs(x - selection.x),
-    //     height: Math.abs(y - selection.y),
-    //     visible: true,
-    //   });
-    // }
   };
 
   const handleMouseUp = async (event: KonvaEventObject<MouseEvent>) => {
-    // if (selection.visible && EVENT_STAGE === "IDLE" && tool === "MOVE") {
-    //   const childrens = Stage?.current?.getStage?.()?.children;
-
-    //   if (!childrens) return;
-    //   const layer = childrens?.find((e) => e?.attrs?.id === "layer-shapes");
-    //   const nodes = layer?.children?.filter?.(
-    //     (child) =>
-    //       child?.attrs?.id !== "transformer-editable" && child?.attrs?.listening
-    //   );
-    //   if (!nodes) return;
-    //   const selected = nodes.filter((shape) =>
-    //     Konva.Util.haveIntersection(selection, shape.getClientRect())
-    //   );
-
-    //   setTimeout(() => {
-    //     SET_UPDATE_SHAPES_IDS(
-    //       selected
-    //         ?.map((e) => ({
-    //           id: e?.attrs?.id,
-    //           parentId: e?.attrs?.parentId,
-    //         }))
-    //         ?.filter((e) => typeof e?.id === "string")
-    //     );
-    //     setSelection({
-    //       x: 0,
-    //       y: 0,
-    //       width: 0,
-    //       height: 0,
-    //       visible: false,
-    //     });
-    //   }, 10);
-    // }
+    if (EVENT_STAGE === "SELECT_AREA") {
+      SET_SELECTION();
+    }
 
     if (EVENT_STAGE === "CREATING" || EVENT_STAGE === "COPYING") {
       SET_EVENT_UP();

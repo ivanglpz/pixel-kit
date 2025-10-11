@@ -5,9 +5,7 @@ import Konva from "konva";
 import { KonvaEventObject } from "konva/lib/Node";
 import { ReactNode, useEffect, useRef, useState } from "react";
 import { Stage } from "react-konva";
-import { useConfiguration } from "./hooks/useConfiguration";
 import { useEventStage } from "./hooks/useEventStage";
-import { useReference } from "./hooks/useReference";
 import { Tools } from "./sidebar/Tools";
 import STAGE_CANVAS_BACKGROUND from "./states/canvas";
 import { EVENT_ATOM, IStageEvents } from "./states/event";
@@ -22,6 +20,7 @@ const cursorByEvent: Record<IStageEvents, string> = {
   CREATING: "custom-cursor-crosshair",
   IDLE: "CursorDefault",
   MULTI_SELECT: "CursorDefault",
+  SELECT_AREA: "CursorDefault",
 };
 
 const PxStage = ({ children }: { children: ReactNode }) => {
@@ -35,9 +34,7 @@ const PxStage = ({ children }: { children: ReactNode }) => {
   const resetShapesIds = useSetAtom(RESET_SHAPES_IDS_ATOM);
   const background = useAtomValue(STAGE_CANVAS_BACKGROUND);
   const MOVING = useAtomValue(MOVING_MOUSE_BUTTON_ATOM);
-  const { config } = useConfiguration();
   const { handleMouseDown, handleMouseUp, handleMouseMove } = useEventStage();
-  const { handleSetRef } = useReference({ type: "STAGE", ref: stageRef });
 
   const MAX_SCALE = 12;
   const MIN_SCALE = 0.1;
@@ -115,12 +112,6 @@ const PxStage = ({ children }: { children: ReactNode }) => {
       stage.batchDraw();
     }
   };
-
-  useEffect(() => {
-    if (stageRef.current) {
-      handleSetRef({ type: "STAGE", ref: stageRef });
-    }
-  }, [stageRef]);
 
   return (
     <section

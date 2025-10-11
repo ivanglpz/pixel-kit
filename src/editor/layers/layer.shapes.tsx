@@ -1,12 +1,11 @@
 import { useAtomValue, useSetAtom } from "jotai";
 import Konva from "konva";
 import { useEffect, useRef } from "react";
-import { Layer, Rect, Transformer } from "react-konva";
+import { Layer, Transformer } from "react-konva";
 import { constants } from "../constants/color";
 import { useAutoSave } from "../hooks/useAutoSave";
 import { Shapes } from "../shapes/shapes";
 import { FCShapeWEvents } from "../shapes/type.shape";
-import { RECTANGLE_SELECTION_ATOM } from "../states/rectangle-selection";
 import { SHAPE_IDS_ATOM } from "../states/shape";
 import ALL_SHAPES_ATOM from "../states/shapes";
 import { UPDATE_UNDO_REDO } from "../states/undo-redo";
@@ -26,7 +25,6 @@ export const LayerShapes = () => {
   const trRef = useRef<Konva.Transformer>(null);
   const lyRef = useRef<Konva.Layer>(null);
   const selectedIds = useAtomValue(SHAPE_IDS_ATOM);
-  const selection = useAtomValue(RECTANGLE_SELECTION_ATOM);
   const setUpdateUndoRedo = useSetAtom(UPDATE_UNDO_REDO);
   const { debounce } = useAutoSave();
 
@@ -78,18 +76,6 @@ export const LayerShapes = () => {
             return newBox;
           }}
         />
-        {/* Rectángulo de selección */}
-        {selection && selection.visible && (
-          <Rect
-            x={selection.x}
-            y={selection.y}
-            width={selection.width}
-            height={selection.height}
-            fill={constants.theme.colors.background}
-            stroke={constants.theme.colors.primary}
-            strokeWidth={1.5}
-          />
-        )}
       </Layer>
     </>
   );
