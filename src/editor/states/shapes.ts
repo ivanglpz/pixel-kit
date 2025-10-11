@@ -1,5 +1,5 @@
 import { IShape, IShapeChildren } from "@/editor/shapes/type.shape";
-import { atom, PrimitiveAtom } from "jotai";
+import { atom, Getter, PrimitiveAtom } from "jotai";
 import { v4 as uuidv4 } from "uuid";
 import {
   cloneDeep,
@@ -50,6 +50,35 @@ export const ALL_SHAPES_ATOM = atom(
     return;
   }
 );
+
+const getStageBounds = (get: Getter) => (shapes: ALL_SHAPES[]) => {
+  if (!shapes.length) return { width: 1000, height: 1000 }; // fallback
+
+  let minX = Infinity;
+  let minY = Infinity;
+  let maxX = -Infinity;
+  let maxY = -Infinity;
+  console.log(shapes.length);
+
+  shapes.forEach((shape) => {
+    const { x, y, width, height } = get(shape.state); // o shape.state según tu estructura
+    minX = Math.min(minX, x);
+    minY = Math.min(minY, y);
+    maxX = Math.max(maxX, x + width);
+    maxY = Math.max(maxY, y + height);
+  });
+
+  return {
+    width: maxX - minX,
+    height: maxY - minY,
+    startX: minX, // posición más a la izquierda
+    startY: minY,
+  };
+};
+
+export const GET_STAGE_BOUNDS = atom((get) => {
+  return getStageBounds(get)(get(ALL_SHAPES_ATOM));
+});
 
 export const PLANE_SHAPES_ATOM = atom((get) => {
   const getAllShapes = (nodes: ALL_SHAPES[]): ALL_SHAPES[] =>

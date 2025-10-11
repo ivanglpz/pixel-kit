@@ -27,8 +27,11 @@ export const ExportShape = () => {
   const [showExportDialog, setShowExportDialog] = useState(false);
 
   const { stageRef } = useStagePreview({
-    width: shape?.width || 0,
-    height: shape?.height || 0,
+    type: "SHAPE",
+    dimensions: {
+      width: shape?.width || 0,
+      height: shape?.height || 0,
+    },
   });
 
   const handleExport = () => {
