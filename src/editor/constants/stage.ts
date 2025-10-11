@@ -9,3 +9,10 @@ export const cursor_event: Record<IStageEvents, string> = {
   MULTI_SELECT: "CursorDefault",
   SELECT_AREA: "CursorDefault",
 };
+
+export const STAGE_IDS = [
+  null,
+  undefined,
+  "main-image-render-stage",
+  "pixel-kit-stage",
+];

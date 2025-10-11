@@ -9,6 +9,7 @@ import { useEffect } from "react";
 import { toast } from "sonner";
 import { v4 as uuidv4 } from "uuid";
 import { MOUSE } from "../constants/mouse";
+import { STAGE_IDS } from "../constants/stage";
 import stageAbsolutePosition from "../helpers/position";
 import { CreateShapeSchema } from "../helpers/shape-schema";
 import { CLEAR_CURRENT_ITEM_ATOM } from "../states/currentItem";
@@ -75,7 +76,7 @@ export const useEventStage = () => {
       if (
         EVENT_STAGE === "IDLE" &&
         tool === "MOVE" &&
-        targetId === "pixel-kit-stage"
+        STAGE_IDS.includes(targetId)
       ) {
         setSelection({
           x,
