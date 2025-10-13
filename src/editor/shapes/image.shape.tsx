@@ -97,12 +97,16 @@ export const ShapeImage = (props: IShapeWithEvents) => {
   // Refs para shape y transformer
 
   const [shapeId, setShapeId] = useAtom(SHAPE_IDS_ATOM);
-  const isSelected = shapeId.some((w) => w.id === box.id);
+  const isSelected = useMemo(
+    () => shapeId.some((w) => w.id === box.id),
+    [shapeId, box.id]
+  );
 
   // Sombra
-  const shadow = box?.effects
-    ?.filter((e) => e?.visible && e?.type === "shadow")
-    .at(0);
+  const shadow = useMemo(
+    () => box?.effects?.filter((e) => e?.visible && e?.type === "shadow").at(0),
+    [box.effects]
+  );
 
   if (!box.visible) return null;
 

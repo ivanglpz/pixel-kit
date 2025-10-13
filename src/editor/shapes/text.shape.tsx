@@ -6,6 +6,7 @@ import { IShape, IShapeWithEvents, WithInitialValue } from "./type.shape";
 /* eslint-disable react/display-name */
 import { SHAPE_IDS_ATOM } from "../states/shape";
 
+import { useMemo } from "react";
 import { coordinatesShapeMove, TransformDimension } from "./events.shape";
 import { flexLayoutAtom } from "./layout-flex";
 export const ShapeText = (props: IShapeWithEvents) => {
@@ -13,16 +14,19 @@ export const ShapeText = (props: IShapeWithEvents) => {
   const [box, setBox] = useAtom(
     item.state as PrimitiveAtom<IShape> & WithInitialValue<IShape>
   );
-  const { width, height, x, y, strokeWidth, dash, rotation } = box;
 
   const applyLayout = useSetAtom(flexLayoutAtom);
 
   const [shapeId, setShapeId] = useAtom(SHAPE_IDS_ATOM);
-  const isSelected = shapeId.some((w) => w.id === box.id);
+  const isSelected = useMemo(
+    () => shapeId.some((w) => w.id === box.id),
+    [shapeId, box.id]
+  );
 
-  const shadow = box?.effects
-    ?.filter((e) => e?.visible && e?.type === "shadow")
-    .at(0);
+  const shadow = useMemo(
+    () => box?.effects?.filter((e) => e?.visible && e?.type === "shadow").at(0),
+    [box.effects]
+  );
 
   if (!box.visible) return null;
   return (
@@ -32,10 +36,10 @@ export const ShapeText = (props: IShapeWithEvents) => {
         id={box?.id}
         parentId={box?.parentId}
         // 2. Posición y tamaño
-        x={x}
-        y={y}
-        width={width}
-        height={height}
+        x={box.x}
+        y={box.y}
+        width={box.width}
+        height={box.height}
         points={box.points ?? [5, 70, 140, 23]}
         globalCompositeOperation="source-over"
         fontFamily={box?.fontFamily}
@@ -44,7 +48,7 @@ export const ShapeText = (props: IShapeWithEvents) => {
         listening={!box.isLocked}
         fontSize={box?.fontSize}
         lineHeight={1.45}
-        rotation={rotation}
+        rotation={box.rotation}
         // 3. Rotación
         // rotationDeg={rotate}
         // 4. Relleno y color
@@ -56,7 +60,7 @@ export const ShapeText = (props: IShapeWithEvents) => {
         }
         // 5. Bordes y trazos
         stroke={box?.strokes?.filter((e) => e?.visible)?.at(0)?.color}
-        strokeWidth={strokeWidth}
+        strokeWidth={box.strokeWidth}
         strokeEnabled={box.strokeWidth > 0}
         dash={[box.dash]}
         dashEnabled={box?.dash > 0}

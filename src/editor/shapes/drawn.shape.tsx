@@ -6,6 +6,7 @@ import { IShape, IShapeWithEvents, WithInitialValue } from "./type.shape";
 /* eslint-disable react/display-name */
 import { SHAPE_IDS_ATOM } from "../states/shape";
 
+import { useMemo } from "react";
 import { coordinatesShapeMove, TransformDimension } from "./events.shape";
 import { flexLayoutAtom } from "./layout-flex";
 
@@ -14,15 +15,18 @@ export const ShapeDraw = ({ shape: item }: IShapeWithEvents) => {
     item.state as PrimitiveAtom<IShape> & WithInitialValue<IShape>
   );
 
-  const { x, y, strokeWidth, dash, rotation } = box;
   const applyLayout = useSetAtom(flexLayoutAtom);
 
   const [shapeId, setShapeId] = useAtom(SHAPE_IDS_ATOM);
-  const isSelected = shapeId.some((w) => w.id === box.id);
+  const isSelected = useMemo(
+    () => shapeId.some((w) => w.id === box.id),
+    [shapeId, box.id]
+  );
 
-  const shadow = box?.effects
-    ?.filter((e) => e?.visible && e?.type === "shadow")
-    .at(0);
+  const shadow = useMemo(
+    () => box?.effects?.filter((e) => e?.visible && e?.type === "shadow").at(0),
+    [box.effects]
+  );
 
   if (!box.visible) return null;
 
@@ -33,9 +37,9 @@ export const ShapeDraw = ({ shape: item }: IShapeWithEvents) => {
         id={box?.id}
         parentId={box?.parentId}
         // 2. Posición y tamaño
-        x={x}
-        y={y}
-        rotation={rotation}
+        x={box.x}
+        y={box.y}
+        rotation={box.rotation}
         listening={!box.isLocked}
         points={box.points ?? []}
         globalCompositeOperation="source-over"
@@ -50,7 +54,7 @@ export const ShapeDraw = ({ shape: item }: IShapeWithEvents) => {
         }
         // 5. Bordes y trazos
         stroke={box?.strokes?.filter((e) => e?.visible)?.at(0)?.color}
-        strokeWidth={strokeWidth}
+        strokeWidth={box.strokeWidth}
         strokeEnabled={box.strokeWidth > 0}
         dash={[box.dash]}
         dashEnabled={box?.dash > 0}

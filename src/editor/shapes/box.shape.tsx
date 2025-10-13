@@ -1,4 +1,5 @@
 import { PrimitiveAtom, useAtom, useSetAtom } from "jotai";
+import { useMemo } from "react";
 import { Rect } from "react-konva";
 import { SHAPE_IDS_ATOM } from "../states/shape";
 import { coordinatesShapeMove, TransformDimension } from "./events.shape";
@@ -14,12 +15,15 @@ const ShapeBox = ({ shape: item }: IShapeWithEvents) => {
   const applyLayout = useSetAtom(flexLayoutAtom);
 
   const [shapeId, setShapeId] = useAtom(SHAPE_IDS_ATOM);
-  const isSelected = shapeId.some((w) => w.id === box.id);
+  const isSelected = useMemo(
+    () => shapeId.some((w) => w.id === box.id),
+    [shapeId, box.id]
+  );
   // Calcular la posición ajustada para la rotación
-
-  const shadow = box?.effects
-    ?.filter((e) => e?.visible && e?.type === "shadow")
-    .at(0);
+  const shadow = useMemo(
+    () => box?.effects?.filter((e) => e?.visible && e?.type === "shadow").at(0),
+    [box.effects]
+  );
 
   if (!box.visible) return null;
 
