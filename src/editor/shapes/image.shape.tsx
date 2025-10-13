@@ -63,7 +63,7 @@ export const ShapeImage = (props: IShapeWithEvents) => {
   );
 
   // Extraer relleno de tipo imagen
-  const fill = useMemo(
+  const fillImage = useMemo(
     () => box.fills?.filter((e) => e?.visible && e?.type === "image").at(0),
     [box.fills]
   );
@@ -73,25 +73,29 @@ export const ShapeImage = (props: IShapeWithEvents) => {
   // Memoización de la imagen base
   const Imagee = useMemo(() => {
     const img = new Image();
-    if (!fill) return img;
-    img.src = fill?.image?.src;
+    if (!fillImage) return img;
+    img.src = fillImage?.image?.src;
     img.crossOrigin = "Anonymous";
 
-    img.width = fill?.image?.width;
-    img.height = fill?.image?.height;
+    img.width = fillImage?.image?.width;
+    img.height = fillImage?.image?.height;
     return img;
-  }, [fill?.image?.src, fill?.image?.width, fill?.image?.height]);
+  }, [
+    fillImage?.image?.src,
+    fillImage?.image?.width,
+    fillImage?.image?.height,
+  ]);
 
   // Configuración de crop para object-fit cover
   const cropConfig = useMemo(
     () =>
       calculateCoverCrop(
-        fill?.image?.width || 0,
-        fill?.image?.height || 0,
+        fillImage?.image?.width || 0,
+        fillImage?.image?.height || 0,
         Number(box.width),
         Number(box.height)
       ),
-    [fill?.image?.width, fill?.image?.height, box.width, box.height]
+    [fillImage?.image?.width, fillImage?.image?.height, box.width, box.height]
   );
 
   // Refs para shape y transformer
@@ -106,6 +110,15 @@ export const ShapeImage = (props: IShapeWithEvents) => {
   const shadow = useMemo(
     () => box?.effects?.filter((e) => e?.visible && e?.type === "shadow").at(0),
     [box.effects]
+  );
+
+  const stroke = useMemo(
+    () => box?.strokes?.filter((e) => e?.visible)?.at(0),
+    [box?.strokes]
+  );
+  const fill = useMemo(
+    () => box?.fills?.filter((e) => e?.type === "fill" && e?.visible)?.at(0),
+    [box.fills]
   );
 
   if (!box.visible) return null;
@@ -133,12 +146,9 @@ export const ShapeImage = (props: IShapeWithEvents) => {
         listening={!box.isLocked}
         // 4. Relleno
         fillEnabled
-        fill={
-          box?.fills?.filter((e) => e?.type === "fill" && e?.visible)?.at(0)
-            ?.color
-        }
+        fill={fill?.color}
         // 5. Bordes y trazos
-        stroke={box?.strokes?.filter((e) => e?.visible)?.at(0)?.color}
+        stroke={stroke?.color}
         strokeWidth={strokeWidth}
         strokeEnabled={box.strokeWidth > 0}
         dash={[box.dash]}
