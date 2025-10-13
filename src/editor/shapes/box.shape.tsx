@@ -24,6 +24,14 @@ const ShapeBox = ({ shape: item }: IShapeWithEvents) => {
     () => box?.effects?.filter((e) => e?.visible && e?.type === "shadow").at(0),
     [box.effects]
   );
+  const stroke = useMemo(
+    () => box?.strokes?.filter((e) => e?.visible)?.at(0),
+    [box?.strokes]
+  );
+  const fill = useMemo(
+    () => box?.fills?.filter((e) => e?.type === "fill" && e?.visible)?.at(0),
+    [box.fills]
+  );
 
   if (!box.visible) return null;
 
@@ -46,12 +54,9 @@ const ShapeBox = ({ shape: item }: IShapeWithEvents) => {
         listening={!box.isLocked}
         // 3. Relleno y color
         fillEnabled
-        fill={
-          box?.fills?.filter((e) => e?.type === "fill" && e?.visible)?.at(0)
-            ?.color
-        }
+        fill={fill?.color}
         // 4. Bordes y trazos
-        stroke={box?.strokes?.filter((e) => e?.visible)?.at(0)?.color}
+        stroke={stroke?.color}
         strokeWidth={box.strokeWidth}
         strokeEnabled={box.strokeWidth > 0}
         // dash={[dash, dash, dash, dash]}

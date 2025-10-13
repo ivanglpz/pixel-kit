@@ -28,6 +28,15 @@ export const ShapeDraw = ({ shape: item }: IShapeWithEvents) => {
     [box.effects]
   );
 
+  const stroke = useMemo(
+    () => box?.strokes?.filter((e) => e?.visible)?.at(0),
+    [box?.strokes]
+  );
+  const fill = useMemo(
+    () => box?.fills?.filter((e) => e?.type === "fill" && e?.visible)?.at(0),
+    [box.fills]
+  );
+
   if (!box.visible) return null;
 
   return (
@@ -48,12 +57,9 @@ export const ShapeDraw = ({ shape: item }: IShapeWithEvents) => {
         // 4. Relleno y color
         // fillEnabled={box?.fills?.filter((e) => e?.visible)?.length > 0}
         fillEnabled
-        fill={
-          box?.fills?.filter((e) => e?.type === "fill" && e?.visible)?.at(0)
-            ?.color
-        }
+        fill={fill?.color}
         // 5. Bordes y trazos
-        stroke={box?.strokes?.filter((e) => e?.visible)?.at(0)?.color}
+        stroke={stroke?.color}
         strokeWidth={box.strokeWidth}
         strokeEnabled={box.strokeWidth > 0}
         dash={[box.dash]}
