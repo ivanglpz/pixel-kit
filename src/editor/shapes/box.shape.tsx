@@ -4,10 +4,11 @@ import { Rect } from "react-konva";
 import { SHAPE_IDS_ATOM } from "../states/shape";
 import { coordinatesShapeMove, TransformDimension } from "./events.shape";
 import { flexLayoutAtom } from "./layout-flex";
-import { IShape, IShapeWithEvents, WithInitialValue } from "./type.shape";
+import { IShape, IShapeEvents, WithInitialValue } from "./type.shape";
 
 // eslint-disable-next-line react/display-name
-const ShapeBox = ({ shape: item }: IShapeWithEvents) => {
+const ShapeBox = (props: IShapeEvents) => {
+  const { shape: item } = props;
   const [box, setBox] = useAtom(
     item.state as PrimitiveAtom<IShape> & WithInitialValue<IShape>
   );

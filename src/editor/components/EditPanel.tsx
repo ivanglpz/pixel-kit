@@ -5,14 +5,14 @@ import { atom, useAtom, useSetAtom } from "jotai";
 import { Send } from "lucide-react";
 import { useState } from "react";
 import { constants } from "../constants/color";
-import { IShapeWithEvents } from "../shapes/type.shape";
+import { IShapeEvents } from "../shapes/type.shape";
 import {
   ALL_SHAPES,
   ALL_SHAPES_CHILDREN,
   GET_ALL_SHAPES_BY_ID,
 } from "../states/shapes";
 import { Input } from "./input";
-export const EditPanel = ({ shape }: IShapeWithEvents) => {
+export const EditPanel = ({ shape }: IShapeEvents) => {
   const [show, setShow] = useState(false);
   const [text, setText] = useState("");
   const [box, setBox] = useAtom(shape.state);

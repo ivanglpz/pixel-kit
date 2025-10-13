@@ -125,8 +125,8 @@ export type IShapeChildren = Omit<IShape, "children"> & {
   children: ALL_SHAPES_CHILDREN[];
 };
 
-export type IShapeWithEvents = {
+export type IShapeEvents = {
   shape: ALL_SHAPES;
 };
 
-export type FCShapeWEvents = FC<IShapeWithEvents>;
+export type FCShapeWEvents = FC<IShapeEvents>;
