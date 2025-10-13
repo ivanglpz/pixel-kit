@@ -9,8 +9,6 @@ export const DB_CONNECT = async (): Promise<void> => {
       // useNewUrlParser: true,
       // useUnifiedTopology: true,
     });
-
-    console.log("DATABASE MONGO CONNECTED SUCCESSFULLY.");
   } catch (error) {
     process.exit(1);
   }
