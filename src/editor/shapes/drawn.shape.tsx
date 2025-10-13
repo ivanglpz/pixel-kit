@@ -1,7 +1,7 @@
 /* eslint-disable react/display-name */
 import { PrimitiveAtom, useAtom, useSetAtom } from "jotai";
 import { Line } from "react-konva";
-import { IShape, IShapeWithEvents, WithInitialValue } from "./type.shape";
+import { IShape, IShapeEvents, WithInitialValue } from "./type.shape";
 
 /* eslint-disable react/display-name */
 import { SHAPE_IDS_ATOM } from "../states/shape";
@@ -10,7 +10,7 @@ import { useMemo } from "react";
 import { coordinatesShapeMove, TransformDimension } from "./events.shape";
 import { flexLayoutAtom } from "./layout-flex";
 
-export const ShapeDraw = ({ shape: item }: IShapeWithEvents) => {
+export const ShapeDraw = ({ shape: item }: IShapeEvents) => {
   const [box, setBox] = useAtom(
     item.state as PrimitiveAtom<IShape> & WithInitialValue<IShape>
   );

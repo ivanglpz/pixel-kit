@@ -2,14 +2,14 @@
 /* eslint-disable react/display-name */
 import { PrimitiveAtom, useAtom, useSetAtom } from "jotai";
 import { Text } from "react-konva";
-import { IShape, IShapeWithEvents, WithInitialValue } from "./type.shape";
+import { IShape, IShapeEvents, WithInitialValue } from "./type.shape";
 /* eslint-disable react/display-name */
 import { SHAPE_IDS_ATOM } from "../states/shape";
 
 import { useMemo } from "react";
 import { coordinatesShapeMove, TransformDimension } from "./events.shape";
 import { flexLayoutAtom } from "./layout-flex";
-export const ShapeText = (props: IShapeWithEvents) => {
+export const ShapeText = (props: IShapeEvents) => {
   const { shape: item } = props;
   const [box, setBox] = useAtom(
     item.state as PrimitiveAtom<IShape> & WithInitialValue<IShape>

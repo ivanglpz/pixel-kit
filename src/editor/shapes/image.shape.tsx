@@ -12,7 +12,7 @@ import { SHAPE_IDS_ATOM } from "../states/shape";
 import { Image as KonvaImage } from "react-konva";
 
 // Tipos
-import { IShape, IShapeWithEvents, WithInitialValue } from "./type.shape";
+import { IShape, IShapeEvents, WithInitialValue } from "./type.shape";
 
 // Eventos de shape
 import { coordinatesShapeMove, TransformDimension } from "./events.shape";
@@ -56,7 +56,7 @@ function calculateCoverCrop(
 // Componente ShapeImage
 // =========================
 
-export const ShapeImage = (props: IShapeWithEvents) => {
+export const ShapeImage = (props: IShapeEvents) => {
   // Estado local vinculado al átomo
   const [box, setBox] = useAtom(
     props?.shape.state as PrimitiveAtom<IShape> & WithInitialValue<IShape>

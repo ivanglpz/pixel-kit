@@ -7,11 +7,11 @@ import { Shapes } from "./shapes";
 import {
   FCShapeWEvents,
   IShape,
-  IShapeWithEvents,
+  IShapeEvents,
   WithInitialValue,
 } from "./type.shape";
 
-export const SHAPE_FRAME = (props: IShapeWithEvents) => {
+export const SHAPE_FRAME = (props: IShapeEvents) => {
   const { shape: item } = props;
   const box = useAtomValue(
     item.state as PrimitiveAtom<IShape> & WithInitialValue<IShape>
