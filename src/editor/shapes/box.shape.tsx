@@ -35,7 +35,6 @@ const ShapeBox = (props: IShapeEvents) => {
   );
 
   if (!box.visible) return null;
-
   return (
     <>
       <Rect
