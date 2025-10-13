@@ -2,6 +2,7 @@ import { IProject } from "@/db/schemas/types";
 import { api } from "@/services/axios";
 import { atom, PrimitiveAtom } from "jotai";
 import { atomWithDefault } from "jotai/utils";
+import { CreateShapeSchema } from "../helpers/shape-schema";
 import { IShape } from "../shapes/type.shape";
 import { IStageEvents } from "./event";
 import { MODE } from "./mode";
@@ -42,7 +43,7 @@ const cloneShapeRecursive = (shape: ALL_SHAPES_CHILDREN): ALL_SHAPES => {
     // pageId: shape.pageId,
     tool: shape.tool,
     state: atom<IShape>({
-      ...shape.state,
+      ...CreateShapeSchema(shape.state),
       children: atom(shape.state.children.map((c) => cloneShapeRecursive(c))),
     }),
   };
@@ -154,7 +155,7 @@ export const PROJECT_ATOM = atom((get) => {
   return FIND_PROJECT ?? MOCKUP_PROJECT;
 });
 
-export const JSON_PROJECTS_ATOM = atom(null, (get, set) => {
+export const GET_JSON_PROJECTS_ATOM = atom(null, (get, set) => {
   const project = get(PROJECT_ATOM);
 
   const cloneShapeJson = (shape: ALL_SHAPES): ALL_SHAPES_CHILDREN => {
@@ -163,7 +164,7 @@ export const JSON_PROJECTS_ATOM = atom(null, (get, set) => {
       // pageId: shape.pageId,
       tool: shape.tool,
       state: {
-        ...get(shape.state),
+        ...CreateShapeSchema(get(shape.state)),
         children: get(get(shape.state).children).map((c) => cloneShapeJson(c)),
       },
     };

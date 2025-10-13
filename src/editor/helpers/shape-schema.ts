@@ -1,4 +1,4 @@
-import { IShape } from "@/editor/shapes/type.shape";
+import { IShape, IShapeChildren } from "@/editor/shapes/type.shape";
 import { v4 as uuidv4 } from "uuid";
 import { IKeyMethods } from "../states/tool";
 
@@ -89,7 +89,7 @@ const initial: Omit<IShape, "children"> = {
   text: "Hello World",
 };
 export const CreateShapeSchema = (
-  props: Partial<IShape>
+  props?: Partial<IShape> | IShapeChildren
 ): Exclude<IShape, "children"> => {
   return cloneDeep({ ...initial, ...props });
 };

@@ -3,12 +3,12 @@ import { updateProject } from "@/services/projects";
 import { useMutation } from "@tanstack/react-query";
 import { useSetAtom } from "jotai";
 import { toast } from "sonner";
-import { JSON_PROJECTS_ATOM } from "../states/projects";
+import { GET_JSON_PROJECTS_ATOM } from "../states/projects";
 import { useDelayedExecutor } from "./useDelayExecutor";
 import { useReference } from "./useReference";
 
 export const useAutoSave = () => {
-  const GET_JSON = useSetAtom(JSON_PROJECTS_ATOM);
+  const GET_JSON = useSetAtom(GET_JSON_PROJECTS_ATOM);
 
   const { ref } = useReference({
     type: "STAGE_PREVIEW",
