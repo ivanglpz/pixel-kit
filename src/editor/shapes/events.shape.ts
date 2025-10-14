@@ -7,10 +7,10 @@ export const coordinatesShapeMove = (
 ): IShape => {
   const shape = evt.target;
 
-  const stage = shape.getStage();
-  if (!stage) return prev;
+  // const stage = shape.getStage();
+  // if (!stage) return prev;
 
-  const box = shape.getClientRect({ relativeTo: stage });
+  // const box = shape.getClientRect({ relativeTo: stage });
   const x = shape.x(); // relativo al grupo
   const y = shape.y();
 
