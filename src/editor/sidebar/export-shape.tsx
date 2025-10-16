@@ -14,24 +14,19 @@ import { formats } from "../constants/formats";
 import { stagePreview } from "../constants/stage-preview";
 import { useStagePreview } from "../hooks/useStagePreview";
 import { Shapes } from "../shapes/shapes";
-import { FCShapeWEvents } from "../shapes/type.shape";
 import { typeExportAtom } from "../states/export";
 import { SHAPE_SELECTED_ATOM } from "../states/shape";
 import { downloadBase64Image } from "../utils/downloadBase64";
 import { computeStageTransform } from "../utils/stageTransform";
 
 export const ExportShape = () => {
-  const { shape } = useAtomValue(SHAPE_SELECTED_ATOM);
+  const { shape, shapes } = useAtomValue(SHAPE_SELECTED_ATOM);
   const [loading, setLoading] = useState(false);
   const [format, setFormat] = useAtom(typeExportAtom);
   const [showExportDialog, setShowExportDialog] = useState(false);
 
   const { stageRef } = useStagePreview({
-    type: "SHAPE",
-    dimensions: {
-      width: shape?.width || 0,
-      height: shape?.height || 0,
-    },
+    type: "SHAPES",
   });
 
   const handleExport = () => {
@@ -125,7 +120,6 @@ export const ExportShape = () => {
         </Dialog.Container>
       </Dialog.Provider>
 
-      {/* Preview */}
       <p
         className={css({
           paddingBottom: "md",
@@ -150,21 +144,19 @@ export const ExportShape = () => {
         })}
       >
         <Layer>
-          {shape &&
-            (() => {
-              const Component = Shapes?.[shape.tool] as FCShapeWEvents;
-              return (
-                <Component
-                  key={`pixel-kit-preview-${shape.id}`}
-                  shape={{
-                    id: "1",
-                    // pageId: "one",
-                    state: atom({ ...shape, x: 0, y: 0 }),
-                    tool: shape.tool,
-                  }}
-                />
-              );
-            })()}
+          {shapes.map((e) => {
+            const Component = Shapes?.[e.tool];
+            return (
+              <Component
+                key={`pixel-kit-shapes-preview-${e.id}`}
+                shape={{
+                  id: e.id,
+                  tool: e.tool,
+                  state: atom(e),
+                }}
+              />
+            );
+          })}
         </Layer>
       </StageContainer>
       <div
