@@ -1,5 +1,5 @@
 import { css } from "@stylespixelkit/css";
-import { useAtom, useAtomValue } from "jotai";
+import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { File } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
@@ -13,12 +13,57 @@ import { formats } from "../constants/formats";
 import { typeExportAtom } from "../states/export";
 import { SHAPE_SELECTED_ATOM } from "../states/shape";
 
+import Konva from "konva";
+import { GET_EXPORT_SHAPES } from "../states/mode";
+
+const exportGroups = (numbers: number[], format: "png" | "jpeg"): void => {
+  const stage = new Konva.Stage({
+    container: document.createElement("div"),
+    width: 1000,
+    height: 1000,
+  });
+  const layer = new Konva.Layer();
+  stage.add(layer);
+
+  numbers.forEach((num, index) => {
+    const group = new Konva.Group({ listening: false });
+
+    // Texto con el número
+    const text = new Konva.Text({
+      text: `Number: ${num}`,
+      fontSize: 24,
+      fontFamily: "Arial",
+      fill: "red",
+      x: 20,
+      y: 20,
+    });
+
+    group.add(text);
+    layer.add(group);
+    layer.draw();
+
+    const dataURL = group.toDataURL({
+      mimeType: format === "png" ? "image/png" : "image/jpeg",
+      pixelRatio: 2,
+    });
+
+    const link = document.createElement("a");
+    link.download = `group-${num}.${format}`;
+    link.href = dataURL;
+    link.click();
+
+    group.destroy();
+  });
+
+  stage.destroy();
+};
+
 export const ExportShape = () => {
-  const { shape } = useAtomValue(SHAPE_SELECTED_ATOM);
+  const { shapes } = useAtomValue(SHAPE_SELECTED_ATOM);
   const [loading, setLoading] = useState(false);
   const [format, setFormat] = useAtom(typeExportAtom);
   const [showExportDialog, setShowExportDialog] = useState(false);
-
+  const EXPORT = useSetAtom(GET_EXPORT_SHAPES);
   const handleExport = () => {
     toast.success("Thank you very much for using pixel kit!", {
       description: (
@@ -36,21 +81,7 @@ export const ExportShape = () => {
     });
 
     setLoading(true);
-
-    // const { offsetX, offsetY, width, height } = computeStageTransform({
-    //   width: shape?.width || 0,
-    //   height: shape?.height || 0,
-    // });
-    // const image = stageRef.current?.toDataURL({
-    //   quality: 1,
-    //   pixelRatio: formats[format as keyof typeof formats],
-    //   x: offsetX,
-    //   y: offsetY,
-    //   width,
-    //   height,
-    // });
-
-    // if (image) downloadBase64Image(image);
+    EXPORT();
     setLoading(false);
   };
 

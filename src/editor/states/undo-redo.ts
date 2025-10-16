@@ -54,7 +54,7 @@ const truncateListAtIndex = <T>(list: T[], index: number): T[] =>
   list.slice(0, index);
 
 // ===== SHAPE CONVERSIONS =====
-const cloneShapeRecursive =
+export const cloneShapeRecursive =
   (get: Getter) =>
   (shape: ALL_SHAPES): UndoShape => {
     const children = get(get(shape.state).children);

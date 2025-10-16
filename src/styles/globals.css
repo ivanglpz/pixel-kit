@@ -27,7 +27,7 @@ body {
   display: flex;
   flex-direction: column;
   cursor: url("/cursors/default.png"), auto;
-  font-family: "Montserrat", sans-serif !important;
+  font-family: "Roboto", sans-serif !important;
   max-width: 100%;
   overscroll-behavior: contain;
   background-color: var(--bg);

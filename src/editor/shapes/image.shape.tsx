@@ -25,7 +25,7 @@ import { flexLayoutAtom } from "./layout-flex";
 // =========================
 
 // Calcula un recorte de imagen estilo "object-fit: cover"
-function calculateCoverCrop(
+export function calculateCoverCrop(
   imageWidth: number,
   imageHeight: number,
   containerWidth: number,
