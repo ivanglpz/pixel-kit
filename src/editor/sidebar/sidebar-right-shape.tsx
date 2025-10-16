@@ -55,6 +55,7 @@ import { useDelayedExecutor } from "../hooks/useDelayExecutor";
 import { AlignItems, JustifyContent } from "../shapes/layout-flex";
 import { PROJECT_ID_ATOM } from "../states/projects";
 import { UPDATE_UNDO_REDO } from "../states/undo-redo";
+import { getObjectUrl } from "../utils/getObjectUrl";
 import { ExportShape } from "./export-shape";
 
 export const calculateScale = (
@@ -282,10 +283,6 @@ export const SectionHeader = ({
     </div>
   </div>
 );
-
-export function getObjectUrl(obj: File): string {
-  return URL.createObjectURL(obj);
-}
 
 export const LayoutShapeConfig = () => {
   const [showIcons, setshowIcons] = useState(false);
