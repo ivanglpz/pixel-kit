@@ -1,6 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { icons } from "@/editor/icons/tool-icons";
 import { atom } from "jotai";
+import { formats } from "../constants/formats";
 import { IStageEvents } from "../states/event";
 import { PROJECT_ATOM } from "../states/projects";
 import { IKeyTool } from "../states/tool";
@@ -8,6 +9,7 @@ import {
   createStagesFromShapes,
   exportAndDownloadStages,
 } from "../utils/export";
+import { typeExportAtom } from "./export";
 import { SHAPE_IDS_ATOM } from "./shape";
 import { PLANE_SHAPES_ATOM } from "./shapes";
 import { cloneShapeRecursive } from "./undo-redo";
@@ -131,6 +133,7 @@ export const CONFIG_ATOM = atom(
 export const GET_EXPORT_SHAPES = atom(null, (get, set) => {
   const selectedIds = get(SHAPE_IDS_ATOM);
   const planeShapes = get(PLANE_SHAPES_ATOM);
+  const format = get(typeExportAtom);
   const cloner = cloneShapeRecursive(get);
   const shapes = planeShapes
     .filter((shape) =>
@@ -144,5 +147,9 @@ export const GET_EXPORT_SHAPES = atom(null, (get, set) => {
   const stagesWithContainers = createStagesFromShapes(shapes);
 
   const stages = stagesWithContainers.map((s) => s.stage);
-  exportAndDownloadStages(stages, "png", 2);
+  exportAndDownloadStages(
+    stages,
+    "png",
+    formats[format as keyof typeof formats]
+  );
 });
