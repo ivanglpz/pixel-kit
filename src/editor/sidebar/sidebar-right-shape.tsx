@@ -48,6 +48,7 @@ import { Input } from "../components/input";
 import { ListIcons } from "../components/list-icons";
 import { Loading } from "../components/loading";
 import { constants } from "../constants/color";
+import { fontFamilyOptions, fontWeightOptions } from "../constants/fonts";
 import { useAutoSave } from "../hooks/useAutoSave";
 import { useDelayedExecutor } from "../hooks/useDelayExecutor";
 import { AlignItems, JustifyContent } from "../shapes/layout-flex";
@@ -55,7 +56,6 @@ import { PROJECT_ID_ATOM } from "../states/projects";
 import { UPDATE_UNDO_REDO } from "../states/undo-redo";
 import { ExportShape } from "./export-shape";
 
-// Función utilitaria para calcular la escala de imagen
 export const calculateScale = (
   originalWidth: number,
   originalHeight: number,
@@ -67,7 +67,6 @@ export const calculateScale = (
   return Math.min(widthScale, heightScale);
 };
 
-// Estilos reutilizables
 export const commonStyles = {
   container: css({
     display: "flex",
@@ -128,7 +127,6 @@ export const commonStyles = {
   }),
 };
 
-// Componente Separador
 const Separator = () => (
   <div
     className={css({
@@ -225,11 +223,11 @@ const LayoutGrid: React.FC<LayoutGridProps> = ({
         borderRadius: "md",
         padding: "md",
         _dark: {
-          borderColor: "gray.700", // ← usa el semantic token
-          backgroundColor: "gray.800", // Fondo más claro para el selector
+          borderColor: "gray.700",
+          backgroundColor: "gray.800",
         },
         backgroundColor: "gray.100",
-        borderColor: "gray.200", // ← usa el semantic token
+        borderColor: "gray.200",
       })}
     >
       {Array.from({ length: 9 }, (_, index) => {
@@ -247,11 +245,11 @@ const LayoutGrid: React.FC<LayoutGridProps> = ({
               aspectRatio: "1",
               transition: "all 0.2s ease",
               _dark: {
-                borderColor: "gray.600", // ← usa el semantic token
-                backgroundColor: "gray.800", // Fondo más claro para el selector
+                borderColor: "gray.600",
+                backgroundColor: "gray.800",
               },
               backgroundColor: "gray.100",
-              borderColor: "gray.200", // ← usa el semantic token
+              borderColor: "gray.200",
             })}
             style={{
               backgroundColor: getSquareColor(row, col),
@@ -263,7 +261,6 @@ const LayoutGrid: React.FC<LayoutGridProps> = ({
   );
 };
 
-// Componente para título de sección con botón opcional
 export const SectionHeader = ({
   title,
   onAdd,
@@ -308,11 +305,10 @@ export function getObjectUrl(obj: File): string {
 }
 
 export const LayoutShapeConfig = () => {
-  // Hooks de estado
   const [showIcons, setshowIcons] = useState(false);
   const [showImage, setShowImage] = useState(false);
-  const shape = useAtomValue(SHAPE_SELECTED_ATOM);
   const inputRef = useRef<HTMLInputElement>(null);
+  const { shape, count } = useAtomValue(SHAPE_SELECTED_ATOM);
   const shapeUpdate = useSetAtom(SHAPE_UPDATE_ATOM);
   const setUpdateUndoRedo = useSetAtom(UPDATE_UNDO_REDO);
   const [type, setType] = useState<"UPLOAD" | "CHOOSE">("UPLOAD");
@@ -323,12 +319,13 @@ export const LayoutShapeConfig = () => {
     IPhoto,
     "createdBy" | "folder" | "projectId"
   > | null>(null);
+
   const { execute, isRunning } = useDelayedExecutor({
     callback: () => {
       setUpdateUndoRedo();
       debounce.execute();
     },
-    timer: 500, // opcional
+    timer: 500,
   });
 
   const QueryListPhotos = useQuery({
@@ -396,7 +393,7 @@ export const LayoutShapeConfig = () => {
             ...(shape.fills || []),
           ],
         });
-        execute(); // Ejecutar después del cambio
+        execute();
         handleResetDialogImage();
         QueryListPhotos.refetch();
 
@@ -432,59 +429,14 @@ export const LayoutShapeConfig = () => {
         ],
       });
 
-      execute(); // Ejecutar después del cambio
+      execute();
       handleResetDialogImage();
     },
     onError: (error) => {
       toast.error(error.message);
     },
   });
-  // Si no hay shape seleccionado, no renderizar nada
   if (shape === null) return null;
-
-  // Opciones para selects
-  const fontFamilyOptions = [
-    { id: "font-Arial", label: "Arial", value: "Arial" },
-    { id: "font-ArialBlack", label: "Arial Black", value: "Arial Black" },
-    { id: "font-Verdana", label: "Verdana", value: "Verdana" },
-    { id: "font-Tahoma", label: "Tahoma", value: "Tahoma" },
-    { id: "font-TrebuchetMS", label: "Trebuchet MS", value: "Trebuchet MS" },
-    { id: "font-Impact", label: "Impact", value: "Impact" },
-    {
-      id: "font-TimesNewRoman",
-      label: "Times New Roman",
-      value: "Times New Roman",
-    },
-    { id: "font-Georgia", label: "Georgia", value: "Georgia" },
-    { id: "font-Palatino", label: "Palatino", value: "Palatino" },
-    { id: "font-Garamond", label: "Garamond", value: "Garamond" },
-    { id: "font-CourierNew", label: "Courier New", value: "Courier New" },
-    {
-      id: "font-LucidaConsole",
-      label: "Lucida Console",
-      value: "Lucida Console",
-    },
-    {
-      id: "font-LucidaSansUnicode",
-      label: "Lucida Sans Unicode",
-      value: "Lucida Sans Unicode",
-    },
-    { id: "font-ComicSansMS", label: "Comic Sans MS", value: "Comic Sans MS" },
-    { id: "font-Candara", label: "Candara", value: "Candara" },
-    { id: "font-Calibri", label: "Calibri", value: "Calibri" },
-    { id: "font-Cambria", label: "Cambria", value: "Cambria" },
-    { id: "font-Constantia", label: "Constantia", value: "Constantia" },
-    { id: "font-Consolas", label: "Consolas", value: "Consolas" },
-  ];
-
-  const fontWeightOptions = [
-    { id: "font-weight-lighter", label: "Lighter", value: "lighter" },
-    { id: "font-weight-normal", label: "Normal", value: "normal" },
-    { id: "font-weight-medium", label: "Medium", value: "500" },
-    { id: "font-weight-semi-bold", label: "Semi Bold", value: "600" },
-    { id: "font-weight-bold", label: "Bold", value: "bold" },
-    { id: "font-weight-bolder", label: "Bolder", value: "bolder" },
-  ];
 
   const createImageFromSVG = (svgString: string, svgName: string) => {
     const img = new Image();
@@ -514,7 +466,7 @@ export const LayoutShapeConfig = () => {
           ...(shape.fills || []),
         ],
       });
-      execute(); // Ejecutar después del cambio
+      execute();
     };
     const dataImage =
       "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svgString);
@@ -529,17 +481,15 @@ export const LayoutShapeConfig = () => {
     const maxSizeInBytes = 1 * 1024 * 1024;
     if (file.size > maxSizeInBytes) {
       toast.error(`The image ${file.name} cannot be larger than 1MB.`);
-      event.target.value = ""; // resetear aquí
+      event.target.value = "";
       return;
     }
 
     setPhotoUpload(file);
 
-    event.target.value = ""; // resetear después también
-    // procesar archivo
+    event.target.value = "";
   };
 
-  // Manejadores para fills
   const handleAddFill = () => {
     shapeUpdate({
       fills: [
@@ -559,31 +509,30 @@ export const LayoutShapeConfig = () => {
         },
       ],
     });
-    execute(); // Ejecutar después del cambio
+    execute();
   };
 
   const handleFillColorChange = (index: number, color: string) => {
     const newFills = [...shape.fills];
     newFills[index].color = color;
     shapeUpdate({ fills: newFills });
-    execute(); // Ejecutar después del cambio
+    execute();
   };
 
   const handleFillVisibilityToggle = (index: number) => {
     const newFills = [...shape.fills];
     newFills[index].visible = !newFills[index].visible;
     shapeUpdate({ fills: newFills });
-    execute(); // Ejecutar después del cambio
+    execute();
   };
 
   const handleFillRemove = (index: number) => {
     const newFills = [...shape.fills];
     newFills.splice(index, 1);
     shapeUpdate({ fills: newFills });
-    execute(); // Ejecutar después del cambio
+    execute();
   };
 
-  // Manejadores para strokes
   const handleAddStroke = () => {
     shapeUpdate({
       strokes: [
@@ -595,28 +544,28 @@ export const LayoutShapeConfig = () => {
         },
       ],
     });
-    execute(); // Ejecutar después del cambio
+    execute();
   };
 
   const handleStrokeColorChange = (index: number, color: string) => {
     const newStrokes = [...shape.strokes];
     newStrokes[index].color = color;
     shapeUpdate({ strokes: newStrokes });
-    execute(); // Ejecutar después del cambio
+    execute();
   };
 
   const handleStrokeVisibilityToggle = (index: number) => {
     const newStrokes = [...shape.strokes];
     newStrokes[index].visible = !newStrokes[index].visible;
     shapeUpdate({ strokes: newStrokes });
-    execute(); // Ejecutar después del cambio
+    execute();
   };
 
   const handleStrokeRemove = (index: number) => {
     const newStrokes = [...shape.strokes];
     newStrokes.splice(index, 1);
     shapeUpdate({ strokes: newStrokes });
-    execute(); // Ejecutar después del cambio
+    execute();
   };
 
   // Manejadores para effects
@@ -632,37 +581,36 @@ export const LayoutShapeConfig = () => {
         },
       ],
     });
-    execute(); // Ejecutar después del cambio
+    execute();
   };
 
   const handleEffectColorChange = (index: number, color: string) => {
     const newEffects = [...(shape.effects ?? [])];
     newEffects[index].color = color;
     shapeUpdate({ effects: newEffects });
-    execute(); // Ejecutar después del cambio
+    execute();
   };
 
   const handleEffectVisibilityToggle = (index: number) => {
     const newEffects = [...(shape.effects ?? [])];
     newEffects[index].visible = !newEffects[index].visible;
     shapeUpdate({ effects: newEffects });
-    execute(); // Ejecutar después del cambio
+    execute();
   };
 
   const handleEffectRemove = (index: number) => {
     const newEffects = [...(shape.effects ?? [])];
     newEffects.splice(index, 1);
     shapeUpdate({ effects: newEffects });
-    execute(); // Ejecutar después del cambio
+    execute();
   };
 
-  // Manejadores para line styles
   const handleLineStyleChange = (
     lineJoin: IShape["lineJoin"],
     lineCap: IShape["lineCap"]
   ) => {
     shapeUpdate({ lineJoin, lineCap });
-    execute(); // Ejecutar después del cambio
+    execute();
   };
 
   const handleResetDialogImage = () => {
@@ -671,8 +619,6 @@ export const LayoutShapeConfig = () => {
     setPhotocChoose(null);
     setShowImage(false);
   };
-
-  // Manejadores para layouts (agregar con los demás manejadores)
 
   return (
     <div
@@ -902,7 +848,6 @@ export const LayoutShapeConfig = () => {
         </Dialog.Container>
       </Dialog.Provider>
 
-      {/* SECCIÓN: SHAPE - Información general */}
       <section className={commonStyles.container}>
         <div
           className={css({
@@ -912,7 +857,9 @@ export const LayoutShapeConfig = () => {
             alignItems: "center",
           })}
         >
-          <p className={commonStyles.sectionTitle}>Shape</p>
+          <p
+            className={commonStyles.sectionTitle}
+          >{`[${count}] Shap${count > 1 ? "es" : "e"} `}</p>
           {isRunning ? (
             <div className="lds-ring">
               <div></div>
@@ -923,7 +870,6 @@ export const LayoutShapeConfig = () => {
           ) : null}
         </div>
 
-        {/* Posición */}
         <div className={commonStyles.twoColumnGrid}>
           <Input.Container>
             <Input.Grid>
@@ -936,7 +882,6 @@ export const LayoutShapeConfig = () => {
                 >
                   X
                 </p>
-                {/* <MoveHorizontal size={constants.icon.size} /> */}
               </Input.IconContainer>
               <Input.withPause>
                 <Input.Number
@@ -944,7 +889,7 @@ export const LayoutShapeConfig = () => {
                   value={shape.x}
                   onChange={(v) => {
                     shapeUpdate({ x: v });
-                    execute(); // Ejecutar después del cambio
+                    execute();
                   }}
                 />
               </Input.withPause>
@@ -961,7 +906,6 @@ export const LayoutShapeConfig = () => {
                 >
                   Y
                 </p>
-                {/* <MoveHorizontal size={constants.icon.size} /> */}
               </Input.IconContainer>
               <Input.withPause>
                 <Input.Number
@@ -969,7 +913,7 @@ export const LayoutShapeConfig = () => {
                   value={shape.y}
                   onChange={(v) => {
                     shapeUpdate({ y: v });
-                    execute(); // Ejecutar después del cambio
+                    execute();
                   }}
                 />
               </Input.withPause>
@@ -978,205 +922,86 @@ export const LayoutShapeConfig = () => {
         </div>
       </section>
 
-      {/* SECCIÓN: LAYOUT - Dimensiones */}
       <section className={commonStyles.container}>
-        <p className={commonStyles.sectionTitle}>Dimensions</p>
-
-        {Boolean(shape.parentId) ? (
-          <>
-            <div className={commonStyles.two2ColumnGrid}>
-              <Input.Container>
-                <Input.Grid>
-                  <Input.IconContainer>
-                    <p
-                      className={css({
-                        fontWeight: 600,
-                        fontSize: "x-small",
-                      })}
-                    >
-                      W
-                    </p>
-                    {/* <MoveHorizontal size={constants.icon.size} /> */}
-                  </Input.IconContainer>
-                  <Input.withPause>
-                    <Input.Number
-                      step={1}
-                      min={0}
-                      value={Number(shape.width) || 0}
-                      onChange={(v) => {
-                        shapeUpdate({ width: v });
-                        execute(); // Ejecutar después del cambio
-                      }}
-                    />
-                  </Input.withPause>
-                </Input.Grid>
-              </Input.Container>
-
-              <button
-                onClick={() => {
-                  shapeUpdate({
-                    fillContainerWidth: !shape.fillContainerWidth,
-                  });
-                  execute(); // Ejecutar después del cambio
-                }}
-                className={css({
-                  cursor: "pointer",
-                  width: 30,
-                  height: 30,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  borderWidth: "1px",
-                  borderStyle: "solid",
-                  borderRadius: "md",
-                })}
-                style={{
-                  backgroundColor: shape.fillContainerWidth
-                    ? constants.theme.colors.background
-                    : "transparent",
-                  borderColor: shape.fillContainerWidth
+        <header className="flex flex-row justify-between items-center">
+          <p className={commonStyles.sectionTitle}>Dimensions</p>
+          <div className="flex flex-row gap-2">
+            <button
+              onClick={() => {
+                shapeUpdate({
+                  fillContainerWidth: !shape.fillContainerWidth,
+                });
+                execute();
+              }}
+              className={css({
+                cursor: "pointer",
+                width: 30,
+                height: 30,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                borderWidth: "1px",
+                borderStyle: "solid",
+                borderRadius: "md",
+              })}
+              style={{
+                backgroundColor: shape.fillContainerWidth
+                  ? constants.theme.colors.background
+                  : "transparent",
+                borderColor: shape.fillContainerWidth
+                  ? constants.theme.colors.primary
+                  : "transparent",
+              }}
+            >
+              <MoveHorizontal
+                size={constants.icon.size}
+                color={
+                  shape.fillContainerWidth
                     ? constants.theme.colors.primary
-                    : "transparent", // ← usa el semantic token
-                }}
-              >
-                <MoveHorizontal
-                  size={constants.icon.size}
-                  color={
-                    shape.fillContainerWidth
-                      ? constants.theme.colors.primary
-                      : constants.theme.colors.white
-                  }
-                  strokeWidth={constants.icon.strokeWidth}
-                />
-              </button>
-            </div>
-            <div className={commonStyles.two2ColumnGrid}>
-              <Input.Container>
-                <Input.Grid>
-                  <Input.IconContainer>
-                    <p
-                      className={css({
-                        fontWeight: 600,
-                        fontSize: "x-small",
-                      })}
-                    >
-                      H
-                    </p>
-                    {/* <MoveHorizontal size={constants.icon.size} /> */}
-                  </Input.IconContainer>
-                  <Input.withPause>
-                    <Input.Number
-                      step={1}
-                      min={0}
-                      value={Number(shape.height) || 0}
-                      onChange={(v) => {
-                        shapeUpdate({ height: v });
-                        execute(); // Ejecutar después del cambio
-                      }}
-                    />
-                  </Input.withPause>
-                </Input.Grid>
-              </Input.Container>
-
-              <button
-                onClick={() => {
-                  shapeUpdate({
-                    fillContainerHeight: !shape.fillContainerHeight,
-                  });
-                  execute(); // Ejecutar después del cambio
-                }}
-                className={css({
-                  cursor: "pointer",
-                  width: 30,
-                  height: 30,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  borderWidth: "1px",
-                  borderStyle: "solid",
-                  borderRadius: "md",
-                })}
-                style={{
-                  backgroundColor: shape.fillContainerHeight
-                    ? constants.theme.colors.background
-                    : "transparent",
-                  borderColor: shape.fillContainerHeight
+                    : constants.theme.colors.white
+                }
+                strokeWidth={constants.icon.strokeWidth}
+              />
+            </button>
+            <button
+              onClick={() => {
+                shapeUpdate({
+                  fillContainerHeight: !shape.fillContainerHeight,
+                });
+                execute();
+              }}
+              className={css({
+                cursor: "pointer",
+                width: 30,
+                height: 30,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                borderWidth: "1px",
+                borderStyle: "solid",
+                borderRadius: "md",
+              })}
+              style={{
+                backgroundColor: shape.fillContainerHeight
+                  ? constants.theme.colors.background
+                  : "transparent",
+                borderColor: shape.fillContainerHeight
+                  ? constants.theme.colors.primary
+                  : "transparent",
+              }}
+            >
+              <MoveVertical
+                size={constants.icon.size}
+                color={
+                  shape.fillContainerHeight
                     ? constants.theme.colors.primary
-                    : "transparent", // ← usa el semantic token
-                }}
-              >
-                <MoveVertical
-                  size={constants.icon.size}
-                  color={
-                    shape.fillContainerHeight
-                      ? constants.theme.colors.primary
-                      : constants.theme.colors.white
-                  }
-                  strokeWidth={constants.icon.strokeWidth}
-                />
-              </button>
-            </div>
-          </>
-        ) : null}
-
-        {!Boolean(shape.parentId) ? (
-          <div className={commonStyles.twoColumnGrid}>
-            <Input.Container>
-              <Input.Grid>
-                <Input.IconContainer>
-                  <p
-                    className={css({
-                      fontWeight: 600,
-                      fontSize: "x-small",
-                    })}
-                  >
-                    W
-                  </p>
-                  {/* <MoveHorizontal size={constants.icon.size} /> */}
-                </Input.IconContainer>
-                <Input.withPause>
-                  <Input.Number
-                    step={1}
-                    value={Number(shape.width) || 0}
-                    onChange={(v) => {
-                      shapeUpdate({ width: v });
-                      execute(); // Ejecutar después del cambio
-                    }}
-                  />
-                </Input.withPause>
-              </Input.Grid>
-            </Input.Container>
-            <Input.Container>
-              <Input.Grid>
-                <Input.IconContainer>
-                  <p
-                    className={css({
-                      fontWeight: 600,
-                      fontSize: "x-small",
-                    })}
-                  >
-                    H
-                  </p>
-                  {/* <MoveHorizontal size={constants.icon.size} /> */}
-                </Input.IconContainer>
-                <Input.withPause>
-                  <Input.Number
-                    step={1}
-                    value={Number(shape.height) || 0}
-                    onChange={(v) => {
-                      shapeUpdate({ height: v });
-                      execute(); // Ejecutar después del cambio
-                    }}
-                  />
-                </Input.withPause>
-              </Input.Grid>
-            </Input.Container>
+                    : constants.theme.colors.white
+                }
+                strokeWidth={constants.icon.strokeWidth}
+              />
+            </button>
           </div>
-        ) : null}
-
-        {/* NEW: Min/Max Dimensions Section */}
-        {/* <p className={commonStyles.labelText}>Min/Max Dimensions</p> */}
-        <Input.Label text="Min" />
+        </header>
 
         <div className={commonStyles.twoColumnGrid}>
           <Input.Container>
@@ -1191,6 +1016,60 @@ export const LayoutShapeConfig = () => {
                   W
                 </p>
                 {/* <MoveHorizontal size={constants.icon.size} /> */}
+              </Input.IconContainer>
+              <Input.withPause>
+                <Input.Number
+                  step={1}
+                  value={Number(shape.width) || 0}
+                  onChange={(v) => {
+                    shapeUpdate({ width: v });
+                    execute();
+                  }}
+                />
+              </Input.withPause>
+            </Input.Grid>
+          </Input.Container>
+          <Input.Container>
+            <Input.Grid>
+              <Input.IconContainer>
+                <p
+                  className={css({
+                    fontWeight: 600,
+                    fontSize: "x-small",
+                  })}
+                >
+                  H
+                </p>
+                {/* <MoveHorizontal size={constants.icon.size} /> */}
+              </Input.IconContainer>
+              <Input.withPause>
+                <Input.Number
+                  step={1}
+                  value={Number(shape.height) || 0}
+                  onChange={(v) => {
+                    shapeUpdate({ height: v });
+                    execute();
+                  }}
+                />
+              </Input.withPause>
+            </Input.Grid>
+          </Input.Container>
+        </div>
+
+        <Input.Label text="Min" />
+
+        <div className={commonStyles.twoColumnGrid}>
+          <Input.Container>
+            <Input.Grid>
+              <Input.IconContainer>
+                <p
+                  className={css({
+                    fontWeight: 600,
+                    fontSize: "x-small",
+                  })}
+                >
+                  W
+                </p>
               </Input.IconContainer>
               <Input.withPause>
                 <Input.Number
@@ -1303,7 +1182,6 @@ export const LayoutShapeConfig = () => {
               }}
             />
 
-            {/* Lista de layouts */}
             {shape.isLayout ? (
               <>
                 <div
@@ -1363,7 +1241,7 @@ export const LayoutShapeConfig = () => {
                             borderColor:
                               shape.flexDirection === "column"
                                 ? constants.theme.colors.primary
-                                : "transparent", // ← usa el semantic token
+                                : "transparent",
                           }}
                         >
                           <ArrowDown
@@ -1402,7 +1280,7 @@ export const LayoutShapeConfig = () => {
                             borderColor:
                               shape.flexDirection === "row"
                                 ? constants.theme.colors.primary
-                                : "transparent", // ← usa el semantic token
+                                : "transparent",
                           }}
                         >
                           <ArrowRight
@@ -1442,7 +1320,7 @@ export const LayoutShapeConfig = () => {
                             borderColor:
                               shape.flexWrap === "wrap"
                                 ? constants.theme.colors.primary
-                                : "transparent", // ← usa el semantic token
+                                : "transparent",
                           }}
                         >
                           <CornerRightDown
@@ -1547,7 +1425,7 @@ export const LayoutShapeConfig = () => {
                           : "transparent",
                         borderColor: !shape.isAllPadding
                           ? constants.theme.colors.primary
-                          : "transparent", // ← usa el semantic token
+                          : "transparent",
                       }}
                     >
                       <Sliders
@@ -1659,7 +1537,6 @@ export const LayoutShapeConfig = () => {
         </>
       ) : null}
 
-      {/* SECCIÓN: APPEARANCE - Apariencia */}
       <section className={commonStyles.container}>
         <p className={commonStyles.sectionTitle}>Appearance</p>
         <div className={commonStyles.twoColumnGrid}>
@@ -1676,7 +1553,7 @@ export const LayoutShapeConfig = () => {
                   value={shape.opacity}
                   onChange={(e) => {
                     shapeUpdate({ opacity: e });
-                    execute(); // Ejecutar después del cambio
+                    execute();
                   }}
                 />
               </Input.withPause>
@@ -1737,7 +1614,7 @@ export const LayoutShapeConfig = () => {
               })}
               onClick={() => {
                 shapeUpdate({ isAllBorderRadius: !shape.isAllBorderRadius });
-                execute(); // Ejecutar después del cambio
+                execute();
               }}
               style={{
                 backgroundColor: !shape.isAllBorderRadius
@@ -1745,7 +1622,7 @@ export const LayoutShapeConfig = () => {
                   : "transparent",
                 borderColor: !shape.isAllBorderRadius
                   ? constants.theme.colors.primary
-                  : "transparent", // ← usa el semantic token
+                  : "transparent",
               }}
             >
               <Sliders
@@ -1852,7 +1729,6 @@ export const LayoutShapeConfig = () => {
       <Separator />
 
       <Valid isValid={shape.tool === "TEXT"}>
-        {/* SECCIÓN: TYPOGRAPHY - Tipografía */}
         <section className={commonStyles.container}>
           <SectionHeader title="Typography" />
 
@@ -1861,7 +1737,7 @@ export const LayoutShapeConfig = () => {
               value={shape.fontFamily ?? "Roboto"}
               onChange={(e) => {
                 shapeUpdate({ fontFamily: e as IShape["fontFamily"] });
-                execute(); // Ejecutar después del cambio
+                execute();
               }}
               options={fontFamilyOptions}
             />
@@ -1873,13 +1749,11 @@ export const LayoutShapeConfig = () => {
                 value={shape.fontWeight ?? "normal"}
                 onChange={(e) => {
                   shapeUpdate({ fontWeight: e as IShape["fontWeight"] });
-                  execute(); // Ejecutar después del cambio
+                  execute();
                 }}
                 options={fontWeightOptions}
               />
             </Input.Container>
-
-            {/* Font Size */}
             <Input.Container>
               <Input.Grid>
                 <Input.IconContainer>
@@ -1892,7 +1766,7 @@ export const LayoutShapeConfig = () => {
                     step={4}
                     onChange={(e) => {
                       shapeUpdate({ fontSize: e });
-                      execute(); // Ejecutar después del cambio
+                      execute();
                     }}
                     value={shape.fontSize || 0}
                   />
@@ -1908,7 +1782,7 @@ export const LayoutShapeConfig = () => {
                 <Input.TextArea
                   onChange={(e) => {
                     shapeUpdate({ text: e });
-                    execute(); // Ejecutar después del cambio
+                    execute();
                   }}
                   value={shape.text || ""}
                 />
@@ -1919,7 +1793,6 @@ export const LayoutShapeConfig = () => {
         <Separator />
       </Valid>
 
-      {/* SECCIÓN: FILL - Rellenos */}
       <section className={commonStyles.container}>
         <SectionHeader
           title="Fill"
@@ -1934,7 +1807,6 @@ export const LayoutShapeConfig = () => {
           }
         />
 
-        {/* Lista de fills */}
         {shape.fills?.length
           ? shape.fills.map((fill, index) => (
               <div
@@ -1966,12 +1838,12 @@ export const LayoutShapeConfig = () => {
                       flex: 1,
                       color: "text",
                       fontSize: "sm",
-                      backgroundColor: "bg.muted", // Fondo más claro para el selector
+                      backgroundColor: "bg.muted",
                       borderRadius: "md",
                       padding: "md",
                       borderWidth: "1px",
                       borderStyle: "solid",
-                      borderColor: "border.muted", // ← usa el semantic token
+                      borderColor: "border.muted",
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "start",
@@ -1990,7 +1862,7 @@ export const LayoutShapeConfig = () => {
                         cursor: "pointer",
                         borderWidth: "1px",
                         borderStyle: "solid",
-                        borderColor: "border.muted", // ← usa el semantic token
+                        borderColor: "border.muted",
                         alignItems: "center",
                         justifyContent: "center",
                         objectFit: "cover",
@@ -2006,14 +1878,12 @@ export const LayoutShapeConfig = () => {
                     </p>
                   </div>
                 )}
-                {/* Botón visibility toggle */}
                 <button
                   onClick={() => handleFillVisibilityToggle(index)}
                   className={commonStyles.iconButton}
                 >
                   {fill.visible ? <Eye size={14} /> : <EyeOff size={14} />}
                 </button>
-                {/* Botón remove */}
                 <button
                   onClick={() => handleFillRemove(index)}
                   className={commonStyles.iconButton}
@@ -2027,13 +1897,11 @@ export const LayoutShapeConfig = () => {
 
       <Separator />
 
-      {/* SECCIÓN: STROKE - Bordes */}
       <section className={commonStyles.container}>
         <SectionHeader title="Stroke" onAdd={handleAddStroke} />
 
         {shape.strokes?.length ? (
           <>
-            {/* Lista de strokes */}
             {shape.strokes.map((stroke, index) => (
               <div
                 key={`pixel-kit-shape-stroke-${shape.id}-${shape.tool}-${index}`}
@@ -2063,7 +1931,6 @@ export const LayoutShapeConfig = () => {
                 >
                   {stroke.visible ? <Eye size={14} /> : <EyeOff size={14} />}
                 </button>
-                {/* Botón remove */}
                 <button
                   onClick={() => handleStrokeRemove(index)}
                   className={commonStyles.iconButton}
@@ -2073,9 +1940,7 @@ export const LayoutShapeConfig = () => {
               </div>
             ))}
 
-            {/* Configuraciones de stroke */}
             <div className={commonStyles.twoColumnGrid}>
-              {/* Stroke Weight */}
               <Input.Container>
                 <Input.Grid>
                   <Input.IconContainer>
@@ -2096,13 +1961,12 @@ export const LayoutShapeConfig = () => {
                       value={shape.strokeWidth || 0}
                       onChange={(v) => {
                         shapeUpdate({ strokeWidth: v });
-                        execute(); // Ejecutar después del cambio
+                        execute();
                       }}
                     />
                   </Input.withPause>
                 </Input.Grid>
               </Input.Container>
-              {/* Line Style Buttons */}
               <div
                 className={css({
                   alignItems: "flex-end",
@@ -2131,7 +1995,7 @@ export const LayoutShapeConfig = () => {
                     borderColor:
                       shape.lineJoin === "round" && shape.lineCap === "round"
                         ? constants.theme.colors.primary
-                        : "transparent", // ← usa el semantic token
+                        : "transparent",
                   }}
                 >
                   <Brush
@@ -2165,7 +2029,7 @@ export const LayoutShapeConfig = () => {
                     borderColor:
                       shape.lineJoin === "miter" && shape.lineCap === "round"
                         ? constants.theme.colors.primary
-                        : "transparent", // ← usa el semantic token
+                        : "transparent",
                   }}
                 >
                   <PenTool
@@ -2199,7 +2063,7 @@ export const LayoutShapeConfig = () => {
                     borderColor:
                       shape.lineJoin === "miter" && shape.lineCap === "butt"
                         ? constants.theme.colors.primary
-                        : "transparent", // ← usa el semantic token
+                        : "transparent",
                   }}
                 >
                   <Ruler
@@ -2226,39 +2090,22 @@ export const LayoutShapeConfig = () => {
                     step={1}
                     onChange={(e) => {
                       shapeUpdate({ dash: e });
-                      execute(); // Ejecutar después del cambio
+                      execute();
                     }}
                     value={shape.dash || 0}
                   />
                 </Input.withPause>
               </Input.Grid>
             </Input.Container>
-            {/* <InputNumber
-              iconType="dashed"
-              labelText="Dash"
-              min={0}
-              max={100}
-              step={5}
-              onChange={(e) =>
-                setShape({
-                  ...shape,
-
-                  dash: e,
-                })
-              }
-              value={shape.dash || 0}
-            /> */}
           </>
         ) : null}
       </section>
 
       <Separator />
 
-      {/* SECCIÓN: EFFECTS - Efectos */}
       <section className={commonStyles.container}>
         <SectionHeader title="Effects" onAdd={handleAddEffect} />
 
-        {/* Lista de effects */}
         {shape.effects?.length
           ? shape.effects.map((effect, index) => (
               <div
@@ -2275,7 +2122,6 @@ export const LayoutShapeConfig = () => {
                         value={effect.color}
                         onChange={(e) => handleEffectColorChange(index, e)}
                       />
-                      {/* <Scaling size={constants.icon.size} /> */}
                     </Input.IconContainer>
                     <Input.Label
                       text={`#${effect.color?.replace(/#/, "") ?? "ffffff"}`}
@@ -2289,7 +2135,6 @@ export const LayoutShapeConfig = () => {
                 >
                   {effect.visible ? <Eye size={14} /> : <EyeOff size={14} />}
                 </button>
-                {/* Botón remove */}
                 <button
                   onClick={() => handleEffectRemove(index)}
                   className={commonStyles.iconButton}
@@ -2300,7 +2145,6 @@ export const LayoutShapeConfig = () => {
             ))
           : null}
       </section>
-      {/* Controles detallados del efecto */}
       <Valid isValid={shape.effects.length > 0}>
         <div
           className={css({
@@ -2328,7 +2172,7 @@ export const LayoutShapeConfig = () => {
                   value={shape.shadowOffsetX || 0}
                   onChange={(v) => {
                     shapeUpdate({ shadowOffsetX: v });
-                    execute(); // Ejecutar después del cambio
+                    execute();
                   }}
                 />
               </Input.withPause>
@@ -2352,7 +2196,7 @@ export const LayoutShapeConfig = () => {
                   value={shape.shadowOffsetY}
                   onChange={(e) => {
                     shapeUpdate({ shadowOffsetY: e });
-                    execute(); // Ejecutar después del cambio
+                    execute();
                   }}
                 />
               </Input.withPause>
@@ -2372,7 +2216,7 @@ export const LayoutShapeConfig = () => {
                   step={1}
                   onChange={(e) => {
                     shapeUpdate({ shadowBlur: e });
-                    execute(); // Ejecutar después del cambio
+                    execute();
                   }}
                   value={shape.shadowBlur}
                 />
@@ -2394,7 +2238,7 @@ export const LayoutShapeConfig = () => {
                   step={0.1}
                   onChange={(e) => {
                     shapeUpdate({ shadowOpacity: e });
-                    execute(); // Ejecutar después del cambio
+                    execute();
                   }}
                   value={shape.shadowOpacity}
                 />
@@ -2404,10 +2248,8 @@ export const LayoutShapeConfig = () => {
         </div>
       </Valid>
       <Separator />
-
       <ExportShape />
 
-      {/* Input file oculto para subir imágenes */}
       <input
         ref={inputRef}
         type="file"
