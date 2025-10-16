@@ -27,6 +27,7 @@ import {
   EyeOff,
   File,
   ImageIcon,
+  Layout,
   Minus,
   MoveHorizontal,
   MoveVertical,
@@ -39,7 +40,7 @@ import {
   Square,
   SquareDashed,
 } from "lucide-react";
-import React, { ChangeEvent, useRef, useState } from "react";
+import React, { ChangeEvent, ReactNode, useRef, useState } from "react";
 import { toast } from "sonner";
 import { v4 as uuidv4 } from "uuid";
 import { Button, ButtonBase } from "../components/button";
@@ -263,14 +264,10 @@ const LayoutGrid: React.FC<LayoutGridProps> = ({
 
 export const SectionHeader = ({
   title,
-  onAdd,
-  onImage,
-  onIcon,
+  children,
 }: {
   title: string;
-  onAdd?: () => void;
-  onImage?: VoidFunction;
-  onIcon?: VoidFunction;
+  children?: ReactNode;
 }) => (
   <div className={commonStyles.sectionHeader}>
     <p className={commonStyles.sectionTitle}>{title}</p>
@@ -281,21 +278,7 @@ export const SectionHeader = ({
         gap: "md",
       })}
     >
-      {onIcon && (
-        <button className={commonStyles.addButton} onClick={onIcon}>
-          <Smile size={14} />
-        </button>
-      )}
-      {onImage && (
-        <button className={commonStyles.addButton} onClick={onImage}>
-          <ImageIcon size={14} />
-        </button>
-      )}
-      {onAdd && (
-        <button className={commonStyles.addButton} onClick={onAdd}>
-          <Plus size={14} />
-        </button>
-      )}
+      {children}
     </div>
   </div>
 );
@@ -1174,13 +1157,43 @@ export const LayoutShapeConfig = () => {
       {shape.tool === "FRAME" ? (
         <>
           <section className={commonStyles.container}>
-            <SectionHeader
-              title="Layouts"
-              onAdd={() => {
-                shapeUpdate({ isLayout: !shape.isLayout });
-                execute();
-              }}
-            />
+            <SectionHeader title="Layouts">
+              <button
+                onClick={() => {
+                  shapeUpdate({ isLayout: !shape.isLayout });
+                  execute();
+                }}
+                className={css({
+                  cursor: "pointer",
+                  width: 30,
+                  height: 30,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  borderWidth: "1px",
+                  borderStyle: "solid",
+                  borderRadius: "md",
+                })}
+                style={{
+                  backgroundColor: shape.isLayout
+                    ? constants.theme.colors.background
+                    : "transparent",
+                  borderColor: shape.isLayout
+                    ? constants.theme.colors.primary
+                    : "transparent",
+                }}
+              >
+                <Layout
+                  size={constants.icon.size}
+                  color={
+                    shape.isLayout
+                      ? constants.theme.colors.primary
+                      : constants.theme.colors.white
+                  }
+                  strokeWidth={constants.icon.strokeWidth}
+                />
+              </button>
+            </SectionHeader>
 
             {shape.isLayout ? (
               <>
@@ -1794,18 +1807,25 @@ export const LayoutShapeConfig = () => {
       </Valid>
 
       <section className={commonStyles.container}>
-        <SectionHeader
-          title="Fill"
-          onAdd={handleAddFill}
-          onIcon={shape.tool === "IMAGE" ? () => setshowIcons(true) : undefined}
-          onImage={
-            shape.tool === "IMAGE"
-              ? () => {
-                  setShowImage(true);
-                }
-              : undefined
-          }
-        />
+        <SectionHeader title="Fill">
+          <button
+            className={commonStyles.addButton}
+            onClick={() => setshowIcons(true)}
+          >
+            <Smile size={14} />
+          </button>
+          <button
+            className={commonStyles.addButton}
+            onClick={() => {
+              setShowImage(true);
+            }}
+          >
+            <ImageIcon size={14} />
+          </button>
+          <button className={commonStyles.addButton} onClick={handleAddFill}>
+            <Plus size={14} />
+          </button>
+        </SectionHeader>
 
         {shape.fills?.length
           ? shape.fills.map((fill, index) => (
@@ -1898,7 +1918,11 @@ export const LayoutShapeConfig = () => {
       <Separator />
 
       <section className={commonStyles.container}>
-        <SectionHeader title="Stroke" onAdd={handleAddStroke} />
+        <SectionHeader title="Stroke">
+          <button className={commonStyles.addButton} onClick={handleAddStroke}>
+            <Plus size={14} />
+          </button>
+        </SectionHeader>
 
         {shape.strokes?.length ? (
           <>
@@ -2104,7 +2128,11 @@ export const LayoutShapeConfig = () => {
       <Separator />
 
       <section className={commonStyles.container}>
-        <SectionHeader title="Effects" onAdd={handleAddEffect} />
+        <SectionHeader title="Effects">
+          <button className={commonStyles.addButton} onClick={handleAddEffect}>
+            <Plus size={14} />
+          </button>
+        </SectionHeader>
 
         {shape.effects?.length
           ? shape.effects.map((effect, index) => (
