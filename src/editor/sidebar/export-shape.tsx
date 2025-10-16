@@ -10,7 +10,6 @@ import { Input } from "../components/input";
 import { Loading } from "../components/loading";
 import { constants } from "../constants/color";
 import { formats } from "../constants/formats";
-import { useStagePreview } from "../hooks/useStagePreview";
 import { typeExportAtom } from "../states/export";
 import { SHAPE_SELECTED_ATOM } from "../states/shape";
 
@@ -19,10 +18,6 @@ export const ExportShape = () => {
   const [loading, setLoading] = useState(false);
   const [format, setFormat] = useAtom(typeExportAtom);
   const [showExportDialog, setShowExportDialog] = useState(false);
-
-  const { stageRef } = useStagePreview({
-    type: "SHAPES",
-  });
 
   const handleExport = () => {
     toast.success("Thank you very much for using pixel kit!", {

@@ -16,7 +16,7 @@ import TOOL_ATOM, { PAUSE_MODE_ATOM } from "./states/tool";
 
 const PxStage = ({ children }: { children: ReactNode }) => {
   const containerRef = useRef<HTMLDivElement>(null);
-  const [containerSize, setContainerSize] = useState({ width: 0, height: 0 });
+  const [containerSize, setContainerSize] = useState({ width: 1, height: 1 });
 
   const [tool, setTool] = useAtom(TOOL_ATOM);
   const setPause = useSetAtom(PAUSE_MODE_ATOM);
