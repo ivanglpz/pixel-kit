@@ -27,21 +27,13 @@ body {
   display: flex;
   flex-direction: column;
   cursor: url("/cursors/default.png"), auto;
-  font-family: "Plus Jakarta Sans", sans-serif !important;
+  font-family: "Roboto", sans-serif !important;
   max-width: 100%;
   overscroll-behavior: contain;
   background-color: var(--bg);
   color: var(--text);
 }
 
-/* .CursorPointer {
-  cursor: url("/cursors/pointer.png"), pointer;
-}
-.CursorDefault {
-  cursor: url("/cursors/default.png"), auto;
-} */
-
-/* ✅ Scroll siempre con espacio, pero invisible por defecto */
 *::-webkit-scrollbar {
   width: 3px;
   height: 3px;
