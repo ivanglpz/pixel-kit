@@ -1,6 +1,13 @@
-import { IShape, IShapeChildren } from "@/editor/shapes/type.shape";
+import {
+  Effect,
+  Fill,
+  IShape,
+  IShapeChildren,
+  Stroke,
+} from "@/editor/shapes/type.shape";
 import { v4 as uuidv4 } from "uuid";
 import { IKeyMethods } from "../states/tool";
+import { UndoShape } from "../states/undo-redo";
 
 const thickness = 1;
 
@@ -113,3 +120,41 @@ export const UpdateShapeDimension = (
     height: isWidth,
   });
 };
+
+interface CommonPropsArgs {
+  shape: IShape | UndoShape["state"];
+  shadow?: Effect | undefined;
+  stroke?: Stroke | undefined;
+  fill?: Fill | undefined;
+}
+
+export const getCommonShapeProps = ({
+  shape,
+  shadow,
+  stroke,
+  fill,
+}: CommonPropsArgs) => ({
+  points: shape.points ?? [],
+  fillEnabled: true,
+  fill: fill?.color,
+  stroke: stroke?.color,
+  strokeWidth: shape.strokeWidth,
+  strokeEnabled: shape.strokeWidth > 0,
+  dash: [shape.dash],
+  dashEnabled: shape.dash > 0,
+  cornerRadius: !shape.isAllBorderRadius
+    ? [
+        shape.borderTopLeftRadius,
+        shape.borderTopRightRadius,
+        shape.borderBottomRightRadius,
+        shape.borderBottomLeftRadius,
+      ]
+    : shape.borderRadius,
+  shadowColor: shadow?.color,
+  shadowOpacity: shape.shadowOpacity,
+  shadowOffsetX: shape.shadowOffsetX,
+  shadowOffsetY: shape.shadowOffsetY,
+  shadowBlur: shape.shadowBlur,
+  shadowEnabled: Boolean(shadow),
+  opacity: shape.opacity ?? 1,
+});

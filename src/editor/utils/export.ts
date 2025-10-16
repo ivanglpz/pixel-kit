@@ -1,4 +1,5 @@
 import Konva from "konva";
+import { getCommonShapeProps } from "../helpers/shape-schema";
 import { calculateCoverCrop } from "../shapes/image.shape";
 import { UndoShape } from "../states/undo-redo";
 
@@ -23,16 +24,20 @@ const createFrameNodes = (
   // Top-level FRAME empieza en (0,0)
   const x = isRoot ? 0 : shape.x;
   const y = isRoot ? 0 : shape.y;
-
+  const fill = shape.fills?.find((f) => f.visible && f.type === "fill");
+  const stroke = shape?.strokes?.filter((e) => e?.visible)?.at(0);
+  const shadow = shape?.effects
+    ?.filter((e) => e?.visible && e?.type === "shadow")
+    .at(0);
   // Rect de fondo (como ShapeBox en React)
   const rect = new Konva.Rect({
     x,
     y,
     width: shape.width,
     height: shape.height,
-    fill: shape.fills?.[0]?.color ?? "transparent",
-    opacity: shape.opacity,
+    // opacity: shape.opacity,
     id: `${shape.id}-bg`,
+    ...getCommonShapeProps({ shape, fill, shadow, stroke }),
   });
   parent.add(rect);
 
@@ -75,7 +80,11 @@ const createNodeFromShape = (
     visible: shape.visible,
     id: shape.id,
   };
-
+  const fill = shape.fills?.find((f) => f.visible && f.type === "fill");
+  const stroke = shape?.strokes?.filter((e) => e?.visible)?.at(0);
+  const shadow = shape?.effects
+    ?.filter((e) => e?.visible && e?.type === "shadow")
+    .at(0);
   switch (shape.tool as ShapeType) {
     case "IMAGE": {
       const img = new Image();
@@ -98,6 +107,8 @@ const createNodeFromShape = (
 
       return new Konva.Image({
         ...commonProps,
+        ...getCommonShapeProps({ shape, fill, shadow, stroke }),
+
         width: shape.width,
         height: shape.height,
         image: img,
@@ -107,6 +118,7 @@ const createNodeFromShape = (
     case "TEXT":
       return new Konva.Text({
         ...commonProps,
+        ...getCommonShapeProps({ shape, fill, shadow, stroke }),
         text: shape.text ?? "",
         fontSize: shape.fontSize,
         fontFamily: shape.fontFamily,
@@ -114,10 +126,12 @@ const createNodeFromShape = (
         align: shape.align as Konva.TextConfig["align"],
         width: shape.width,
         height: shape.height,
+        lineHeight: 1.45,
       });
     case "DRAW":
       return new Konva.Line({
         ...commonProps,
+        ...getCommonShapeProps({ shape, fill, shadow, stroke }),
         points: shape.points ?? [],
         stroke: shape.strokes?.[0]?.color ?? "black",
         strokeWidth: shape.strokeWidth,
