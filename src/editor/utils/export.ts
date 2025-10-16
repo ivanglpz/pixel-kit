@@ -1,0 +1,194 @@
+import Konva from "konva";
+import { calculateCoverCrop } from "../shapes/image.shape";
+import { UndoShape } from "../states/undo-redo";
+
+type ShapeType = "IMAGE" | "TEXT" | "FRAME" | "DRAW";
+
+export type StageWithContainer = {
+  stage: Konva.Stage;
+  container: HTMLDivElement;
+};
+
+const getChildren = (shape: UndoShape["state"]): UndoShape[] => {
+  const c = shape.children;
+  return Array.isArray(c) ? c : [];
+};
+
+// Crear un FRAME con Rect de fondo y Group para hijos
+const createFrameNodes = (
+  shape: UndoShape["state"],
+  parent: Konva.Container,
+  isRoot = false
+): Konva.Group => {
+  // Top-level FRAME empieza en (0,0)
+  const x = isRoot ? 0 : shape.x;
+  const y = isRoot ? 0 : shape.y;
+
+  // Rect de fondo (como ShapeBox en React)
+  const rect = new Konva.Rect({
+    x,
+    y,
+    width: shape.width,
+    height: shape.height,
+    fill: shape.fills?.[0]?.color ?? "transparent",
+    opacity: shape.opacity,
+    id: `${shape.id}-bg`,
+  });
+  parent.add(rect);
+
+  // Grupo principal que contendrá hijos
+  const group = new Konva.Group({
+    x,
+    y,
+    id: shape.id,
+    rotation: shape.rotation,
+    opacity: shape.opacity,
+    visible: shape.visible,
+  });
+  parent.add(group);
+
+  // Adjuntar hijos recursivamente, posiciones relativas al padre
+  const children = getChildren(shape);
+  children.forEach((child) => attachShapeRecursively(child, group));
+
+  return group;
+};
+
+const createNodeFromShape = (
+  shape: UndoShape["state"],
+  parent?: Konva.Container,
+  isRoot = false
+): Konva.Node => {
+  // Si es FRAME
+  if (shape.tool === "FRAME" && parent) {
+    return createFrameNodes(shape, parent, isRoot);
+  }
+
+  const x = isRoot ? 0 : shape.x;
+  const y = isRoot ? 0 : shape.y;
+
+  const commonProps = {
+    x,
+    y,
+    rotation: shape.rotation,
+    opacity: shape.opacity,
+    visible: shape.visible,
+    id: shape.id,
+  };
+
+  switch (shape.tool as ShapeType) {
+    case "IMAGE": {
+      const img = new Image();
+      const fillImage = shape.fills?.find(
+        (f) => f.visible && f.type === "image"
+      )?.image;
+      if (fillImage) {
+        img.src = fillImage.src;
+        img.crossOrigin = "Anonymous";
+        img.width = fillImage.width;
+        img.height = fillImage.height;
+      }
+
+      const cropConfig = calculateCoverCrop(
+        fillImage?.width || 0,
+        fillImage?.height || 0,
+        Number(shape.width),
+        Number(shape.height)
+      );
+
+      return new Konva.Image({
+        ...commonProps,
+        width: shape.width,
+        height: shape.height,
+        image: img,
+        crop: cropConfig,
+      });
+    }
+    case "TEXT":
+      return new Konva.Text({
+        ...commonProps,
+        text: shape.text ?? "",
+        fontSize: shape.fontSize,
+        fontFamily: shape.fontFamily,
+        fontStyle: shape.fontStyle,
+        align: shape.align as Konva.TextConfig["align"],
+        width: shape.width,
+        height: shape.height,
+      });
+    case "DRAW":
+      return new Konva.Line({
+        ...commonProps,
+        points: shape.points ?? [],
+        stroke: shape.strokes?.[0]?.color ?? "black",
+        strokeWidth: shape.strokeWidth,
+        lineCap: shape.lineCap,
+        lineJoin: shape.lineJoin,
+      });
+    default:
+      return new Konva.Group({ ...commonProps });
+  }
+};
+
+// Adjuntar un shape y sus hijos recursivamente
+const attachShapeRecursively = (
+  shape: UndoShape,
+  parent: Konva.Container,
+  isRoot = false
+): Konva.Node => {
+  if (shape.tool === "FRAME") {
+    return createFrameNodes(shape.state, parent, isRoot);
+  }
+
+  const node = createNodeFromShape(shape.state, parent, isRoot);
+  parent.add(node);
+
+  const children = getChildren(shape.state);
+  if (children.length > 0) {
+    const containerNode = node instanceof Konva.Group ? node : parent;
+    children.forEach((child) => attachShapeRecursively(child, containerNode));
+  }
+
+  return node;
+};
+
+// Crear stages para cada top-level shape
+export const createStagesFromShapes = (
+  shapes: UndoShape[]
+): StageWithContainer[] => {
+  return shapes.map((topShape) => {
+    const container = document.createElement("div");
+    container.style.width = `${topShape.state.width}px`;
+    container.style.height = `${topShape.state.height}px`;
+
+    const stage = new Konva.Stage({
+      container,
+      width: Math.max(1, Math.round(topShape.state.width)),
+      height: Math.max(1, Math.round(topShape.state.height)),
+    });
+
+    const layer = new Konva.Layer();
+    stage.add(layer);
+
+    attachShapeRecursively(topShape, layer, true);
+    layer.draw();
+
+    return { stage, container };
+  });
+};
+
+// Exportar y descargar stages
+export const exportAndDownloadStages = (
+  stages: Konva.Stage[],
+  format: "png" | "jpeg" = "png",
+  pixelRatio = 2
+): void => {
+  stages.forEach((stage, index) => {
+    const mime = format === "png" ? "image/png" : "image/jpeg";
+    const dataURL = stage.toDataURL({ mimeType: mime, pixelRatio });
+
+    const link = document.createElement("a");
+    link.download = `shape-${index + 1}.${format}`;
+    link.href = dataURL;
+    link.click();
+  });
+};
