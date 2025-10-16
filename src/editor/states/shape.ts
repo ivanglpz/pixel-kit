@@ -49,21 +49,22 @@ export const RESET_SHAPES_IDS_ATOM = atom(null, (get, set) => {
 });
 
 export const SHAPE_SELECTED_ATOM = atom((get) => {
-  const shapes = get(SHAPE_IDS_ATOM);
-  const shapeSelected = shapes.at(0);
+  const selectedIds = get(SHAPE_IDS_ATOM);
+  const planeShapes = get(PLANE_SHAPES_ATOM);
 
-  const shape = get(PLANE_SHAPES_ATOM)?.find(
-    (e) => e?.id === shapeSelected?.id
-  );
-
-  if (!shape || !shape.state)
-    return {
-      shape: null,
-      count: 0,
-    };
+  const shapes = planeShapes
+    .filter((shape) =>
+      selectedIds.some(
+        (selected) =>
+          shape.id === selected.id &&
+          get(shape.state).parentId === selected.parentId
+      )
+    )
+    .map((shape) => get(shape.state));
 
   return {
-    shape: get(shape?.state),
+    shape: shapes.at(0) || null,
+    shapes,
     count: shapes.length,
   };
 });
