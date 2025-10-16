@@ -21,7 +21,7 @@ import { downloadBase64Image } from "../utils/downloadBase64";
 import { computeStageTransform } from "../utils/stageTransform";
 
 export const ExportShape = () => {
-  const shape = useAtomValue(SHAPE_SELECTED_ATOM);
+  const { shape } = useAtomValue(SHAPE_SELECTED_ATOM);
   const [loading, setLoading] = useState(false);
   const [format, setFormat] = useAtom(typeExportAtom);
   const [showExportDialog, setShowExportDialog] = useState(false);

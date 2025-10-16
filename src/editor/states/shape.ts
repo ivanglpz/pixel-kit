@@ -49,28 +49,44 @@ export const RESET_SHAPES_IDS_ATOM = atom(null, (get, set) => {
 });
 
 export const SHAPE_SELECTED_ATOM = atom((get) => {
-  const shapeSelected = get(SHAPE_IDS_ATOM).at(0);
+  const shapes = get(SHAPE_IDS_ATOM);
+  const shapeSelected = shapes.at(0);
 
   const shape = get(PLANE_SHAPES_ATOM)?.find(
     (e) => e?.id === shapeSelected?.id
   );
 
-  if (!shape || !shape.state) return null;
+  if (!shape || !shape.state)
+    return {
+      shape: null,
+      count: 0,
+    };
 
-  return get(shape?.state);
+  return {
+    shape: get(shape?.state),
+    count: shapes.length,
+  };
 });
 
 export const SHAPE_UPDATE_ATOM = atom(
   null,
   (get, set, args: Partial<IShape>) => {
-    const shapeSelected = get(SHAPE_IDS_ATOM).at(0);
-    const findShape = get(PLANE_SHAPES_ATOM)?.find(
-      (e) =>
-        e?.id === shapeSelected?.id &&
-        get(e?.state).parentId === shapeSelected.parentId
-    );
-    if (!findShape || !findShape.state) return null;
+    const shapesSelected = get(SHAPE_IDS_ATOM);
+    const planeShapes = get(PLANE_SHAPES_ATOM);
 
-    set(findShape?.state, { ...get(findShape.state), ...args });
+    shapesSelected.forEach((selected) => {
+      const target = planeShapes.find(
+        (shape) =>
+          shape.id === selected.id &&
+          get(shape.state).parentId === selected.parentId
+      );
+
+      if (target && target.state) {
+        set(target.state, {
+          ...get(target.state),
+          ...args,
+        });
+      }
+    });
   }
 );
