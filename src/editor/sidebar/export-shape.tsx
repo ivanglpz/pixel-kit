@@ -1,9 +1,8 @@
 import { css } from "@stylespixelkit/css";
-import { atom, useAtom, useAtomValue } from "jotai";
+import { useAtom, useAtomValue } from "jotai";
 import { File } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
-import { Layer, Stage as StageContainer } from "react-konva";
 import { toast } from "sonner";
 import { Button } from "../components/button";
 import { Dialog } from "../components/dialog";
@@ -11,16 +10,12 @@ import { Input } from "../components/input";
 import { Loading } from "../components/loading";
 import { constants } from "../constants/color";
 import { formats } from "../constants/formats";
-import { stagePreview } from "../constants/stage-preview";
 import { useStagePreview } from "../hooks/useStagePreview";
-import { Shapes } from "../shapes/shapes";
 import { typeExportAtom } from "../states/export";
 import { SHAPE_SELECTED_ATOM } from "../states/shape";
-import { downloadBase64Image } from "../utils/downloadBase64";
-import { computeStageTransform } from "../utils/stageTransform";
 
 export const ExportShape = () => {
-  const { shape, shapes } = useAtomValue(SHAPE_SELECTED_ATOM);
+  const { shape } = useAtomValue(SHAPE_SELECTED_ATOM);
   const [loading, setLoading] = useState(false);
   const [format, setFormat] = useAtom(typeExportAtom);
   const [showExportDialog, setShowExportDialog] = useState(false);
@@ -47,26 +42,25 @@ export const ExportShape = () => {
 
     setLoading(true);
 
-    const { offsetX, offsetY, width, height } = computeStageTransform({
-      width: shape?.width || 0,
-      height: shape?.height || 0,
-    });
-    const image = stageRef.current?.toDataURL({
-      quality: 1,
-      pixelRatio: formats[format as keyof typeof formats],
-      x: offsetX,
-      y: offsetY,
-      width,
-      height,
-    });
+    // const { offsetX, offsetY, width, height } = computeStageTransform({
+    //   width: shape?.width || 0,
+    //   height: shape?.height || 0,
+    // });
+    // const image = stageRef.current?.toDataURL({
+    //   quality: 1,
+    //   pixelRatio: formats[format as keyof typeof formats],
+    //   x: offsetX,
+    //   y: offsetY,
+    //   width,
+    //   height,
+    // });
 
-    if (image) downloadBase64Image(image);
+    // if (image) downloadBase64Image(image);
     setLoading(false);
   };
 
   return (
     <>
-      {/* Export Dialog */}
       <Dialog.Provider
         visible={showExportDialog}
         onClose={() => setShowExportDialog(false)}
@@ -130,46 +124,10 @@ export const ExportShape = () => {
       >
         Export
       </p>
-      <StageContainer
-        id="preview-shape"
-        ref={stageRef}
-        width={stagePreview.width}
-        height={stagePreview.height}
-        listening={false}
-        className={css({
-          backgroundColor: "gray.100",
-          borderColor: "border",
-          borderWidth: 1,
-          _dark: { backgroundColor: "gray.800" },
-        })}
-      >
-        <Layer>
-          {shapes.map((e) => {
-            const Component = Shapes?.[e.tool];
-            return (
-              <Component
-                key={`pixel-kit-shapes-preview-${e.id}`}
-                shape={{
-                  id: e.id,
-                  tool: e.tool,
-                  state: atom(e),
-                }}
-              />
-            );
-          })}
-        </Layer>
-      </StageContainer>
-      <div
-        className={css({
-          display: "grid",
-          gridTemplateColumns: "2",
-          gap: "md",
-        })}
-      >
-        <Button.Primary onClick={() => setShowExportDialog(true)}>
-          <File size={constants.icon.size} /> Export
-        </Button.Primary>
-      </div>
+
+      <Button.Secondary onClick={() => setShowExportDialog(true)}>
+        <File size={constants.icon.size} /> Export
+      </Button.Secondary>
     </>
   );
 };
