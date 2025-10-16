@@ -1,5 +1,7 @@
 export const fontFamilyOptions = [
   { id: "font-Arial", label: "Arial", value: "Arial" },
+  { id: "font-roboto", label: "Roboto", value: "Roboto" },
+
   { id: "font-ArialBlack", label: "Arial Black", value: "Arial Black" },
   { id: "font-Verdana", label: "Verdana", value: "Verdana" },
   { id: "font-Tahoma", label: "Tahoma", value: "Tahoma" },
