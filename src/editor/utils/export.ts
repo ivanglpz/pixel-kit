@@ -108,7 +108,6 @@ const createNodeFromShape = (
       return new Konva.Image({
         ...commonProps,
         ...getCommonShapeProps({ shape, fill, shadow, stroke }),
-
         width: shape.width,
         height: shape.height,
         image: img,
@@ -132,9 +131,6 @@ const createNodeFromShape = (
       return new Konva.Line({
         ...commonProps,
         ...getCommonShapeProps({ shape, fill, shadow, stroke }),
-        points: shape.points ?? [],
-        stroke: shape.strokes?.[0]?.color ?? "black",
-        strokeWidth: shape.strokeWidth,
         lineCap: shape.lineCap,
         lineJoin: shape.lineJoin,
       });
@@ -198,7 +194,7 @@ export const exportAndDownloadStages = (
 ): void => {
   stages.forEach((stage, index) => {
     const mime = format === "png" ? "image/png" : "image/jpeg";
-    const dataURL = stage.toDataURL({ mimeType: mime, pixelRatio });
+    const dataURL = stage.toDataURL({ mimeType: mime, pixelRatio, quality: 1 });
 
     const link = document.createElement("a");
     link.download = `shape-${index + 1}.${format}`;
