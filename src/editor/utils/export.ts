@@ -121,7 +121,7 @@ const createNodeFromShape = (
         text: shape.text ?? "",
         fontSize: shape.fontSize,
         fontFamily: shape.fontFamily,
-        fontStyle: shape.fontStyle,
+        fontVariant: shape.fontWeight,
         align: shape.align as Konva.TextConfig["align"],
         width: shape.width,
         height: shape.height,
