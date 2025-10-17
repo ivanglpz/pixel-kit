@@ -5,12 +5,10 @@ import { Analytics } from "@vercel/analytics/react";
 import { NextPage } from "next";
 import { ThemeProvider } from "next-themes";
 import type { AppProps } from "next/app";
-import { Plus_Jakarta_Sans } from "next/font/google";
 import { Toaster } from "sonner";
 import { css } from "../../styled-system/css";
 
 // If loading a variable font, you don't need to specify the font weight
-const jkrt = Plus_Jakarta_Sans({ subsets: ["latin"] });
 export type LayoutKey = keyof typeof Layout;
 
 export type NextPageWithLayout<P = {}, IP = P> = NextPage<P, IP> & {
@@ -27,7 +25,7 @@ const App = ({ Component, pageProps }: AppPropsWithLayout) => {
     Layout[Component.layout ?? "Default"] || Layout.Default;
 
   return (
-    <main className={jkrt.className}>
+    <>
       <QueryClientProvider client={queryClient}>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <Analytics />
@@ -44,7 +42,7 @@ const App = ({ Component, pageProps }: AppPropsWithLayout) => {
           </LayoutProvider>
         </ThemeProvider>
       </QueryClientProvider>
-    </main>
+    </>
   );
 };
 
