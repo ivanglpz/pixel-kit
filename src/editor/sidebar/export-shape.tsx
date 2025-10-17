@@ -59,7 +59,7 @@ const exportGroups = (numbers: number[], format: "png" | "jpeg"): void => {
 };
 
 export const ExportShape = () => {
-  const { shapes } = useAtomValue(SHAPE_SELECTED_ATOM);
+  const { shapes, count } = useAtomValue(SHAPE_SELECTED_ATOM);
   const [loading, setLoading] = useState(false);
   const [format, setFormat] = useAtom(typeExportAtom);
   const [showExportDialog, setShowExportDialog] = useState(false);
@@ -152,7 +152,7 @@ export const ExportShape = () => {
       </p>
 
       <Button.Secondary onClick={() => setShowExportDialog(true)}>
-        <File size={constants.icon.size} /> Export
+        <File size={constants.icon.size} /> Export {count}
       </Button.Secondary>
     </>
   );
