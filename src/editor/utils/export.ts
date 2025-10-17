@@ -49,6 +49,10 @@ const createFrameNodes = (
     rotation: shape.rotation,
     opacity: shape.opacity,
     visible: shape.visible,
+    clipX: 0,
+    clipY: 0,
+    clipWidth: shape.width,
+    clipHeight: shape.height,
   });
   parent.add(group);
 
@@ -135,7 +139,13 @@ const createNodeFromShape = (
         lineJoin: shape.lineJoin,
       });
     default:
-      return new Konva.Group({ ...commonProps });
+      return new Konva.Group({
+        ...commonProps,
+        clipX: 0,
+        clipY: 0,
+        clipWidth: shape.width,
+        clipHeight: shape.height,
+      });
   }
 };
 
