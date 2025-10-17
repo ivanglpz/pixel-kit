@@ -49,6 +49,7 @@ import { Input } from "../components/input";
 import { ListIcons } from "../components/list-icons";
 import { Loading } from "../components/loading";
 import { constants } from "../constants/color";
+import { DIMENSIONS_SHAPE } from "../constants/dimensions";
 import { fontFamilyOptions, fontWeightOptions } from "../constants/fonts";
 import { useAutoSave } from "../hooks/useAutoSave";
 import { useDelayedExecutor } from "../hooks/useDelayExecutor";
@@ -292,6 +293,7 @@ export const LayoutShapeConfig = () => {
   const shapeUpdate = useSetAtom(SHAPE_UPDATE_ATOM);
   const setUpdateUndoRedo = useSetAtom(UPDATE_UNDO_REDO);
   const [type, setType] = useState<"UPLOAD" | "CHOOSE">("UPLOAD");
+  const [D_TYPE, SET_DTYPE] = useState<keyof typeof DIMENSIONS_SHAPE>("FIXED");
   const { debounce } = useAutoSave();
   const PROJECT_ID = useAtomValue(PROJECT_ID_ATOM);
   const [photoUpload, setPhotoUpload] = useState<File | null>(null);
@@ -901,10 +903,27 @@ export const LayoutShapeConfig = () => {
           </Input.Container>
         </div>
       </section>
+      <Separator />
 
       <section className={commonStyles.container}>
         <header className="flex flex-row justify-between items-center">
           <p className={commonStyles.sectionTitle}>Dimensions</p>
+          {/* <Input.Container>
+            <Input.withPause>
+              <Input.Select
+                value={D_TYPE}
+                options={Object.values(DIMENSIONS_SHAPE).map((e, index) => {
+                  return {
+                    id: `dimension-${index}`,
+                    label: e.label,
+                    value: e.value,
+                  };
+                })}
+                onChange={(e) => SET_DTYPE(e)}
+              />
+            </Input.withPause>
+          </Input.Container> */}
+
           <div className="flex flex-row gap-2">
             <button
               onClick={() => {
@@ -1000,9 +1019,11 @@ export const LayoutShapeConfig = () => {
               <Input.withPause>
                 <Input.Number
                   step={1}
-                  value={Number(shape.width) || 0}
+                  value={Number(shape.width || 0)}
                   onChange={(v) => {
-                    shapeUpdate({ width: v });
+                    shapeUpdate({
+                      width: v,
+                    });
                     execute();
                   }}
                 />
@@ -1020,14 +1041,16 @@ export const LayoutShapeConfig = () => {
                 >
                   H
                 </p>
-                {/* <MoveHorizontal size={constants.icon.size} /> */}
               </Input.IconContainer>
               <Input.withPause>
                 <Input.Number
                   step={1}
-                  value={Number(shape.height) || 0}
+                  // value={Number(shape.height) || 0}
+                  value={Number(shape.height || 0)}
                   onChange={(v) => {
-                    shapeUpdate({ height: v });
+                    shapeUpdate({
+                      height: v,
+                    });
                     execute();
                   }}
                 />
@@ -1035,7 +1058,7 @@ export const LayoutShapeConfig = () => {
             </Input.Grid>
           </Input.Container>
         </div>
-
+        {/*
         <Input.Label text="Min" />
 
         <div className={commonStyles.twoColumnGrid}>
@@ -1146,7 +1169,7 @@ export const LayoutShapeConfig = () => {
               </Input.withPause>
             </Input.Grid>
           </Input.Container>
-        </div>
+        </div> */}
       </section>
 
       <Separator />

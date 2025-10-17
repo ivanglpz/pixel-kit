@@ -265,28 +265,28 @@ export const TextArea = ({
   );
 };
 
-type Props = {
-  value: string;
+type Props<T> = {
+  value: T;
   options: {
     id: string | number;
     label: string;
     value: string;
   }[];
-  onChange: (value: string) => void;
+  onChange: (value: T) => void;
 };
 
-const Select = ({ options, value, onChange, ...rest }: Props) => {
+const Select = <T,>({ options, value, onChange, ...rest }: Props<T>) => {
   return (
     <select
       {...rest}
-      value={value}
+      value={`${value}`}
       className={css({
         width: "100%",
         color: "text",
         fontSize: "sm",
         backgroundColor: "transparent",
       })}
-      onChange={(event) => onChange(event.target.value)}
+      onChange={(event) => onChange(event.target.value as T)}
     >
       {options?.map((e) => (
         <option key={e.id} value={e.value}>
