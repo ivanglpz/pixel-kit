@@ -5,6 +5,7 @@ import {
   IShapeChildren,
   Stroke,
 } from "@/editor/shapes/type.shape";
+import { Konva } from "konva/lib/_FullInternals";
 import { v4 as uuidv4 } from "uuid";
 import { IKeyMethods } from "../states/tool";
 import { UndoShape } from "../states/undo-redo";
@@ -159,4 +160,10 @@ export const getCommonShapeProps = ({
   opacity: shape.opacity ?? 1,
   width: shape.width,
   height: shape.height,
+  text: shape.text ?? "",
+  fontSize: shape.fontSize,
+  fontFamily: shape.fontFamily,
+  fontVariant: shape.fontWeight,
+  align: shape.align as Konva.TextConfig["align"],
+  lineHeight: 1.45,
 });
