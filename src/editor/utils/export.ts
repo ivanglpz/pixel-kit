@@ -33,8 +33,6 @@ const createFrameNodes = (
   const rect = new Konva.Rect({
     x,
     y,
-    width: shape.width,
-    height: shape.height,
     // opacity: shape.opacity,
     id: `${shape.id}-bg`,
     ...getCommonShapeProps({ shape, fill, shadow, stroke }),
@@ -110,26 +108,22 @@ const createNodeFromShape = (
       );
 
       return new Konva.Image({
-        ...commonProps,
-        ...getCommonShapeProps({ shape, fill, shadow, stroke }),
-        width: shape.width,
-        height: shape.height,
         image: img,
         crop: cropConfig,
+        ...commonProps,
+        ...getCommonShapeProps({ shape, fill, shadow, stroke }),
       });
     }
     case "TEXT":
       return new Konva.Text({
-        ...commonProps,
-        ...getCommonShapeProps({ shape, fill, shadow, stroke }),
         text: shape.text ?? "",
         fontSize: shape.fontSize,
         fontFamily: shape.fontFamily,
         fontVariant: shape.fontWeight,
         align: shape.align as Konva.TextConfig["align"],
-        width: shape.width,
-        height: shape.height,
         lineHeight: 1.45,
+        ...commonProps,
+        ...getCommonShapeProps({ shape, fill, shadow, stroke }),
       });
     case "DRAW":
       return new Konva.Line({

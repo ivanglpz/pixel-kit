@@ -157,4 +157,6 @@ export const getCommonShapeProps = ({
   shadowBlur: shape.shadowBlur,
   shadowEnabled: Boolean(shadow),
   opacity: shape.opacity ?? 1,
+  width: shape.width,
+  height: shape.height,
 });
