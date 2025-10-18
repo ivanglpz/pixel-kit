@@ -106,6 +106,11 @@ const createNodeFromShape = (
         Number(shape.width),
         Number(shape.height)
       );
+      console.log(cropConfig);
+
+      console.log(img);
+
+      console.log(commonProps);
 
       return new Konva.Image({
         image: img,
