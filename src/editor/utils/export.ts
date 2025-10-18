@@ -116,12 +116,6 @@ const createNodeFromShape = (
     }
     case "TEXT":
       return new Konva.Text({
-        text: shape.text ?? "",
-        fontSize: shape.fontSize,
-        fontFamily: shape.fontFamily,
-        fontVariant: shape.fontWeight,
-        align: shape.align as Konva.TextConfig["align"],
-        lineHeight: 1.45,
         ...commonProps,
         ...getCommonShapeProps({ shape, fill, shadow, stroke }),
       });
