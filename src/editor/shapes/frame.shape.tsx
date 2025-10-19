@@ -43,7 +43,7 @@ export const SHAPE_FRAME = (props: IShapeEvents) => {
     box.paddingLeft,
     box.fillContainerWidth,
     box.fillContainerHeight,
-    childrens.length,
+    childrens,
   ]);
 
   if (!box.visible) return null;
