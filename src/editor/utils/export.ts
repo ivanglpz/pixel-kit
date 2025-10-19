@@ -90,27 +90,35 @@ const createNodeFromShape = (
   switch (shape.tool as ShapeType) {
     case "IMAGE": {
       const img = new Image();
-      const fillImage = shape.fills?.find(
+      const IMG = shape.fills?.find(
         (f) => f.visible && f.type === "image"
       )?.image;
-      if (fillImage) {
-        img.src = fillImage.src;
+      if (IMG) {
+        if (IMG.src.includes("data:image/svg+xml;charset=utf-8,")) {
+          const svgText = decodeURIComponent(
+            IMG.src.replace("data:image/svg+xml;charset=utf-8,", "")
+          );
+          const newSvg = svgText.replace(
+            /stroke="currentColor"/g,
+            `stroke="${stroke?.color || "#000000"}"`
+          );
+
+          img.src =
+            "data:image/svg+xml;charset=utf-8," + encodeURIComponent(newSvg);
+        } else {
+          img.src = IMG.src;
+        }
         img.crossOrigin = "Anonymous";
-        img.width = fillImage.width;
-        img.height = fillImage.height;
+        img.width = IMG.width;
+        img.height = IMG.height;
       }
 
       const cropConfig = calculateCoverCrop(
-        fillImage?.width || 0,
-        fillImage?.height || 0,
+        IMG?.width || 0,
+        IMG?.height || 0,
         Number(shape.width),
         Number(shape.height)
       );
-      console.log(cropConfig);
-
-      console.log(img);
-
-      console.log(commonProps);
 
       return new Konva.Image({
         image: img,
