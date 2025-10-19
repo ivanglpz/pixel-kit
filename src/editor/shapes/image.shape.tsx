@@ -63,40 +63,12 @@ export const ShapeImage = (props: IShapeEvents) => {
   );
 
   // Extraer relleno de tipo imagen
-  const fillImage = useMemo(
+  const IMG = useMemo(
     () => box.fills?.filter((e) => e?.visible && e?.type === "image").at(0),
     [box.fills]
   );
   const { x, y, strokeWidth, rotation } = box;
   const applyLayout = useSetAtom(flexLayoutAtom);
-
-  // Memoización de la imagen base
-  const Imagee = useMemo(() => {
-    const img = new Image();
-    if (!fillImage) return img;
-    img.src = fillImage?.image?.src;
-    img.crossOrigin = "Anonymous";
-
-    img.width = fillImage?.image?.width;
-    img.height = fillImage?.image?.height;
-    return img;
-  }, [
-    fillImage?.image?.src,
-    fillImage?.image?.width,
-    fillImage?.image?.height,
-  ]);
-
-  // Configuración de crop para object-fit cover
-  const cropConfig = useMemo(
-    () =>
-      calculateCoverCrop(
-        fillImage?.image?.width || 0,
-        fillImage?.image?.height || 0,
-        Number(box.width),
-        Number(box.height)
-      ),
-    [fillImage?.image?.width, fillImage?.image?.height, box.width, box.height]
-  );
 
   // Refs para shape y transformer
 
@@ -119,6 +91,42 @@ export const ShapeImage = (props: IShapeEvents) => {
   const fill = useMemo(
     () => box?.fills?.filter((e) => e?.type === "fill" && e?.visible)?.at(0),
     [box.fills]
+  );
+
+  const Imagee = useMemo(() => {
+    const img = new Image();
+    if (!IMG?.image?.src) return img;
+
+    if (IMG.image.src.includes("data:image/svg+xml;charset=utf-8,")) {
+      const svgText = decodeURIComponent(
+        IMG.image.src.replace("data:image/svg+xml;charset=utf-8,", "")
+      );
+      const newSvg = svgText.replace(
+        /stroke="currentColor"/g,
+        `stroke="${stroke?.color || "#000000"}"`
+      );
+
+      img.src =
+        "data:image/svg+xml;charset=utf-8," + encodeURIComponent(newSvg);
+    } else {
+      img.src = IMG.image.src;
+    }
+    img.crossOrigin = "Anonymous";
+    img.width = IMG.image.width;
+    img.height = IMG.image.height;
+    return img;
+  }, [IMG?.image?.src, IMG?.image?.width, IMG?.image?.height, stroke?.color]);
+
+  // Configuración de crop para object-fit cover
+  const cropConfig = useMemo(
+    () =>
+      calculateCoverCrop(
+        IMG?.image?.width || 0,
+        IMG?.image?.height || 0,
+        Number(box.width),
+        Number(box.height)
+      ),
+    [IMG?.image?.width, IMG?.image?.height, box.width, box.height]
   );
 
   if (!box.visible) return null;
