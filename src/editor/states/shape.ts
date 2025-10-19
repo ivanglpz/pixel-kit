@@ -1,5 +1,6 @@
 import { IShape } from "@/editor/shapes/type.shape";
 import { atom } from "jotai";
+import { cloneDeep } from "../helpers/shape-schema";
 import { EVENT_ATOM } from "./event";
 import { CURRENT_PAGE, IPageShapeIds } from "./pages";
 import { PLANE_SHAPES_ATOM } from "./shapes";
@@ -85,7 +86,7 @@ export const SHAPE_UPDATE_ATOM = atom(
       if (target && target.state) {
         set(target.state, {
           ...get(target.state),
-          ...args,
+          ...cloneDeep(args),
         });
       }
     });
