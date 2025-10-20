@@ -601,6 +601,7 @@ export const LayoutShapeConfig = () => {
     setPhotocChoose(null);
     setShowImage(false);
   };
+  console.log(shape);
 
   return (
     <div
