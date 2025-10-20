@@ -20,7 +20,7 @@ import {
   SHAPE_IDS_ATOM,
   UPDATE_SHAPES_IDS_ATOM,
 } from "./shape";
-import TOOL_ATOM, { IShapesKeys } from "./tool";
+import TOOL_ATOM, { IKeyTool, IShapesKeys } from "./tool";
 import { NEW_UNDO_REDO } from "./undo-redo";
 
 export type WithInitialValue<Value> = {
@@ -36,9 +36,13 @@ export type ALL_SHAPES = {
 export type ALL_SHAPES_CHILDREN = Omit<ALL_SHAPES, "state"> & {
   state: IShapeChildren;
 };
-const TOOLS_BOX_BASED = ["FRAME", "IMAGE", "TEXT"];
 
-const TOOLS_DRAW_BASED = ["DRAW"];
+type ExcludedKeys = "DRAW" | "MOVE";
+type FirstArrayKeys = Exclude<IKeyTool, ExcludedKeys>; // ["IMAGE", "TEXT", "FRAME"]
+type DrawBasedTools = Extract<IKeyTool, "DRAW">;
+const TOOLS_BOX_BASED: FirstArrayKeys[] = ["FRAME", "IMAGE", "TEXT", "ICON"];
+
+const TOOLS_DRAW_BASED: DrawBasedTools[] = ["DRAW"];
 export const DELETE_KEYS = ["DELETE", "BACKSPACE"];
 
 export const ALL_SHAPES_ATOM = atom(
@@ -452,7 +456,7 @@ export const EVENT_DOWN_SHAPES = atom(
     const { x, y } = args;
     const drawConfig = get(DRAW_START_CONFIG_ATOM);
     const tool = get(TOOL_ATOM);
-    if (TOOLS_BOX_BASED.includes(tool)) {
+    if (TOOLS_BOX_BASED.includes(tool as FirstArrayKeys)) {
       const createStartElement = CreateShapeSchema({
         tool: tool as IShape["tool"],
         x,
@@ -474,7 +478,7 @@ export const EVENT_DOWN_SHAPES = atom(
     //   });
     //   set(CREATE_CURRENT_ITEM_ATOM, [createStartElement]);
     // }
-    if (TOOLS_DRAW_BASED.includes(tool)) {
+    if (TOOLS_DRAW_BASED.includes(tool as DrawBasedTools)) {
       const createStartElement = CreateShapeSchema({
         ...drawConfig,
         tool: tool as IShape["tool"],
@@ -605,7 +609,7 @@ export const EVENT_MOVING_SHAPE = atom(
     const newShape = CURRENT_ITEMS.at(0);
     if (!newShape) return;
 
-    if (TOOLS_BOX_BASED.includes(newShape.tool)) {
+    if (TOOLS_BOX_BASED.includes(newShape.tool as FirstArrayKeys)) {
       const updateShape = UpdateShapeDimension(x, y, newShape);
       set(CURRENT_ITEM_ATOM, [updateShape]);
     }
@@ -616,7 +620,7 @@ export const EVENT_MOVING_SHAPE = atom(
     //   });
     //   set(CURRENT_ITEM_ATOM, [updateShape]);
     // }
-    if (TOOLS_DRAW_BASED.includes(newShape.tool)) {
+    if (TOOLS_DRAW_BASED.includes(newShape.tool as DrawBasedTools)) {
       const updateShape = UpdateShapeDimension(x, y, {
         ...newShape,
         points: newShape.points?.concat([x, y]),

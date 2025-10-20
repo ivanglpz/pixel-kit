@@ -93,11 +93,16 @@ const configs: { [key in MODE]: Config } = {
         keyBoard: "R",
         eventStage: "CREATE",
       },
-
+      {
+        icon: icons.icon,
+        keyMethod: "ICON",
+        keyBoard: "A",
+        eventStage: "CREATE",
+      },
       {
         icon: icons.peentool,
         keyMethod: "DRAW",
-        keyBoard: "T",
+        keyBoard: "S",
         eventStage: "CREATE",
       },
       // {
