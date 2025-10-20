@@ -1593,169 +1593,176 @@ export const LayoutShapeConfig = () => {
             </Input.Grid>
           </Input.Container>
         </div>
-
-        <div
-          className={css({
-            display: "flex",
-            flexDir: "column",
-            gap: "md",
-          })}
-        >
-          <Input.Label text="Corner Radius" />
-          <div
-            className={css({
-              display: "grid",
-              gridTemplateColumns: "1fr 30px",
-              gap: "md",
-            })}
-          >
-            <Input.Container>
-              <Input.Grid>
-                <Input.IconContainer>
-                  <Expand size={constants.icon.size} />
-                </Input.IconContainer>
-                {shape.isAllBorderRadius ? (
-                  <Input.withPause>
-                    <Input.Number
-                      min={0}
-                      max={9999}
-                      step={1}
-                      value={shape.borderRadius}
-                      onChange={(e) => {
-                        shapeUpdate({
-                          borderRadius: e,
-                        });
-                        execute();
-                      }}
-                    />
-                  </Input.withPause>
-                ) : null}
-                {!shape.isAllBorderRadius ? <Input.Label text="Mixed" /> : null}
-              </Input.Grid>
-            </Input.Container>
-            <button
+        {!["TEXT", "ICON", "DRAW"].includes(shape.tool) ? (
+          <>
+            <div
               className={css({
-                cursor: "pointer",
-                width: 30,
-                height: 30,
                 display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                borderWidth: "1px",
-                borderStyle: "solid",
-                borderRadius: "md",
+                flexDir: "column",
+                gap: "md",
               })}
-              onClick={() => {
-                shapeUpdate({ isAllBorderRadius: !shape.isAllBorderRadius });
-                execute();
-              }}
-              style={{
-                backgroundColor: !shape.isAllBorderRadius
-                  ? constants.theme.colors.background
-                  : "transparent",
-                borderColor: !shape.isAllBorderRadius
-                  ? constants.theme.colors.primary
-                  : "transparent",
-              }}
             >
-              <Sliders
-                size={constants.icon.size}
-                strokeWidth={constants.icon.strokeWidth}
-                color={
-                  !shape.isAllBorderRadius
-                    ? constants.theme.colors.primary
-                    : constants.theme.colors.white
-                }
-              />
-            </button>
-          </div>
-        </div>
-        {!shape.isAllBorderRadius ? (
-          <div
-            className={css({
-              display: "grid",
-              flexDirection: "column",
-              gap: "md",
-              gridTemplateColumns: "2",
-            })}
-          >
-            <Input.Container>
-              <Input.Grid>
-                <Input.IconContainer>
-                  <CornerUpLeft size={constants.icon.size} />
-                </Input.IconContainer>
-                <Input.withPause>
-                  <Input.Number
-                    min={0}
-                    max={9999}
-                    step={1}
-                    value={shape.borderTopLeftRadius || 0}
-                    onChange={(e) => {
-                      shapeUpdate({ borderTopLeftRadius: e });
-                      execute();
-                    }}
+              <Input.Label text="Corner Radius" />
+              <div
+                className={css({
+                  display: "grid",
+                  gridTemplateColumns: "1fr 30px",
+                  gap: "md",
+                })}
+              >
+                <Input.Container>
+                  <Input.Grid>
+                    <Input.IconContainer>
+                      <Expand size={constants.icon.size} />
+                    </Input.IconContainer>
+                    {shape.isAllBorderRadius ? (
+                      <Input.withPause>
+                        <Input.Number
+                          min={0}
+                          max={9999}
+                          step={1}
+                          value={shape.borderRadius}
+                          onChange={(e) => {
+                            shapeUpdate({
+                              borderRadius: e,
+                            });
+                            execute();
+                          }}
+                        />
+                      </Input.withPause>
+                    ) : null}
+                    {!shape.isAllBorderRadius ? (
+                      <Input.Label text="Mixed" />
+                    ) : null}
+                  </Input.Grid>
+                </Input.Container>
+                <button
+                  className={css({
+                    cursor: "pointer",
+                    width: 30,
+                    height: 30,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    borderWidth: "1px",
+                    borderStyle: "solid",
+                    borderRadius: "md",
+                  })}
+                  onClick={() => {
+                    shapeUpdate({
+                      isAllBorderRadius: !shape.isAllBorderRadius,
+                    });
+                    execute();
+                  }}
+                  style={{
+                    backgroundColor: !shape.isAllBorderRadius
+                      ? constants.theme.colors.background
+                      : "transparent",
+                    borderColor: !shape.isAllBorderRadius
+                      ? constants.theme.colors.primary
+                      : "transparent",
+                  }}
+                >
+                  <Sliders
+                    size={constants.icon.size}
+                    strokeWidth={constants.icon.strokeWidth}
+                    color={
+                      !shape.isAllBorderRadius
+                        ? constants.theme.colors.primary
+                        : constants.theme.colors.white
+                    }
                   />
-                </Input.withPause>
-              </Input.Grid>
-            </Input.Container>
-            <Input.Container>
-              <Input.Grid>
-                <Input.IconContainer>
-                  <CornerUpRight size={constants.icon.size} />
-                </Input.IconContainer>
-                <Input.withPause>
-                  <Input.Number
-                    min={0}
-                    max={9999}
-                    step={1}
-                    value={shape.borderTopRightRadius || 0}
-                    onChange={(e) => {
-                      shapeUpdate({ borderTopRightRadius: e });
-                      execute();
-                    }}
-                  />
-                </Input.withPause>
-              </Input.Grid>
-            </Input.Container>
-            <Input.Container>
-              <Input.Grid>
-                <Input.IconContainer>
-                  <CornerDownLeft size={constants.icon.size} />
-                </Input.IconContainer>
-                <Input.withPause>
-                  <Input.Number
-                    min={0}
-                    max={9999}
-                    step={1}
-                    value={shape.borderBottomLeftRadius || 0}
-                    onChange={(e) => {
-                      shapeUpdate({ borderBottomLeftRadius: e });
-                      execute();
-                    }}
-                  />
-                </Input.withPause>
-              </Input.Grid>
-            </Input.Container>
-            <Input.Container>
-              <Input.Grid>
-                <Input.IconContainer>
-                  <CornerDownRight size={constants.icon.size} />
-                </Input.IconContainer>
-                <Input.withPause>
-                  <Input.Number
-                    min={0}
-                    max={9999}
-                    step={1}
-                    value={shape.borderBottomRightRadius || 0}
-                    onChange={(e) => {
-                      shapeUpdate({ borderBottomRightRadius: e });
-                      execute();
-                    }}
-                  />
-                </Input.withPause>
-              </Input.Grid>
-            </Input.Container>
-          </div>
+                </button>
+              </div>
+            </div>
+            {!shape.isAllBorderRadius ? (
+              <div
+                className={css({
+                  display: "grid",
+                  flexDirection: "column",
+                  gap: "md",
+                  gridTemplateColumns: "2",
+                })}
+              >
+                <Input.Container>
+                  <Input.Grid>
+                    <Input.IconContainer>
+                      <CornerUpLeft size={constants.icon.size} />
+                    </Input.IconContainer>
+                    <Input.withPause>
+                      <Input.Number
+                        min={0}
+                        max={9999}
+                        step={1}
+                        value={shape.borderTopLeftRadius || 0}
+                        onChange={(e) => {
+                          shapeUpdate({ borderTopLeftRadius: e });
+                          execute();
+                        }}
+                      />
+                    </Input.withPause>
+                  </Input.Grid>
+                </Input.Container>
+                <Input.Container>
+                  <Input.Grid>
+                    <Input.IconContainer>
+                      <CornerUpRight size={constants.icon.size} />
+                    </Input.IconContainer>
+                    <Input.withPause>
+                      <Input.Number
+                        min={0}
+                        max={9999}
+                        step={1}
+                        value={shape.borderTopRightRadius || 0}
+                        onChange={(e) => {
+                          shapeUpdate({ borderTopRightRadius: e });
+                          execute();
+                        }}
+                      />
+                    </Input.withPause>
+                  </Input.Grid>
+                </Input.Container>
+                <Input.Container>
+                  <Input.Grid>
+                    <Input.IconContainer>
+                      <CornerDownLeft size={constants.icon.size} />
+                    </Input.IconContainer>
+                    <Input.withPause>
+                      <Input.Number
+                        min={0}
+                        max={9999}
+                        step={1}
+                        value={shape.borderBottomLeftRadius || 0}
+                        onChange={(e) => {
+                          shapeUpdate({ borderBottomLeftRadius: e });
+                          execute();
+                        }}
+                      />
+                    </Input.withPause>
+                  </Input.Grid>
+                </Input.Container>
+                <Input.Container>
+                  <Input.Grid>
+                    <Input.IconContainer>
+                      <CornerDownRight size={constants.icon.size} />
+                    </Input.IconContainer>
+                    <Input.withPause>
+                      <Input.Number
+                        min={0}
+                        max={9999}
+                        step={1}
+                        value={shape.borderBottomRightRadius || 0}
+                        onChange={(e) => {
+                          shapeUpdate({ borderBottomRightRadius: e });
+                          execute();
+                        }}
+                      />
+                    </Input.withPause>
+                  </Input.Grid>
+                </Input.Container>
+              </div>
+            ) : null}
+          </>
         ) : null}
       </section>
 
@@ -1828,20 +1835,24 @@ export const LayoutShapeConfig = () => {
 
       <section className={commonStyles.container}>
         <SectionHeader title="Fill">
-          <button
-            className={commonStyles.addButton}
-            onClick={() => setshowIcons(true)}
-          >
-            <Smile size={14} />
-          </button>
-          <button
-            className={commonStyles.addButton}
-            onClick={() => {
-              setShowImage(true);
-            }}
-          >
-            <ImageIcon size={14} />
-          </button>
+          {shape.tool === "ICON" ? (
+            <button
+              className={commonStyles.addButton}
+              onClick={() => setshowIcons(true)}
+            >
+              <Smile size={14} />
+            </button>
+          ) : null}
+          {shape.tool === "IMAGE" ? (
+            <button
+              className={commonStyles.addButton}
+              onClick={() => {
+                setShowImage(true);
+              }}
+            >
+              <ImageIcon size={14} />
+            </button>
+          ) : null}
           <button className={commonStyles.addButton} onClick={handleAddFill}>
             <Plus size={14} />
           </button>
@@ -1935,215 +1946,233 @@ export const LayoutShapeConfig = () => {
           : null}
       </section>
 
-      <Separator />
+      {shape.tool !== "TEXT" ? (
+        <>
+          <Separator />
 
-      <section className={commonStyles.container}>
-        <SectionHeader title="Stroke">
-          <button className={commonStyles.addButton} onClick={handleAddStroke}>
-            <Plus size={14} />
-          </button>
-        </SectionHeader>
-
-        {shape.strokes?.length ? (
-          <>
-            {shape.strokes.map((stroke, index) => (
-              <div
-                key={`pixel-kit-shape-stroke-${shape.id}-${shape.tool}-${index}`}
-                className={commonStyles.threeColumnGrid}
+          <section className={commonStyles.container}>
+            <SectionHeader title="Stroke">
+              <button
+                className={commonStyles.addButton}
+                onClick={handleAddStroke}
               >
-                <Input.Container
-                  id={`pixel-kit-shape-stroke-${shape.id}-${shape.tool}-${index}`}
-                >
-                  <Input.Grid>
-                    <Input.IconContainer>
-                      <Input.Color
-                        id={`pixel-kit-shape-stroke-${shape.id}-${shape.tool}-${index}`}
-                        value={stroke.color}
-                        onChange={(e) => handleStrokeColorChange(index, e)}
-                      />
-                      {/* <Scaling size={constants.icon.size} /> */}
-                    </Input.IconContainer>
-                    <Input.Label
-                      text={`#${stroke.color?.replace(/#/, "") ?? "ffffff"}`}
-                    />
-                  </Input.Grid>
-                </Input.Container>
+                <Plus size={14} />
+              </button>
+            </SectionHeader>
 
-                <button
-                  onClick={() => handleStrokeVisibilityToggle(index)}
-                  className={commonStyles.iconButton}
-                >
-                  {stroke.visible ? <Eye size={14} /> : <EyeOff size={14} />}
-                </button>
-                <button
-                  onClick={() => handleStrokeRemove(index)}
-                  className={commonStyles.iconButton}
-                >
-                  <Minus size={14} />
-                </button>
-              </div>
-            ))}
-
-            <div className={commonStyles.twoColumnGrid}>
-              <Input.Container>
-                <Input.Grid>
-                  <Input.IconContainer>
-                    <p
-                      className={css({
-                        fontWeight: 600,
-                        fontSize: "x-small",
-                      })}
+            {shape.strokes?.length ? (
+              <>
+                {shape.strokes.map((stroke, index) => (
+                  <div
+                    key={`pixel-kit-shape-stroke-${shape.id}-${shape.tool}-${index}`}
+                    className={commonStyles.threeColumnGrid}
+                  >
+                    <Input.Container
+                      id={`pixel-kit-shape-stroke-${shape.id}-${shape.tool}-${index}`}
                     >
-                      W
-                    </p>
-                  </Input.IconContainer>
-                  <Input.withPause>
-                    <Input.Number
-                      min={0}
-                      max={9999}
-                      step={1}
-                      value={shape.strokeWidth || 0}
-                      onChange={(v) => {
-                        shapeUpdate({ strokeWidth: v });
-                        execute();
-                      }}
-                    />
-                  </Input.withPause>
-                </Input.Grid>
-              </Input.Container>
-              <div
-                className={css({
-                  alignItems: "flex-end",
-                  display: "grid",
-                  gridTemplateColumns: "3",
-                })}
-              >
-                <button
-                  onClick={() => handleLineStyleChange("round", "round")}
-                  className={css({
-                    cursor: "pointer",
-                    width: 30,
-                    height: 30,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    borderWidth: "1px",
-                    borderStyle: "solid",
-                    borderRadius: "md",
-                  })}
-                  style={{
-                    backgroundColor:
-                      shape.lineJoin === "round" && shape.lineCap === "round"
-                        ? constants.theme.colors.background
-                        : "transparent",
-                    borderColor:
-                      shape.lineJoin === "round" && shape.lineCap === "round"
-                        ? constants.theme.colors.primary
-                        : "transparent",
-                  }}
-                >
-                  <Brush
-                    size={constants.icon.size}
-                    strokeWidth={constants.icon.strokeWidth}
-                    color={
-                      shape.lineJoin === "round" && shape.lineCap === "round"
-                        ? constants.theme.colors.primary
-                        : constants.theme.colors.white
-                    }
-                  />
-                </button>
-                <button
-                  onClick={() => handleLineStyleChange("miter", "round")}
-                  className={css({
-                    cursor: "pointer",
-                    width: 30,
-                    height: 30,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    borderWidth: "1px",
-                    borderStyle: "solid",
-                    borderRadius: "md",
-                  })}
-                  style={{
-                    backgroundColor:
-                      shape.lineJoin === "miter" && shape.lineCap === "round"
-                        ? constants.theme.colors.background
-                        : "transparent",
-                    borderColor:
-                      shape.lineJoin === "miter" && shape.lineCap === "round"
-                        ? constants.theme.colors.primary
-                        : "transparent",
-                  }}
-                >
-                  <PenTool
-                    size={constants.icon.size}
-                    strokeWidth={constants.icon.strokeWidth}
-                    color={
-                      shape.lineJoin === "miter" && shape.lineCap === "round"
-                        ? constants.theme.colors.primary
-                        : constants.theme.colors.white
-                    }
-                  />
-                </button>
-                <button
-                  onClick={() => handleLineStyleChange("miter", "butt")}
-                  className={css({
-                    cursor: "pointer",
-                    width: 30,
-                    height: 30,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    borderWidth: "1px",
-                    borderStyle: "solid",
-                    borderRadius: "md",
-                  })}
-                  style={{
-                    backgroundColor:
-                      shape.lineJoin === "miter" && shape.lineCap === "butt"
-                        ? constants.theme.colors.background
-                        : "transparent",
-                    borderColor:
-                      shape.lineJoin === "miter" && shape.lineCap === "butt"
-                        ? constants.theme.colors.primary
-                        : "transparent",
-                  }}
-                >
-                  <Ruler
-                    size={constants.icon.size}
-                    strokeWidth={constants.icon.strokeWidth}
-                    color={
-                      shape.lineJoin === "miter" && shape.lineCap === "butt"
-                        ? constants.theme.colors.primary
-                        : constants.theme.colors.white
-                    }
-                  />
-                </button>
-              </div>
-            </div>
+                      <Input.Grid>
+                        <Input.IconContainer>
+                          <Input.Color
+                            id={`pixel-kit-shape-stroke-${shape.id}-${shape.tool}-${index}`}
+                            value={stroke.color}
+                            onChange={(e) => handleStrokeColorChange(index, e)}
+                          />
+                          {/* <Scaling size={constants.icon.size} /> */}
+                        </Input.IconContainer>
+                        <Input.Label
+                          text={`#${stroke.color?.replace(/#/, "") ?? "ffffff"}`}
+                        />
+                      </Input.Grid>
+                    </Input.Container>
 
-            <Input.Container>
-              <Input.Grid>
-                <Input.IconContainer>
-                  <SquareDashed size={constants.icon.size} />
-                </Input.IconContainer>
-                <Input.withPause>
-                  <Input.Number
-                    min={0}
-                    step={1}
-                    onChange={(e) => {
-                      shapeUpdate({ dash: e });
-                      execute();
-                    }}
-                    value={shape.dash || 0}
-                  />
-                </Input.withPause>
-              </Input.Grid>
-            </Input.Container>
-          </>
-        ) : null}
-      </section>
+                    <button
+                      onClick={() => handleStrokeVisibilityToggle(index)}
+                      className={commonStyles.iconButton}
+                    >
+                      {stroke.visible ? (
+                        <Eye size={14} />
+                      ) : (
+                        <EyeOff size={14} />
+                      )}
+                    </button>
+                    <button
+                      onClick={() => handleStrokeRemove(index)}
+                      className={commonStyles.iconButton}
+                    >
+                      <Minus size={14} />
+                    </button>
+                  </div>
+                ))}
+
+                <div className={commonStyles.twoColumnGrid}>
+                  <Input.Container>
+                    <Input.Grid>
+                      <Input.IconContainer>
+                        <p
+                          className={css({
+                            fontWeight: 600,
+                            fontSize: "x-small",
+                          })}
+                        >
+                          W
+                        </p>
+                      </Input.IconContainer>
+                      <Input.withPause>
+                        <Input.Number
+                          min={0}
+                          max={9999}
+                          step={1}
+                          value={shape.strokeWidth || 0}
+                          onChange={(v) => {
+                            shapeUpdate({ strokeWidth: v });
+                            execute();
+                          }}
+                        />
+                      </Input.withPause>
+                    </Input.Grid>
+                  </Input.Container>
+                  <div
+                    className={css({
+                      alignItems: "flex-end",
+                      display: "grid",
+                      gridTemplateColumns: "3",
+                    })}
+                  >
+                    <button
+                      onClick={() => handleLineStyleChange("round", "round")}
+                      className={css({
+                        cursor: "pointer",
+                        width: 30,
+                        height: 30,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        borderWidth: "1px",
+                        borderStyle: "solid",
+                        borderRadius: "md",
+                      })}
+                      style={{
+                        backgroundColor:
+                          shape.lineJoin === "round" &&
+                          shape.lineCap === "round"
+                            ? constants.theme.colors.background
+                            : "transparent",
+                        borderColor:
+                          shape.lineJoin === "round" &&
+                          shape.lineCap === "round"
+                            ? constants.theme.colors.primary
+                            : "transparent",
+                      }}
+                    >
+                      <Brush
+                        size={constants.icon.size}
+                        strokeWidth={constants.icon.strokeWidth}
+                        color={
+                          shape.lineJoin === "round" &&
+                          shape.lineCap === "round"
+                            ? constants.theme.colors.primary
+                            : constants.theme.colors.white
+                        }
+                      />
+                    </button>
+                    <button
+                      onClick={() => handleLineStyleChange("miter", "round")}
+                      className={css({
+                        cursor: "pointer",
+                        width: 30,
+                        height: 30,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        borderWidth: "1px",
+                        borderStyle: "solid",
+                        borderRadius: "md",
+                      })}
+                      style={{
+                        backgroundColor:
+                          shape.lineJoin === "miter" &&
+                          shape.lineCap === "round"
+                            ? constants.theme.colors.background
+                            : "transparent",
+                        borderColor:
+                          shape.lineJoin === "miter" &&
+                          shape.lineCap === "round"
+                            ? constants.theme.colors.primary
+                            : "transparent",
+                      }}
+                    >
+                      <PenTool
+                        size={constants.icon.size}
+                        strokeWidth={constants.icon.strokeWidth}
+                        color={
+                          shape.lineJoin === "miter" &&
+                          shape.lineCap === "round"
+                            ? constants.theme.colors.primary
+                            : constants.theme.colors.white
+                        }
+                      />
+                    </button>
+                    <button
+                      onClick={() => handleLineStyleChange("miter", "butt")}
+                      className={css({
+                        cursor: "pointer",
+                        width: 30,
+                        height: 30,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        borderWidth: "1px",
+                        borderStyle: "solid",
+                        borderRadius: "md",
+                      })}
+                      style={{
+                        backgroundColor:
+                          shape.lineJoin === "miter" && shape.lineCap === "butt"
+                            ? constants.theme.colors.background
+                            : "transparent",
+                        borderColor:
+                          shape.lineJoin === "miter" && shape.lineCap === "butt"
+                            ? constants.theme.colors.primary
+                            : "transparent",
+                      }}
+                    >
+                      <Ruler
+                        size={constants.icon.size}
+                        strokeWidth={constants.icon.strokeWidth}
+                        color={
+                          shape.lineJoin === "miter" && shape.lineCap === "butt"
+                            ? constants.theme.colors.primary
+                            : constants.theme.colors.white
+                        }
+                      />
+                    </button>
+                  </div>
+                </div>
+                {["FRAME", "IMAGE", "DRAW"].includes(shape.tool) ? (
+                  <Input.Container>
+                    <Input.Grid>
+                      <Input.IconContainer>
+                        <SquareDashed size={constants.icon.size} />
+                      </Input.IconContainer>
+                      <Input.withPause>
+                        <Input.Number
+                          min={0}
+                          step={1}
+                          onChange={(e) => {
+                            shapeUpdate({ dash: e });
+                            execute();
+                          }}
+                          value={shape.dash || 0}
+                        />
+                      </Input.withPause>
+                    </Input.Grid>
+                  </Input.Container>
+                ) : null}
+              </>
+            ) : null}
+          </section>
+        </>
+      ) : null}
 
       <Separator />
 

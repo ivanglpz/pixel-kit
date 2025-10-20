@@ -1,6 +1,7 @@
 import { IShapesKeys } from "../states/tool";
 import { ShapeDraw } from "./drawn.shape";
 import { SHAPE_FRAME } from "./frame.shape";
+import { SHAPE_ICON } from "./icon.shape";
 import { ShapeImage } from "./image.shape";
 import { ShapeText } from "./text.shape";
 import { IShapeEvents } from "./type.shape";
@@ -17,5 +18,6 @@ export const Shapes: IMapperElements = {
   // LINE: ShapeLine,
   IMAGE: ShapeImage,
   DRAW: ShapeDraw,
+  ICON: SHAPE_ICON,
   // GROUP: ShapeGroup,
 };
