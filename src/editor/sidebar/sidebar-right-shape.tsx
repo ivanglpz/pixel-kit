@@ -1978,7 +1978,6 @@ export const LayoutShapeConfig = () => {
                             value={stroke.color}
                             onChange={(e) => handleStrokeColorChange(index, e)}
                           />
-                          {/* <Scaling size={constants.icon.size} /> */}
                         </Input.IconContainer>
                         <Input.Label
                           text={`#${stroke.color?.replace(/#/, "") ?? "ffffff"}`}
