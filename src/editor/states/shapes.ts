@@ -37,10 +37,13 @@ export type ALL_SHAPES_CHILDREN = Omit<ALL_SHAPES, "state"> & {
   state: IShapeChildren;
 };
 
-type ExcludedKeys = "DRAW" | "MOVE";
+type ExcludedKeys = "DRAW" | "MOVE" | "ICON";
 type FirstArrayKeys = Exclude<IKeyTool, ExcludedKeys>; // ["IMAGE", "TEXT", "FRAME"]
+type SecondArrayKeys = Extract<IKeyTool, "ICON">; // ["ICON"]
+
 type DrawBasedTools = Extract<IKeyTool, "DRAW">;
-const TOOLS_BOX_BASED: FirstArrayKeys[] = ["FRAME", "IMAGE", "TEXT", "ICON"];
+const TOOLS_BOX_BASED: FirstArrayKeys[] = ["FRAME", "IMAGE", "TEXT"];
+const TOOLS_ICON_BASED: SecondArrayKeys[] = ["ICON"];
 
 const TOOLS_DRAW_BASED: DrawBasedTools[] = ["DRAW"];
 export const DELETE_KEYS = ["DELETE", "BACKSPACE"];
@@ -463,47 +466,51 @@ export const EVENT_DOWN_SHAPES = atom(
         y,
         id: uuidv4(),
         label: capitalize(tool),
-        strokes:
-          tool === "ICON"
-            ? [
-                {
-                  id: uuidv4(),
-                  visible: true,
-                  color: "#000000",
-                },
-              ]
-            : undefined,
-        fills:
-          tool === "ICON"
-            ? [
-                {
-                  color: "#fff",
-                  id: uuidv4(),
-                  image: {
-                    src: "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20class%3D%22lucide%20lucide-smile%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22currentColor%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%0A%20%20%3Ccircle%20cx%3D%2212%22%20cy%3D%2212%22%20r%3D%2210%22%2F%3E%0A%20%20%3Cpath%20d%3D%22M8%2014s1.5%202%204%202%204-2%204-2%22%2F%3E%0A%20%20%3Cline%20x1%3D%229%22%20x2%3D%229.01%22%20y1%3D%229%22%20y2%3D%229%22%2F%3E%0A%20%20%3Cline%20x1%3D%2215%22%20x2%3D%2215.01%22%20y1%3D%229%22%20y2%3D%229%22%2F%3E%0A%3C%2Fsvg%3E",
-                    width: 24,
-                    height: 24,
-                    name: "Smile",
-                  },
-                  opacity: 1,
-                  type: "image",
-                  visible: true,
-                },
-                {
-                  visible: true,
-                  color: "#ffffff",
-                  opacity: 1,
-                  type: "fill",
-                  id: uuidv4(),
-                  image: {
-                    height: 0,
-                    name: "default.png",
-                    src: "/placeholder.svg",
-                    width: 0,
-                  },
-                },
-              ]
-            : undefined,
+      });
+      set(CREATE_CURRENT_ITEM_ATOM, [createStartElement]);
+    }
+    if (TOOLS_ICON_BASED.includes(tool as SecondArrayKeys)) {
+      const createStartElement = CreateShapeSchema({
+        tool: tool as IShape["tool"],
+        x,
+        y,
+        id: uuidv4(),
+        label: capitalize(tool),
+        strokes: [
+          {
+            id: uuidv4(),
+            visible: true,
+            color: "#000000",
+          },
+        ],
+        fills: [
+          {
+            color: "#fff",
+            id: uuidv4(),
+            image: {
+              src: "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20class%3D%22lucide%20lucide-smile%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22currentColor%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%0A%20%20%3Ccircle%20cx%3D%2212%22%20cy%3D%2212%22%20r%3D%2210%22%2F%3E%0A%20%20%3Cpath%20d%3D%22M8%2014s1.5%202%204%202%204-2%204-2%22%2F%3E%0A%20%20%3Cline%20x1%3D%229%22%20x2%3D%229.01%22%20y1%3D%229%22%20y2%3D%229%22%2F%3E%0A%20%20%3Cline%20x1%3D%2215%22%20x2%3D%2215.01%22%20y1%3D%229%22%20y2%3D%229%22%2F%3E%0A%3C%2Fsvg%3E",
+              width: 24,
+              height: 24,
+              name: "Smile",
+            },
+            opacity: 1,
+            type: "image",
+            visible: true,
+          },
+          {
+            visible: true,
+            color: "#ffffff",
+            opacity: 1,
+            type: "fill",
+            id: uuidv4(),
+            image: {
+              height: 0,
+              name: "default.png",
+              src: "/placeholder.svg",
+              width: 0,
+            },
+          },
+        ],
       });
       set(CREATE_CURRENT_ITEM_ATOM, [createStartElement]);
     }
@@ -654,13 +661,12 @@ export const EVENT_MOVING_SHAPE = atom(
       const updateShape = UpdateShapeDimension(x, y, newShape);
       set(CURRENT_ITEM_ATOM, [updateShape]);
     }
-    // if (TOOLS_LINE_BASED.includes(newShape.tool)) {
-    //   const updateShape = UpdateShapeDimension(x, y, {
-    //     ...newShape,
-    //     points: [newShape?.points?.[0] ?? 0, newShape?.points?.[1] ?? 0, x, y],
-    //   });
-    //   set(CURRENT_ITEM_ATOM, [updateShape]);
-    // }
+
+    if (TOOLS_ICON_BASED.includes(newShape.tool as SecondArrayKeys)) {
+      const updateShape = UpdateShapeDimension(x, y, newShape);
+      set(CURRENT_ITEM_ATOM, [updateShape]);
+    }
+
     if (TOOLS_DRAW_BASED.includes(newShape.tool as DrawBasedTools)) {
       const updateShape = UpdateShapeDimension(x, y, {
         ...newShape,
