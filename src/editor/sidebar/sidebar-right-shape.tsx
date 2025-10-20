@@ -2022,7 +2022,7 @@ export const LayoutShapeConfig = () => {
                         <Input.Number
                           min={0}
                           max={9999}
-                          step={1}
+                          step={["DRAW", "ICON"].includes(shape.tool) ? 0.1 : 1}
                           value={shape.strokeWidth || 0}
                           onChange={(v) => {
                             shapeUpdate({ strokeWidth: v });
