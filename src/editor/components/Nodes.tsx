@@ -432,9 +432,9 @@ export const NodesDefault = ({
           }}
           layoutScroll={false}
         >
-          {children.map((childItem) => (
+          {children.map((childItem, index) => (
             <DraggableNodeItem
-              key={childItem.id + shape.id + String(shape.parentId)}
+              key={`pixel-kit-node-child-${childItem.id}-${shape.id}-${String(shape.parentId)}-${index}`}
               childItem={childItem}
               childOptions={childOptions}
             />

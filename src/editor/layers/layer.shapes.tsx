@@ -44,10 +44,13 @@ export const LayerShapes = () => {
   return (
     <>
       <Layer id="layer-shapes" ref={lyRef}>
-        {ALL_SHAPES?.map((item) => {
+        {ALL_SHAPES?.map((item, index) => {
           const Component = Shapes?.[item?.tool] as FCShapeWEvents;
           return (
-            <Component shape={item} key={`pixel-kit-shapes-${item?.id}`} />
+            <Component
+              shape={item}
+              key={`pixel-kit-shapes-${item?.id}-${index}`}
+            />
           );
         })}
         {/* Transformer */}
