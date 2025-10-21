@@ -55,10 +55,13 @@ export const ExportStage = () => {
         })}
       >
         <Layer>
-          {ALL_SHAPES.map((e) => {
+          {ALL_SHAPES.map((e, index) => {
             const Component = Shapes?.[e.tool];
             return (
-              <Component key={`pixel-kit-stage-preview-${e.id}`} shape={e} />
+              <Component
+                key={`pixel-kit-stage-preview-${e.id}-${index}`}
+                shape={e}
+              />
             );
           })}
         </Layer>

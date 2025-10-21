@@ -18,11 +18,9 @@ export const Profile = () => {
   const [user] = useAtom(userAtom);
 
   const handleLogout = async () => {
-    await localStorage.clear();
+    localStorage.clear();
     router.replace("/login");
     Cookies.remove("accessToken");
-    // Aquí puedes agregar la lógica para cerrar sesión
-    console.log("Cerrar sesión");
   };
 
   return (
