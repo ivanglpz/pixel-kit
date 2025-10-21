@@ -1,7 +1,7 @@
 import { withAuth } from "@/db/middleware/auth";
 import { IOrganizationMember, Organization } from "@/db/schemas/organizations";
 import { PhotoSchema } from "@/db/schemas/photos";
-import { IProject } from "@/db/schemas/types";
+import { IProject } from "@/db/schemas/projects";
 import { sanitizeInput } from "@/utils/sanitize";
 import { Types } from "mongoose";
 import type { NextApiRequest, NextApiResponse } from "next";
@@ -26,20 +26,21 @@ async function handler(
     const project = await PhotoSchema.findOne(
       { projectId: new Types.ObjectId(projectId) },
       { projectId: 1 }
-    ).lean();
+    )
+      .populate("projectId")
+      .lean<{ projectId: IProject }>();
 
     if (!project) {
       return res.status(404).json({ error: "Project not found" });
     }
 
-    // Obtener la organización asociada al proyecto
-    const organization = await Organization.findOne({ projects: projectId });
-    if (!organization) {
+    const org = await Organization.findById(project.projectId.organization);
+    if (!org) {
       return res.status(404).json({ error: "Organization not found" });
     }
 
     // Verificar que el usuario sea miembro de la organización
-    const isMember = organization.members.some(
+    const isMember = org.members.some(
       (m: IOrganizationMember) => m.user.toString() === req.userId
     );
 
