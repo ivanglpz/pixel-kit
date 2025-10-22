@@ -1,7 +1,5 @@
 export const formats = {
-  LOW: 0.8,
-  MEDIUM: 1,
-  HIGH: 1.8,
-  BIG_HIGH: 2.6,
-  ULTRA_HIGH: 3.5,
+  LOW: 0.6, // Previsualización muy ligera
+  MEDIUM: 1.25, // Calidad estándar equilibrada
+  HIGH: 2, // Máxima calidad razonable
 };
