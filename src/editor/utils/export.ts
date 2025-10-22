@@ -1,9 +1,11 @@
 import Konva from "konva";
 import { getCommonShapeProps } from "../helpers/shape-schema";
 import { calculateCoverCrop } from "../shapes/image.shape";
+import { IKeyTool } from "../states/tool";
 import { UndoShape } from "../states/undo-redo";
 
-type ShapeType = "IMAGE" | "TEXT" | "FRAME" | "DRAW";
+type ExcludedKeys = "MOVE" | "ICON";
+type ShapeType = Exclude<IKeyTool, ExcludedKeys>; // ["IMAGE", "TEXT", "FRAME"]
 
 export type StageWithContainer = {
   stage: Konva.Stage;
@@ -16,11 +18,11 @@ const getChildren = (shape: UndoShape["state"]): UndoShape[] => {
 };
 
 // Crear un FRAME con Rect de fondo y Group para hijos
-const createFrameNodes = (
+const createFrameNodes = async (
   shape: UndoShape["state"],
   parent: Konva.Container,
   isRoot = false
-): Konva.Group => {
+): Promise<Konva.Group> => {
   // Top-level FRAME empieza en (0,0)
   const x = isRoot ? 0 : shape.x;
   const y = isRoot ? 0 : shape.y;
@@ -60,12 +62,40 @@ const createFrameNodes = (
 
   return group;
 };
+const fetchAsBase64 = async (url: string): Promise<string> => {
+  const response = await fetch(url, { mode: "cors" });
+  const blob = await response.blob();
 
-const createNodeFromShape = (
+  return new Promise<string>((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onloadend = () => resolve(reader.result as string);
+    reader.onerror = reject;
+    reader.readAsDataURL(blob);
+  });
+};
+
+const loadImageFromBase64 = (
+  base64: string,
+  width: number,
+  height: number
+): Promise<HTMLImageElement> => {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.crossOrigin = "Anonymous";
+    img.onload = () => resolve(img);
+    img.onerror = reject;
+    img.width = width;
+    img.height = height;
+    img.crossOrigin = "Anonymous";
+    img.src = base64;
+  });
+};
+
+const createNodeFromShape = async (
   shape: UndoShape["state"],
   parent?: Konva.Container,
   isRoot = false
-): Konva.Node => {
+): Promise<Konva.Node> => {
   // Si es FRAME
   if (shape.tool === "FRAME" && parent) {
     return createFrameNodes(shape, parent, isRoot);
@@ -87,35 +117,41 @@ const createNodeFromShape = (
   const shadow = shape?.effects
     ?.filter((e) => e?.visible && e?.type === "shadow")
     .at(0);
-  switch (shape.tool as ShapeType) {
-    case "IMAGE": {
-      const img = new Image();
-      const IMG = shape.fills?.find(
+  switch (shape.tool) {
+    case "ICON": {
+      const SHAPE_IMAGE = shape.fills?.find(
         (f) => f.visible && f.type === "image"
       )?.image;
-      if (IMG) {
-        if (IMG.src.includes("data:image/svg+xml;charset=utf-8,")) {
-          const svgText = decodeURIComponent(
-            IMG.src.replace("data:image/svg+xml;charset=utf-8,", "")
-          );
-          const newSvg = svgText.replace(
-            /stroke="currentColor"/g,
-            `stroke="${stroke?.color || "#000000"}"`
-          );
 
-          img.src =
-            "data:image/svg+xml;charset=utf-8," + encodeURIComponent(newSvg);
-        } else {
-          img.src = IMG.src;
-        }
-        img.crossOrigin = "Anonymous";
-        img.width = IMG.width;
-        img.height = IMG.height;
+      if (!SHAPE_IMAGE) {
+        return new Konva.Image({
+          width: shape.width,
+          height: shape.height,
+          fill: "#fff",
+          image: new Image(),
+          ...commonProps,
+        });
       }
 
+      const CONTENT = "data:image/svg+xml;charset=utf-8,";
+
+      const svgText = decodeURIComponent(SHAPE_IMAGE.src.replace(CONTENT, ""));
+      const newSvg = svgText
+        .replace(/stroke-width="[^"]*"/g, `stroke-width="${shape.strokeWidth}"`)
+        .replace(
+          /stroke="currentColor"/g,
+          `stroke="${stroke?.color || "#000000"}"`
+        );
+      const src = CONTENT + encodeURIComponent(newSvg);
+
+      const width = SHAPE_IMAGE.width || shape.width;
+      const height = SHAPE_IMAGE.height || shape.height;
+
+      const img = await loadImageFromBase64(src, width, height);
+
       const cropConfig = calculateCoverCrop(
-        IMG?.width || 0,
-        IMG?.height || 0,
+        SHAPE_IMAGE.width || 0,
+        SHAPE_IMAGE.height || 0,
         Number(shape.width),
         Number(shape.height)
       );
@@ -124,9 +160,47 @@ const createNodeFromShape = (
         image: img,
         crop: cropConfig,
         ...commonProps,
-        ...getCommonShapeProps({ shape, fill, shadow, stroke }),
+        ...getCommonShapeProps({ shape, fill, shadow }),
       });
     }
+    case "IMAGE": {
+      try {
+        const SHAPE_IMAGE = shape.fills?.find(
+          (f) => f.visible && f.type === "image"
+        )?.image;
+
+        if (!SHAPE_IMAGE) throw new Error("shape image doesnt exist");
+
+        const src = await fetchAsBase64(SHAPE_IMAGE.src);
+        const width = SHAPE_IMAGE.width || shape.width;
+        const height = SHAPE_IMAGE.height || shape.height;
+
+        const img = await loadImageFromBase64(src, width, height);
+
+        const cropConfig = calculateCoverCrop(
+          SHAPE_IMAGE.width || 0,
+          SHAPE_IMAGE.height || 0,
+          Number(shape.width),
+          Number(shape.height)
+        );
+
+        return new Konva.Image({
+          image: img,
+          crop: cropConfig,
+          ...commonProps,
+          ...getCommonShapeProps({ shape, fill, shadow, stroke }),
+        });
+      } catch (err) {
+        return new Konva.Image({
+          width: shape.width,
+          height: shape.height,
+          fill: "#fff",
+          image: new Image(),
+          ...commonProps,
+        });
+      }
+    }
+
     case "TEXT":
       return new Konva.Text({
         ...commonProps,
@@ -151,50 +225,54 @@ const createNodeFromShape = (
 };
 
 // Adjuntar un shape y sus hijos recursivamente
-const attachShapeRecursively = (
+const attachShapeRecursively = async (
   shape: UndoShape,
   parent: Konva.Container,
   isRoot = false
-): Konva.Node => {
+): Promise<Konva.Node> => {
   if (shape.tool === "FRAME") {
-    return createFrameNodes(shape.state, parent, isRoot);
+    return await createFrameNodes(shape.state, parent, isRoot);
   }
 
-  const node = createNodeFromShape(shape.state, parent, isRoot);
+  const node = await createNodeFromShape(shape.state, parent, isRoot);
   parent.add(node);
 
   const children = getChildren(shape.state);
   if (children.length > 0) {
     const containerNode = node instanceof Konva.Group ? node : parent;
-    children.forEach((child) => attachShapeRecursively(child, containerNode));
+    await Promise.all(
+      children.map((child) => attachShapeRecursively(child, containerNode))
+    );
   }
 
   return node;
 };
 
 // Crear stages para cada top-level shape
-export const createStagesFromShapes = (
+export const createStagesFromShapes = async (
   shapes: UndoShape[]
-): StageWithContainer[] => {
-  return shapes.map((topShape) => {
-    const container = document.createElement("div");
-    container.style.width = `${topShape.state.width}px`;
-    container.style.height = `${topShape.state.height}px`;
+): Promise<StageWithContainer[]> => {
+  return Promise.all(
+    shapes.map(async (topShape) => {
+      const container = document.createElement("div");
+      container.style.width = `${topShape.state.width}px`;
+      container.style.height = `${topShape.state.height}px`;
 
-    const stage = new Konva.Stage({
-      container,
-      width: Math.max(1, Math.round(topShape.state.width)),
-      height: Math.max(1, Math.round(topShape.state.height)),
-    });
+      const stage = new Konva.Stage({
+        container,
+        width: Math.max(1, Math.round(topShape.state.width)),
+        height: Math.max(1, Math.round(topShape.state.height)),
+      });
 
-    const layer = new Konva.Layer();
-    stage.add(layer);
+      const layer = new Konva.Layer();
+      stage.add(layer);
 
-    attachShapeRecursively(topShape, layer, true);
-    layer.draw();
+      await attachShapeRecursively(topShape, layer, true);
+      layer.draw();
 
-    return { stage, container };
-  });
+      return { stage, container };
+    })
+  );
 };
 
 // Exportar y descargar stages

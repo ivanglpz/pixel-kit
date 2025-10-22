@@ -135,7 +135,7 @@ export const CONFIG_ATOM = atom(
   (get) => configs[get(MODE_ATOM)] || configs.DESIGN_MODE
 );
 
-export const GET_EXPORT_SHAPES = atom(null, (get, set) => {
+export const GET_EXPORT_SHAPES = atom(null, async (get, set) => {
   const selectedIds = get(SHAPE_IDS_ATOM);
   const planeShapes = get(PLANE_SHAPES_ATOM);
   const format = get(typeExportAtom);
@@ -149,9 +149,9 @@ export const GET_EXPORT_SHAPES = atom(null, (get, set) => {
       )
     )
     .map(cloner);
-  const stagesWithContainers = createStagesFromShapes(shapes);
-
+  const stagesWithContainers = await createStagesFromShapes(shapes);
   const stages = stagesWithContainers.map((s) => s.stage);
+
   exportAndDownloadStages(
     stages,
     "png",
