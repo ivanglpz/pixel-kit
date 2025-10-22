@@ -231,7 +231,7 @@ export const useEventStage = () => {
 
       const createStartElement = CreateShapeSchema({
         id: uuidv4(),
-        tool: "IMAGE",
+        tool: "ICON",
         x: 0,
         y: 0,
         fills: [
