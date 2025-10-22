@@ -178,8 +178,12 @@ const App: NextPageWithLayout = () => {
                 className={css({
                   height: "100%",
                   width: "100%",
-                  objectFit: "cover",
+                  objectFit: "contain",
                   borderTopRadius: "lg",
+                  backgroundColor: "gray.100",
+                  _dark: {
+                    backgroundColor: "gray.600",
+                  },
                 })}
               />
               <div

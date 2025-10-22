@@ -99,8 +99,11 @@ export const SidebarLeftShapes = () => {
           padding: 0,
         }}
       >
-        {ALL_SHAPES.map((item) => (
-          <DraggableRootItem key={item.id} item={item} />
+        {ALL_SHAPES.map((item, index) => (
+          <DraggableRootItem
+            key={`pixel-kit-sidebar-left-shape-${item.id}-${index}`}
+            item={item}
+          />
         ))}
       </Reorder.Group>
     </div>

@@ -34,14 +34,6 @@ body {
   color: var(--text);
 }
 
-/* .CursorPointer {
-  cursor: url("/cursors/pointer.png"), pointer;
-}
-.CursorDefault {
-  cursor: url("/cursors/default.png"), auto;
-} */
-
-/* ✅ Scroll siempre con espacio, pero invisible por defecto */
 *::-webkit-scrollbar {
   width: 3px;
   height: 3px;

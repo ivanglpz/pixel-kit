@@ -1,6 +1,7 @@
 import { atom, Getter, Setter } from "jotai";
 import { v4 as uuidv4 } from "uuid";
 import { cloneDeep } from "../helpers/shape-schema";
+import { flexLayoutAtom } from "../shapes/layout-flex";
 import { IShape } from "../shapes/type.shape";
 import { CURRENT_PAGE } from "./pages";
 import { SHAPE_IDS_ATOM } from "./shape";
@@ -53,7 +54,7 @@ const truncateListAtIndex = <T>(list: T[], index: number): T[] =>
   list.slice(0, index);
 
 // ===== SHAPE CONVERSIONS =====
-const cloneShapeRecursive =
+export const cloneShapeRecursive =
   (get: Getter) =>
   (shape: ALL_SHAPES): UndoShape => {
     const children = get(get(shape.state).children);
@@ -110,6 +111,7 @@ const removeShapeCompletely =
     if (!shapeToRemove) return false;
 
     const currentParentId = get(shapeToRemove.state).parentId;
+
     if (currentParentId) {
       const parent = findShapeById(currentShapes, currentParentId);
       if (!parent) return false;
@@ -123,6 +125,7 @@ const removeShapeCompletely =
         ...get(parent.state),
         children: atom(filteredChildren),
       });
+      set(flexLayoutAtom, { id: currentParentId }); // aplicar layout si es flex
     } else {
       const currentRootShapes = get(ALL_SHAPES_ATOM);
       const filteredRootShapes = filterShapesExcluding(currentRootShapes, [
@@ -152,6 +155,7 @@ const addShapeToContainer =
         ...get(parent.state),
         children: atom([...currentChildren, convertedShape]),
       });
+      set(flexLayoutAtom, { id: targetParentId }); // aplicar layout si es flex
     } else {
       const currentRootShapes = get(ALL_SHAPES_ATOM);
       set(ALL_SHAPES_ATOM, [...currentRootShapes, convertedShape]);

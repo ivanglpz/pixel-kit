@@ -1,31 +1,41 @@
 /* eslint-disable react/display-name */
 import { PrimitiveAtom, useAtom, useSetAtom } from "jotai";
 import { Line } from "react-konva";
-import { IShape, IShapeWithEvents, WithInitialValue } from "./type.shape";
+import { IShape, IShapeEvents, WithInitialValue } from "./type.shape";
 
 /* eslint-disable react/display-name */
 import { SHAPE_IDS_ATOM } from "../states/shape";
 
-import { useConfiguration } from "../hooks/useConfiguration";
-import { coordinatesShapeMove, shapeEventDragMove } from "./events.shape";
+import { useMemo } from "react";
+import { coordinatesShapeMove, TransformDimension } from "./events.shape";
 import { flexLayoutAtom } from "./layout-flex";
 
-export const ShapeDraw = ({ shape: item }: IShapeWithEvents) => {
+export const ShapeDraw = ({ shape: item }: IShapeEvents) => {
   const [box, setBox] = useAtom(
     item.state as PrimitiveAtom<IShape> & WithInitialValue<IShape>
   );
 
-  const { x, y, strokeWidth, dash, rotation } = box;
   const applyLayout = useSetAtom(flexLayoutAtom);
 
-  const { config } = useConfiguration();
-
   const [shapeId, setShapeId] = useAtom(SHAPE_IDS_ATOM);
-  const isSelected = shapeId.some((w) => w.id === box.id);
+  const isSelected = useMemo(
+    () => shapeId.some((w) => w.id === box.id),
+    [shapeId, box.id]
+  );
 
-  const shadow = box?.effects
-    ?.filter((e) => e?.visible && e?.type === "shadow")
-    .at(0);
+  const shadow = useMemo(
+    () => box?.effects?.filter((e) => e?.visible && e?.type === "shadow").at(0),
+    [box.effects]
+  );
+
+  const stroke = useMemo(
+    () => box?.strokes?.filter((e) => e?.visible)?.at(0),
+    [box?.strokes]
+  );
+  const fill = useMemo(
+    () => box?.fills?.filter((e) => e?.type === "fill" && e?.visible)?.at(0),
+    [box.fills]
+  );
 
   if (!box.visible) return null;
 
@@ -36,9 +46,9 @@ export const ShapeDraw = ({ shape: item }: IShapeWithEvents) => {
         id={box?.id}
         parentId={box?.parentId}
         // 2. Posición y tamaño
-        x={x}
-        y={y}
-        rotation={rotation}
+        x={box.x}
+        y={box.y}
+        rotation={box.rotation}
         listening={!box.isLocked}
         points={box.points ?? []}
         globalCompositeOperation="source-over"
@@ -47,13 +57,10 @@ export const ShapeDraw = ({ shape: item }: IShapeWithEvents) => {
         // 4. Relleno y color
         // fillEnabled={box?.fills?.filter((e) => e?.visible)?.length > 0}
         fillEnabled
-        fill={
-          box?.fills?.filter((e) => e?.type === "fill" && e?.visible)?.at(0)
-            ?.color
-        }
+        fill={fill?.color}
         // 5. Bordes y trazos
-        stroke={box?.strokes?.filter((e) => e?.visible)?.at(0)?.color}
-        strokeWidth={strokeWidth}
+        stroke={stroke?.color}
+        strokeWidth={box.strokeWidth}
         strokeEnabled={box.strokeWidth > 0}
         dash={[box.dash]}
         dashEnabled={box?.dash > 0}
@@ -86,37 +93,19 @@ export const ShapeDraw = ({ shape: item }: IShapeWithEvents) => {
             parentId: box.parentId,
           })
         }
-        onDragMove={(e) =>
-          setBox(
-            shapeEventDragMove(
-              e,
-              Number(config.expand_stage_resolution?.width),
-              Number(config.expand_stage_resolution?.height)
-            )
-          )
-        }
+        onDragMove={(evt) => setBox((prev) => coordinatesShapeMove(prev, evt))}
         onDragEnd={() => {
           if (!box.parentId) return;
           applyLayout({ id: box.parentId });
         }}
         onTransform={(e) => {
-          const scaleX = e.target.scaleX();
-          const scaleY = e.target.scaleY();
-          e.target.scaleX(1);
-          e.target.scaleY(1);
-          const payload = coordinatesShapeMove(
-            box,
-            Number(config.expand_stage_resolution?.width),
-            Number(config.expand_stage_resolution?.height),
-            e
-          );
-
-          setBox({
-            ...payload,
-            rotation: e.target.rotation(),
-            width: Math.max(5, e.target.width() * scaleX),
-            height: Math.max(e.target.height() * scaleY),
-          });
+          const dimension = TransformDimension(e, box);
+          setBox(dimension);
+        }}
+        onTransformEnd={() => {
+          if (box?.parentId) {
+            applyLayout({ id: box.parentId });
+          }
         }}
       />
     </>

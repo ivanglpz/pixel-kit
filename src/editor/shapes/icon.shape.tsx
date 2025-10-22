@@ -31,7 +31,7 @@ import { flexLayoutAtom } from "./layout-flex";
 // Componente ShapeImage
 // =========================
 
-export const ShapeImage = (props: IShapeEvents) => {
+export const SHAPE_ICON = (props: IShapeEvents) => {
   // Estado local vinculado al átomo
   const [box, setBox] = useAtom(
     props?.shape.state as PrimitiveAtom<IShape> & WithInitialValue<IShape>
@@ -68,16 +68,32 @@ export const ShapeImage = (props: IShapeEvents) => {
     [box.fills]
   );
 
-  const Imagee = useMemo(() => {
+  const IMAGE_ICON = useMemo(() => {
     const img = new Image();
     if (!IMG?.image?.src) return img;
+    const CONTENT = "data:image/svg+xml;charset=utf-8,";
 
-    img.src = IMG.image.src;
+    const svgText = decodeURIComponent(IMG.image.src.replace(CONTENT, ""));
+
+    const newSvg = svgText
+      .replace(/stroke-width="[^"]*"/g, `stroke-width="${strokeWidth}"`)
+      .replace(
+        /stroke="currentColor"/g,
+        `stroke="${stroke?.color || "#000000"}"`
+      );
+
+    img.src = CONTENT + encodeURIComponent(newSvg);
     img.crossOrigin = "Anonymous";
     img.width = IMG.image.width;
     img.height = IMG.image.height;
     return img;
-  }, [IMG?.image?.src, IMG?.image?.width, IMG?.image?.height, stroke?.color]);
+  }, [
+    IMG?.image?.src,
+    IMG?.image?.width,
+    IMG?.image?.height,
+    stroke?.color,
+    strokeWidth,
+  ]);
 
   // Configuración de crop para object-fit cover
   const cropConfig = useMemo(
@@ -109,7 +125,7 @@ export const ShapeImage = (props: IShapeEvents) => {
         height={box?.height}
         points={box.points ?? []}
         globalCompositeOperation="source-over"
-        image={Imagee}
+        image={IMAGE_ICON}
         // 3. Rotación
         rotation={rotation}
         // rotationDeg={rotate}
@@ -119,8 +135,9 @@ export const ShapeImage = (props: IShapeEvents) => {
         fill={fill?.color}
         // 5. Bordes y trazos
         stroke={stroke?.color}
-        strokeWidth={strokeWidth}
-        strokeEnabled={box.strokeWidth > 0}
+        strokeEnabled={false}
+        // strokeWidth={strokeWidth}
+        // strokeEnabled={box.strokeWidth > 0}
         dash={[box.dash]}
         dashEnabled={box?.dash > 0}
         // 6. Crop (object-fit: cover)

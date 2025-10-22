@@ -1,30 +1,40 @@
 import { PrimitiveAtom, useAtom, useSetAtom } from "jotai";
+import { useMemo } from "react";
 import { Rect } from "react-konva";
-import { useConfiguration } from "../hooks/useConfiguration";
 import { SHAPE_IDS_ATOM } from "../states/shape";
-import { coordinatesShapeMove, shapeEventDragMove } from "./events.shape";
+import { coordinatesShapeMove, TransformDimension } from "./events.shape";
 import { flexLayoutAtom } from "./layout-flex";
-import { IShape, IShapeWithEvents, WithInitialValue } from "./type.shape";
+import { IShape, IShapeEvents, WithInitialValue } from "./type.shape";
 
 // eslint-disable-next-line react/display-name
-const ShapeBox = ({ shape: item }: IShapeWithEvents) => {
+const ShapeBox = (props: IShapeEvents) => {
+  const { shape: item } = props;
   const [box, setBox] = useAtom(
     item.state as PrimitiveAtom<IShape> & WithInitialValue<IShape>
   );
-  const { config } = useConfiguration();
   const rotation = Number(box.rotation) || 0;
   const applyLayout = useSetAtom(flexLayoutAtom);
 
   const [shapeId, setShapeId] = useAtom(SHAPE_IDS_ATOM);
-  const isSelected = shapeId.some((w) => w.id === box.id);
+  const isSelected = useMemo(
+    () => shapeId.some((w) => w.id === box.id),
+    [shapeId, box.id]
+  );
   // Calcular la posición ajustada para la rotación
-
-  const shadow = box?.effects
-    ?.filter((e) => e?.visible && e?.type === "shadow")
-    .at(0);
+  const shadow = useMemo(
+    () => box?.effects?.filter((e) => e?.visible && e?.type === "shadow").at(0),
+    [box.effects]
+  );
+  const stroke = useMemo(
+    () => box?.strokes?.filter((e) => e?.visible)?.at(0),
+    [box?.strokes]
+  );
+  const fill = useMemo(
+    () => box?.fills?.filter((e) => e?.type === "fill" && e?.visible)?.at(0),
+    [box.fills]
+  );
 
   if (!box.visible) return null;
-
   return (
     <>
       <Rect
@@ -44,12 +54,9 @@ const ShapeBox = ({ shape: item }: IShapeWithEvents) => {
         listening={!box.isLocked}
         // 3. Relleno y color
         fillEnabled
-        fill={
-          box?.fills?.filter((e) => e?.type === "fill" && e?.visible)?.at(0)
-            ?.color
-        }
+        fill={fill?.color}
         // 4. Bordes y trazos
-        stroke={box?.strokes?.filter((e) => e?.visible)?.at(0)?.color}
+        stroke={stroke?.color}
         strokeWidth={box.strokeWidth}
         strokeEnabled={box.strokeWidth > 0}
         // dash={[dash, dash, dash, dash]}
@@ -83,37 +90,19 @@ const ShapeBox = ({ shape: item }: IShapeWithEvents) => {
             parentId: box.parentId,
           });
         }}
-        onDragMove={(e) =>
-          setBox(
-            shapeEventDragMove(
-              e,
-              Number(config.expand_stage_resolution?.width),
-              Number(config.expand_stage_resolution?.height)
-            )
-          )
-        }
+        onDragMove={(evt) => setBox((prev) => coordinatesShapeMove(prev, evt))}
         onDragEnd={() => {
           if (!box.parentId) return;
           applyLayout({ id: box.parentId });
         }}
         onTransform={(e) => {
-          const scaleX = e.target.scaleX();
-          const scaleY = e.target.scaleY();
-          e.target.scaleX(1);
-          e.target.scaleY(1);
-          const payload = coordinatesShapeMove(
-            box,
-            Number(config.expand_stage_resolution?.width),
-            Number(config.expand_stage_resolution?.height),
-            e
-          );
-
-          setBox({
-            ...payload,
-            rotation: e.target.rotation(),
-            width: Math.max(5, e.target.width() * scaleX),
-            height: Math.max(e.target.height() * scaleY),
-          });
+          const dimension = TransformDimension(e, box);
+          setBox(dimension);
+        }}
+        onTransformEnd={() => {
+          if (box?.parentId) {
+            applyLayout({ id: box.parentId });
+          }
         }}
       />
     </>

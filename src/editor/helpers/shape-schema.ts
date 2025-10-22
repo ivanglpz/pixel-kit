@@ -1,6 +1,14 @@
-import { IShape } from "@/editor/shapes/type.shape";
+import {
+  Effect,
+  Fill,
+  IShape,
+  IShapeChildren,
+  Stroke,
+} from "@/editor/shapes/type.shape";
+import { Konva } from "konva/lib/_FullInternals";
 import { v4 as uuidv4 } from "uuid";
 import { IKeyMethods } from "../states/tool";
+import { UndoShape } from "../states/undo-redo";
 
 const thickness = 1;
 
@@ -89,7 +97,7 @@ const initial: Omit<IShape, "children"> = {
   text: "Hello World",
 };
 export const CreateShapeSchema = (
-  props: Partial<IShape>
+  props?: Partial<IShape> | IShapeChildren
 ): Exclude<IShape, "children"> => {
   return cloneDeep({ ...initial, ...props });
 };
@@ -111,9 +119,51 @@ export const UpdateShapeDimension = (
     ...element,
     width: isHeight,
     height: isWidth,
-    // borderRadius:
-    //   element?.tool === "CIRCLE"
-    //     ? isNotNegative(Number(element?.width) / 2)
-    //     : 0,
   });
 };
+
+interface CommonPropsArgs {
+  shape: IShape | UndoShape["state"];
+  shadow?: Effect | undefined;
+  stroke?: Stroke | undefined;
+  fill?: Fill | undefined;
+}
+
+export const getCommonShapeProps = ({
+  shape,
+  shadow,
+  stroke,
+  fill,
+}: CommonPropsArgs) => ({
+  points: shape.points ?? [],
+  fillEnabled: true,
+  fill: fill?.color,
+  stroke: stroke?.color,
+  strokeWidth: shape.strokeWidth,
+  strokeEnabled: shape.strokeWidth > 0,
+  dash: [shape.dash],
+  dashEnabled: shape.dash > 0,
+  cornerRadius: !shape.isAllBorderRadius
+    ? [
+        shape.borderTopLeftRadius,
+        shape.borderTopRightRadius,
+        shape.borderBottomRightRadius,
+        shape.borderBottomLeftRadius,
+      ]
+    : shape.borderRadius,
+  shadowColor: shadow?.color,
+  shadowOpacity: shape.shadowOpacity,
+  shadowOffsetX: shape.shadowOffsetX,
+  shadowOffsetY: shape.shadowOffsetY,
+  shadowBlur: shape.shadowBlur,
+  shadowEnabled: Boolean(shadow),
+  opacity: shape.opacity ?? 1,
+  width: shape.width,
+  height: shape.height,
+  text: shape.text ?? "",
+  fontSize: shape.fontSize,
+  fontFamily: shape.fontFamily,
+  fontVariant: shape.fontWeight,
+  align: shape.align as Konva.TextConfig["align"],
+  lineHeight: 1.45,
+});

@@ -8,6 +8,7 @@ import {
   EyeOff,
   Minus,
   PenTool,
+  Plus,
   Ruler,
   Square,
   SquareDashed,
@@ -138,7 +139,11 @@ export const Drawing = () => {
     >
       {" "}
       {/* SECCIÓN: STROKE - Bordes */}
-      <SectionHeader title="Stroke" onAdd={handleAddStroke} />
+      <SectionHeader title="Stroke">
+        <button className={commonStyles.addButton} onClick={handleAddStroke}>
+          <Plus size={14} />
+        </button>
+      </SectionHeader>
       {shape.strokes?.length ? (
         <>
           {/* Lista de strokes */}
@@ -373,7 +378,11 @@ export const Drawing = () => {
         </>
       ) : null}
       {/* SECCIÓN: EFFECTS - Efectos */}
-      <SectionHeader title="Effects" onAdd={handleAddEffect} />
+      <SectionHeader title="Effects">
+        <button className={commonStyles.addButton} onClick={handleAddEffect}>
+          <Plus size={14} />
+        </button>
+      </SectionHeader>
       {/* Lista de efectos */}
       {shape.effects?.map?.((effect, index) => (
         <section

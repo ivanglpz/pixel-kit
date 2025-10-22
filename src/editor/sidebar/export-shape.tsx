@@ -1,76 +1,27 @@
-import { useConfiguration } from "@/editor/hooks/useConfiguration";
 import { css } from "@stylespixelkit/css";
-import { atom, useAtom, useAtomValue } from "jotai";
-import Konva from "konva";
+import { useAtom, useSetAtom } from "jotai";
 import { File } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
-import { Layer, Stage as StageContainer } from "react-konva";
+import { useState } from "react";
 import { toast } from "sonner";
-import { v4 as uuidv4 } from "uuid";
 import { Button } from "../components/button";
 import { Dialog } from "../components/dialog";
 import { Input } from "../components/input";
 import { Loading } from "../components/loading";
 import { constants } from "../constants/color";
-import { Shapes } from "../shapes/shapes";
-import { FCShapeWEvents, IShape } from "../shapes/type.shape";
+import { formats } from "../constants/formats";
 import { typeExportAtom } from "../states/export";
-import { SHAPE_SELECTED_ATOM } from "../states/shape";
 
-const formats = {
-  LOW: 0.8,
-  MEDIUM: 1,
-  HIGH: 1.8,
-  BIG_HIGH: 2.6,
-  ULTRA_HIGH: 3.5,
-};
-
-const stageWidth = 210;
-const stageHeight = 210;
-
-function downloadBase64Image(base64: string) {
-  const link = document.createElement("a");
-  link.download = `pixel-kit-edition-${uuidv4().slice(0, 4)}.jpg`;
-  link.href = base64;
-  document.body.appendChild(link);
-  link.click();
-  link.remove();
-}
-
-function computeStageTransform(shape: IShape | null) {
-  const contentWidth = Number(shape?.width) || 0;
-  const contentHeight = Number(shape?.height) || 0;
-  if (!contentWidth || !contentHeight)
-    return { scale: 1, offsetX: 0, offsetY: 0 };
-
-  const scale = Math.min(
-    stageWidth / contentWidth,
-    stageHeight / contentHeight
-  );
-  const offsetX = (stageWidth - contentWidth * scale) / 2;
-  const offsetY = (stageHeight - contentHeight * scale) / 2;
-
-  return {
-    scale,
-    offsetX,
-    offsetY,
-    width: contentWidth * scale,
-    height: contentHeight * scale,
-  };
-}
+import { GET_EXPORT_SHAPES } from "../states/mode";
 
 export const ExportShape = () => {
-  const { config } = useConfiguration();
-  const shape = useAtomValue(SHAPE_SELECTED_ATOM);
   const [loading, setLoading] = useState(false);
   const [format, setFormat] = useAtom(typeExportAtom);
   const [showExportDialog, setShowExportDialog] = useState(false);
+  const EXPORT = useSetAtom(GET_EXPORT_SHAPES);
+  const handleExport = async () => {
+    setLoading(true);
 
-  const stageRef = useRef<Konva.Stage>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
-
-  const handleExport = () => {
     toast.success("Thank you very much for using pixel kit!", {
       description: (
         <p>
@@ -85,38 +36,12 @@ export const ExportShape = () => {
         </p>
       ),
     });
-
-    setLoading(true);
-
-    const { offsetX, offsetY, width, height } = computeStageTransform(shape);
-    const image = stageRef.current?.toDataURL({
-      quality: 1,
-      pixelRatio: formats[format as keyof typeof formats],
-      x: offsetX,
-      y: offsetY,
-      width,
-      height,
-    });
-
-    if (image) downloadBase64Image(image);
+    await EXPORT();
     setLoading(false);
   };
 
-  useEffect(() => {
-    if (!stageRef.current || !shape) return;
-    const stage = stageRef.current;
-    const { scale, offsetX, offsetY } = computeStageTransform(shape);
-
-    stage.width(stageWidth);
-    stage.height(stageHeight);
-    stage.scale({ x: scale, y: scale });
-    stage.position({ x: offsetX, y: offsetY });
-    stage.batchDraw();
-  }, [config.export_mode, shape]);
-
   return (
     <>
-      {/* Export Dialog */}
       <Dialog.Provider
         visible={showExportDialog}
         onClose={() => setShowExportDialog(false)}
@@ -170,7 +95,6 @@ export const ExportShape = () => {
         </Dialog.Container>
       </Dialog.Provider>
 
-      {/* Preview */}
       <p
         className={css({
           paddingBottom: "md",
@@ -181,48 +105,10 @@ export const ExportShape = () => {
       >
         Export
       </p>
-      <StageContainer
-        id="preview-shape"
-        ref={stageRef}
-        width={stageWidth}
-        height={stageHeight}
-        listening={false}
-        className={css({
-          backgroundColor: "gray.100",
-          borderColor: "border",
-          borderWidth: 1,
-          _dark: { backgroundColor: "gray.800" },
-        })}
-      >
-        <Layer>
-          {shape &&
-            (() => {
-              const Component = Shapes?.[shape.tool] as FCShapeWEvents;
-              return (
-                <Component
-                  key={`pixel-kit-preview-${shape.id}`}
-                  shape={{
-                    id: "1",
-                    // pageId: "one",
-                    state: atom({ ...shape, x: 0, y: 0 }),
-                    tool: shape.tool,
-                  }}
-                />
-              );
-            })()}
-        </Layer>
-      </StageContainer>
-      <div
-        className={css({
-          display: "grid",
-          gridTemplateColumns: "2",
-          gap: "md",
-        })}
-      >
-        <Button.Primary onClick={() => setShowExportDialog(true)}>
-          <File size={constants.icon.size} /> Export
-        </Button.Primary>
-      </div>
+
+      <Button.Secondary onClick={() => setShowExportDialog(true)}>
+        <File size={constants.icon.size} /> Export
+      </Button.Secondary>
     </>
   );
 };
