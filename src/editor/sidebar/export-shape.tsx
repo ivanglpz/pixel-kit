@@ -19,7 +19,9 @@ export const ExportShape = () => {
   const [format, setFormat] = useAtom(typeExportAtom);
   const [showExportDialog, setShowExportDialog] = useState(false);
   const EXPORT = useSetAtom(GET_EXPORT_SHAPES);
-  const handleExport = () => {
+  const handleExport = async () => {
+    setLoading(true);
+
     toast.success("Thank you very much for using pixel kit!", {
       description: (
         <p>
@@ -34,9 +36,7 @@ export const ExportShape = () => {
         </p>
       ),
     });
-
-    setLoading(true);
-    EXPORT();
+    await EXPORT();
     setLoading(false);
   };
 

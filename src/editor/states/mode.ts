@@ -150,6 +150,7 @@ export const GET_EXPORT_SHAPES = atom(null, async (get, set) => {
     )
     .map(cloner);
   const stagesWithContainers = await createStagesFromShapes(shapes);
+  await new Promise((resolve) => setTimeout(resolve, 5000)); // wait for stage to render
   const stages = stagesWithContainers.map((s) => s.stage);
 
   exportAndDownloadStages(
