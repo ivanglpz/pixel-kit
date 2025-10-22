@@ -15,6 +15,7 @@ import { Image as KonvaImage } from "react-konva";
 import { IShape, IShapeEvents, WithInitialValue } from "./type.shape";
 
 // Eventos de shape
+import { calculateCoverCrop } from "../utils/crop";
 import { coordinatesShapeMove, TransformDimension } from "./events.shape";
 import { flexLayoutAtom } from "./layout-flex";
 
@@ -25,32 +26,6 @@ import { flexLayoutAtom } from "./layout-flex";
 // =========================
 
 // Calcula un recorte de imagen estilo "object-fit: cover"
-export function calculateCoverCrop(
-  imageWidth: number,
-  imageHeight: number,
-  containerWidth: number,
-  containerHeight: number
-) {
-  const imageRatio = imageWidth / imageHeight;
-  const containerRatio = containerWidth / containerHeight;
-
-  let cropX = 0;
-  let cropY = 0;
-  let cropWidth = imageWidth;
-  let cropHeight = imageHeight;
-
-  if (imageRatio > containerRatio) {
-    // Imagen más ancha → recortar lados
-    cropWidth = imageHeight * containerRatio;
-    cropX = (imageWidth - cropWidth) / 2;
-  } else {
-    // Imagen más alta → recortar arriba y abajo
-    cropHeight = imageWidth / containerRatio;
-    cropY = (imageHeight - cropHeight) / 2;
-  }
-
-  return { x: cropX, y: cropY, width: cropWidth, height: cropHeight };
-}
 
 // =========================
 // Componente ShapeImage
@@ -93,27 +68,21 @@ export const SHAPE_ICON = (props: IShapeEvents) => {
     [box.fills]
   );
 
-  const Imagee = useMemo(() => {
+  const IMAGE_ICON = useMemo(() => {
     const img = new Image();
     if (!IMG?.image?.src) return img;
+    const CONTENT = "data:image/svg+xml;charset=utf-8,";
 
-    if (IMG.image.src.includes("data:image/svg+xml;charset=utf-8,")) {
-      const svgText = decodeURIComponent(
-        IMG.image.src.replace("data:image/svg+xml;charset=utf-8,", "")
+    const svgText = decodeURIComponent(IMG.image.src.replace(CONTENT, ""));
+
+    const newSvg = svgText
+      .replace(/stroke-width="[^"]*"/g, `stroke-width="${strokeWidth}"`)
+      .replace(
+        /stroke="currentColor"/g,
+        `stroke="${stroke?.color || "#000000"}"`
       );
 
-      const newSvg = svgText
-        .replace(/stroke-width="[^"]*"/g, `stroke-width="${strokeWidth}"`)
-        .replace(
-          /stroke="currentColor"/g,
-          `stroke="${stroke?.color || "#000000"}"`
-        );
-
-      img.src =
-        "data:image/svg+xml;charset=utf-8," + encodeURIComponent(newSvg);
-    } else {
-      img.src = IMG.image.src;
-    }
+    img.src = CONTENT + encodeURIComponent(newSvg);
     img.crossOrigin = "Anonymous";
     img.width = IMG.image.width;
     img.height = IMG.image.height;
@@ -156,7 +125,7 @@ export const SHAPE_ICON = (props: IShapeEvents) => {
         height={box?.height}
         points={box.points ?? []}
         globalCompositeOperation="source-over"
-        image={Imagee}
+        image={IMAGE_ICON}
         // 3. Rotación
         rotation={rotation}
         // rotationDeg={rotate}
