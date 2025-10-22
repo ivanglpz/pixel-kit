@@ -1,3 +1,3 @@
-import { atomWithStorage } from "jotai/utils";
+import { atom } from "jotai";
 
-export const typeExportAtom = atomWithStorage("pixel-kit-type-export", "HIGH");
+export const typeExportAtom = atom("HIGH");
