@@ -1,6 +1,7 @@
 import { withAuth } from "@/db/middleware/auth";
+import { IOrganizationMember, Organization } from "@/db/schemas/organizations";
 import { PhotoSchema } from "@/db/schemas/photos";
-import { IProject } from "@/db/schemas/types";
+import { IProject } from "@/db/schemas/projects";
 import { sanitizeInput } from "@/utils/sanitize";
 import { Types } from "mongoose";
 import type { NextApiRequest, NextApiResponse } from "next";
@@ -21,20 +22,48 @@ async function handler(
   }
 
   try {
-    const projects = await PhotoSchema.find(
+    // Buscar el proyecto para obtener su organización
+    const project = await PhotoSchema.findOne(
+      { projectId: new Types.ObjectId(projectId) },
+      { projectId: 1 }
+    )
+      .populate("projectId")
+      .lean<{ projectId: IProject }>();
+
+    if (!project) {
+      return res.status(404).json({ error: "Project not found" });
+    }
+
+    const org = await Organization.findById(project.projectId.organization);
+    if (!org) {
+      return res.status(404).json({ error: "Organization not found" });
+    }
+
+    // Verificar que el usuario sea miembro de la organización
+    const isMember = org.members.some(
+      (m: IOrganizationMember) => m.user.toString() === req.userId
+    );
+
+    if (!isMember) {
+      return res.status(403).json({
+        error: "Not authorized to view photos from this project",
+      });
+    }
+
+    // Obtener las fotos del proyecto
+    const photos = await PhotoSchema.find(
       {
         projectId: new Types.ObjectId(projectId),
       },
-
       { createdBy: 0, folder: 0, projectId: 0 }
     );
 
     return res.status(200).json({
       message: "Photos retrieved successfully",
-      data: projects,
+      data: photos,
     });
   } catch (error) {
-    console.error("Error while fetching projects:", error);
+    console.error("Error while fetching photos:", error);
     return res.status(500).json({ error: "Internal Server Error" });
   }
 }

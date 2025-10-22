@@ -1,5 +1,5 @@
 import { IShape, IShapeChildren } from "@/editor/shapes/type.shape";
-import { atom, PrimitiveAtom } from "jotai";
+import { atom, Getter, PrimitiveAtom } from "jotai";
 import { v4 as uuidv4 } from "uuid";
 import {
   cloneDeep,
@@ -20,7 +20,7 @@ import {
   SHAPE_IDS_ATOM,
   UPDATE_SHAPES_IDS_ATOM,
 } from "./shape";
-import TOOL_ATOM, { IShapesKeys } from "./tool";
+import TOOL_ATOM, { IKeyTool, IShapesKeys } from "./tool";
 import { NEW_UNDO_REDO } from "./undo-redo";
 
 export type WithInitialValue<Value> = {
@@ -36,9 +36,16 @@ export type ALL_SHAPES = {
 export type ALL_SHAPES_CHILDREN = Omit<ALL_SHAPES, "state"> & {
   state: IShapeChildren;
 };
-const TOOLS_BOX_BASED = ["FRAME", "IMAGE", "TEXT"];
 
-const TOOLS_DRAW_BASED = ["DRAW"];
+type ExcludedKeys = "DRAW" | "MOVE" | "ICON";
+type FirstArrayKeys = Exclude<IKeyTool, ExcludedKeys>; // ["IMAGE", "TEXT", "FRAME"]
+type SecondArrayKeys = Extract<IKeyTool, "ICON">; // ["ICON"]
+
+type DrawBasedTools = Extract<IKeyTool, "DRAW">;
+const TOOLS_BOX_BASED: FirstArrayKeys[] = ["FRAME", "IMAGE", "TEXT"];
+const TOOLS_ICON_BASED: SecondArrayKeys[] = ["ICON"];
+
+const TOOLS_DRAW_BASED: DrawBasedTools[] = ["DRAW"];
 export const DELETE_KEYS = ["DELETE", "BACKSPACE"];
 
 export const ALL_SHAPES_ATOM = atom(
@@ -50,6 +57,39 @@ export const ALL_SHAPES_ATOM = atom(
     return;
   }
 );
+
+const getStageBounds = (get: Getter) => (shapes: ALL_SHAPES[]) => {
+  if (!shapes.length)
+    return { width: 1000, height: 1000, startX: 0, startY: 0 };
+
+  let minX = Infinity;
+  let minY = Infinity;
+  let maxX = -Infinity;
+  let maxY = -Infinity;
+
+  shapes.forEach((shape) => {
+    const { x, y, width, height } = get(shape.state);
+    minX = Math.min(minX, x);
+    minY = Math.min(minY, y);
+    maxX = Math.max(maxX, x + width);
+    maxY = Math.max(maxY, y + height);
+  });
+
+  return {
+    width: maxX - minX,
+    height: maxY - minY,
+    startX: minX,
+    startY: minY,
+  };
+};
+
+export const STAGE_BOUNDS = atom((get) => {
+  return getStageBounds(get)(get(ALL_SHAPES_ATOM));
+});
+
+export const GET_STAGE_BOUNDS_ATOM = atom(null, (get, set) => {
+  return get(STAGE_BOUNDS);
+});
 
 export const PLANE_SHAPES_ATOM = atom((get) => {
   const getAllShapes = (nodes: ALL_SHAPES[]): ALL_SHAPES[] =>
@@ -81,6 +121,7 @@ export const DELETE_SHAPES_ATOM = atom(null, (get, set) => {
           get(get(FIND_SHAPE.state).children).filter((e) => e.id !== element.id)
         ),
       });
+      set(flexLayoutAtom, { id: element.parentId }); // aplicar layout si es flex
     } else {
       set(
         ALL_SHAPES_ATOM,
@@ -418,13 +459,58 @@ export const EVENT_DOWN_SHAPES = atom(
     const { x, y } = args;
     const drawConfig = get(DRAW_START_CONFIG_ATOM);
     const tool = get(TOOL_ATOM);
-    if (TOOLS_BOX_BASED.includes(tool)) {
+    if (TOOLS_BOX_BASED.includes(tool as FirstArrayKeys)) {
       const createStartElement = CreateShapeSchema({
         tool: tool as IShape["tool"],
         x,
         y,
         id: uuidv4(),
         label: capitalize(tool),
+      });
+      set(CREATE_CURRENT_ITEM_ATOM, [createStartElement]);
+    }
+    if (TOOLS_ICON_BASED.includes(tool as SecondArrayKeys)) {
+      const createStartElement = CreateShapeSchema({
+        tool: tool as IShape["tool"],
+        x,
+        y,
+        id: uuidv4(),
+        label: capitalize(tool),
+        strokes: [
+          {
+            id: uuidv4(),
+            visible: true,
+            color: "#000000",
+          },
+        ],
+        fills: [
+          {
+            color: "#fff",
+            id: uuidv4(),
+            image: {
+              src: "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20class%3D%22lucide%20lucide-smile%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22currentColor%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%0A%20%20%3Ccircle%20cx%3D%2212%22%20cy%3D%2212%22%20r%3D%2210%22%2F%3E%0A%20%20%3Cpath%20d%3D%22M8%2014s1.5%202%204%202%204-2%204-2%22%2F%3E%0A%20%20%3Cline%20x1%3D%229%22%20x2%3D%229.01%22%20y1%3D%229%22%20y2%3D%229%22%2F%3E%0A%20%20%3Cline%20x1%3D%2215%22%20x2%3D%2215.01%22%20y1%3D%229%22%20y2%3D%229%22%2F%3E%0A%3C%2Fsvg%3E",
+              width: 24,
+              height: 24,
+              name: "Smile",
+            },
+            opacity: 1,
+            type: "image",
+            visible: true,
+          },
+          {
+            visible: true,
+            color: "#ffffff",
+            opacity: 1,
+            type: "fill",
+            id: uuidv4(),
+            image: {
+              height: 0,
+              name: "default.png",
+              src: "/placeholder.svg",
+              width: 0,
+            },
+          },
+        ],
       });
       set(CREATE_CURRENT_ITEM_ATOM, [createStartElement]);
     }
@@ -440,7 +526,7 @@ export const EVENT_DOWN_SHAPES = atom(
     //   });
     //   set(CREATE_CURRENT_ITEM_ATOM, [createStartElement]);
     // }
-    if (TOOLS_DRAW_BASED.includes(tool)) {
+    if (TOOLS_DRAW_BASED.includes(tool as DrawBasedTools)) {
       const createStartElement = CreateShapeSchema({
         ...drawConfig,
         tool: tool as IShape["tool"],
@@ -532,7 +618,7 @@ export const EVENT_UP_SHAPES = atom(null, (get, set) => {
   for (const newShape of CURRENT_ITEMS) {
     set(CREATE_SHAPE_ATOM, newShape);
   }
-  setTimeout(() => {
+  Promise.resolve().then(() => {
     set(
       UPDATE_SHAPES_IDS_ATOM,
       CURRENT_ITEMS?.map((e) => ({
@@ -540,7 +626,7 @@ export const EVENT_UP_SHAPES = atom(null, (get, set) => {
         parentId: e?.parentId,
       }))
     );
-  }, 10);
+  });
   set(TOOL_ATOM, "MOVE");
   set(EVENT_ATOM, "IDLE");
   set(CLEAR_CURRENT_ITEM_ATOM);
@@ -571,18 +657,17 @@ export const EVENT_MOVING_SHAPE = atom(
     const newShape = CURRENT_ITEMS.at(0);
     if (!newShape) return;
 
-    if (TOOLS_BOX_BASED.includes(newShape.tool)) {
+    if (TOOLS_BOX_BASED.includes(newShape.tool as FirstArrayKeys)) {
       const updateShape = UpdateShapeDimension(x, y, newShape);
       set(CURRENT_ITEM_ATOM, [updateShape]);
     }
-    // if (TOOLS_LINE_BASED.includes(newShape.tool)) {
-    //   const updateShape = UpdateShapeDimension(x, y, {
-    //     ...newShape,
-    //     points: [newShape?.points?.[0] ?? 0, newShape?.points?.[1] ?? 0, x, y],
-    //   });
-    //   set(CURRENT_ITEM_ATOM, [updateShape]);
-    // }
-    if (TOOLS_DRAW_BASED.includes(newShape.tool)) {
+
+    if (TOOLS_ICON_BASED.includes(newShape.tool as SecondArrayKeys)) {
+      const updateShape = UpdateShapeDimension(x, y, newShape);
+      set(CURRENT_ITEM_ATOM, [updateShape]);
+    }
+
+    if (TOOLS_DRAW_BASED.includes(newShape.tool as DrawBasedTools)) {
       const updateShape = UpdateShapeDimension(x, y, {
         ...newShape,
         points: newShape.points?.concat([x, y]),

@@ -9,7 +9,8 @@ export type IStageEvents =
   // | "CLIPING"
   | "COPYING"
   | "COPY"
-  | "MULTI_SELECT";
+  | "MULTI_SELECT"
+  | "SELECT_AREA";
 
 export const EVENT_ATOM = atom(
   (get) => get(get(PROJECT_ATOM).EVENT),

@@ -1,9 +1,5 @@
-import { Input } from "@/editor/components/input";
-import { useAutoSave } from "@/editor/hooks/useAutoSave";
-import { ICON_MODES_TABS } from "@/editor/icons/mode";
 import {
   DELETE_PROJECT,
-  IEDITORPROJECT,
   PROJECT_ID_ATOM,
   PROJECTS_ATOM,
   SET_PROJECTS_FROM_TABS,
@@ -11,120 +7,12 @@ import {
 import { userAtom } from "@/jotai/user";
 import { css } from "@stylespixelkit/css";
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
-import { Home, Plus, X } from "lucide-react";
+import { Home, Plus } from "lucide-react";
 import { useRouter } from "next/router";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { Profile } from "./Profile";
+import { Tab } from "./tab";
 
-const Tab = ({
-  project,
-  onClick,
-  onDelete,
-  isSelected,
-}: {
-  project: IEDITORPROJECT;
-  onClick: VoidFunction;
-  onDelete: VoidFunction;
-  isSelected: boolean;
-}) => {
-  const [text, setText] = useAtom(project.name);
-  const mode = useAtomValue(project.MODE_ATOM);
-  const [show, setShow] = useState(false);
-  const { debounce } = useAutoSave();
-
-  return (
-    <button
-      className={css({
-        display: "grid",
-        gridTemplateColumns: "20px 1fr 20px",
-        gap: "md",
-        alignContent: "center",
-        alignItems: "center",
-        _dark: {
-          backgroundColor: isSelected ? "gray.700" : "transparent",
-        },
-        backgroundColor: isSelected ? "gray.150" : "transparent",
-        height: "100%",
-        width: "190px",
-        minWidth: "190px",
-        paddingLeft: "md",
-        paddingRight: "md",
-      })}
-      onClick={onClick}
-      onMouseLeave={() => {
-        setShow(false);
-      }}
-      onDoubleClick={() => {
-        setShow(true);
-      }}
-    >
-      <div
-        className={css({
-          flex: 1,
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-        })}
-      >
-        {ICON_MODES_TABS[mode]}
-      </div>
-      {show ? (
-        <Input.withPause>
-          <Input.Text
-            value={text}
-            onChange={(e) => {
-              setText(e);
-              debounce.execute();
-            }}
-            style={{
-              width: "auto",
-              border: "none",
-              backgroundColor: "transparent",
-              color: "text",
-              paddingLeft: "0px",
-              padding: "sm",
-              height: "15px",
-              borderRadius: "0px",
-              fontSize: "x-small",
-            }}
-          />
-        </Input.withPause>
-      ) : (
-        <span
-          className={css({
-            fontSize: "x-small",
-            textAlign: "left",
-            lineClamp: 1,
-            wordBreak: "break-all",
-          })}
-        >
-          {text}
-        </span>
-      )}
-
-      <div
-        className={css({
-          display: "flex",
-        })}
-      >
-        <button
-          className={css({
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            flex: 1,
-          })}
-          onClick={(e) => {
-            e.stopPropagation();
-            onDelete();
-          }}
-        >
-          <X size={16} />
-        </button>
-      </div>
-    </button>
-  );
-};
 export const TabsProjects = () => {
   const router = useRouter();
   const listProjects = useAtomValue(PROJECTS_ATOM);

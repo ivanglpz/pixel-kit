@@ -9,13 +9,14 @@ import {
   MousePointer2,
   Pencil,
   Slash,
+  Smile,
   Square,
   Type,
 } from "lucide-react";
 
 const size = 14;
 
-const icons = {
+export const icons = {
   cursor: (
     <MousePointer2
       size={size}
@@ -236,6 +237,17 @@ const icons = {
       })}
     />
   ),
+  icon: (
+    <Smile
+      size={size}
+      className={css({
+        stroke: "black",
+        _dark: {
+          stroke: "white",
+        },
+      })}
+    />
+  ),
 };
 
 export const iconsWithTools: { [key in IShapesKeys]: JSX.Element } = {
@@ -245,7 +257,7 @@ export const iconsWithTools: { [key in IShapesKeys]: JSX.Element } = {
   // GROUP: icons.group,
   IMAGE: icons.image,
   TEXT: icons.text,
+  ICON: icons.icon,
   // LINE: icons.line,
   // CLIP: icons.clip,
 };
-export default icons;

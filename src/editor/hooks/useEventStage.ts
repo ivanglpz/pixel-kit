@@ -6,16 +6,22 @@ import { useMutation } from "@tanstack/react-query";
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import Konva from "konva";
 import { KonvaEventObject } from "konva/lib/Node";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { toast } from "sonner";
 import { v4 as uuidv4 } from "uuid";
+import { MOUSE } from "../constants/mouse";
+import { STAGE_IDS } from "../constants/stage";
 import stageAbsolutePosition from "../helpers/position";
 import { CreateShapeSchema } from "../helpers/shape-schema";
 import { CLEAR_CURRENT_ITEM_ATOM } from "../states/currentItem";
 import { EVENT_ATOM } from "../states/event";
+import { MOVING_MOUSE_BUTTON_ATOM } from "../states/moving";
 import { PROJECT_ID_ATOM } from "../states/projects";
-import { RECTANGLE_SELECTION_ATOM } from "../states/rectangle-selection";
-import { SHAPE_IDS_ATOM, UPDATE_SHAPES_IDS_ATOM } from "../states/shape";
+import {
+  RECTANGLE_SELECTION_ATOM,
+  SELECT_AREA_SHAPES_ATOM,
+} from "../states/rectangle-selection";
+import { SHAPE_IDS_ATOM } from "../states/shape";
 import {
   CREATE_SHAPE_ATOM,
   DELETE_KEYS,
@@ -25,12 +31,12 @@ import {
   EVENT_DOWN_SHAPES,
   EVENT_MOVING_SHAPE,
   EVENT_UP_SHAPES,
+  GET_STAGE_BOUNDS_ATOM,
   GROUP_SHAPES_IN_LAYOUT,
 } from "../states/shapes";
 import { REDO_ATOM, UNDO_ATOM } from "../states/undo-redo";
 import { useAutoSave } from "./useAutoSave";
 import { useConfiguration } from "./useConfiguration";
-import { useReference } from "./useReference";
 
 // ===== CONSTANTS =====
 
@@ -39,18 +45,18 @@ export const useEventStage = () => {
   const [tool, setTool] = useAtom(TOOL_ATOM);
   const shapeId = useAtomValue(SHAPE_IDS_ATOM);
   const [EVENT_STAGE, SET_EVENT_STAGE] = useAtom(EVENT_ATOM);
-
+  const SET_MOVING = useSetAtom(MOVING_MOUSE_BUTTON_ATOM);
   // ===== READ-ONLY STATE =====
   const PAUSE = useAtomValue(PAUSE_MODE_ATOM);
 
   const { config } = useConfiguration();
   const { debounce } = useAutoSave();
   const PROJECT_ID = useAtomValue(PROJECT_ID_ATOM);
-
+  const stageRef = useRef<Konva.Stage>(null);
+  const GET_BOUNDS = useSetAtom(GET_STAGE_BOUNDS_ATOM);
   // ===== SETTERS =====
   const SET_CREATE = useSetAtom(CREATE_SHAPE_ATOM);
   const DELETE_SHAPE = useSetAtom(DELETE_SHAPES_ATOM);
-  const SET_UPDATE_SHAPES_IDS = useSetAtom(UPDATE_SHAPES_IDS_ATOM);
   const SET_CLEAR_CITEM = useSetAtom(CLEAR_CURRENT_ITEM_ATOM);
   const [selection, setSelection] = useAtom(RECTANGLE_SELECTION_ATOM);
   const setRedo = useSetAtom(REDO_ATOM);
@@ -61,101 +67,72 @@ export const useEventStage = () => {
   const SET_EVENT_COPYING = useSetAtom(EVENT_COPYING_SHAPES);
   const SET_EVENT_DOWN = useSetAtom(EVENT_DOWN_SHAPES);
   const SET_EVENT_DOWN_COPY = useSetAtom(EVENT_DOWN_COPY);
-  const { ref: Stage } = useReference({ type: "STAGE" });
+  const SET_SELECTION = useSetAtom(SELECT_AREA_SHAPES_ATOM);
 
   // ===== MOUSE EVENT HANDLERS =====
   const handleMouseDown = (event: KonvaEventObject<MouseEvent>) => {
+    const mouse_button = event.evt.button;
     const { x, y } = stageAbsolutePosition(event);
+    const targetId = event?.target?.attrs?.id;
 
-    if (
-      EVENT_STAGE === "IDLE" &&
-      [null, undefined, "main-image-render-stage", "pixel-kit-stage"].includes(
-        event.target?.attrs?.id
-      ) &&
-      tool === "MOVE" &&
-      shapeId?.length === 0
-    ) {
-      setSelection({
-        x,
-        y,
-        width: 0,
-        height: 0,
-        visible: true,
-      });
-    }
-
-    if (EVENT_STAGE === "CREATE") {
-      SET_EVENT_DOWN({ x, y });
-    }
-    if (EVENT_STAGE === "COPY") {
-      SET_EVENT_DOWN_COPY({ x, y });
+    if (mouse_button === MOUSE.LEFT) {
+      if (
+        EVENT_STAGE === "IDLE" &&
+        tool === "MOVE" &&
+        STAGE_IDS.includes(targetId)
+      ) {
+        setSelection({
+          x,
+          y,
+          width: 0,
+          height: 0,
+          visible: true,
+        });
+        SET_EVENT_STAGE("SELECT_AREA");
+      }
+      if (EVENT_STAGE === "CREATE") {
+        SET_EVENT_DOWN({ x, y });
+      }
+      if (EVENT_STAGE === "COPY") {
+        SET_EVENT_DOWN_COPY({ x, y });
+      }
+      SET_MOVING(false);
     }
   };
 
   const handleMouseMove = (event: KonvaEventObject<MouseEvent>) => {
+    const mouse_button = event.evt.button;
     const { x, y } = stageAbsolutePosition(event);
 
-    if (
-      selection.visible &&
-      EVENT_STAGE === "IDLE" &&
-      tool === "MOVE" &&
-      shapeId?.length === 0
-    ) {
-      setSelection({
-        x: Math.min(selection.x, x),
-        y: Math.min(selection.y, y),
-        width: Math.abs(x - selection.x),
-        height: Math.abs(y - selection.y),
-        visible: true,
-      });
-    }
+    if (mouse_button === MOUSE.LEFT) {
+      if (EVENT_STAGE === "SELECT_AREA") {
+        setSelection({
+          ...selection,
+          width: x - selection.x,
+          height: y - selection.y,
+          visible: true,
+        });
+      }
 
-    if (EVENT_STAGE === "CREATING") {
-      SET_EVENT_MOVING_SHAPE({ x, y });
-    }
-    if (EVENT_STAGE === "COPYING") {
-      SET_EVENT_COPYING({ x, y });
+      if (EVENT_STAGE === "CREATING") {
+        SET_EVENT_MOVING_SHAPE({ x, y });
+      }
+      if (EVENT_STAGE === "COPYING") {
+        SET_EVENT_COPYING({ x, y });
+      }
     }
   };
 
-  const handleMouseUp = async () => {
-    if (selection.visible && EVENT_STAGE === "IDLE" && tool === "MOVE") {
-      const childrens = Stage?.current?.getStage?.()?.children;
-
-      if (!childrens) return;
-      const layer = childrens?.find((e) => e?.attrs?.id === "layer-shapes");
-      const nodes = layer?.children?.filter?.(
-        (child) =>
-          child?.attrs?.id !== "transformer-editable" && child?.attrs?.listening
-      );
-      if (!nodes) return;
-      const selected = nodes.filter((shape) =>
-        Konva.Util.haveIntersection(selection, shape.getClientRect())
-      );
-
-      setTimeout(() => {
-        SET_UPDATE_SHAPES_IDS(
-          selected
-            ?.map((e) => ({
-              id: e?.attrs?.id,
-              parentId: e?.attrs?.parentId,
-            }))
-            ?.filter((e) => typeof e?.id === "string")
-        );
-        setSelection({
-          x: 0,
-          y: 0,
-          width: 0,
-          height: 0,
-          visible: false,
-        });
-      }, 10);
+  const handleMouseUp = async (event: KonvaEventObject<MouseEvent>) => {
+    if (EVENT_STAGE === "SELECT_AREA") {
+      SET_SELECTION();
     }
 
     if (EVENT_STAGE === "CREATING" || EVENT_STAGE === "COPYING") {
       SET_EVENT_UP();
       debounce.execute();
     }
+    SET_MOVING(true);
   };
 
   // ===== UTILITY FUNCTIONS =====
@@ -283,6 +260,24 @@ export const useEventStage = () => {
     img.src = dataImage;
   };
 
+  const zoomToFitAllShapes = () => {
+    if (!stageRef.current) return;
+    const bounds = GET_BOUNDS();
+    if (!bounds) return;
+
+    const stageWidth = stageRef.current.width();
+    const stageHeight = stageRef.current.height();
+    const scale =
+      Math.min(stageWidth / bounds.width, stageHeight / bounds.height) * 0.9;
+
+    stageRef.current.scale({ x: scale, y: scale });
+    stageRef.current.position({
+      x: -bounds.startX * scale + (stageWidth - bounds.width * scale) / 2,
+      y: -bounds.startY * scale + (stageHeight - bounds.height * scale) / 2,
+    });
+    stageRef.current.batchDraw();
+  };
+
   // ===== EVENT LISTENERS =====
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -290,8 +285,14 @@ export const useEventStage = () => {
       const shift = event.shiftKey;
       const isMac = navigator.platform.toUpperCase().includes("MAC");
       const meta = isMac ? event.metaKey : event.ctrlKey;
-      const alt = event.altKey;
       const key = event.key.toLowerCase();
+
+      // ✅ Zoom to all shapes (Shift + 1)
+      if (shift && event.code === "Digit1") {
+        event.preventDefault();
+        zoomToFitAllShapes();
+        return;
+      }
 
       // ✅ Undo (IR HACIA ATRÁS)
       if (meta && !event.shiftKey && key === "z") {
@@ -401,6 +402,7 @@ export const useEventStage = () => {
 
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
+      document.removeEventListener("keyup", handleKeyUp);
       document.removeEventListener("paste", handlePaste);
     };
   }, [tool, shapeId, config.tools, PAUSE]);
@@ -409,5 +411,6 @@ export const useEventStage = () => {
     handleMouseDown,
     handleMouseMove,
     handleMouseUp,
+    stageRef,
   };
 };
