@@ -1,5 +1,5 @@
 import { css } from "@stylespixelkit/css";
-import { useAtom, useAtomValue, useSetAtom } from "jotai";
+import { useAtom, useSetAtom } from "jotai";
 import { File } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
@@ -11,12 +11,10 @@ import { Loading } from "../components/loading";
 import { constants } from "../constants/color";
 import { formats } from "../constants/formats";
 import { typeExportAtom } from "../states/export";
-import { SHAPE_SELECTED_ATOM } from "../states/shape";
 
 import { GET_EXPORT_SHAPES } from "../states/mode";
 
 export const ExportShape = () => {
-  const { count } = useAtomValue(SHAPE_SELECTED_ATOM);
   const [loading, setLoading] = useState(false);
   const [format, setFormat] = useAtom(typeExportAtom);
   const [showExportDialog, setShowExportDialog] = useState(false);
@@ -109,7 +107,7 @@ export const ExportShape = () => {
       </p>
 
       <Button.Secondary onClick={() => setShowExportDialog(true)}>
-        <File size={constants.icon.size} /> Export {count}
+        <File size={constants.icon.size} /> Export
       </Button.Secondary>
     </>
   );

@@ -1,8 +1,8 @@
 import Konva from "konva";
 import { getCommonShapeProps } from "../helpers/shape-schema";
-import { calculateCoverCrop } from "../shapes/image.shape";
 import { IKeyTool } from "../states/tool";
 import { UndoShape } from "../states/undo-redo";
+import { calculateCoverCrop } from "./crop";
 
 type ExcludedKeys = "MOVE" | "ICON";
 type ShapeType = Exclude<IKeyTool, ExcludedKeys>; // ["IMAGE", "TEXT", "FRAME"]
