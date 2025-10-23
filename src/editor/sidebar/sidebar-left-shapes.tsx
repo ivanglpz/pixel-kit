@@ -55,15 +55,16 @@ export const SidebarLeftShapes = () => {
   const clearAll = useSetAtom(DELETE_ALL_SHAPES_ATOM);
 
   return (
-    <div
-      onDragOver={(e) => e.preventDefault()}
+    <section
       className={css({
-        overflow: "scroll",
+        display: "flex",
+        flexDirection: "column",
+        overflow: "hidden",
       })}
     >
       <ContextMenu>
         <ContextMenuTrigger>
-          <div className="py-1">
+          <header className={"p-2 flex items-center justify-between"}>
             <p
               className={css({
                 fontSize: "sm",
@@ -72,7 +73,7 @@ export const SidebarLeftShapes = () => {
             >
               Shapes
             </p>
-          </div>
+          </header>
         </ContextMenuTrigger>
         <ContextMenuContent>
           <ContextMenuItem
@@ -97,26 +98,33 @@ export const SidebarLeftShapes = () => {
           </ContextMenuItem>
         </ContextMenuContent>
       </ContextMenu>
-
-      <Reorder.Group
-        axis="y"
-        values={ALL_SHAPES}
-        onReorder={handleReorder}
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          listStyle: "none",
-          margin: 0,
-          padding: 0,
-        }}
+      <div
+        className={css({
+          overflow: "scroll",
+        })}
       >
-        {ALL_SHAPES.map((item, index) => (
-          <DraggableRootItem
-            key={`pixel-kit-sidebar-left-shape-${item.id}-${index}`}
-            item={item}
-          />
-        ))}
-      </Reorder.Group>
-    </div>
+        <Reorder.Group
+          axis="y"
+          values={ALL_SHAPES}
+          onReorder={handleReorder}
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            listStyle: "none",
+            margin: 0,
+            padding: 0,
+            overflowY: "scroll",
+            height: "100%",
+          }}
+        >
+          {ALL_SHAPES.map((item, index) => (
+            <DraggableRootItem
+              key={`pixel-kit-sidebar-left-shape-${item.id}-${index}`}
+              item={item}
+            />
+          ))}
+        </Reorder.Group>
+      </div>
+    </section>
   );
 };
