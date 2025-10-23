@@ -1,4 +1,10 @@
 import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuTrigger,
+} from "@/components/ui/context-menu";
+import {
   DELETE_PAGE,
   IPage,
   NEW_PAGE,
@@ -10,10 +16,8 @@ import { Reorder, useDragControls } from "framer-motion";
 import { useAtom, useSetAtom } from "jotai";
 import { File, FolderCog, GripVertical, Plus, Trash } from "lucide-react";
 import { useRef, useState } from "react";
-import { ContextMenu, useContextMenu } from "../components/context-menu";
 import { Input } from "../components/input";
 import { useAutoSave } from "../hooks/useAutoSave";
-
 const DraggableRootItem = ({
   page,
   isSelected,
@@ -30,7 +34,6 @@ const DraggableRootItem = ({
   const [show, setShow] = useState(false);
   const [name, setName] = useAtom(page.name);
   const rootDragControls = useDragControls();
-  const { open } = useContextMenu();
   const SET = useSetAtom(DELETE_PAGE);
   const handleDragStart = (e: React.PointerEvent) => {
     e.stopPropagation(); // Prevenir que el evento se propague al padre
@@ -55,112 +58,109 @@ const DraggableRootItem = ({
         zIndex: 1000,
       }}
     >
-      <ContextMenu
-        id={page.id}
-        options={[
-          {
-            label: "Rename",
-            icon: <FolderCog size={14} />,
-
-            onClick: () => setShow(true),
-            isEnabled: true,
-          },
-          {
-            label: "Delete",
-            icon: <Trash size={14} />,
-
-            onClick: () => {
-              // setTool("MOVE");
+      <ContextMenu>
+        <ContextMenuTrigger>
+          <div
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
+            key={`page-${page.id}`}
+            className={css({
+              padding: "md",
+              borderRadius: "md",
+              alignItems: "center",
+              gap: "md",
+              _dark: {
+                backgroundColor: isSelected ? "gray.800" : "transparent",
+              },
+              backgroundColor: isSelected ? "gray.150" : "transparent",
+              display: "grid",
+              gridTemplateColumns: "15px 15px 1fr",
+              _hover: {
+                backgroundColor: "gray.100",
+                _dark: {
+                  backgroundColor: "gray.800",
+                },
+              },
+            })}
+            onClick={onClick}
+            onDoubleClick={() => {
+              setShow(true);
+              onClick();
+            }}
+            onBlur={() => {
+              setShow(false);
+            }}
+          >
+            {/* ✅ Drag Handle mejorado */}
+            <div
+              className={css({
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                cursor: "grab",
+                _active: {
+                  cursor: "grabbing",
+                },
+              })}
+              onPointerDown={handleDragStart} // ✅ Usar el handler mejorado
+            >
+              <GripVertical size={14} opacity={isHovered ? 1 : 0.3} />
+            </div>
+            <File size={14} />
+            {show ? (
+              <Input.withPause>
+                <Input.Text
+                  value={name}
+                  onChange={(e) => {
+                    setName(e);
+                    onDebounce();
+                  }}
+                  style={{
+                    width: "auto",
+                    border: "none",
+                    backgroundColor: "transparent",
+                    color: "text",
+                    paddingLeft: "0px",
+                    padding: "sm",
+                    height: "15px",
+                    borderRadius: "0px",
+                    fontSize: "x-small",
+                  }}
+                />
+              </Input.withPause>
+            ) : (
+              <span
+                className={css({
+                  fontSize: "x-small",
+                })}
+              >
+                {name}
+              </span>
+            )}
+          </div>
+        </ContextMenuTrigger>
+        <ContextMenuContent>
+          <ContextMenuItem
+            className="text-[12px]"
+            onClick={() => {
+              setShow(true);
+            }}
+          >
+            <FolderCog size={14} />
+            Rename
+          </ContextMenuItem>
+          <ContextMenuItem
+            className="text-[12px]"
+            onClick={() => {
               SET(page.id);
               debounce.execute();
-            },
-            isEnabled: lengthPage > 1,
-          },
-        ]}
-      />
-      <div
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
-        onContextMenu={(e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          open(page.id, e.clientX, e.clientY);
-        }}
-        key={`page-${page.id}`}
-        className={css({
-          padding: "md",
-          borderRadius: "md",
-          alignItems: "center",
-          gap: "md",
-          _dark: {
-            backgroundColor: isSelected ? "gray.800" : "transparent",
-          },
-          backgroundColor: isSelected ? "gray.150" : "transparent",
-          display: "grid",
-          gridTemplateColumns: "15px 15px 1fr",
-          _hover: {
-            backgroundColor: "gray.100",
-            _dark: {
-              backgroundColor: "gray.800",
-            },
-          },
-        })}
-        onClick={onClick}
-        onDoubleClick={() => {
-          setShow(true);
-          onClick();
-        }}
-        onBlur={() => {
-          setShow(false);
-        }}
-      >
-        {/* ✅ Drag Handle mejorado */}
-        <div
-          className={css({
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            cursor: "grab",
-            _active: {
-              cursor: "grabbing",
-            },
-          })}
-          onPointerDown={handleDragStart} // ✅ Usar el handler mejorado
-        >
-          <GripVertical size={14} opacity={isHovered ? 1 : 0.3} />
-        </div>
-        <File size={14} />
-        {show ? (
-          <Input.withPause>
-            <Input.Text
-              value={name}
-              onChange={(e) => {
-                setName(e);
-                onDebounce();
-              }}
-              style={{
-                width: "auto",
-                border: "none",
-                backgroundColor: "transparent",
-                color: "text",
-                paddingLeft: "0px",
-                padding: "sm",
-                height: "15px",
-                borderRadius: "0px",
-                fontSize: "x-small",
-              }}
-            />
-          </Input.withPause>
-        ) : (
-          <span
-            className={css({
-              fontSize: "x-small",
-            })}
+            }}
           >
-            {name}
-          </span>
-        )}
-      </div>
+            <Trash size={14} />
+            Delete
+          </ContextMenuItem>
+        </ContextMenuContent>
+      </ContextMenu>
     </Reorder.Item>
   );
 };

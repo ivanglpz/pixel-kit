@@ -1,3 +1,9 @@
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuTrigger,
+} from "@/components/ui/context-menu";
 import { Nodes, withStableIcon } from "@/editor/components/Nodes";
 import ALL_SHAPES_ATOM, {
   ALL_SHAPES,
@@ -8,10 +14,8 @@ import { UPDATE_UNDO_REDO } from "@/editor/states/undo-redo";
 import { css } from "@stylespixelkit/css";
 import { Reorder, useDragControls } from "framer-motion";
 import { useAtom, useSetAtom } from "jotai";
-import { Folders, Trash } from "lucide-react";
-import { ContextMenu, useContextMenu } from "../components/context-menu";
+import { Move, Trash } from "lucide-react";
 import { useAutoSave } from "../hooks/useAutoSave";
-
 // ✅ Componente wrapper para elementos de nivel superior
 const DraggableRootItem = withStableIcon(({ item }: { item: ALL_SHAPES }) => {
   const rootDragControls = useDragControls();
@@ -50,43 +54,50 @@ export const SidebarLeftShapes = () => {
   };
   const clearAll = useSetAtom(DELETE_ALL_SHAPES_ATOM);
 
-  const { open } = useContextMenu();
-
   return (
     <div
       onDragOver={(e) => e.preventDefault()}
       className={css({
         overflow: "scroll",
       })}
-      onContextMenu={(e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        open("sidebar-left-shapes", e.clientX, e.clientY);
-      }}
     >
-      <ContextMenu
-        id={"sidebar-left-shapes"}
-        options={[
-          {
-            label: "Move to root",
-            icon: <Folders size={14} />,
-            onClick: () => {
+      <ContextMenu>
+        <ContextMenuTrigger>
+          <div className="py-1">
+            <p
+              className={css({
+                fontSize: "sm",
+                fontWeight: 600,
+              })}
+            >
+              Shapes
+            </p>
+          </div>
+        </ContextMenuTrigger>
+        <ContextMenuContent>
+          <ContextMenuItem
+            className="text-[12px]"
+            onClick={() => {
               setmove();
               debounce.execute();
-            },
-            isEnabled: true,
-          },
-          {
-            label: "Clear All",
-            icon: <Trash size={14} />,
-            onClick: () => {
+            }}
+          >
+            <Move size={14} />
+            Move to
+          </ContextMenuItem>
+          <ContextMenuItem
+            className="text-[12px]"
+            onClick={() => {
               clearAll();
               debounce.execute();
-            },
-            isEnabled: true,
-          },
-        ]}
-      />
+            }}
+          >
+            <Trash size={14} />
+            Clear All
+          </ContextMenuItem>
+        </ContextMenuContent>
+      </ContextMenu>
+
       <Reorder.Group
         axis="y"
         values={ALL_SHAPES}
