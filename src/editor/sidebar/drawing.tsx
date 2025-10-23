@@ -162,29 +162,19 @@ export const Drawing = () => {
                       value={stroke.color}
                       onChange={(e) => handleStrokeColorChange(index, e)}
                     />
-                    {/* <Scaling size={constants.icon.size} /> */}
                   </Input.IconContainer>
                   <Input.Label
                     text={`#${stroke.color?.replace(/#/, "") ?? "ffffff"}`}
                   />
                 </Input.Grid>
               </Input.Container>
-              {/* <InputColor
-                keyInput={`pixel-kit-shape-stroke-${shape.id}-${shape.tool}-${index}`}
-                labelText=""
-                color={stroke.color}
-                onChangeColor={(e) => handleStrokeColorChange(index, e)}
-              /> */}
 
-              {/* Botón visibility toggle */}
               <button
                 onClick={() => handleStrokeVisibilityToggle(index)}
                 className={commonStyles.iconButton}
               >
                 {stroke.visible ? <Eye size={18} /> : <EyeOff size={18} />}
               </button>
-
-              {/* Botón remove */}
               <button
                 onClick={() => handleStrokeRemove(index)}
                 className={commonStyles.iconButton}
@@ -194,25 +184,7 @@ export const Drawing = () => {
             </div>
           ))}
 
-          {/* Configuraciones de stroke */}
           <div className={commonStyles.twoColumnGrid}>
-            {/* Stroke Weight */}
-            {/* <InputNumber
-              iconType="width"
-              min={0}
-              max={9999}
-              step={1}
-              labelText="Weight"
-              value={shape.strokeWidth || 0}
-              onChange={(v) =>
-                setShape({
-                  ...shape,
-
-                  strokeWidth: v,
-                })
-              }
-            /> */}
-
             <Input.Container>
               <Input.Grid>
                 <Input.IconContainer>
@@ -412,14 +384,7 @@ export const Drawing = () => {
                 />
               </Input.Grid>
             </Input.Container>
-            {/* <InputColor
-              keyInput={`pixel-kit-shape-effect-${shape.id}-${shape.tool}-${index}`}
-              labelText=""
-              color={effect.color}
-              onChangeColor={(e) => handleEffectColorChange(index, e)}
-            /> */}
 
-            {/* Botón visibility toggle */}
             <button
               onClick={() => handleEffectVisibilityToggle(index)}
               className={commonStyles.iconButton}
@@ -427,7 +392,6 @@ export const Drawing = () => {
               {effect.visible ? <Eye size={18} /> : <EyeOff size={18} />}
             </button>
 
-            {/* Botón remove */}
             <button
               onClick={() => handleEffectRemove(index)}
               className={commonStyles.iconButton}
@@ -437,7 +401,6 @@ export const Drawing = () => {
           </div>
         </section>
       ))}
-      {/* Controles detallados del efecto */}
       <Valid isValid={shape.effects.length > 0}>
         <div
           className={css({

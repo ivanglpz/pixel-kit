@@ -2,19 +2,13 @@ import { iconsWithTools } from "@/editor/icons/tool-icons";
 import { css } from "@stylespixelkit/css";
 import { DragControls, Reorder, useDragControls } from "framer-motion";
 import { useAtom, useSetAtom } from "jotai";
-// import {
-//   ChevronDown,
-//   ChevronRight,
-//   DotIcon,
-//   Eye,
-//   EyeClosed,
-//   FolderCog,
-//   GripVertical,
-//   Group,
-//   Lock,
-//   Trash,
-//   Unlock,
-// } from "lucide-react";
+
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuTrigger,
+} from "@/components/ui/context-menu";
 import * as Luicde from "lucide-react";
 import { ComponentType, memo, useMemo, useState } from "react";
 import { constants } from "../constants/color";
@@ -28,7 +22,6 @@ import {
 } from "../states/shapes";
 import TOOL_ATOM, { PAUSE_MODE_ATOM } from "../states/tool";
 import { UPDATE_UNDO_REDO } from "../states/undo-redo";
-import { ContextMenu, useContextMenu } from "./context-menu";
 import { Input } from "./input";
 
 type NodeProps = {
@@ -111,7 +104,6 @@ export const NodesDefault = ({
   const DELETE_SHAPE = useSetAtom(DELETE_SHAPES_ATOM);
   const setMove = useSetAtom(MOVE_SHAPES_BY_ID);
 
-  const { open } = useContextMenu();
   // ✅ Usar controles externos si están disponibles, sino crear propios
   const dragControls = externalDragControls;
 
@@ -171,250 +163,255 @@ export const NodesDefault = ({
 
   return (
     <>
-      <ContextMenu
-        id={shape.id}
-        options={[
-          {
-            label: "Move to Group",
-            icon: <Group size={14} />,
-            onClick: () => {
-              setMove(shape.id);
-              debounce.execute();
-            },
-            isEnabled: true,
-          },
-          {
-            label: "Rename",
-            icon: <FolderCog size={14} />,
-
-            onClick: () => setShow(true),
-            isEnabled: true,
-          },
-          {
-            label: "Delete",
-            icon: <Trash size={14} />,
-
-            onClick: () => {
-              setTool("MOVE");
-              DELETE_SHAPE();
-              debounce.execute();
-            },
-            isEnabled: true,
-          },
-        ]}
-      />
-      <div
-        id={shape.id + ` ${shape.tool}`}
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
-        onContextMenu={(e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          open(shape.id, e.clientX, e.clientY);
-        }}
-        className={css({
-          color: "text",
-          height: 30,
-          fontSize: "sm",
-          listStyle: "none",
-          display: "grid",
-          padding: "md",
-          gridTemplateColumns: "15px 15px 15px 120px 50px",
-          gap: "4",
-          flexDirection: "row",
-          alignItems: "center",
-          borderRadius: "4",
-          _dark: {
-            backgroundColor: shapeId.some((w) => w.id === shape.id)
-              ? "gray.700"
-              : "transparent",
-          },
-          backgroundColor: shapeId.some((w) => w.id === shape.id)
-            ? "gray.150"
-            : "transparent",
-          _hover: {
-            backgroundColor: "gray.100",
-            _dark: {
-              backgroundColor: "gray.800",
-            },
-          },
-          cursor: "pointer",
-          userSelect: "none",
-          width: 240,
-        })}
-        onClick={(e) => {
-          e.preventDefault(); // puedes dejar esto si quieres
-          e.stopPropagation();
-          setTool("MOVE");
-          setShapeId({
-            id: shape?.id,
-            parentId: shape.parentId,
-          });
-        }}
-      >
-        {/* ✅ Drag Handle mejorado */}
-        <div
-          className={css({
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            cursor: "grab",
-            _active: {
-              cursor: "grabbing",
-            },
-          })}
-          onPointerDown={handleDragStart} // ✅ Usar el handler mejorado
-        >
-          <GripVertical size={14} opacity={isHovered ? 1 : 0.3} />
-        </div>
-
-        {shape.tool === "FRAME" && children.length > 0 ? (
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              setIsExpanded((prev) => !prev);
-            }}
+      <ContextMenu>
+        <ContextMenuTrigger>
+          <div
+            id={shape.id + ` ${shape.tool}`}
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
             className={css({
-              border: "none",
-              color: "white",
-              cursor: "pointer",
+              color: "text",
+              height: 30,
               fontSize: "sm",
-              borderRadius: "2px",
+              listStyle: "none",
+              display: "grid",
+              padding: "md",
+              gridTemplateColumns: "15px 15px 15px 120px 50px",
+              gap: "4",
+              flexDirection: "row",
+              alignItems: "center",
+              borderRadius: "4",
+              _dark: {
+                backgroundColor: shapeId.some((w) => w.id === shape.id)
+                  ? "gray.600"
+                  : "transparent",
+              },
+              backgroundColor: shapeId.some((w) => w.id === shape.id)
+                ? "gray.200"
+                : "transparent",
+              _hover: {
+                backgroundColor: "gray.100",
+                _dark: {
+                  backgroundColor: "gray.800",
+                },
+              },
+              cursor: "pointer",
+              userSelect: "none",
+              width: 240,
             })}
+            onClick={(e) => {
+              e.preventDefault(); // puedes dejar esto si quieres
+              e.stopPropagation();
+              setTool("MOVE");
+              setShapeId({
+                id: shape?.id,
+                parentId: shape.parentId,
+              });
+            }}
           >
-            {isExpanded ? (
-              <ChevronDown size={14} />
-            ) : (
-              <ChevronRight size={14} />
-            )}
-          </button>
-        ) : (
-          <div></div>
-        )}
-
-        {iconsWithTools[shape.tool]}
-
-        <div
-          onDoubleClick={() => {
-            setShow(true);
-          }}
-          onBlur={() => {
-            setPause(false);
-            setShow(false);
-          }}
-        >
-          {show ? (
-            <Input.withPause>
-              <Input.Text
-                value={shape?.label}
-                onChange={(e) => {
-                  setShape({ ...shape, label: e });
-                  debounce.execute();
-                }}
-                style={{
-                  width: "auto",
-                  border: "none",
-                  backgroundColor: "transparent",
-                  color: "text",
-                  paddingLeft: "0px",
-                  padding: "sm",
-                  height: "15px",
-                  borderRadius: "0px",
-                  fontSize: "x-small",
-                }}
-              />
-            </Input.withPause>
-          ) : (
-            <p
+            {/* ✅ Drag Handle mejorado */}
+            <div
               className={css({
-                textTransform: "capitalize",
-                fontSize: "x-small",
-                lineClamp: 1,
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                cursor: "grab",
+                _active: {
+                  cursor: "grabbing",
+                },
+              })}
+              onPointerDown={handleDragStart} // ✅ Usar el handler mejorado
+            >
+              <GripVertical size={14} opacity={isHovered ? 1 : 0.3} />
+            </div>
+
+            {shape.tool === "FRAME" && children.length > 0 ? (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsExpanded((prev) => !prev);
+                }}
+                className={css({
+                  border: "none",
+                  color: "white",
+                  cursor: "pointer",
+                  fontSize: "sm",
+                  borderRadius: "2px",
+                })}
+              >
+                {isExpanded ? (
+                  <ChevronDown size={14} />
+                ) : (
+                  <ChevronRight size={14} />
+                )}
+              </button>
+            ) : (
+              <div></div>
+            )}
+
+            {iconsWithTools[shape.tool]}
+
+            <div
+              onDoubleClick={() => {
+                setShow(true);
+              }}
+              onBlur={() => {
+                setPause(false);
+                setShow(false);
+              }}
+            >
+              {show ? (
+                <Input.withPause>
+                  <Input.Text
+                    value={shape?.label}
+                    onChange={(e) => {
+                      setShape({ ...shape, label: e });
+                      debounce.execute();
+                    }}
+                    style={{
+                      width: "auto",
+                      border: "none",
+                      backgroundColor: "transparent",
+                      color: "text",
+                      paddingLeft: "0px",
+                      padding: "sm",
+                      height: "15px",
+                      borderRadius: "0px",
+                      fontSize: "x-small",
+                    }}
+                  />
+                </Input.withPause>
+              ) : (
+                <p
+                  className={css({
+                    textTransform: "capitalize",
+                    fontSize: "x-small",
+                    lineClamp: 1,
+                  })}
+                >
+                  {shape.label}
+                </p>
+              )}
+            </div>
+
+            <div
+              className={css({
+                display: "grid",
+                gridTemplateColumns: "2",
+                justifyContent: "center",
+                alignItems: "center",
               })}
             >
-              {shape.label}
-            </p>
-          )}
-        </div>
-
-        <div
-          className={css({
-            display: "grid",
-            gridTemplateColumns: "2",
-            justifyContent: "center",
-            alignItems: "center",
-          })}
-        >
-          {/* Lock/Unlock Section */}
-          <div
-            className={css({
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-            })}
-          >
-            {isLockedByParent ? (
-              <DotIcon
-                strokeWidth={8}
-                size={14}
-                color={constants.theme.colors.primary}
-              />
-            ) : (
-              <>
-                {!isHovered && shape.isLocked ? (
-                  <Lock size={14} color={constants.theme.colors.primary} />
-                ) : null}
-
-                {isHovered ? (
-                  <button onClick={handleLockToggle}>
-                    {shape.isLocked ? (
+              {/* Lock/Unlock Section */}
+              <div
+                className={css({
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                })}
+              >
+                {isLockedByParent ? (
+                  <DotIcon
+                    strokeWidth={8}
+                    size={14}
+                    color={constants.theme.colors.primary}
+                  />
+                ) : (
+                  <>
+                    {!isHovered && shape.isLocked ? (
                       <Lock size={14} color={constants.theme.colors.primary} />
-                    ) : (
-                      <Unlock size={14} />
-                    )}
-                  </button>
-                ) : null}
-              </>
-            )}
-          </div>
+                    ) : null}
 
-          {/* Visibility Section */}
-          <div
-            className={css({
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-            })}
-          >
-            {isHiddenByParent ? (
-              <DotIcon
-                strokeWidth={8}
-                size={14}
-                color={constants.theme.colors.primary}
-              />
-            ) : (
-              <>
-                {!isHovered && !shape.visible ? (
-                  <EyeClosed size={14} color={constants.theme.colors.primary} />
-                ) : null}
+                    {isHovered ? (
+                      <button onClick={handleLockToggle}>
+                        {shape.isLocked ? (
+                          <Lock
+                            size={14}
+                            color={constants.theme.colors.primary}
+                          />
+                        ) : (
+                          <Unlock size={14} />
+                        )}
+                      </button>
+                    ) : null}
+                  </>
+                )}
+              </div>
 
-                {isHovered ? (
-                  <button onClick={handleVisibilityToggle}>
-                    {shape.visible ? (
-                      <Eye size={14} />
-                    ) : (
+              {/* Visibility Section */}
+              <div
+                className={css({
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                })}
+              >
+                {isHiddenByParent ? (
+                  <DotIcon
+                    strokeWidth={8}
+                    size={14}
+                    color={constants.theme.colors.primary}
+                  />
+                ) : (
+                  <>
+                    {!isHovered && !shape.visible ? (
                       <EyeClosed
                         size={14}
                         color={constants.theme.colors.primary}
                       />
-                    )}
-                  </button>
-                ) : null}
-              </>
-            )}
+                    ) : null}
+
+                    {isHovered ? (
+                      <button onClick={handleVisibilityToggle}>
+                        {shape.visible ? (
+                          <Eye size={14} />
+                        ) : (
+                          <EyeClosed
+                            size={14}
+                            color={constants.theme.colors.primary}
+                          />
+                        )}
+                      </button>
+                    ) : null}
+                  </>
+                )}
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
+        </ContextMenuTrigger>
+        <ContextMenuContent>
+          {shape.tool === "FRAME" ? (
+            <ContextMenuItem
+              className="text-[12px]"
+              onClick={() => {
+                setMove(shape.id);
+                debounce.execute();
+              }}
+            >
+              <Luicde.Move size={14} />
+              Move to
+            </ContextMenuItem>
+          ) : null}
+          <ContextMenuItem
+            className="text-[12px]"
+            onClick={() => setShow(true)}
+          >
+            <FolderCog size={14} />
+            Rename
+          </ContextMenuItem>
+          <ContextMenuItem
+            className="text-[12px]"
+            onClick={() => {
+              setTool("MOVE");
+              DELETE_SHAPE();
+              debounce.execute();
+            }}
+          >
+            <Trash size={14} />
+            Delete
+          </ContextMenuItem>
+        </ContextMenuContent>
+      </ContextMenu>
 
       {/* ✅ Sección de children mejorada */}
       {children?.length > 0 && isExpanded && (
