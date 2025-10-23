@@ -199,75 +199,101 @@ export const DELETE_ALL_SHAPES_ATOM = atom(null, (get, set) => {
 });
 
 // ===== Funciones de movimiento actualizadas =====
+export const MOVE_SHAPES_BY_ID = atom(null, (get, set, targetId: string) => {
+  const allShapes = get(PLANE_SHAPES_ATOM);
+  const selectedShapeIds = get(SHAPE_IDS_ATOM);
 
-export const MOVE_SHAPES_BY_ID = atom(null, (get, set, args: string) => {
-  const currentShapes = get(PLANE_SHAPES_ATOM);
-  const shapesSelected = get(SHAPE_IDS_ATOM);
-  const selectedShapes = currentShapes.filter((w) =>
-    shapesSelected.some((e) => e.id === w.id)
+  // Shapes seleccionados y destino
+  const selectedShapes = allShapes.filter((shape) =>
+    selectedShapeIds.some((sel) => sel.id === shape.id)
   );
-  const FIND_SHAPE = currentShapes.find((s) => s.id === args);
-  if (!FIND_SHAPE) return;
+  const targetShape = allShapes.find((shape) => shape.id === targetId);
+  if (!targetShape) return;
 
-  // Guardar estado anterior para undo/redo
+  // Evitar que un shape se mueva a sí mismo
+  if (selectedShapes.some((s) => s.id === targetShape.id)) return;
+
+  // Validar que no se mueva un padre dentro de sus hijos
+  const isDescendant = (parent: ALL_SHAPES, childId: string): boolean => {
+    const children = get(get(parent.state).children);
+    if (children.some((c) => c.id === childId)) return true;
+    return children.some((c) => isDescendant(c, childId));
+  };
+
+  for (const shape of selectedShapes) {
+    if (isDescendant(shape, targetShape.id)) return;
+  }
+
+  // Guardar estado previo (para undo/redo)
   const prevShapes = [...selectedShapes];
 
-  // recrea un árbol fresco con atom nuevos
+  // Clonación recursiva pura
   const cloneShapeRecursive = (
     shape: ALL_SHAPES,
     parentId: string
-  ): ALL_SHAPES => {
-    return {
-      id: shape.id,
-      // pageId: shape.pageId,
-      tool: shape.tool,
-      state: atom<IShape>({
-        ...get(shape.state),
-        parentId,
-        children: atom(
-          get(get(shape.state).children).map((c) =>
-            cloneShapeRecursive(c, shape.id)
-          )
-        ),
-      }),
-    };
-  };
-
-  const result = selectedShapes.map((s) =>
-    cloneShapeRecursive(s, get(FIND_SHAPE.state).id)
-  );
-
-  // agregar nuevos hijos con referencia fresca
-  set(FIND_SHAPE.state, {
-    ...get(FIND_SHAPE.state),
-    children: atom([...get(get(FIND_SHAPE.state).children), ...result]),
+  ): ALL_SHAPES => ({
+    id: shape.id,
+    tool: shape.tool,
+    state: atom<IShape>({
+      ...get(shape.state),
+      parentId,
+      children: atom(
+        get(get(shape.state).children).map((child) =>
+          cloneShapeRecursive(child, shape.id)
+        )
+      ),
+    }),
   });
 
-  // remover de donde estaban antes
-  for (const element of shapesSelected) {
-    if (element.parentId) {
-      const parent = currentShapes.find((r) => r.id === element.parentId);
+  const targetChildren = get(get(targetShape.state).children);
+
+  // Shapes que deben eliminarse de su padre original
+  const detachedShapes = selectedShapes.filter(
+    (s) => !targetChildren.some((c) => c.id === s.id || s.id === targetId)
+  );
+
+  const clonedShapes = selectedShapes.map((s) =>
+    cloneShapeRecursive(s, get(targetShape.state).id)
+  );
+
+  const newChildren = clonedShapes.filter(
+    (s) => !targetChildren.some((c) => c.id === s.id || s.id === targetId)
+  );
+
+  // Actualizar hijos del destino
+  set(targetShape.state, {
+    ...get(targetShape.state),
+    children: atom([...targetChildren, ...newChildren]),
+  });
+
+  // Eliminar shapes de sus padres originales o nivel raíz
+  for (const shape of detachedShapes) {
+    const parentId = get(shape.state).parentId;
+
+    if (parentId) {
+      const parent = allShapes.find((p) => p.id === parentId);
       if (!parent) continue;
+
+      const updatedChildren = get(get(parent.state).children).filter(
+        (c) => c.id !== shape.id
+      );
       set(parent.state, {
         ...get(parent.state),
-        children: atom(
-          get(get(parent.state).children).filter((u) => u.id !== element.id)
-        ),
+        children: atom(updatedChildren),
       });
     } else {
       set(
         ALL_SHAPES_ATOM,
-        get(ALL_SHAPES_ATOM).filter((e) => e.id !== element.id)
+        get(ALL_SHAPES_ATOM).filter((s) => s.id !== shape.id)
       );
     }
   }
 
-  // Registrar la acción MOVE para undo/redo
-
+  // Registrar acción MOVE para undo/redo
   set(NEW_UNDO_REDO, {
     type: "MOVE",
-    shapes: result,
-    prevShapes: prevShapes,
+    shapes: clonedShapes,
+    prevShapes,
   });
 });
 

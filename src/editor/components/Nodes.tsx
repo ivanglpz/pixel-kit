@@ -380,16 +380,18 @@ export const NodesDefault = ({
           </div>
         </ContextMenuTrigger>
         <ContextMenuContent>
-          <ContextMenuItem
-            className="text-[12px]"
-            onClick={() => {
-              setMove(shape.id);
-              debounce.execute();
-            }}
-          >
-            <Luicde.Move size={14} />
-            Move to
-          </ContextMenuItem>
+          {shape.tool === "FRAME" ? (
+            <ContextMenuItem
+              className="text-[12px]"
+              onClick={() => {
+                setMove(shape.id);
+                debounce.execute();
+              }}
+            >
+              <Luicde.Move size={14} />
+              Move to
+            </ContextMenuItem>
+          ) : null}
           <ContextMenuItem
             className="text-[12px]"
             onClick={() => setShow(true)}
