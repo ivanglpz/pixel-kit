@@ -184,16 +184,7 @@ export const SidebarLeftPages = () => {
         flexDirection: "column",
       })}
     >
-      <div
-        className={css({
-          display: "flex",
-          flexDirection: "row",
-          gap: "sm",
-          alignItems: "center",
-          justifyContent: "space-between",
-          paddingBottom: "lg",
-        })}
-      >
+      <header className={"p-2 flex items-center justify-between"}>
         <p
           className={css({
             fontSize: "sm",
@@ -219,7 +210,7 @@ export const SidebarLeftPages = () => {
         >
           <Plus size={14} />
         </button>
-      </div>
+      </header>
 
       <Reorder.Group
         axis="y"
