@@ -60,6 +60,7 @@ export const SidebarLeftShapes = () => {
         display: "flex",
         flexDirection: "column",
         overflow: "hidden",
+        height: "100%",
       })}
     >
       <ContextMenu>
@@ -101,6 +102,7 @@ export const SidebarLeftShapes = () => {
       <div
         className={css({
           overflow: "scroll",
+          height: "100%",
         })}
       >
         <Reorder.Group

@@ -204,6 +204,7 @@ type InputTextProps = {
   onChange: (value: string) => void;
   style?: CSSProperties;
   placeholder?: string;
+  rows?: number;
 };
 
 const TextComponent = ({ onChange, value, style, ...rest }: InputTextProps) => {

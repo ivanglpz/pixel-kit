@@ -1820,6 +1820,7 @@ export const LayoutShapeConfig = () => {
             <Input.Container>
               <Input.withPause>
                 <Input.TextArea
+                  rows={6}
                   onChange={(e) => {
                     shapeUpdate({ text: e });
                     execute();
