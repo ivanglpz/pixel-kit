@@ -135,6 +135,25 @@ export const CONFIG_ATOM = atom(
   (get) => configs[get(MODE_ATOM)] || configs.DESIGN_MODE
 );
 
+export const GET_EXPORT_JSON = atom(null, (get) => {
+  const selectedIds = get(SHAPE_IDS_ATOM);
+  const planeShapes = get(PLANE_SHAPES_ATOM);
+  const cloner = cloneShapeRecursive(get);
+  const shapes = planeShapes
+    .filter((shape) =>
+      selectedIds.some(
+        (selected) =>
+          shape.id === selected.id &&
+          get(shape.state).parentId === selected.parentId
+      )
+    )
+    .map(cloner);
+
+  return {
+    shapes,
+  };
+});
+
 export const GET_EXPORT_SHAPES = atom(null, async (get, set) => {
   const selectedIds = get(SHAPE_IDS_ATOM);
   const planeShapes = get(PLANE_SHAPES_ATOM);
