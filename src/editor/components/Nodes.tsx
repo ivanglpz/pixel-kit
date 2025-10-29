@@ -10,7 +10,8 @@ import {
   ContextMenuTrigger,
 } from "@/components/ui/context-menu";
 import * as Luicde from "lucide-react";
-import { ComponentType, memo, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
+import { withStableMemo } from "../utils/withStableMemo";
 import { constants } from "../constants/color";
 import { useAutoSave } from "../hooks/useAutoSave";
 import { flexLayoutAtom } from "../shapes/layout-flex";
@@ -72,21 +73,16 @@ export const DraggableNodeItem = ({
     </Reorder.Item>
   );
 };
-export function withStableIcon<T extends object>(Icon: ComponentType<T>) {
-  return memo((props: T) => <Icon {...props} />);
-}
-
-const Group = withStableIcon(Luicde.Group);
-const ChevronDown = withStableIcon(Luicde.ChevronDown);
-const ChevronRight = withStableIcon(Luicde.ChevronRight);
-const DotIcon = withStableIcon(Luicde.Circle);
-const Eye = withStableIcon(Luicde.Eye);
-const EyeClosed = withStableIcon(Luicde.EyeOff);
-const FolderCog = withStableIcon(Luicde.FolderCog);
-const GripVertical = withStableIcon(Luicde.GripVertical);
-const Lock = withStableIcon(Luicde.Lock);
-const Trash = withStableIcon(Luicde.Trash);
-const Unlock = withStableIcon(Luicde.Unlock);
+const ChevronDown = withStableMemo(Luicde.ChevronDown);
+const ChevronRight = withStableMemo(Luicde.ChevronRight);
+const DotIcon = withStableMemo(Luicde.Circle);
+const Eye = withStableMemo(Luicde.Eye);
+const EyeClosed = withStableMemo(Luicde.EyeOff);
+const FolderCog = withStableMemo(Luicde.FolderCog);
+const GripVertical = withStableMemo(Luicde.GripVertical);
+const Lock = withStableMemo(Luicde.Lock);
+const Trash = withStableMemo(Luicde.Trash);
+const Unlock = withStableMemo(Luicde.Unlock);
 export const NodesDefault = ({
   shape: item,
   options = {},
@@ -441,4 +437,4 @@ export const NodesDefault = ({
     </>
   );
 };
-export const Nodes = withStableIcon(NodesDefault);
+export const Nodes = withStableMemo(NodesDefault);
