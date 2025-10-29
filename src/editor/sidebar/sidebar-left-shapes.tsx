@@ -4,7 +4,7 @@ import {
   ContextMenuItem,
   ContextMenuTrigger,
 } from "@/components/ui/context-menu";
-import { Nodes, withStableIcon } from "@/editor/components/Nodes";
+import { Nodes } from "@/editor/components/Nodes";
 import ALL_SHAPES_ATOM, {
   ALL_SHAPES,
   DELETE_ALL_SHAPES_ATOM,
@@ -16,8 +16,9 @@ import { Reorder, useDragControls } from "framer-motion";
 import { useAtom, useSetAtom } from "jotai";
 import { Move, Trash } from "lucide-react";
 import { useAutoSave } from "../hooks/useAutoSave";
+import { withStableMemo } from "../utils/withStableMemo";
 // ✅ Componente wrapper para elementos de nivel superior
-const DraggableRootItem = withStableIcon(({ item }: { item: ALL_SHAPES }) => {
+const DraggableRootItem = withStableMemo(({ item }: { item: ALL_SHAPES }) => {
   const rootDragControls = useDragControls();
 
   return (
