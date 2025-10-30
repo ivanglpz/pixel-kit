@@ -316,6 +316,11 @@ export const MOVE_SHAPES_BY_ID = atom(null, (get, set, targetId: string) => {
       );
     }
   }
+  const updateShapesIds = get(SHAPE_IDS_ATOM)?.map((e) => ({
+    ...e,
+    parentId: get(targetShape.state).id,
+  }));
+  set(UPDATE_SHAPES_IDS_ATOM, updateShapesIds);
 
   // Registrar acción MOVE para undo/redo
   set(NEW_UNDO_REDO, {
@@ -539,7 +544,11 @@ export const MOVE_SHAPES_TO_ROOT = atom(null, (get, set) => {
       });
     }
   }
-
+  const updateShapesIds = get(SHAPE_IDS_ATOM)?.map((e) => ({
+    ...e,
+    parentId: null,
+  }));
+  set(UPDATE_SHAPES_IDS_ATOM, updateShapesIds);
   // añadir al root con átomos frescos
   set(ALL_SHAPES_ATOM, [...get(ALL_SHAPES_ATOM), ...result]);
 
