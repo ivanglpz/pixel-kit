@@ -466,32 +466,28 @@ export const GROUP_SHAPES_IN_LAYOUT = atom(null, (get, set) => {
   });
 });
 export const MOVE_SHAPES_TO_ROOT = atom(null, (get, set) => {
-  const PLANE_SHAPES = get(PLANE_SHAPES_ATOM);
+  const allShapes = get(PLANE_SHAPES_ATOM);
   const SELECTED = get(SHAPE_IDS_ATOM);
-  const selectedShapes = PLANE_SHAPES.filter((w) =>
+  const selectedShapes = allShapes.filter((w) =>
     SELECTED.some((e) => e.id === w.id)
   );
 
   // Guardar estado anterior para undo/redo
   const prevShapes = [...selectedShapes];
 
-  // Helper to compute cumulative x/y for a node and its ancestors
-  const sumInheritedXY = (
-    flat: ALL_SHAPES[],
-    targetId: string
-  ): { x: number; y: number } => {
-    const map = new Map(flat.map((n) => [n.id, n]));
-    let current = map.get(targetId);
+  // Precompute lookup map and helper to compute cumulative ancestor offsets
+  const flatMap = new Map(allShapes.map((s) => [s.id, s] as const));
+  const getInheritedOffset = (id: string | null): { x: number; y: number } => {
+    if (!id) return { x: 0, y: 0 };
+    let current = flatMap.get(id);
     let totalX = 0;
     let totalY = 0;
     while (current) {
-      totalX += get(current.state).x;
-      totalY += get(current.state).y;
-      current = get(current.state).parentId
-        ? map.get(get(current.state).parentId ?? "")
-        : undefined;
+      const st = get(current.state);
+      totalX += st.x;
+      totalY += st.y;
+      current = st.parentId ? flatMap.get(st.parentId) : undefined;
     }
-
     return { x: totalX, y: totalY };
   };
 
@@ -511,7 +507,7 @@ export const MOVE_SHAPES_TO_ROOT = atom(null, (get, set) => {
     // same absolute coordinates.
     const originalParentId = state.parentId;
     const parentOffset = originalParentId
-      ? sumInheritedXY(PLANE_SHAPES, originalParentId)
+      ? getInheritedOffset(originalParentId)
       : { x: 0, y: 0 };
 
     const newX = parentId === null ? state.x + parentOffset.x : state.x;
@@ -537,7 +533,7 @@ export const MOVE_SHAPES_TO_ROOT = atom(null, (get, set) => {
   // quitar de sus padres
   for (const element of SELECTED) {
     if (element.parentId) {
-      const parent = PLANE_SHAPES.find((r) => r.id === element.parentId);
+      const parent = allShapes.find((r) => r.id === element.parentId);
       if (!parent) continue;
       set(parent.state, {
         ...get(parent.state),
