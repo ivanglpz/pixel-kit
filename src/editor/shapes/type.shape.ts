@@ -52,8 +52,12 @@ export type IShape = {
   // Position & Transform
   x: number;
   y: number;
+  copyX: number;
+  copyY: number;
   offsetX: number;
   offsetY: number;
+  offsetCopyX: number;
+  offsetCopyY: number;
   rotation: number;
   width: number;
   height: number;

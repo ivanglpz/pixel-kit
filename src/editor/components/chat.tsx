@@ -21,7 +21,6 @@ export const ChatTool = () => {
     mutationKey: ["chat", text],
     mutationFn: async () => {
       const { shapes } = GET_SHAPES();
-      console.log(shapes);
 
       const response = await axios.post("/api/chat", {
         prompt: text,

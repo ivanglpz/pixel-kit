@@ -227,23 +227,51 @@ export const MOVE_SHAPES_BY_ID = atom(null, (get, set, targetId: string) => {
   // Guardar estado previo (para undo/redo)
   const prevShapes = [...selectedShapes];
 
+  const sumInheritedXY = (
+    flat: ALL_SHAPES[],
+    targetId: string
+  ): { x: number; y: number } => {
+    const map = new Map(flat.map((n) => [n.id, n]));
+    let current = map.get(targetId);
+    let totalX = 0;
+    let totalY = 0;
+    while (current) {
+      totalX += get(current.state).x;
+      totalY += get(current.state).y;
+      current = get(current.state).parentId
+        ? map.get(get(current.state).parentId ?? "")
+        : undefined;
+    }
+
+    return { x: totalX, y: totalY };
+  };
+
   // Clonación recursiva pura
   const cloneShapeRecursive = (
     shape: ALL_SHAPES,
-    parentId: string
-  ): ALL_SHAPES => ({
-    id: shape.id,
-    tool: shape.tool,
-    state: atom<IShape>({
-      ...get(shape.state),
-      parentId,
-      children: atom(
-        get(get(shape.state).children).map((child) =>
-          cloneShapeRecursive(child, shape.id)
-        )
-      ),
-    }),
-  });
+    parentId: string,
+    fixPosition: boolean
+  ): ALL_SHAPES => {
+    return {
+      id: shape.id,
+      tool: shape.tool,
+      state: atom<IShape>({
+        ...get(shape.state),
+        x: fixPosition
+          ? get(shape.state).x - sumInheritedXY(allShapes, targetId).x
+          : get(shape.state).x,
+        y: fixPosition
+          ? get(shape.state).y - sumInheritedXY(allShapes, targetId).y
+          : get(shape.state).y,
+        parentId,
+        children: atom(
+          get(get(shape.state).children).map((child) =>
+            cloneShapeRecursive(child, shape.id, false)
+          )
+        ),
+      }),
+    };
+  };
 
   const targetChildren = get(get(targetShape.state).children);
 
@@ -253,7 +281,7 @@ export const MOVE_SHAPES_BY_ID = atom(null, (get, set, targetId: string) => {
   );
 
   const clonedShapes = selectedShapes.map((s) =>
-    cloneShapeRecursive(s, get(targetShape.state).id)
+    cloneShapeRecursive(s, get(targetShape.state).id, true)
   );
 
   const newChildren = clonedShapes.filter(
@@ -580,19 +608,46 @@ export const EVENT_DOWN_COPY = atom(
       selectedIds.some((w) => w.id === shape.id)
     );
 
-    //
+    const sumInheritedXY = (
+      flat: ALL_SHAPES[],
+      targetId: string
+    ): { x: number; y: number } => {
+      const map = new Map(flat.map((n) => [n.id, n]));
+      let current = map.get(targetId);
+      let totalX = 0;
+      let totalY = 0;
+      while (current) {
+        totalX += get(current.state).x;
+        totalY += get(current.state).y;
+        current = get(current.state).parentId
+          ? map.get(get(current.state).parentId ?? "")
+          : undefined;
+      }
 
+      return { x: totalX, y: totalY };
+    };
+
+    //
     const recursiveCloneShape = (
       shape: ALL_SHAPES,
-      parentId: string | null = null,
-      offset?: { offsetX: number; offsetY: number }
+      parentId: string | null = null
     ): IShape => {
       const state = get(shape.state);
       const newId = uuidv4(); // Generamos un nuevo ID
 
       return {
         ...cloneDeep(state),
-        ...offset,
+        offsetX: args.x - get(shape.state).x,
+        offsetY: args.y - get(shape.state).y,
+        offsetCopyX:
+          args.x -
+          get(shape.state).x -
+          sumInheritedXY(rootShapes, parentId ?? "").x,
+        offsetCopyY:
+          args.y -
+          get(shape.state).y -
+          sumInheritedXY(rootShapes, parentId ?? "").y,
+
         id: newId, // también en el state
         parentId, // el parentId que viene del nivel superior
         children: atom<ALL_SHAPES[]>(
@@ -610,26 +665,8 @@ export const EVENT_DOWN_COPY = atom(
       };
     };
     const newShapes = shapesSelected.map((shape) => {
-      const offsetX = args.x - get(shape.state).x;
-      const offsetY = args.y - get(shape.state).y;
-      return recursiveCloneShape(shape, get(shape.state).parentId, {
-        offsetX,
-        offsetY,
-      });
+      return recursiveCloneShape(shape, get(shape.state).parentId);
     });
-
-    // for (const element of newShapes) {
-    //   if (get(element.state).parentId) {
-    //     const FIND_SHAPE = PLANE_SHAPES?.find(
-    //       (w) => w.id === get(element.state).parentId
-    //     );
-    //     if (!FIND_SHAPE) continue;
-    //     const children = get(FIND_SHAPE.state).children;
-    //     set(children, [...get(children), element]);
-    //   } else {
-    //     set(ALL_SHAPES_ATOM, [...get(ALL_SHAPES_ATOM), element]);
-    //   }
-    // }
 
     set(RESET_SHAPES_IDS_ATOM);
     set(CREATE_CURRENT_ITEM_ATOM, newShapes);
@@ -638,6 +675,50 @@ export const EVENT_DOWN_COPY = atom(
     // return newShapes;
   }
 );
+
+export const EVENT_COPYING_SHAPES = atom(
+  null,
+  (get, set, args: { x: number; y: number }) => {
+    const CURRENT_ITEMS = get(CURRENT_ITEM_ATOM);
+
+    const items = CURRENT_ITEMS?.map((i) => {
+      return {
+        ...i,
+        x: args.x - i.offsetCopyX,
+        y: args.y - i.offsetCopyY,
+        copyX: args.x - i.offsetX,
+        copyY: args?.y - i.offsetY,
+      };
+    });
+
+    set(CURRENT_ITEM_ATOM, items);
+  }
+);
+
+export const EVENT_UP_COPY = atom(null, (get, set) => {
+  const CURRENT_ITEMS = get(CURRENT_ITEM_ATOM);
+  for (const newShape of CURRENT_ITEMS) {
+    console.log(newShape, "EVENT_UP_SHAPE");
+
+    set(CREATE_SHAPE_ATOM, {
+      ...newShape,
+      x: newShape.copyX,
+      y: newShape.copyY,
+    });
+  }
+  Promise.resolve().then(() => {
+    set(
+      UPDATE_SHAPES_IDS_ATOM,
+      CURRENT_ITEMS?.map((e) => ({
+        id: e?.id,
+        parentId: e?.parentId,
+      }))
+    );
+  });
+  set(TOOL_ATOM, "MOVE");
+  set(EVENT_ATOM, "IDLE");
+  set(CLEAR_CURRENT_ITEM_ATOM);
+});
 
 export const EVENT_UP_SHAPES = atom(null, (get, set) => {
   const CURRENT_ITEMS = get(CURRENT_ITEM_ATOM);
@@ -657,22 +738,6 @@ export const EVENT_UP_SHAPES = atom(null, (get, set) => {
   set(EVENT_ATOM, "IDLE");
   set(CLEAR_CURRENT_ITEM_ATOM);
 });
-
-export const EVENT_COPYING_SHAPES = atom(
-  null,
-  (get, set, args: { x: number; y: number }) => {
-    const CURRENT_ITEMS = get(CURRENT_ITEM_ATOM);
-
-    const items = CURRENT_ITEMS?.map((i) => {
-      return {
-        ...i,
-        x: args.x - i.offsetX,
-        y: args.y - i.offsetY,
-      };
-    });
-    set(CURRENT_ITEM_ATOM, items);
-  }
-);
 
 export const EVENT_MOVING_SHAPE = atom(
   null,
