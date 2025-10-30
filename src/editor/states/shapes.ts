@@ -652,88 +652,89 @@ export const EVENT_DOWN_SHAPES = atom(
 export const EVENT_DOWN_COPY = atom(
   null,
   (get, set, args: { x: number; y: number }) => {
-    const rootShapes = get(PLANE_SHAPES_ATOM);
-    const selectedIds = get(SHAPE_IDS_ATOM);
+    const rootShapes = get(PLANE_SHAPES_ATOM) ?? [];
+    const selectedIds = get(SHAPE_IDS_ATOM) ?? [];
 
-    if (!rootShapes) return [];
+    if (rootShapes.length === 0 || selectedIds.length === 0) return [];
 
-    const shapesSelected = rootShapes.filter((shape) =>
-      selectedIds.some((w) => w.id === shape.id)
-    );
+    // Precompute a lookup map for ancestor traversal
+    const flatMap = new Map(rootShapes.map((s) => [s.id, s] as const));
 
-    const sumInheritedXY = (
-      flat: ALL_SHAPES[],
-      targetId: string
+    const getInheritedOffset = (
+      targetId?: string | null
     ): { x: number; y: number } => {
-      const map = new Map(flat.map((n) => [n.id, n]));
-      let current = map.get(targetId);
+      if (!targetId) return { x: 0, y: 0 };
+      let current = flatMap.get(targetId);
       let totalX = 0;
       let totalY = 0;
       while (current) {
-        totalX += get(current.state).x;
-        totalY += get(current.state).y;
-        current = get(current.state).parentId
-          ? map.get(get(current.state).parentId ?? "")
-          : undefined;
+        const s = get(current.state);
+        totalX += s.x;
+        totalY += s.y;
+        const parentId = s.parentId;
+        current = parentId ? flatMap.get(parentId) : undefined;
       }
-
       return { x: totalX, y: totalY };
     };
 
-    //
+    const shapesSelected = rootShapes.filter((shape) =>
+      selectedIds.some((sel) => sel.id === shape.id)
+    );
+
+    // Pure recursive clone that returns a plain IShape (not an atom)
     const recursiveCloneShape = (
       shape: ALL_SHAPES,
-      parentId: string | null = null
+      parentId: string | null = null,
+      isRootCopy = false
     ): IShape => {
       const state = get(shape.state);
-      const newId = uuidv4(); // Generamos un nuevo ID
+      const newId = uuidv4();
+
+      const parentAccum = getInheritedOffset(parentId);
+
+      const rootParams = isRootCopy
+        ? {
+            x: args.x - state.x - parentAccum.x,
+            y: args.y - state.y - parentAccum.y,
+            offsetX: args.x - state.x,
+            offsetY: args.y - state.y,
+            offsetCopyX: args.x - state.x - parentAccum.x,
+            offsetCopyY: args.y - state.y - parentAccum.y,
+          }
+        : {};
+
+      const originalChildren = get(state.children) ?? [];
+
+      const clonedChildren: ALL_SHAPES[] = originalChildren.map((child) => {
+        const newChildState = recursiveCloneShape(child, newId, false);
+        return {
+          ...child,
+          id: newChildState.id,
+          tool: newChildState.tool as IShapesKeys,
+          pageId: get(PAGE_ID_ATOM),
+          state: atom(newChildState),
+        } as ALL_SHAPES;
+      });
 
       return {
         ...cloneDeep(state),
-        x:
-          args.x -
-          get(shape.state).x -
-          sumInheritedXY(rootShapes, parentId ?? "").x,
-        y:
-          args.y -
-          get(shape.state).y -
-          sumInheritedXY(rootShapes, parentId ?? "").y,
-        offsetX: args.x - get(shape.state).x,
-        offsetY: args.y - get(shape.state).y,
-        offsetCopyX:
-          args.x -
-          get(shape.state).x -
-          sumInheritedXY(rootShapes, parentId ?? "").x,
-        offsetCopyY:
-          args.y -
-          get(shape.state).y -
-          sumInheritedXY(rootShapes, parentId ?? "").y,
-
-        id: newId, // también en el state
-        parentId, // el parentId que viene del nivel superior
-        children: atom<ALL_SHAPES[]>(
-          get(state.children)?.map((i) => {
-            const newElement = recursiveCloneShape(i, newId);
-            return {
-              ...i,
-              id: newElement.id,
-              tool: newElement.tool,
-              pageId: get(PAGE_ID_ATOM),
-              state: atom(newElement),
-            };
-          })
-        ),
-      };
+        ...rootParams,
+        id: newId,
+        parentId,
+        children: atom<ALL_SHAPES[]>(clonedChildren),
+      } as IShape;
     };
-    const newShapes = shapesSelected.map((shape) => {
-      return recursiveCloneShape(shape, get(shape.state).parentId);
-    });
 
+    const newShapes = shapesSelected.map((shape) =>
+      recursiveCloneShape(shape, get(shape.state).parentId, true)
+    );
+
+    // Commit state changes immutably via Jotai setters
     set(RESET_SHAPES_IDS_ATOM);
     set(CREATE_CURRENT_ITEM_ATOM, newShapes);
     set(TOOL_ATOM, "MOVE");
     set(EVENT_ATOM, "COPYING");
-    // return newShapes;
+    return newShapes;
   }
 );
 
