@@ -689,16 +689,14 @@ export const EVENT_DOWN_COPY = atom(
       const state = get(shape.state);
       const newId = uuidv4();
 
-      const parentAccum = getInheritedOffset(parentId);
-
       const rootParams = isRootCopy
         ? {
-            x: args.x - state.x - parentAccum.x,
-            y: args.y - state.y - parentAccum.y,
+            x: args.x - state.x - getInheritedOffset(parentId).x,
+            y: args.y - state.y - getInheritedOffset(parentId).y,
             offsetX: args.x - state.x,
             offsetY: args.y - state.y,
-            offsetCopyX: args.x - state.x - parentAccum.x,
-            offsetCopyY: args.y - state.y - parentAccum.y,
+            offsetCopyX: args.x - state.x - getInheritedOffset(parentId).x,
+            offsetCopyY: args.y - state.y - getInheritedOffset(parentId).y,
           }
         : {};
 
