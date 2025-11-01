@@ -51,7 +51,6 @@ export const RESET_SHAPES_IDS_ATOM = atom(null, (get, set) => {
 
 export const SHAPE_SELECTED_ATOM = atom((get) => {
   const selectedIds = get(SHAPE_IDS_ATOM);
-  console.log(selectedIds, "selectedIds");
 
   const planeShapes = get(PLANE_SHAPES_ATOM);
 
