@@ -208,8 +208,6 @@ export default async function handler(
     // This schema enables creation of any UI component by understanding how properties interact and combining them effectively.
     // `;
 
-    console.log(JSON.stringify(shapes));
-
     const userPrompt = `
     Existing array: ${JSON.stringify(shapes)}
     Instructions: ${prompt}

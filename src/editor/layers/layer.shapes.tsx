@@ -27,7 +27,6 @@ export const LayerShapes = () => {
   const selectedIds = useAtomValue(SHAPE_IDS_ATOM);
   const setUpdateUndoRedo = useSetAtom(UPDATE_UNDO_REDO);
   const { debounce } = useAutoSave();
-  console.log(ALL_SHAPES);
 
   useEffect(() => {
     const allShapes = lyRef.current ? getAllShapes(lyRef.current) : [];

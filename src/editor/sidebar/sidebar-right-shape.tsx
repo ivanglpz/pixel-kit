@@ -49,7 +49,6 @@ import { Input } from "../components/input";
 import { ListIcons } from "../components/list-icons";
 import { Loading } from "../components/loading";
 import { constants } from "../constants/color";
-import { DIMENSIONS_SHAPE } from "../constants/dimensions";
 import { fontFamilyOptions, fontWeightOptions } from "../constants/fonts";
 import { useAutoSave } from "../hooks/useAutoSave";
 import { useDelayedExecutor } from "../hooks/useDelayExecutor";
@@ -290,10 +289,10 @@ export const LayoutShapeConfig = () => {
   const [showImage, setShowImage] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const { shape, count } = useAtomValue(SHAPE_SELECTED_ATOM);
+
   const shapeUpdate = useSetAtom(SHAPE_UPDATE_ATOM);
   const setUpdateUndoRedo = useSetAtom(UPDATE_UNDO_REDO);
   const [type, setType] = useState<"UPLOAD" | "CHOOSE">("UPLOAD");
-  const [D_TYPE, SET_DTYPE] = useState<keyof typeof DIMENSIONS_SHAPE>("FIXED");
   const { debounce } = useAutoSave();
   const PROJECT_ID = useAtomValue(PROJECT_ID_ATOM);
   const [photoUpload, setPhotoUpload] = useState<File | null>(null);
