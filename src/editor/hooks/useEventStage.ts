@@ -30,6 +30,7 @@ import {
   EVENT_DOWN_COPY,
   EVENT_DOWN_SHAPES,
   EVENT_MOVING_SHAPE,
+  EVENT_UP_COPY,
   EVENT_UP_SHAPES,
   GET_STAGE_BOUNDS_ATOM,
   GROUP_SHAPES_IN_LAYOUT,
@@ -63,10 +64,13 @@ export const useEventStage = () => {
   const setUndo = useSetAtom(UNDO_ATOM);
   const SET_EVENT_GROUP = useSetAtom(GROUP_SHAPES_IN_LAYOUT);
   const SET_EVENT_UP = useSetAtom(EVENT_UP_SHAPES);
+
   const SET_EVENT_MOVING_SHAPE = useSetAtom(EVENT_MOVING_SHAPE);
   const SET_EVENT_COPYING = useSetAtom(EVENT_COPYING_SHAPES);
   const SET_EVENT_DOWN = useSetAtom(EVENT_DOWN_SHAPES);
   const SET_EVENT_DOWN_COPY = useSetAtom(EVENT_DOWN_COPY);
+  const SET_EVENT_UP_COPY = useSetAtom(EVENT_UP_COPY);
+
   const SET_SELECTION = useSetAtom(SELECT_AREA_SHAPES_ATOM);
 
   // ===== MOUSE EVENT HANDLERS =====
@@ -127,8 +131,11 @@ export const useEventStage = () => {
     if (EVENT_STAGE === "SELECT_AREA") {
       SET_SELECTION();
     }
-
-    if (EVENT_STAGE === "CREATING" || EVENT_STAGE === "COPYING") {
+    if (EVENT_STAGE === "COPYING") {
+      SET_EVENT_UP_COPY();
+      debounce.execute();
+    }
+    if (EVENT_STAGE === "CREATING") {
       SET_EVENT_UP();
       debounce.execute();
     }
