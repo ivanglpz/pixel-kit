@@ -1,9 +1,10 @@
 import { IShape } from "@/editor/shapes/type.shape";
 import { atom } from "jotai";
-import { cloneDeep } from "../helpers/shape-schema";
+import { cloneDeep, CreateShapeSchema } from "../helpers/shape-schema";
 import { EVENT_ATOM } from "./event";
 import { CURRENT_PAGE, IPageShapeIds } from "./pages";
-import { PLANE_SHAPES_ATOM } from "./shapes";
+import { ALL_SHAPES, PLANE_SHAPES_ATOM } from "./shapes";
+import { UndoShape } from "./undo-redo";
 export const SHAPE_IDS_ATOM = atom(
   (get) => {
     return get(get(CURRENT_PAGE).SHAPES.ID);
@@ -93,3 +94,28 @@ export const SHAPE_UPDATE_ATOM = atom(
     });
   }
 );
+
+const cloneShapeRecursive = (shape: UndoShape): ALL_SHAPES => {
+  return {
+    id: shape.id,
+    tool: shape.tool,
+    state: atom<IShape>({
+      ...CreateShapeSchema(shape.state),
+      children: atom(shape.state.children.map((c) => cloneShapeRecursive(c))),
+    }),
+  };
+};
+
+export const SHAPE_XD_DATA = atom(null, (get, set, args: UndoShape[]) => {
+  const planeShapes = get(PLANE_SHAPES_ATOM);
+  for (const element of args) {
+    const find_shape = planeShapes.find((e) => e.id === element.id);
+    console.log(find_shape, "find_shape");
+
+    if (!find_shape) continue;
+    set(find_shape.state, {
+      ...CreateShapeSchema(element.state),
+      children: atom(element.state.children.map((c) => cloneShapeRecursive(c))),
+    });
+  }
+});

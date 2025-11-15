@@ -7,14 +7,14 @@ import axios from "axios";
 import { Send } from "lucide-react";
 import { constants } from "../constants/color";
 import { GET_EXPORT_JSON } from "../states/mode";
-import ALL_SHAPES_ATOM from "../states/shapes";
+import { SHAPE_XD_DATA } from "../states/shape";
 import { Input } from "./input";
 import { Loading } from "./loading";
 
 export const ChatTool = () => {
   const [text, setText] = useState("");
 
-  const setShapes = useSetAtom(ALL_SHAPES_ATOM);
+  const SET_DATA = useSetAtom(SHAPE_XD_DATA);
   const GET_SHAPES = useSetAtom(GET_EXPORT_JSON);
 
   const mutate = useMutation({
@@ -27,6 +27,11 @@ export const ChatTool = () => {
         shapes,
       });
       return response.data;
+    },
+    onSuccess: (data) => {
+      console.log(data);
+
+      SET_DATA(data?.data);
     },
   });
 

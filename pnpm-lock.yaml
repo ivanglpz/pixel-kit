@@ -29,6 +29,9 @@ importers:
       '@tanstack/react-query':
         specifier: 5.90.2
         version: 5.90.2(react@18.3.1)
+      '@toon-format/toon':
+        specifier: ^1.0.0
+        version: 1.0.0
       '@types/formidable':
         specifier: 3.4.5
         version: 3.4.5
@@ -1286,6 +1289,9 @@ packages:
     resolution: {integrity: sha512-CLABiR+h5PYfOWr/z+vWFt5VsOA2ekQeRQBFSKlcoW6Ndx/f8rfyVmq4LbgOM4GG2qtxAxjLYLOpCNTYm4uKzw==}
     peerDependencies:
       react: ^18 || ^19
+
+  '@toon-format/toon@1.0.0':
+    resolution: {integrity: sha512-2gIk8LaqrzpurNDaDWZ72kucAGcBbxJxUnp+4ZP+Pny/QVNdMVf97yzSDTI3ed2q8ypjj8T271P6iE3bRmQBNw==}
 
   '@ts-morph/common@0.22.0':
     resolution: {integrity: sha512-HqNBuV/oIlMKdkLshXd1zKBqNQCsuPEsgQOkfFQ/eUKjRlwndXW1AjN9LVkBEIukm00gGXSRmfkl0Wv5VXLnlw==}
@@ -4737,6 +4743,8 @@ snapshots:
     dependencies:
       '@tanstack/query-core': 5.90.2
       react: 18.3.1
+
+  '@toon-format/toon@1.0.0': {}
 
   '@ts-morph/common@0.22.0':
     dependencies:
