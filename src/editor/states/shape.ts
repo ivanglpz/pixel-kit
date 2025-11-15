@@ -110,7 +110,6 @@ export const SHAPE_XD_DATA = atom(null, (get, set, args: UndoShape[]) => {
   const planeShapes = get(PLANE_SHAPES_ATOM);
   for (const element of args) {
     const find_shape = planeShapes.find((e) => e.id === element.id);
-    console.log(find_shape, "find_shape");
 
     if (!find_shape) continue;
     set(find_shape.state, {
