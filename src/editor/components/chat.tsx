@@ -29,8 +29,6 @@ export const ChatTool = () => {
       return response.data;
     },
     onSuccess: (data) => {
-      console.log(data);
-
       SET_DATA(data?.data);
     },
   });
