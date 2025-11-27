@@ -1,7 +1,7 @@
-import { atom, PrimitiveAtom } from "jotai";
+import { atom, Getter, Setter } from "jotai";
 import React from "react";
 import { PLANE_SHAPES_ATOM } from "../states/shapes";
-import { IShape, WithInitialValue } from "./type.shape";
+import { IShape } from "./type.shape";
 
 export type JustifyContent =
   | "flex-start"
@@ -24,56 +24,50 @@ export type LayoutFlexProps = {
   justifyContent: JustifyContent;
   alignItems: AlignItems;
   flexWrap: FlexWrap;
-  // id: string;
-  // visible: boolean;
   gap: number;
   children: React.ReactElement[];
-  shape: IShape; // contenedor padre
+  shape: IShape;
 };
 
 export const flexLayoutAtom = atom(null, (get, set, { id }: { id: string }) => {
   const FIND_SHAPE = get(PLANE_SHAPES_ATOM).find((s) => s.id === id);
   if (!FIND_SHAPE) return;
-  const shape = get(
-    FIND_SHAPE.state as PrimitiveAtom<IShape> & WithInitialValue<IShape>
-  );
+  const shape = get(FIND_SHAPE.state);
 
-  if (!shape.isLayout) return;
+  const isLayout = get(shape.isLayout);
+  if (!isLayout) return;
 
   const children = get(shape.children);
   if (children.length === 0) return;
 
-  const {
-    flexDirection,
-    justifyContent,
-    alignItems,
-    flexWrap,
-    gap,
-    width: containerWidth,
-    height: containerHeight,
-  } = shape;
+  const flexDirection = get(shape.flexDirection);
+  const justifyContent = get(shape.justifyContent);
+  const alignItems = get(shape.alignItems);
+  const flexWrap = get(shape.flexWrap);
+  const gap = get(shape.gap);
+  const containerWidth = get(shape.width);
+  const containerHeight = get(shape.height);
 
   if (containerWidth === 0 || containerHeight === 0) return;
 
+  const isAllPadding = get(shape.isAllPadding);
+  const padding = get(shape.padding);
+
   // Calcular padding del contenedor
-  const paddingTop = shape.isAllPadding ? shape.padding : shape.paddingTop;
-  const paddingRight = shape.isAllPadding ? shape.padding : shape.paddingRight;
-  const paddingBottom = shape.isAllPadding
-    ? shape.padding
-    : shape.paddingBottom;
-  const paddingLeft = shape.isAllPadding ? shape.padding : shape.paddingLeft;
+  const paddingTop = isAllPadding ? padding : get(shape.paddingTop);
+  const paddingRight = isAllPadding ? padding : get(shape.paddingRight);
+  const paddingBottom = isAllPadding ? padding : get(shape.paddingBottom);
+  const paddingLeft = isAllPadding ? padding : get(shape.paddingLeft);
 
   const effectiveWidth = containerWidth - paddingLeft - paddingRight;
   const effectiveHeight = containerHeight - paddingTop - paddingBottom;
 
   const childrenStates = children.map((child) => {
-    const state = get(
-      child.state as PrimitiveAtom<IShape> & WithInitialValue<IShape>
-    );
+    const state = get(child.state);
     return { state, atom: child.state };
   });
 
-  const lines = groupIntoLines(
+  const lines = groupIntoLines(get, set)(
     childrenStates.map(({ state }) => state),
     flexDirection,
     flexWrap,
@@ -85,9 +79,11 @@ export const flexLayoutAtom = atom(null, (get, set, { id }: { id: string }) => {
   let totalCrossSize = 0;
   lines.forEach((line, index) => {
     const maxCrossSize = Math.max(
-      ...line.map((child) =>
-        flexDirection === "row" ? child.height : child.width
-      )
+      ...line.map((child) => {
+        const height = get(child.height);
+        const width = get(child.width);
+        return flexDirection === "row" ? height : width;
+      })
     );
     totalCrossSize += maxCrossSize + (index > 0 ? gap : 0);
   });
@@ -111,6 +107,7 @@ export const flexLayoutAtom = atom(null, (get, set, { id }: { id: string }) => {
 
   lines.forEach((line, lineIndex) => {
     const { startMain, spacing } = computeMainLayout(
+      get,
       justifyContent,
       flexDirection,
       effectiveWidth,
@@ -120,9 +117,11 @@ export const flexLayoutAtom = atom(null, (get, set, { id }: { id: string }) => {
     );
 
     const maxCrossSize = Math.max(
-      ...line.map((child) =>
-        flexDirection === "row" ? child.height : child.width
-      )
+      ...line.map((child) => {
+        const height = get(child.height);
+        const width = get(child.width);
+        return flexDirection === "row" ? height : width;
+      })
     );
 
     let accumulatedMain = startMain;
@@ -131,6 +130,7 @@ export const flexLayoutAtom = atom(null, (get, set, { id }: { id: string }) => {
       const cross =
         flexWrap === "wrap" && lines.length > 1
           ? computeCross(
+              get,
               "flex-start",
               flexDirection,
               effectiveWidth,
@@ -138,6 +138,7 @@ export const flexLayoutAtom = atom(null, (get, set, { id }: { id: string }) => {
               childState
             )
           : computeCross(
+              get,
               alignItems,
               flexDirection,
               effectiveWidth,
@@ -145,27 +146,32 @@ export const flexLayoutAtom = atom(null, (get, set, { id }: { id: string }) => {
               childState
             );
 
+      const fillContainerWidth = get(childState.fillContainerWidth);
+      const fillContainerHeight = get(childState.fillContainerHeight);
+      const childWidth = get(childState.width);
+      const childHeight = get(childState.height);
+      const minWidth = get(childState.minWidth);
+      const maxWidth = get(childState.maxWidth);
+      const minHeight = get(childState.minHeight);
+      const maxHeight = get(childState.maxHeight);
+
       // Ajustar width y height con min/max de los hijos
-      let newWidth = childState.fillContainerWidth
+      let newWidth = fillContainerWidth
         ? flexDirection === "row"
           ? (effectiveWidth - gap * (line.length - 1)) / line.length
           : effectiveWidth
-        : childState.width;
+        : childWidth;
 
-      let newHeight = childState.fillContainerHeight
+      let newHeight = fillContainerHeight
         ? flexDirection === "column"
           ? (effectiveHeight - gap * (line.length - 1)) / line.length
           : effectiveHeight
-        : childState.height;
+        : childHeight;
 
-      if (childState.minWidth > 0)
-        newWidth = Math.max(newWidth, childState.minWidth);
-      if (childState.maxWidth > 0)
-        newWidth = Math.min(newWidth, childState.maxWidth);
-      if (childState.minHeight > 0)
-        newHeight = Math.max(newHeight, childState.minHeight);
-      if (childState.maxHeight > 0)
-        newHeight = Math.min(newHeight, childState.maxHeight);
+      if (minWidth > 0) newWidth = Math.max(newWidth, minWidth);
+      if (maxWidth > 0) newWidth = Math.min(newWidth, maxWidth);
+      if (minHeight > 0) newHeight = Math.max(newHeight, minHeight);
+      if (maxHeight > 0) newHeight = Math.min(newHeight, maxHeight);
 
       const x =
         flexDirection === "row"
@@ -180,15 +186,13 @@ export const flexLayoutAtom = atom(null, (get, set, { id }: { id: string }) => {
       const childAtom = childrenStates.find(
         ({ state }) => state.id === childState.id
       )?.atom;
-
       if (childAtom) {
-        set(childAtom, (prev: IShape) => ({
-          ...prev,
-          x,
-          y,
-          width: newWidth,
-          height: newHeight,
-        }));
+        const shp = get(childAtom);
+
+        set(shp.x, x);
+        set(shp.y, y);
+        set(shp.width, newWidth);
+        set(shp.height, newHeight);
       }
 
       accumulatedMain +=
@@ -200,49 +204,53 @@ export const flexLayoutAtom = atom(null, (get, set, { id }: { id: string }) => {
 });
 
 // --- helpers ---
-const groupIntoLines = (
-  children: IShape[],
-  flexDirection: FlexDirection,
-  flexWrap: FlexWrap,
-  containerWidth: number,
-  containerHeight: number,
-  gap: number
-): IShape[][] => {
-  if (flexWrap === "nowrap") return [children];
+const groupIntoLines =
+  (get: Getter, set: Setter) =>
+  (
+    children: IShape[],
+    flexDirection: FlexDirection,
+    flexWrap: FlexWrap,
+    containerWidth: number,
+    containerHeight: number,
+    gap: number
+  ): IShape[][] => {
+    if (flexWrap === "nowrap") return [children];
 
-  const limit = flexDirection === "row" ? containerWidth : containerHeight;
-  const lines: IShape[][] = [];
-  let currentLine: IShape[] = [];
-  let currentSize = 0;
+    const limit = flexDirection === "row" ? containerWidth : containerHeight;
+    const lines: IShape[][] = [];
+    let currentLine: IShape[] = [];
+    let currentSize = 0;
 
-  children.forEach((child, index) => {
-    const childSize = flexDirection === "row" ? child.width : child.height;
+    children.forEach((child) => {
+      const childSize =
+        flexDirection === "row" ? get(child.width) : get(child.height);
 
-    // Calcular el tamaño que tendría la línea si agregamos este elemento
-    const gapSize = currentLine.length > 0 ? gap : 0;
-    const nextSize = currentSize + childSize + gapSize;
+      // Calcular el tamaño que tendría la línea si agregamos este elemento
+      const gapSize = currentLine.length > 0 ? gap : 0;
+      const nextSize = currentSize + childSize + gapSize;
 
-    // Si excede el límite y ya hay elementos en la línea actual, crear nueva línea
-    if (nextSize > limit && currentLine.length > 0) {
+      // Si excede el límite y ya hay elementos en la línea actual, crear nueva línea
+      if (nextSize > limit && currentLine.length > 0) {
+        lines.push(currentLine);
+        currentLine = [child];
+        currentSize = childSize;
+      } else {
+        // Agregar a la línea actual
+        currentLine.push(child);
+        currentSize = nextSize;
+      }
+    });
+
+    // No olvidar agregar la última línea
+    if (currentLine.length > 0) {
       lines.push(currentLine);
-      currentLine = [child];
-      currentSize = childSize;
-    } else {
-      // Agregar a la línea actual
-      currentLine.push(child);
-      currentSize = nextSize;
     }
-  });
 
-  // No olvidar agregar la última línea
-  if (currentLine.length > 0) {
-    lines.push(currentLine);
-  }
-
-  return lines;
-};
+    return lines;
+  };
 
 const computeMainLayout = (
+  get: Getter,
   justifyContent: JustifyContent,
   flexDirection: FlexDirection,
   containerWidth: number,
@@ -252,9 +260,11 @@ const computeMainLayout = (
 ): { startMain: number; spacing: number } => {
   const mainContainerSize =
     flexDirection === "row" ? containerWidth : containerHeight;
+
   const totalSize =
     children.reduce((sum, child) => {
-      const childSize = flexDirection === "row" ? child.width : child.height;
+      const childSize =
+        flexDirection === "row" ? get(child.width) : get(child.height);
       return sum + childSize;
     }, 0) +
     Math.max(children.length - 1, 0) * gap;
@@ -271,20 +281,20 @@ const computeMainLayout = (
       break;
     case "space-between":
       if (children.length > 1) {
-        const contentSize = children.reduce(
-          (sum, child) =>
-            sum + (flexDirection === "row" ? child.width : child.height),
-          0
-        );
+        const contentSize = children.reduce((sum, child) => {
+          const size =
+            flexDirection === "row" ? get(child.width) : get(child.height);
+          return sum + size;
+        }, 0);
         spacing = (mainContainerSize - contentSize) / (children.length - 1);
       }
       break;
     case "space-around":
-      const contentSize = children.reduce(
-        (sum, child) =>
-          sum + (flexDirection === "row" ? child.width : child.height),
-        0
-      );
+      const contentSize = children.reduce((sum, child) => {
+        const size =
+          flexDirection === "row" ? get(child.width) : get(child.height);
+        return sum + size;
+      }, 0);
       spacing = (mainContainerSize - contentSize) / children.length;
       startMain = spacing / 2;
       break;
@@ -294,6 +304,7 @@ const computeMainLayout = (
 };
 
 const computeCross = (
+  get: Getter,
   alignItems: AlignItems,
   flexDirection: FlexDirection,
   containerWidth: number,
@@ -302,7 +313,8 @@ const computeCross = (
 ): number => {
   const crossContainerSize =
     flexDirection === "row" ? containerHeight : containerWidth;
-  const childSize = flexDirection === "row" ? child.height : child.width;
+  const childSize =
+    flexDirection === "row" ? get(child.height) : get(child.width);
 
   switch (alignItems) {
     case "center":
