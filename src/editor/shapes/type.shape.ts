@@ -13,7 +13,7 @@ import {
 export type WithInitialValue<Value> = {
   init: Value;
 };
-
+export type JotaiState<T> = PrimitiveAtom<T> & WithInitialValue<T>;
 type FillImage = {
   src: string;
   width: number;
@@ -22,28 +22,120 @@ type FillImage = {
 };
 export type Fill = {
   id: string;
-  color: string;
-  opacity: number;
-  visible: boolean;
+  color: JotaiState<string>;
+  opacity: JotaiState<number>;
+  visible: JotaiState<boolean>;
   type: "fill" | "image";
   image: FillImage;
 };
 
 export type Stroke = {
   id: string;
-  color: string;
-  visible: boolean;
+  color: JotaiState<string>;
+  visible: JotaiState<boolean>;
 };
 
 export type Effect = {
   id: string;
   type: "shadow" | "blur" | "glow";
-  visible: boolean;
-  color: string;
+  visible: JotaiState<boolean>;
+  color: JotaiState<string>;
 };
+export type FontWeight =
+  | "bold"
+  | "normal"
+  | "lighter"
+  | "bolder"
+  | "100"
+  | "900";
+
+export type Align = "left" | "center" | "right" | "justify";
+export type VerticalAlign = "top" | "middle" | "bottom";
 
 export type IShape = {
   // Identity
+  id: string;
+  label: JotaiState<string>;
+  tool: IShapesKeys;
+  parentId: JotaiState<string | null>;
+
+  // Position & Transform
+  x: JotaiState<number>;
+  y: JotaiState<number>;
+  copyX: number;
+  copyY: number;
+  offsetX: number;
+  offsetY: number;
+  offsetCopyX: number;
+  offsetCopyY: number;
+  rotation: JotaiState<number>;
+  width: JotaiState<number>;
+  height: JotaiState<number>;
+  points: JotaiState<number[]>;
+
+  // Visibility & Lock
+  visible: JotaiState<boolean>;
+  isLocked: JotaiState<boolean>;
+  opacity: JotaiState<number>;
+
+  // Fill & Stroke
+  fills: JotaiState<Fill[]>;
+  strokes: JotaiState<Stroke[]>;
+  strokeWidth: JotaiState<number>;
+  lineCap: JotaiState<LineCap>;
+  lineJoin: JotaiState<LineJoin>;
+  dash: JotaiState<number>;
+
+  // Effects
+  effects: JotaiState<Effect[]>;
+  shadowBlur: JotaiState<number>;
+  shadowOffsetX: JotaiState<number>;
+  shadowOffsetY: JotaiState<number>;
+  shadowOpacity: JotaiState<number>;
+
+  // Typography
+  text: JotaiState<string>;
+  fontFamily: JotaiState<string>;
+  fontSize: JotaiState<number>;
+  fontStyle: JotaiState<string>;
+  fontWeight: JotaiState<FontWeight>;
+  textDecoration: JotaiState<string>;
+  align: JotaiState<Align>;
+  verticalAlign: JotaiState<VerticalAlign>;
+
+  // Layout
+  isLayout: JotaiState<boolean>;
+  flexDirection: JotaiState<FlexDirection>;
+  justifyContent: JotaiState<JustifyContent>;
+  alignItems: JotaiState<AlignItems>;
+  flexWrap: JotaiState<FlexWrap>;
+  // visible: boolean;
+  gap: JotaiState<number>;
+  fillContainerWidth: JotaiState<boolean>;
+  fillContainerHeight: JotaiState<boolean>;
+
+  // Border Radius
+  borderRadius: JotaiState<number>;
+  isAllBorderRadius: JotaiState<boolean>;
+  borderTopLeftRadius: JotaiState<number>;
+  borderTopRightRadius: JotaiState<number>;
+  borderBottomRightRadius: JotaiState<number>;
+  borderBottomLeftRadius: JotaiState<number>;
+  minWidth: JotaiState<number>;
+  minHeight: JotaiState<number>;
+  maxWidth: JotaiState<number>;
+  maxHeight: JotaiState<number>;
+  isAllPadding: JotaiState<boolean>;
+  paddingTop: JotaiState<number>;
+  paddingRight: JotaiState<number>;
+  paddingBottom: JotaiState<number>;
+  paddingLeft: JotaiState<number>;
+  padding: JotaiState<number>;
+  // Children
+  children: JotaiState<ALL_SHAPES[]>;
+};
+
+export type IShapeChildren = {
   id: string;
   label: string;
   tool: IShapesKeys;
@@ -88,10 +180,10 @@ export type IShape = {
   fontFamily: string;
   fontSize: number;
   fontStyle: string;
-  fontWeight: "bold" | "normal" | "lighter" | "bolder" | "100" | "900";
-  textDecoration?: string;
-  align: "left" | "center" | "right" | "justify";
-  verticalAlign: "top" | "middle" | "bottom";
+  fontWeight: FontWeight;
+  textDecoration: string;
+  align: Align;
+  verticalAlign: VerticalAlign;
 
   // Layout
   isLayout: boolean;
@@ -122,10 +214,7 @@ export type IShape = {
   paddingLeft: number;
   padding: number;
   // Children
-  children: PrimitiveAtom<ALL_SHAPES[]> & WithInitialValue<ALL_SHAPES[]>;
-};
-
-export type IShapeChildren = Omit<IShape, "children"> & {
+  ///children
   children: ALL_SHAPES_CHILDREN[];
 };
 

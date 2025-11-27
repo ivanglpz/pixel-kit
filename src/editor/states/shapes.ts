@@ -1,10 +1,16 @@
-import { IShape, IShapeChildren } from "@/editor/shapes/type.shape";
-import { atom, Getter, PrimitiveAtom } from "jotai";
+import {
+  Fill,
+  IShape,
+  IShapeChildren,
+  JotaiState,
+  Stroke,
+} from "@/editor/shapes/type.shape";
+import { atom, Getter } from "jotai";
 import { v4 as uuidv4 } from "uuid";
 import {
   cloneDeep,
   CreateShapeSchema,
-  UpdateShapeDimension,
+  isNotNegative,
 } from "../helpers/shape-schema";
 import { flexLayoutAtom } from "../shapes/layout-flex";
 import { capitalize } from "../utils/capitalize";
@@ -30,7 +36,7 @@ export type ALL_SHAPES = {
   id: string;
   tool: IShapesKeys;
   // pageId: string | null;
-  state: PrimitiveAtom<IShape> & WithInitialValue<IShape>;
+  state: JotaiState<IShape>;
 };
 
 export type ALL_SHAPES_CHILDREN = Omit<ALL_SHAPES, "state"> & {
@@ -568,45 +574,30 @@ export const EVENT_DOWN_SHAPES = atom(
     if (TOOLS_BOX_BASED.includes(tool as FirstArrayKeys)) {
       const createStartElement = CreateShapeSchema({
         tool: tool as IShape["tool"],
-        x,
-        y,
+        x: atom(x),
+        y: atom(y),
+        label: atom<string>(tool),
+        // x,
+        // y,
         id: uuidv4(),
-        label: capitalize(tool),
-      });
-      set(CREATE_CURRENT_ITEM_ATOM, [createStartElement]);
-    }
-    if (TOOLS_ICON_BASED.includes(tool as SecondArrayKeys)) {
-      const createStartElement = CreateShapeSchema({
-        tool: tool as IShape["tool"],
-        x,
-        y,
-        id: uuidv4(),
-        label: capitalize(tool),
-        strokes: [
+        fills: atom<Fill[]>([
           {
-            id: uuidv4(),
-            visible: true,
-            color: "#000000",
-          },
-        ],
-        fills: [
-          {
-            color: "#fff",
+            color: atom("#ffffff"),
             id: uuidv4(),
             image: {
-              src: "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20class%3D%22lucide%20lucide-smile%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22currentColor%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%0A%20%20%3Ccircle%20cx%3D%2212%22%20cy%3D%2212%22%20r%3D%2210%22%2F%3E%0A%20%20%3Cpath%20d%3D%22M8%2014s1.5%202%204%202%204-2%204-2%22%2F%3E%0A%20%20%3Cline%20x1%3D%229%22%20x2%3D%229.01%22%20y1%3D%229%22%20y2%3D%229%22%2F%3E%0A%20%20%3Cline%20x1%3D%2215%22%20x2%3D%2215.01%22%20y1%3D%229%22%20y2%3D%229%22%2F%3E%0A%3C%2Fsvg%3E",
-              width: 24,
-              height: 24,
-              name: "Smile",
+              height: 0,
+              name: "default.png",
+              src: "/placeholder.svg",
+              width: 0,
             },
-            opacity: 1,
-            type: "image",
-            visible: true,
+            opacity: atom(1),
+            type: "fill",
+            visible: atom(true),
           },
           {
-            visible: true,
-            color: "#ffffff",
-            opacity: 1,
+            visible: atom(true),
+            color: atom("#ffffff"),
+            opacity: atom(1),
             type: "fill",
             id: uuidv4(),
             image: {
@@ -616,7 +607,84 @@ export const EVENT_DOWN_SHAPES = atom(
               width: 0,
             },
           },
-        ],
+        ]),
+        // label: capitalize(tool),
+      });
+      set(CREATE_CURRENT_ITEM_ATOM, [createStartElement]);
+    }
+    if (TOOLS_ICON_BASED.includes(tool as SecondArrayKeys)) {
+      const createStartElement = CreateShapeSchema({
+        id: uuidv4(),
+        tool: tool as IShape["tool"],
+        x: atom(x),
+        y: atom(y),
+        label: atom<string>(tool),
+        strokes: atom<Stroke[]>([
+          {
+            id: uuidv4(),
+            visible: atom(true),
+            color: atom("#ffffff"),
+          },
+        ]),
+        fills: atom<Fill[]>([
+          {
+            color: atom("#ffffff"),
+            id: uuidv4(),
+            image: {
+              src: "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20class%3D%22lucide%20lucide-smile%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22currentColor%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%0A%20%20%3Ccircle%20cx%3D%2212%22%20cy%3D%2212%22%20r%3D%2210%22%2F%3E%0A%20%20%3Cpath%20d%3D%22M8%2014s1.5%202%204%202%204-2%204-2%22%2F%3E%0A%20%20%3Cline%20x1%3D%229%22%20x2%3D%229.01%22%20y1%3D%229%22%20y2%3D%229%22%2F%3E%0A%20%20%3Cline%20x1%3D%2215%22%20x2%3D%2215.01%22%20y1%3D%229%22%20y2%3D%229%22%2F%3E%0A%3C%2Fsvg%3E",
+              width: 24,
+              height: 24,
+              name: "Smile",
+            },
+            opacity: atom(1),
+            type: "image",
+            visible: atom(true),
+          },
+          {
+            visible: atom(true),
+            color: atom("#ffffff"),
+            opacity: atom(1),
+            type: "fill",
+            id: uuidv4(),
+            image: {
+              height: 0,
+              name: "default.png",
+              src: "/placeholder.svg",
+              width: 0,
+            },
+          },
+        ]),
+        // strokes: [
+
+        // ],
+        // fills: [
+        //   {
+        //     color: "#fff",
+        //     id: uuidv4(),
+        //     image: {
+        //       src: "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20class%3D%22lucide%20lucide-smile%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22currentColor%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%0A%20%20%3Ccircle%20cx%3D%2212%22%20cy%3D%2212%22%20r%3D%2210%22%2F%3E%0A%20%20%3Cpath%20d%3D%22M8%2014s1.5%202%204%202%204-2%204-2%22%2F%3E%0A%20%20%3Cline%20x1%3D%229%22%20x2%3D%229.01%22%20y1%3D%229%22%20y2%3D%229%22%2F%3E%0A%20%20%3Cline%20x1%3D%2215%22%20x2%3D%2215.01%22%20y1%3D%229%22%20y2%3D%229%22%2F%3E%0A%3C%2Fsvg%3E",
+        //       width: 24,
+        //       height: 24,
+        //       name: "Smile",
+        //     },
+        //     opacity: 1,
+        //     type: "image",
+        //     visible: true,
+        //   },
+        //   {
+        //     visible: true,
+        //     color: "#ffffff",
+        //     opacity: 1,
+        //     type: "fill",
+        //     id: uuidv4(),
+        //     image: {
+        //       height: 0,
+        //       name: "default.png",
+        //       src: "/placeholder.svg",
+        //       width: 0,
+        //     },
+        //   },
+        // ],
       });
       set(CREATE_CURRENT_ITEM_ATOM, [createStartElement]);
     }
@@ -636,11 +704,11 @@ export const EVENT_DOWN_SHAPES = atom(
       const createStartElement = CreateShapeSchema({
         ...drawConfig,
         tool: tool as IShape["tool"],
-        x: 0,
-        y: 0,
-        points: [x, y, x, y],
+        x: atom(0),
+        y: atom(0),
+        points: atom<number[]>([x, y, x, y]),
         id: uuidv4(),
-        label: capitalize(tool),
+        label: atom(capitalize(tool)),
       });
       set(CREATE_CURRENT_ITEM_ATOM, [createStartElement]);
     }
@@ -801,34 +869,42 @@ export const EVENT_MOVING_SHAPE = atom(
   (get, set, args: { x: number; y: number }) => {
     const { x, y } = args;
     const CURRENT_ITEMS = get(CURRENT_ITEM_ATOM);
+    for (const item of CURRENT_ITEMS) {
+      const newHeight = isNotNegative(y - Number(get(item?.y)));
+      const newWidth = isNotNegative(x - Number(get(item?.x)));
 
-    const newShape = CURRENT_ITEMS.at(0);
-    if (!newShape) return;
+      if (TOOLS_BOX_BASED.includes(item.tool as FirstArrayKeys)) {
+        set(item.width, newWidth);
+        set(item.height, newHeight);
+      }
 
-    if (TOOLS_BOX_BASED.includes(newShape.tool as FirstArrayKeys)) {
-      const updateShape = UpdateShapeDimension(x, y, newShape);
-      set(CURRENT_ITEM_ATOM, [updateShape]);
+      if (TOOLS_ICON_BASED.includes(item.tool as SecondArrayKeys)) {
+        set(item.width, newWidth);
+        set(item.height, newHeight);
+      }
+
+      if (TOOLS_DRAW_BASED.includes(item.tool as DrawBasedTools)) {
+        const points = get(item.points);
+        set(item.points, points.concat(x, y));
+        // const updateShape = UpdateShapeDimension(x, y, {
+        //   ...newShape,
+        //   points: newShape.points?.concat([x, y]),
+        // });
+        // set(CURRENT_ITEM_ATOM, [updateShape]);
+      }
     }
 
-    if (TOOLS_ICON_BASED.includes(newShape.tool as SecondArrayKeys)) {
-      const updateShape = UpdateShapeDimension(x, y, newShape);
-      set(CURRENT_ITEM_ATOM, [updateShape]);
-    }
-
-    if (TOOLS_DRAW_BASED.includes(newShape.tool as DrawBasedTools)) {
-      const updateShape = UpdateShapeDimension(x, y, {
-        ...newShape,
-        points: newShape.points?.concat([x, y]),
-      });
-      set(CURRENT_ITEM_ATOM, [updateShape]);
-    }
+    // const newShape = CURRENT_ITEMS.at(0);
+    // if (!newShape) return;
   }
 );
 
 export const CREATE_SHAPE_ATOM = atom(null, (get, set, args: IShape) => {
+  console.log(args, "args");
+
   if (!args || !args?.id) return;
 
-  if (args.parentId) {
+  if (get(args.parentId)) {
     const FIND_SHAPE = get(PLANE_SHAPES_ATOM).find(
       (e) => e.id === args.parentId
     );
@@ -854,37 +930,35 @@ export const CREATE_SHAPE_ATOM = atom(null, (get, set, args: IShape) => {
       ]),
     };
 
-    set(FIND_SHAPE.state, newElement);
-    set(flexLayoutAtom, { id: FIND_SHAPE.id }); // aplicar layout si es flex
-    set(NEW_UNDO_REDO, {
-      shapes: [
-        {
-          ...FIND_SHAPE,
-          state: atom(newElement),
-          // pageId: get(PAGE_ID_ATOM),
-        },
-      ],
-      type: "CREATE",
-    });
+    // set(FIND_SHAPE.state, newElement);
+    // set(flexLayoutAtom, { id: FIND_SHAPE.id }); // aplicar layout si es flex
+    // set(NEW_UNDO_REDO, {
+    //   shapes: [
+    //     {
+    //       ...FIND_SHAPE,
+    //       state: atom(newElement),
+    //       // pageId: get(PAGE_ID_ATOM),
+    //     },
+    //   ],
+    //   type: "CREATE",
+    // });
     return;
   }
 
-  const result = args?.children ? get(args?.children) : [];
-
+  // const result = args?.children ? get(args?.children) : [];
   const newAllShape: ALL_SHAPES = {
     id: args?.id,
     tool: args?.tool,
-    state: atom({
-      ...args,
-      children: atom(result),
-    }),
+    state: atom<IShape>(args),
     // pageId: get(PAGE_ID_ATOM),
   };
+  console.log(newAllShape);
+
   set(ALL_SHAPES_ATOM, [...get(ALL_SHAPES_ATOM), newAllShape]);
-  set(NEW_UNDO_REDO, {
-    shapes: [newAllShape],
-    type: "CREATE",
-  });
+  // set(NEW_UNDO_REDO, {
+  //   shapes: [newAllShape],
+  //   type: "CREATE",
+  // });
 });
 
 export default ALL_SHAPES_ATOM;
