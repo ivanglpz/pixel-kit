@@ -40,6 +40,7 @@ export const LayerShapes = () => {
     trRef.current?.nodes(selected);
     trRef.current?.getLayer()?.batchDraw();
   }, [selectedIds, ALL_SHAPES]);
+  console.log(ALL_SHAPES);
 
   return (
     <>
@@ -63,12 +64,12 @@ export const LayerShapes = () => {
           anchorCornerRadius={2}
           keepRatio={false}
           onTransformEnd={() => {
-            setUpdateUndoRedo();
-            debounce.execute();
+            // setUpdateUndoRedo();
+            // debounce.execute();
           }}
           onDragEnd={() => {
-            setUpdateUndoRedo();
-            debounce.execute();
+            // setUpdateUndoRedo();
+            // debounce.execute();
           }}
           anchorStroke={constants.theme.colors.primary}
           boundBoxFunc={(oldBox, newBox) => {

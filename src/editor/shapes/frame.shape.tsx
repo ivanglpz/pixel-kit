@@ -1,52 +1,54 @@
-import { PrimitiveAtom, useAtomValue, useSetAtom } from "jotai";
-import { useEffect, useMemo } from "react";
+import { useAtomValue, useSetAtom } from "jotai";
+import { useMemo } from "react";
 import { Group } from "react-konva";
 import ShapeBox from "./box.shape";
 import { flexLayoutAtom } from "./layout-flex";
 import { Shapes } from "./shapes";
-import {
-  FCShapeWEvents,
-  IShape,
-  IShapeEvents,
-  WithInitialValue,
-} from "./type.shape";
+import { FCShapeWEvents, IShapeEvents } from "./type.shape";
 
 export const SHAPE_FRAME = (props: IShapeEvents) => {
   const { shape: item } = props;
-  const box = useAtomValue(
-    item.state as PrimitiveAtom<IShape> & WithInitialValue<IShape>
-  );
 
+  const box = useAtomValue(item.state);
+  const x = useAtomValue(box.x);
+  const y = useAtomValue(box.y);
+  const width = useAtomValue(box.width);
+  const height = useAtomValue(box.height);
+  const isLocked = useAtomValue(box.isLocked);
+  const rotation = useAtomValue(box.rotation);
+  const visible = useAtomValue(box.visible);
   const childrens = useAtomValue(box.children);
-
+  const parentId = useAtomValue(box.parentId);
   const applyLayout = useSetAtom(flexLayoutAtom);
+  const isLayout = useAtomValue(box.isLayout);
 
-  useEffect(() => {
-    if (box.isLayout) {
-      applyLayout({ id: box.id });
-    }
-  }, [
-    box.isLayout,
-    box.justifyContent,
-    box.alignItems,
-    box.flexDirection,
-    box.flexWrap,
-    box.width,
-    box.height,
-    box.gap,
-    box.id,
-    box.isAllPadding,
-    box.padding,
-    box.paddingTop,
-    box.paddingRight,
-    box.paddingBottom,
-    box.paddingLeft,
-    box.fillContainerWidth,
-    box.fillContainerHeight,
-    childrens,
-  ]);
+  // useEffect(() => {
+  //   if (isLayout) {
+  //     applyLayout({ id: box.id });
+  //   }
+  // }, [
+  //   isLayout,
+  //   // box.isLayout,
+  //   // box.justifyContent,
+  //   // box.alignItems,
+  //   // box.flexDirection,
+  //   // box.flexWrap,
+  //   // box.width,
+  //   // box.height,
+  //   // box.gap,
+  //   // box.id,
+  //   // box.isAllPadding,
+  //   // box.padding,
+  //   // box.paddingTop,
+  //   // box.paddingRight,
+  //   // box.paddingBottom,
+  //   // box.paddingLeft,
+  //   // box.fillContainerWidth,
+  //   // box.fillContainerHeight,
+  //   // childrens,
+  // ]);
 
-  if (!box.visible) return null;
+  if (!visible) return null;
 
   const children = useMemo(
     () =>
@@ -68,18 +70,18 @@ export const SHAPE_FRAME = (props: IShapeEvents) => {
 
       <Group
         id={box?.id}
-        parentId={box?.parentId}
-        x={box.x}
-        y={box.y}
-        width={box.width}
-        height={box.height}
-        listening={!box.isLocked}
-        rotation={box.rotation}
+        parentId={parentId}
+        x={x}
+        y={y}
+        width={width}
+        height={height}
+        listening={!isLocked}
+        rotation={rotation}
         clip={{
           x: 0,
           y: 0,
-          width: box.width,
-          height: box.height,
+          width: width,
+          height: height,
         }}
       >
         {children}

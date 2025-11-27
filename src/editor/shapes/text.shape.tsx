@@ -1,116 +1,138 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react/display-name */
-import { PrimitiveAtom, useAtom, useSetAtom } from "jotai";
+import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { Text } from "react-konva";
-import { IShape, IShapeEvents, WithInitialValue } from "./type.shape";
+import { IShapeEvents } from "./type.shape";
 /* eslint-disable react/display-name */
 import { SHAPE_IDS_ATOM } from "../states/shape";
 
 import { useMemo } from "react";
-import { coordinatesShapeMove, TransformDimension } from "./events.shape";
+import { useFillColor } from "../hooks/useFillColor";
+import { useShadowColor } from "../hooks/useShadowColor";
+import { useStrokeColor } from "../hooks/useStrokeColor";
 import { flexLayoutAtom } from "./layout-flex";
 export const ShapeText = (props: IShapeEvents) => {
   const { shape: item } = props;
-  const [box, setBox] = useAtom(
-    item.state as PrimitiveAtom<IShape> & WithInitialValue<IShape>
-  );
-
+  const box = useAtomValue(item.state);
+  const [rotation, setRotation] = useAtom(box.rotation);
+  const [x, setX] = useAtom(box.x);
+  const [y, setY] = useAtom(box.y);
+  const [width, setWidth] = useAtom(box.width);
+  const [height, setHeight] = useAtom(box.height);
+  const visible = useAtomValue(box.visible);
   const applyLayout = useSetAtom(flexLayoutAtom);
-
+  const isLocked = useAtomValue(box.isLocked);
+  const shadow = useShadowColor(box.effects);
+  const parentId = useAtomValue(box.parentId);
+  const strokeColor = useStrokeColor(box.strokes);
+  const fillColor = useFillColor(box.fills);
+  const strokeWidth = useAtomValue(box.strokeWidth);
+  const dash = useAtomValue(box.dash);
+  const isAllBorderRadius = useAtomValue(box.isAllBorderRadius);
+  const borderTopLeftRadius = useAtomValue(box.borderTopLeftRadius);
+  const borderTopRightRadius = useAtomValue(box.borderTopRightRadius);
+  const borderBottomRightRadius = useAtomValue(box.borderBottomRightRadius);
+  const borderBottomLeftRadius = useAtomValue(box.borderBottomLeftRadius);
+  const borderRadius = useAtomValue(box.borderRadius);
+  const shadowOpacity = useAtomValue(box.shadowOpacity);
+  const shadowOffsetX = useAtomValue(box.shadowOffsetX);
+  const shadowOffsetY = useAtomValue(box.shadowOffsetY);
+  const shadowBlur = useAtomValue(box.shadowBlur);
+  const opacity = useAtomValue(box.opacity);
+  const fontFamily = useAtomValue(box.fontFamily);
+  const fontVariant = useAtomValue(box.fontWeight);
+  const text = useAtomValue(box.text);
+  const fontSize = useAtomValue(box.fontSize);
+  // const shadow = useAtomValue(effects.at(0)?.color)
   const [shapeId, setShapeId] = useAtom(SHAPE_IDS_ATOM);
   const isSelected = useMemo(
     () => shapeId.some((w) => w.id === box.id),
     [shapeId, box.id]
   );
 
-  const shadow = useMemo(
-    () => box?.effects?.filter((e) => e?.visible && e?.type === "shadow").at(0),
-    [box.effects]
-  );
+  if (!visible) return null;
 
-  const stroke = useMemo(
-    () => box?.strokes?.filter((e) => e?.visible)?.at(0),
-    [box?.strokes]
-  );
-  const fill = useMemo(
-    () => box?.fills?.filter((e) => e?.type === "fill" && e?.visible)?.at(0),
-    [box.fills]
-  );
-
-  if (!box.visible) return null;
   return (
     <>
       <Text
         // 1. Identificación y referencia
         id={box?.id}
-        parentId={box?.parentId}
-        // 2. Posición y tamaño
-        x={box.x}
-        y={box.y}
-        width={box.width}
-        height={box.height}
-        points={box.points ?? [5, 70, 140, 23]}
-        globalCompositeOperation="source-over"
-        fontFamily={box?.fontFamily}
-        fontVariant={box?.fontWeight}
-        text={box?.text}
-        listening={!box.isLocked}
-        fontSize={box?.fontSize}
+        parentId={parentId}
+        // 2. Posición y tamaño - calculada manualmente para rotación
+        x={x}
+        y={y}
+        width={width}
+        height={height}
+        rotation={rotation}
+        fontFamily={fontFamily}
+        fontVariant={fontVariant}
+        text={text}
+        fontSize={fontSize}
         lineHeight={1.45}
-        rotation={box.rotation}
-        // 3. Rotación
-        // rotationDeg={rotate}
-        // 4. Relleno y color
-        // fillEnabled={box?.fills?.filter((e) => e?.visible)?.length > 0}
+        // Sin offset - calculamos todo manualmente
+        // offsetX={width / 2}
+        // offsetY={height / 2}
+        // Sin offset - calculamos todo manualmente
+        listening={!isLocked}
+        // 3. Relleno y color
         fillEnabled
-        fill={fill?.color}
-        // 5. Bordes y trazos
-        stroke={stroke?.color}
-        strokeWidth={box.strokeWidth}
-        strokeEnabled={box.strokeWidth > 0}
-        dash={[box.dash]}
-        dashEnabled={box?.dash > 0}
+        fill={fillColor}
+        // 4. Bordes y trazos
+        stroke={strokeColor}
+        strokeWidth={strokeWidth}
+        strokeEnabled={false}
+        // dash={[dash, dash, dash, dash]}
+        dash={[dash]}
+        dashEnabled={dash > 0}
         cornerRadius={
-          !box?.isAllBorderRadius
+          !isAllBorderRadius
             ? [
-                box.borderTopLeftRadius,
-                box.borderTopRightRadius,
-                box.borderBottomRightRadius,
-                box.borderBottomLeftRadius,
+                borderTopLeftRadius,
+                borderTopRightRadius,
+                borderBottomRightRadius,
+                borderBottomLeftRadius,
               ]
-            : box.borderRadius
+            : borderRadius
         }
-        // 6. Sombras
-        shadowColor={shadow?.color}
-        shadowOpacity={box.shadowOpacity}
-        shadowOffsetX={box?.shadowOffsetX}
-        shadowOffsetY={box?.shadowOffsetY}
-        shadowBlur={box?.shadowBlur}
-        shadowEnabled={Boolean(shadow)}
-        // 7. Apariencia y opacidad
-        opacity={box?.opacity ?? 1}
-        // 8. Interactividad y arrastre
+        // 5. Sombras
+        shadowColor={shadow.color}
+        shadowOpacity={shadowOpacity}
+        shadowOffsetX={shadowOffsetX}
+        shadowOffsetY={shadowOffsetY}
+        shadowBlur={shadowBlur}
+        shadowEnabled={Boolean(shadow.enabled)}
+        // 6. Apariencia y opacidad
+        opacity={opacity}
+        // 7. Interactividad y arrastre
         draggable={isSelected}
-        // 9. Eventos
-        onClick={() =>
+        // 8. Eventos
+        onClick={() => {
           setShapeId({
             id: box?.id,
-            parentId: box.parentId,
-          })
-        }
-        onDragEnd={() => {
-          if (!box.parentId) return;
-          applyLayout({ id: box.parentId });
+            parentId: parentId,
+          });
         }}
-        onDragMove={(evt) => setBox((prev) => coordinatesShapeMove(prev, evt))}
+        onDragMove={(evt) => {
+          setX(evt.target.x());
+          setY(evt.target.y());
+        }}
+        onDragEnd={() => {
+          // if (!box.parentId) return;
+          // applyLayout({ id: box.parentId });
+        }}
         onTransform={(e) => {
-          const dimension = TransformDimension(e, box);
-          setBox(dimension);
+          const scaleX = e.target.scaleX();
+          const scaleY = e.target.scaleY();
+          e.target.scaleX(1);
+          e.target.scaleY(1);
+          setRotation(e.target.rotation());
+          setWidth(Math.max(5, e.target.width() * scaleX));
+          setHeight(Math.max(e.target.height() * scaleY));
         }}
         onTransformEnd={() => {
-          if (box?.parentId) {
-            applyLayout({ id: box.parentId });
-          }
+          // if (box?.parentId) {
+          //   applyLayout({ id: box.parentId });
+          // }
         }}
       />
     </>

@@ -1,13 +1,12 @@
 import { atom, PrimitiveAtom } from "jotai";
 import { v4 as uuidv4 } from "uuid";
-import { IShape } from "../shapes/type.shape";
 import { canvasTheme } from "./canvas";
 import { MODE_ATOM } from "./mode";
 import { PROJECT_ATOM } from "./projects";
 import { ALL_SHAPES, ALL_SHAPES_CHILDREN, WithInitialValue } from "./shapes";
 import { UndoRedoAction } from "./undo-redo";
 
-export type IPageShapeIds = Pick<IShape, "id" | "parentId">;
+export type IPageShapeIds = { id: string; parentId: string | null };
 
 export type IPage = {
   id: string;

@@ -2,8 +2,23 @@ import { IProject } from "@/db/schemas/types";
 import { api } from "@/services/axios";
 import { atom, PrimitiveAtom } from "jotai";
 import { atomWithDefault } from "jotai/utils";
+import { LineCap, LineJoin } from "konva/lib/Shape";
 import { CreateShapeSchema } from "../helpers/shape-schema";
-import { IShape } from "../shapes/type.shape";
+import {
+  AlignItems,
+  FlexDirection,
+  FlexWrap,
+  JustifyContent,
+} from "../shapes/layout-flex";
+import {
+  Align,
+  Effect,
+  Fill,
+  FontWeight,
+  IShape,
+  Stroke,
+  VerticalAlign,
+} from "../shapes/type.shape";
 import { IStageEvents } from "./event";
 import { MODE } from "./mode";
 import { IPage, IPageJSON, IPageShapeIds } from "./pages";
@@ -43,7 +58,100 @@ const cloneShapeRecursive = (shape: ALL_SHAPES_CHILDREN): ALL_SHAPES => {
     // pageId: shape.pageId,
     tool: shape.tool,
     state: atom<IShape>({
-      ...CreateShapeSchema(shape.state),
+      // ...CreateShapeSchema(shape.state),
+      ...CreateShapeSchema({
+        id: shape.id,
+        x: atom(shape.state.x),
+        y: atom(shape.state.y),
+        tool: shape.state.tool,
+        align: atom<Align>(shape.state.align),
+        offsetX: shape.state.offsetX,
+        copyX: shape.state.copyX,
+        copyY: shape.state.copyY,
+        offsetCopyX: shape.state.offsetCopyX,
+        offsetCopyY: shape.state.offsetCopyY,
+        offsetY: shape.state.offsetY,
+        verticalAlign: atom<VerticalAlign>(shape.state.verticalAlign),
+        paddingBottom: atom(shape.state.paddingBottom),
+        paddingTop: atom(shape.state.paddingTop),
+        borderBottomLeftRadius: atom(shape.state.borderBottomLeftRadius),
+        isAllPadding: atom(shape.state.isAllPadding),
+        borderBottomRightRadius: atom(shape.state.borderBottomRightRadius),
+        borderTopLeftRadius: atom(shape.state.borderTopLeftRadius),
+        borderTopRightRadius: atom(shape.state.borderTopRightRadius),
+        paddingLeft: atom(shape.state.paddingLeft),
+        paddingRight: atom(shape.state.paddingRight),
+        padding: atom(shape.state.padding),
+        maxHeight: atom(shape.state.maxHeight),
+        maxWidth: atom(shape.state.maxWidth),
+        minHeight: atom(shape.state.minHeight),
+        minWidth: atom(shape.state.minWidth),
+        effects: atom<Effect[]>(
+          shape.state.effects.map((e) => {
+            return {
+              id: e.id,
+              type: e.type,
+              visible: atom(e.visible),
+              color: atom(e.color),
+            };
+          })
+        ),
+        isLocked: atom(shape.state.isLocked),
+        fillContainerHeight: atom(shape.state.fillContainerHeight),
+        fillContainerWidth: atom(shape.state.fillContainerWidth),
+        label: atom(shape.state.label),
+        parentId: atom<string | null>(shape.state.parentId),
+        rotation: atom(shape.state.rotation),
+        opacity: atom(shape.state.opacity),
+        fills: atom<Fill[]>(
+          shape.state.fills.map((e) => {
+            return {
+              id: e.id,
+              color: atom(e.color),
+              opacity: atom(e.opacity),
+              visible: atom(e.visible),
+              type: e.type,
+              image: e.image,
+            };
+          })
+        ),
+        isLayout: atom(shape.state.isLayout),
+        alignItems: atom<AlignItems>(shape.state.alignItems),
+        flexDirection: atom<FlexDirection>(shape.state.flexDirection),
+        flexWrap: atom<FlexWrap>(shape.state.flexWrap),
+        justifyContent: atom<JustifyContent>(shape.state.justifyContent),
+        gap: atom(shape.state.gap),
+        strokes: atom<Stroke[]>(
+          shape.state.strokes.map((e) => {
+            return {
+              id: e.id,
+              color: atom(e.color),
+              visible: atom(e.visible),
+            };
+          })
+        ),
+        visible: atom(shape.state.visible),
+        height: atom(shape.state.height),
+        width: atom(shape.state.width),
+        points: atom<number[]>(shape.state.points),
+        strokeWidth: atom(shape.state.strokeWidth),
+        lineCap: atom<LineCap>(shape.state.lineCap),
+        lineJoin: atom<LineJoin>(shape.state.lineJoin),
+        shadowBlur: atom(shape.state.shadowBlur),
+        shadowOffsetY: atom(shape.state.shadowOffsetY),
+        shadowOffsetX: atom(shape.state.shadowOffsetX),
+        shadowOpacity: atom(shape.state.shadowOpacity),
+        isAllBorderRadius: atom(shape.state.isAllBorderRadius),
+        borderRadius: atom(shape.state.borderRadius),
+        dash: atom(shape.state.dash),
+        fontStyle: atom(shape.state.fontStyle),
+        textDecoration: atom(shape.state.textDecoration),
+        fontWeight: atom<FontWeight>(shape.state.fontWeight),
+        fontFamily: atom(shape.state.fontFamily),
+        fontSize: atom(shape.state.fontSize),
+        text: atom(shape.state.text),
+      }),
+
       children: atom(shape.state.children.map((c) => cloneShapeRecursive(c))),
     }),
   };

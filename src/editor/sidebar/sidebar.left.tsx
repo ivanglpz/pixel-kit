@@ -1,7 +1,6 @@
 import { css } from "@stylespixelkit/css";
 import { FC } from "react";
 import { SidebarLeftPages } from "./sidebar-left-pages";
-import { SidebarLeftShapes } from "./sidebar-left-shapes";
 
 export const SidebarLeft: FC = () => {
   return (
@@ -40,7 +39,7 @@ export const SidebarLeft: FC = () => {
           })}
         ></div>
 
-        <SidebarLeftShapes />
+        {/* <SidebarLeftShapes /> */}
       </div>
     </aside>
   );
