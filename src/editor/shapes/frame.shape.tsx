@@ -1,5 +1,5 @@
 import { useAtomValue, useSetAtom } from "jotai";
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { Group } from "react-konva";
 import ShapeBox from "./box.shape";
 import { flexLayoutAtom } from "./layout-flex";
@@ -22,31 +22,31 @@ export const SHAPE_FRAME = (props: IShapeEvents) => {
   const applyLayout = useSetAtom(flexLayoutAtom);
   const isLayout = useAtomValue(box.isLayout);
 
-  // useEffect(() => {
-  //   if (isLayout) {
-  //     applyLayout({ id: box.id });
-  //   }
-  // }, [
-  //   isLayout,
-  //   // box.isLayout,
-  //   // box.justifyContent,
-  //   // box.alignItems,
-  //   // box.flexDirection,
-  //   // box.flexWrap,
-  //   // box.width,
-  //   // box.height,
-  //   // box.gap,
-  //   // box.id,
-  //   // box.isAllPadding,
-  //   // box.padding,
-  //   // box.paddingTop,
-  //   // box.paddingRight,
-  //   // box.paddingBottom,
-  //   // box.paddingLeft,
-  //   // box.fillContainerWidth,
-  //   // box.fillContainerHeight,
-  //   // childrens,
-  // ]);
+  useEffect(() => {
+    if (isLayout) {
+      applyLayout({ id: box.id });
+    }
+  }, [
+    isLayout,
+    // box.isLayout,
+    // box.justifyContent,
+    // box.alignItems,
+    // box.flexDirection,
+    // box.flexWrap,
+    // box.width,
+    // box.height,
+    // box.gap,
+    // box.id,
+    // box.isAllPadding,
+    // box.padding,
+    // box.paddingTop,
+    // box.paddingRight,
+    // box.paddingBottom,
+    // box.paddingLeft,
+    // box.fillContainerWidth,
+    // box.fillContainerHeight,
+    // childrens,
+  ]);
 
   if (!visible) return null;
 
