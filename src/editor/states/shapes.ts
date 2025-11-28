@@ -1,18 +1,25 @@
 import {
+  Align,
+  Effect,
   Fill,
+  FontWeight,
   IShape,
   IShapeChildren,
   JotaiState,
   Stroke,
+  VerticalAlign,
 } from "@/editor/shapes/type.shape";
 import { atom, Getter } from "jotai";
+import { LineCap, LineJoin } from "konva/lib/Shape";
 import { v4 as uuidv4 } from "uuid";
+import { CreateShapeSchema, isNotNegative } from "../helpers/shape-schema";
 import {
-  cloneDeep,
-  CreateShapeSchema,
-  isNotNegative,
-} from "../helpers/shape-schema";
-import { flexLayoutAtom } from "../shapes/layout-flex";
+  AlignItems,
+  FlexDirection,
+  flexLayoutAtom,
+  FlexWrap,
+  JustifyContent,
+} from "../shapes/layout-flex";
 import { capitalize } from "../utils/capitalize";
 import CURRENT_ITEM_ATOM, {
   CLEAR_CURRENT_ITEM_ATOM,
@@ -565,7 +572,196 @@ export const MOVE_SHAPES_TO_ROOT = atom(null, (get, set) => {
   });
 });
 
-export const EVENT_DOWN_SHAPES = atom(
+// ----------- COPY SHAPES -------------- //
+
+export const EVENT_COPY_START_SHAPES = atom(
+  null,
+  (get, set, args: { x: number; y: number }) => {
+    const rootShapes = get(PLANE_SHAPES_ATOM) ?? [];
+    const selectedIds = get(SHAPE_IDS_ATOM) ?? [];
+
+    if (rootShapes.length === 0 || selectedIds.length === 0) return [];
+
+    // Precompute a lookup map for ancestor traversal
+    const flatMap = new Map(rootShapes.map((s) => [s.id, s] as const));
+
+    const getInheritedOffset = (
+      targetId?: string | null
+    ): { x: number; y: number } => {
+      if (!targetId) return { x: 0, y: 0 };
+      let current = flatMap.get(targetId);
+      let totalX = 0;
+      let totalY = 0;
+      while (current) {
+        const s = get(current.state);
+        totalX += get(s.x);
+        totalY += get(s.y);
+        const parentId = get(s.parentId);
+        current = parentId ? flatMap.get(parentId) : undefined;
+      }
+      return { x: totalX, y: totalY };
+    };
+
+    const shapesSelected = rootShapes.filter((shape) =>
+      selectedIds.some((sel) => sel.id === shape.id)
+    );
+
+    // Pure recursive clone that returns a plain IShape (not an atom)
+    const recursiveCloneShape = (
+      shape: ALL_SHAPES,
+      parentId: string | null = null,
+      isRootCopy = false
+    ): IShape => {
+      const state = get(shape.state);
+      const newId = uuidv4();
+
+      const rootParams = isRootCopy
+        ? {
+            x: atom(args.x - get(state.x) - getInheritedOffset(parentId).x),
+            y: atom(args.y - get(state.y) - getInheritedOffset(parentId).y),
+            offsetX: atom(args.x - get(state.x)),
+            offsetY: atom(args.y - get(state.y)),
+            offsetCopyX: atom(
+              args.x - get(state.x) - getInheritedOffset(parentId).x
+            ),
+            offsetCopyY: atom(
+              args.y - get(state.y) - getInheritedOffset(parentId).y
+            ),
+          }
+        : {
+            x: atom(get(state.x)),
+            y: atom(get(state.y)),
+          };
+
+      const originalChildren = get(state.children) ?? [];
+
+      const clonedChildren: ALL_SHAPES[] = originalChildren.map((child) => {
+        const newChildState = recursiveCloneShape(child, newId, false);
+        return {
+          ...child,
+          id: newChildState.id,
+          tool: newChildState.tool as IShapesKeys,
+          pageId: get(PAGE_ID_ATOM),
+          state: atom(newChildState),
+        } as ALL_SHAPES;
+      });
+
+      return {
+        // ...cloneDeep(state),
+        id: newId,
+        ...rootParams,
+
+        tool: state.tool,
+        align: atom<Align>(get(state.align)),
+        // offsetX: atom(get(state.offsetX)),
+        copyX: atom(get(state.copyX)),
+        copyY: atom(get(state.copyY)),
+        // offsetCopyX: atom(get(state.offsetCopyX)),
+        // offsetCopyY: atom(get(state.offsetCopyY)),
+        // offsetY: atom(get(state.offsetY)),
+        verticalAlign: atom<VerticalAlign>(get(state.verticalAlign)),
+        paddingBottom: atom(get(state.paddingBottom)),
+        paddingTop: atom(get(state.paddingTop)),
+        borderBottomLeftRadius: atom(get(state.borderBottomLeftRadius)),
+        isAllPadding: atom(get(state.isAllPadding)),
+        borderBottomRightRadius: atom(get(state.borderBottomRightRadius)),
+        borderTopLeftRadius: atom(get(state.borderTopLeftRadius)),
+        borderTopRightRadius: atom(get(state.borderTopRightRadius)),
+        paddingLeft: atom(get(state.paddingLeft)),
+        paddingRight: atom(get(state.paddingRight)),
+        padding: atom(get(state.padding)),
+        maxHeight: atom(get(state.maxHeight)),
+        maxWidth: atom(get(state.maxWidth)),
+        minHeight: atom(get(state.minHeight)),
+        minWidth: atom(get(state.minWidth)),
+        effects: atom<Effect[]>(get(state.effects)),
+        isLocked: atom(get(state.isLocked)),
+        fillContainerHeight: atom(get(state.fillContainerHeight)),
+        fillContainerWidth: atom(get(state.fillContainerWidth)),
+        label: atom(get(state.label)),
+        parentId: atom<string | null>(get(state.parentId)),
+        rotation: atom(get(state.rotation)),
+        opacity: atom(get(state.opacity)),
+        fills: atom<Fill[]>(get(state.fills)),
+        isLayout: atom(get(state.isLayout)),
+        alignItems: atom<AlignItems>(get(state.alignItems)),
+        flexDirection: atom<FlexDirection>(get(state.flexDirection)),
+        flexWrap: atom<FlexWrap>(get(state.flexWrap)),
+        justifyContent: atom<JustifyContent>(get(state.justifyContent)),
+        gap: atom(get(state.gap)),
+        strokes: atom<Stroke[]>(get(state.strokes)),
+        visible: atom(get(state.visible)),
+        height: atom(get(state.height)),
+        width: atom(get(state.width)),
+        points: atom<number[]>(get(state.points)),
+        strokeWidth: atom(get(state.strokeWidth)),
+        lineCap: atom<LineCap>(get(state.lineCap)),
+        lineJoin: atom<LineJoin>(get(state.lineJoin)),
+        shadowBlur: atom(get(state.shadowBlur)),
+        shadowOffsetY: atom(get(state.shadowOffsetY)),
+        shadowOffsetX: atom(get(state.shadowOffsetX)),
+        shadowOpacity: atom(get(state.shadowOpacity)),
+        isAllBorderRadius: atom(get(state.isAllBorderRadius)),
+        borderRadius: atom(get(state.borderRadius)),
+        dash: atom(get(state.dash)),
+        fontStyle: atom(get(state.fontStyle)),
+        textDecoration: atom(get(state.textDecoration)),
+        fontWeight: atom<FontWeight>(get(state.fontWeight)),
+        fontFamily: atom(get(state.fontFamily)),
+        fontSize: atom(get(state.fontSize)),
+        text: atom(get(state.text)),
+        children: atom<ALL_SHAPES[]>(clonedChildren),
+      } as IShape;
+    };
+
+    const newShapes = shapesSelected.map((shape) =>
+      recursiveCloneShape(shape, get(get(shape.state).parentId), true)
+    );
+
+    // Commit state changes immutably via Jotai setters
+    set(RESET_SHAPES_IDS_ATOM);
+    set(CREATE_CURRENT_ITEM_ATOM, newShapes);
+    set(TOOL_ATOM, "MOVE");
+    set(EVENT_ATOM, "COPYING");
+    return newShapes;
+  }
+);
+
+export const EVENT_COPY_CREATING_SHAPES = atom(
+  null,
+  (get, set, args: { x: number; y: number }) => {
+    const CURRENT_ITEMS = get(CURRENT_ITEM_ATOM);
+    for (const element of CURRENT_ITEMS) {
+      set(element.x, args.x - get(element.offsetCopyX));
+      set(element.y, args.y - get(element.offsetCopyY));
+      set(element.copyX, args.x - get(element.offsetX));
+      set(element.copyY, args.y - get(element.offsetY));
+    }
+  }
+);
+
+export const EVENT_COPY_FINISH_SHAPES = atom(null, (get, set) => {
+  const CURRENT_ITEMS = get(CURRENT_ITEM_ATOM);
+  for (const newShape of CURRENT_ITEMS) {
+    set(CREATE_SHAPE_ATOM, newShape);
+  }
+  Promise.resolve().then(() => {
+    set(
+      UPDATE_SHAPES_IDS_ATOM,
+      CURRENT_ITEMS?.map((e) => ({
+        id: e?.id,
+        parentId: get(e?.parentId),
+      }))
+    );
+  });
+  set(TOOL_ATOM, "MOVE");
+  set(EVENT_ATOM, "IDLE");
+  set(CLEAR_CURRENT_ITEM_ATOM);
+});
+// ----------- COPY SHAPES -------------- //
+
+// ----------- DOWN SHAPES -------------- //
+export const EVENT_DOWN_START_SHAPES = atom(
   null,
   (get, set, args: { x: number; y: number }) => {
     const { x, y } = args;
@@ -716,155 +912,8 @@ export const EVENT_DOWN_SHAPES = atom(
     set(EVENT_ATOM, "CREATING");
   }
 );
-export const EVENT_DOWN_COPY = atom(
-  null,
-  (get, set, args: { x: number; y: number }) => {
-    const rootShapes = get(PLANE_SHAPES_ATOM) ?? [];
-    const selectedIds = get(SHAPE_IDS_ATOM) ?? [];
 
-    if (rootShapes.length === 0 || selectedIds.length === 0) return [];
-
-    // Precompute a lookup map for ancestor traversal
-    const flatMap = new Map(rootShapes.map((s) => [s.id, s] as const));
-
-    const getInheritedOffset = (
-      targetId?: string | null
-    ): { x: number; y: number } => {
-      if (!targetId) return { x: 0, y: 0 };
-      let current = flatMap.get(targetId);
-      let totalX = 0;
-      let totalY = 0;
-      while (current) {
-        const s = get(current.state);
-        totalX += s.x;
-        totalY += s.y;
-        const parentId = s.parentId;
-        current = parentId ? flatMap.get(parentId) : undefined;
-      }
-      return { x: totalX, y: totalY };
-    };
-
-    const shapesSelected = rootShapes.filter((shape) =>
-      selectedIds.some((sel) => sel.id === shape.id)
-    );
-
-    // Pure recursive clone that returns a plain IShape (not an atom)
-    const recursiveCloneShape = (
-      shape: ALL_SHAPES,
-      parentId: string | null = null,
-      isRootCopy = false
-    ): IShape => {
-      const state = get(shape.state);
-      const newId = uuidv4();
-
-      const rootParams = isRootCopy
-        ? {
-            x: args.x - state.x - getInheritedOffset(parentId).x,
-            y: args.y - state.y - getInheritedOffset(parentId).y,
-            offsetX: args.x - state.x,
-            offsetY: args.y - state.y,
-            offsetCopyX: args.x - state.x - getInheritedOffset(parentId).x,
-            offsetCopyY: args.y - state.y - getInheritedOffset(parentId).y,
-          }
-        : {};
-
-      const originalChildren = get(state.children) ?? [];
-
-      const clonedChildren: ALL_SHAPES[] = originalChildren.map((child) => {
-        const newChildState = recursiveCloneShape(child, newId, false);
-        return {
-          ...child,
-          id: newChildState.id,
-          tool: newChildState.tool as IShapesKeys,
-          pageId: get(PAGE_ID_ATOM),
-          state: atom(newChildState),
-        } as ALL_SHAPES;
-      });
-
-      return {
-        ...cloneDeep(state),
-        ...rootParams,
-        id: newId,
-        parentId,
-        children: atom<ALL_SHAPES[]>(clonedChildren),
-      } as IShape;
-    };
-
-    const newShapes = shapesSelected.map((shape) =>
-      recursiveCloneShape(shape, get(shape.state).parentId, true)
-    );
-
-    // Commit state changes immutably via Jotai setters
-    set(RESET_SHAPES_IDS_ATOM);
-    set(CREATE_CURRENT_ITEM_ATOM, newShapes);
-    set(TOOL_ATOM, "MOVE");
-    set(EVENT_ATOM, "COPYING");
-    return newShapes;
-  }
-);
-
-export const EVENT_COPYING_SHAPES = atom(
-  null,
-  (get, set, args: { x: number; y: number }) => {
-    const CURRENT_ITEMS = get(CURRENT_ITEM_ATOM);
-
-    const items = CURRENT_ITEMS?.map((i) => {
-      return {
-        ...i,
-        x: args.x - i.offsetCopyX,
-        y: args.y - i.offsetCopyY,
-        copyX: args.x - i.offsetX,
-        copyY: args.y - i.offsetY,
-      };
-    });
-
-    set(CURRENT_ITEM_ATOM, items);
-  }
-);
-
-export const EVENT_UP_COPY = atom(null, (get, set) => {
-  const CURRENT_ITEMS = get(CURRENT_ITEM_ATOM);
-  for (const newShape of CURRENT_ITEMS) {
-    set(CREATE_SHAPE_ATOM, {
-      ...newShape,
-      x: newShape.copyX,
-      y: newShape.copyY,
-    });
-  }
-  Promise.resolve().then(() => {
-    set(
-      UPDATE_SHAPES_IDS_ATOM,
-      CURRENT_ITEMS?.map((e) => ({
-        id: e?.id,
-        parentId: e?.parentId,
-      }))
-    );
-  });
-  set(TOOL_ATOM, "MOVE");
-  set(EVENT_ATOM, "IDLE");
-  set(CLEAR_CURRENT_ITEM_ATOM);
-});
-
-export const EVENT_UP_SHAPES = atom(null, (get, set) => {
-  const CURRENT_ITEMS = get(CURRENT_ITEM_ATOM);
-  for (const newShape of CURRENT_ITEMS) {
-    set(CREATE_SHAPE_ATOM, newShape);
-  }
-  Promise.resolve().then(() => {
-    set(
-      UPDATE_SHAPES_IDS_ATOM,
-      CURRENT_ITEMS?.map((e) => ({
-        id: e?.id,
-        parentId: e?.parentId,
-      }))
-    );
-  });
-  set(TOOL_ATOM, "MOVE");
-  set(EVENT_ATOM, "IDLE");
-  set(CLEAR_CURRENT_ITEM_ATOM);
-});
-
-export const EVENT_MOVING_SHAPE = atom(
+export const EVENT_DOWN_CREATING_SHAPES = atom(
   null,
   (get, set, args: { x: number; y: number }) => {
     const { x, y } = args;
@@ -886,18 +935,29 @@ export const EVENT_MOVING_SHAPE = atom(
       if (TOOLS_DRAW_BASED.includes(item.tool as DrawBasedTools)) {
         const points = get(item.points);
         set(item.points, points.concat(x, y));
-        // const updateShape = UpdateShapeDimension(x, y, {
-        //   ...newShape,
-        //   points: newShape.points?.concat([x, y]),
-        // });
-        // set(CURRENT_ITEM_ATOM, [updateShape]);
       }
     }
-
-    // const newShape = CURRENT_ITEMS.at(0);
-    // if (!newShape) return;
   }
 );
+export const EVENT_DOWN_FINISH_SHAPES = atom(null, (get, set) => {
+  const CURRENT_ITEMS = get(CURRENT_ITEM_ATOM);
+  for (const newShape of CURRENT_ITEMS) {
+    set(CREATE_SHAPE_ATOM, newShape);
+  }
+  Promise.resolve().then(() => {
+    set(
+      UPDATE_SHAPES_IDS_ATOM,
+      CURRENT_ITEMS?.map((e) => ({
+        id: e?.id,
+        parentId: get(e?.parentId),
+      }))
+    );
+  });
+  set(TOOL_ATOM, "MOVE");
+  set(EVENT_ATOM, "IDLE");
+  set(CLEAR_CURRENT_ITEM_ATOM);
+});
+// ----------- DOWN SHAPES -------------- //
 
 export const CREATE_SHAPE_ATOM = atom(null, (get, set, args: IShape) => {
   console.log(args, "args");
@@ -906,7 +966,7 @@ export const CREATE_SHAPE_ATOM = atom(null, (get, set, args: IShape) => {
 
   if (get(args.parentId)) {
     const FIND_SHAPE = get(PLANE_SHAPES_ATOM).find(
-      (e) => e.id === args.parentId
+      (e) => e.id === get(args.parentId)
     );
     if (!FIND_SHAPE) return;
 
@@ -919,19 +979,14 @@ export const CREATE_SHAPE_ATOM = atom(null, (get, set, args: IShape) => {
         {
           id: args?.id,
           tool: args?.tool,
-          state: atom({
-            ...args,
-            children: atom(
-              args?.children ? get(args.children) : ([] as ALL_SHAPES[])
-            ),
-          }),
+          state: atom<IShape>(args),
           pageId: get(PAGE_ID_ATOM),
         },
       ]),
     };
 
-    // set(FIND_SHAPE.state, newElement);
-    // set(flexLayoutAtom, { id: FIND_SHAPE.id }); // aplicar layout si es flex
+    set(FIND_SHAPE.state, newElement);
+    set(flexLayoutAtom, { id: FIND_SHAPE.id }); // aplicar layout si es flex
     // set(NEW_UNDO_REDO, {
     //   shapes: [
     //     {
@@ -944,7 +999,6 @@ export const CREATE_SHAPE_ATOM = atom(null, (get, set, args: IShape) => {
     // });
     return;
   }
-
   // const result = args?.children ? get(args?.children) : [];
   const newAllShape: ALL_SHAPES = {
     id: args?.id,

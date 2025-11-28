@@ -26,12 +26,12 @@ import {
   CREATE_SHAPE_ATOM,
   DELETE_KEYS,
   DELETE_SHAPES_ATOM,
-  EVENT_COPYING_SHAPES,
-  EVENT_DOWN_COPY,
-  EVENT_DOWN_SHAPES,
-  EVENT_MOVING_SHAPE,
-  EVENT_UP_COPY,
-  EVENT_UP_SHAPES,
+  EVENT_COPY_CREATING_SHAPES,
+  EVENT_COPY_FINISH_SHAPES,
+  EVENT_COPY_START_SHAPES,
+  EVENT_DOWN_CREATING_SHAPES,
+  EVENT_DOWN_FINISH_SHAPES,
+  EVENT_DOWN_START_SHAPES,
   GET_STAGE_BOUNDS_ATOM,
   GROUP_SHAPES_IN_LAYOUT,
 } from "../states/shapes";
@@ -63,13 +63,13 @@ export const useEventStage = () => {
   const setRedo = useSetAtom(REDO_ATOM);
   const setUndo = useSetAtom(UNDO_ATOM);
   const SET_EVENT_GROUP = useSetAtom(GROUP_SHAPES_IN_LAYOUT);
-  const SET_EVENT_UP = useSetAtom(EVENT_UP_SHAPES);
 
-  const SET_EVENT_MOVING_SHAPE = useSetAtom(EVENT_MOVING_SHAPE);
-  const SET_EVENT_COPYING = useSetAtom(EVENT_COPYING_SHAPES);
-  const SET_EVENT_DOWN = useSetAtom(EVENT_DOWN_SHAPES);
-  const SET_EVENT_DOWN_COPY = useSetAtom(EVENT_DOWN_COPY);
-  const SET_EVENT_UP_COPY = useSetAtom(EVENT_UP_COPY);
+  const SET_EVENT_COPY_START_SHAPES = useSetAtom(EVENT_COPY_START_SHAPES);
+  const SET_EVENT_COPY_CREATING_SHAPES = useSetAtom(EVENT_COPY_CREATING_SHAPES);
+  const SET_EVENT_COPY_FINISH_SHAPES = useSetAtom(EVENT_COPY_FINISH_SHAPES);
+  const SET_EVENT_DOWN_START_SHAPES = useSetAtom(EVENT_DOWN_START_SHAPES);
+  const SET_EVENT_DOWN_CREATING_SHAPE = useSetAtom(EVENT_DOWN_CREATING_SHAPES);
+  const SET_EVENT_DOWN_FINISH_SHAPES = useSetAtom(EVENT_DOWN_FINISH_SHAPES);
 
   const SET_SELECTION = useSetAtom(SELECT_AREA_SHAPES_ATOM);
 
@@ -95,10 +95,10 @@ export const useEventStage = () => {
         SET_EVENT_STAGE("SELECT_AREA");
       }
       if (EVENT_STAGE === "CREATE") {
-        SET_EVENT_DOWN({ x, y });
+        SET_EVENT_DOWN_START_SHAPES({ x, y });
       }
       if (EVENT_STAGE === "COPY") {
-        SET_EVENT_DOWN_COPY({ x, y });
+        SET_EVENT_COPY_START_SHAPES({ x, y });
       }
       SET_MOVING(false);
     }
@@ -119,10 +119,10 @@ export const useEventStage = () => {
       }
 
       if (EVENT_STAGE === "CREATING") {
-        SET_EVENT_MOVING_SHAPE({ x, y });
+        SET_EVENT_DOWN_CREATING_SHAPE({ x, y });
       }
       if (EVENT_STAGE === "COPYING") {
-        SET_EVENT_COPYING({ x, y });
+        SET_EVENT_COPY_CREATING_SHAPES({ x, y });
       }
     }
   };
@@ -132,11 +132,11 @@ export const useEventStage = () => {
       SET_SELECTION();
     }
     if (EVENT_STAGE === "COPYING") {
-      SET_EVENT_UP_COPY();
+      SET_EVENT_COPY_FINISH_SHAPES();
       debounce.execute();
     }
     if (EVENT_STAGE === "CREATING") {
-      SET_EVENT_UP();
+      SET_EVENT_DOWN_FINISH_SHAPES();
       debounce.execute();
     }
     SET_MOVING(true);
