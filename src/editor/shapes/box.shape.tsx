@@ -118,9 +118,8 @@ const ShapeBox = (props: IShapeEvents) => {
           setHeight(Math.max(e.target.height() * scaleY));
         }}
         onTransformEnd={() => {
-          if (parentId) {
-            applyLayout({ id: parentId });
-          }
+          if (!parentId) return;
+          applyLayout({ id: parentId });
         }}
       />
     </>
