@@ -30,7 +30,7 @@ import { EVENT_ATOM } from "./event";
 import { CURRENT_PAGE, PAGE_ID_ATOM } from "./pages";
 import {
   RESET_SHAPES_IDS_ATOM,
-  SHAPE_IDS_ATOM,
+  SELECTED_SHAPES_BY_IDS_ATOM,
   UPDATE_SHAPES_IDS_ATOM,
 } from "./shape";
 import TOOL_ATOM, { IKeyTool, IShapesKeys } from "./tool";
@@ -119,7 +119,7 @@ export const PLANE_SHAPES_ATOM = atom((get) => {
 
 export const DELETE_SHAPES_ATOM = atom(null, (get, set) => {
   const currentShapes = get(PLANE_SHAPES_ATOM);
-  const shapesSelected = get(SHAPE_IDS_ATOM);
+  const shapesSelected = get(SELECTED_SHAPES_BY_IDS_ATOM);
 
   for (const element of shapesSelected) {
     if (element.parentId) {
@@ -214,7 +214,7 @@ export const DELETE_ALL_SHAPES_ATOM = atom(null, (get, set) => {
 // ===== Funciones de movimiento actualizadas =====
 export const MOVE_SHAPES_BY_ID = atom(null, (get, set, targetId: string) => {
   const allShapes = get(PLANE_SHAPES_ATOM);
-  const selectedShapeIds = get(SHAPE_IDS_ATOM);
+  const selectedShapeIds = get(SELECTED_SHAPES_BY_IDS_ATOM);
 
   // Early exits
   if (!allShapes?.length || !selectedShapeIds?.length) return;
@@ -332,7 +332,7 @@ export const MOVE_SHAPES_BY_ID = atom(null, (get, set, targetId: string) => {
       );
     }
   }
-  const updateShapesIds = get(SHAPE_IDS_ATOM)?.map((e) => ({
+  const updateShapesIds = get(SELECTED_SHAPES_BY_IDS_ATOM)?.map((e) => ({
     ...e,
     parentId: get(targetShape.state).id,
   }));
@@ -348,7 +348,7 @@ export const MOVE_SHAPES_BY_ID = atom(null, (get, set, targetId: string) => {
 
 export const GROUP_SHAPES_IN_LAYOUT = atom(null, (get, set) => {
   const PLANE_SHAPES = get(PLANE_SHAPES_ATOM);
-  const SELECTED = get(SHAPE_IDS_ATOM);
+  const SELECTED = get(SELECTED_SHAPES_BY_IDS_ATOM);
 
   if (SELECTED.length === 0) return;
 
@@ -480,7 +480,7 @@ export const GROUP_SHAPES_IN_LAYOUT = atom(null, (get, set) => {
 });
 export const MOVE_SHAPES_TO_ROOT = atom(null, (get, set) => {
   const allShapes = get(PLANE_SHAPES_ATOM);
-  const SELECTED = get(SHAPE_IDS_ATOM);
+  const SELECTED = get(SELECTED_SHAPES_BY_IDS_ATOM);
   const selectedShapes = allShapes.filter((w) =>
     SELECTED.some((e) => e.id === w.id)
   );
@@ -556,7 +556,7 @@ export const MOVE_SHAPES_TO_ROOT = atom(null, (get, set) => {
       });
     }
   }
-  const updateShapesIds = get(SHAPE_IDS_ATOM)?.map((e) => ({
+  const updateShapesIds = get(SELECTED_SHAPES_BY_IDS_ATOM)?.map((e) => ({
     ...e,
     parentId: null,
   }));
@@ -578,7 +578,7 @@ export const EVENT_COPY_START_SHAPES = atom(
   null,
   (get, set, args: { x: number; y: number }) => {
     const rootShapes = get(PLANE_SHAPES_ATOM) ?? [];
-    const selectedIds = get(SHAPE_IDS_ATOM) ?? [];
+    const selectedIds = get(SELECTED_SHAPES_BY_IDS_ATOM) ?? [];
 
     if (rootShapes.length === 0 || selectedIds.length === 0) return [];
 

@@ -1,7 +1,7 @@
 import { iconsWithTools } from "@/editor/icons/tool-icons";
 import { css } from "@stylespixelkit/css";
 import { DragControls, Reorder, useDragControls } from "framer-motion";
-import { useAtom, useSetAtom } from "jotai";
+import { useAtom, useAtomValue, useSetAtom } from "jotai";
 
 import {
   ContextMenu,
@@ -11,11 +11,10 @@ import {
 } from "@/components/ui/context-menu";
 import * as Luicde from "lucide-react";
 import { useMemo, useState } from "react";
-import { withStableMemo } from "../utils/withStableMemo";
 import { constants } from "../constants/color";
 import { useAutoSave } from "../hooks/useAutoSave";
 import { flexLayoutAtom } from "../shapes/layout-flex";
-import { SHAPE_IDS_ATOM } from "../states/shape";
+import { SELECTED_SHAPES_BY_IDS_ATOM } from "../states/shape";
 import {
   ALL_SHAPES,
   DELETE_SHAPES_ATOM,
@@ -23,6 +22,7 @@ import {
 } from "../states/shapes";
 import TOOL_ATOM, { PAUSE_MODE_ATOM } from "../states/tool";
 import { UPDATE_UNDO_REDO } from "../states/undo-redo";
+import { withStableMemo } from "../utils/withStableMemo";
 import { Input } from "./input";
 
 type NodeProps = {
@@ -88,8 +88,8 @@ export const NodesDefault = ({
   options = {},
   dragControls: externalDragControls, // ✅ Recibimos controles externos
 }: NodeProps) => {
-  const [shape, setShape] = useAtom(item.state);
-  const [shapeId, setShapeId] = useAtom(SHAPE_IDS_ATOM);
+  const shape = useAtomValue(item.state);
+  const [shapeId, setShapeId] = useAtom(SELECTED_SHAPES_BY_IDS_ATOM);
   const [show, setShow] = useState(false);
   const setPause = useSetAtom(PAUSE_MODE_ATOM);
   const setTool = useSetAtom(TOOL_ATOM);
@@ -100,6 +100,9 @@ export const NodesDefault = ({
   const DELETE_SHAPE = useSetAtom(DELETE_SHAPES_ATOM);
   const setMove = useSetAtom(MOVE_SHAPES_BY_ID);
 
+  const [isLocked, setIsLocked] = useAtom(shape.isLocked);
+  const [visible, setVisible] = useAtom(shape.visible);
+  const parentId = useAtomValue(shape.parentId);
   // ✅ Usar controles externos si están disponibles, sino crear propios
   const dragControls = externalDragControls;
 
@@ -110,12 +113,12 @@ export const NodesDefault = ({
   // Para los hijos, determinar qué propiedades heredar
   const childOptions = useMemo(() => {
     return {
-      isLockedByParent: isLockedByParent || shape.isLocked,
-      isHiddenByParent: isHiddenByParent || !shape.visible,
+      isLockedByParent: isLockedByParent || isLocked,
+      isHiddenByParent: isHiddenByParent || !visible,
       id: shape.id,
-      parentId: shape.parentId,
+      parentId: parentId,
     };
-  }, [isLockedByParent, isHiddenByParent, shape.isLocked, shape.visible]);
+  }, [isLockedByParent, isHiddenByParent, isLocked, visible, parentId]);
 
   const [children, setChildren] = useAtom(shape.children);
   const { debounce } = useAutoSave();
@@ -133,10 +136,11 @@ export const NodesDefault = ({
   const handleLockToggle = (e: React.MouseEvent) => {
     e.stopPropagation(); // ✅ Prevenir propagación
     if (!isLockedByParent) {
-      setShape({
-        ...shape,
-        isLocked: !shape.isLocked,
-      });
+      setIsLocked((e) => !e);
+      // setShape({
+      //   ...shape,
+      //   isLocked: !shape.isLocked,
+      // });
     }
   };
 
@@ -144,10 +148,11 @@ export const NodesDefault = ({
   const handleVisibilityToggle = (e: React.MouseEvent) => {
     e.stopPropagation(); // ✅ Prevenir propagación
     if (!isHiddenByParent) {
-      setShape({
-        ...shape,
-        visible: !shape.visible,
-      });
+      setVisible((e) => !e);
+      // setShape({
+      //   ...shape,
+      //   visible: !shape.visible,
+      // });
     }
   };
 
@@ -201,7 +206,7 @@ export const NodesDefault = ({
               setTool("MOVE");
               setShapeId({
                 id: shape?.id,
-                parentId: shape.parentId,
+                parentId: parentId,
               });
             }}
           >
@@ -259,10 +264,11 @@ export const NodesDefault = ({
               {show ? (
                 <Input.withPause>
                   <Input.Text
-                    value={shape?.label}
+                    // value={shape?.label}
+                    value="test"
                     onChange={(e) => {
-                      setShape({ ...shape, label: e });
-                      debounce.execute();
+                      // setShape({ ...shape, label: e });
+                      // debounce.execute();
                     }}
                     style={{
                       width: "auto",
@@ -285,7 +291,8 @@ export const NodesDefault = ({
                     lineClamp: 1,
                   })}
                 >
-                  {shape.label}
+                  {/* {shape.label} */}
+                  test
                 </p>
               )}
             </div>
@@ -314,13 +321,13 @@ export const NodesDefault = ({
                   />
                 ) : (
                   <>
-                    {!isHovered && shape.isLocked ? (
+                    {!isHovered && isLocked ? (
                       <Lock size={14} color={constants.theme.colors.primary} />
                     ) : null}
 
                     {isHovered ? (
                       <button onClick={handleLockToggle}>
-                        {shape.isLocked ? (
+                        {isLocked ? (
                           <Lock
                             size={14}
                             color={constants.theme.colors.primary}
@@ -350,7 +357,7 @@ export const NodesDefault = ({
                   />
                 ) : (
                   <>
-                    {!isHovered && !shape.visible ? (
+                    {!isHovered && !visible ? (
                       <EyeClosed
                         size={14}
                         color={constants.theme.colors.primary}
@@ -359,7 +366,7 @@ export const NodesDefault = ({
 
                     {isHovered ? (
                       <button onClick={handleVisibilityToggle}>
-                        {shape.visible ? (
+                        {visible ? (
                           <Eye size={14} />
                         ) : (
                           <EyeClosed
@@ -427,7 +434,7 @@ export const NodesDefault = ({
         >
           {children.map((childItem, index) => (
             <DraggableNodeItem
-              key={`pixel-kit-node-child-${childItem.id}-${shape.id}-${String(shape.parentId)}-${index}`}
+              key={`pixel-kit-node-child-${childItem.id}-${shape.id}-${String(parentId)}-${index}`}
               childItem={childItem}
               childOptions={childOptions}
             />

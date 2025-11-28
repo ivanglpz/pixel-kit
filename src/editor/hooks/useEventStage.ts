@@ -21,7 +21,7 @@ import {
   RECTANGLE_SELECTION_ATOM,
   SELECT_AREA_SHAPES_ATOM,
 } from "../states/rectangle-selection";
-import { SHAPE_IDS_ATOM } from "../states/shape";
+import { SELECTED_SHAPES_BY_IDS_ATOM } from "../states/shape";
 import {
   CREATE_SHAPE_ATOM,
   DELETE_KEYS,
@@ -44,7 +44,7 @@ import { useConfiguration } from "./useConfiguration";
 export const useEventStage = () => {
   // ===== STATE HOOKS =====
   const [tool, setTool] = useAtom(TOOL_ATOM);
-  const shapeId = useAtomValue(SHAPE_IDS_ATOM);
+  const shapeId = useAtomValue(SELECTED_SHAPES_BY_IDS_ATOM);
   const [EVENT_STAGE, SET_EVENT_STAGE] = useAtom(EVENT_ATOM);
   const SET_MOVING = useSetAtom(MOVING_MOUSE_BUTTON_ATOM);
   // ===== READ-ONLY STATE =====

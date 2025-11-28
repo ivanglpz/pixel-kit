@@ -4,7 +4,7 @@ import { cloneDeep } from "../helpers/shape-schema";
 import { flexLayoutAtom } from "../shapes/layout-flex";
 import { IShape } from "../shapes/type.shape";
 import { CURRENT_PAGE } from "./pages";
-import { SHAPE_IDS_ATOM } from "./shape";
+import { SELECTED_SHAPES_BY_IDS_ATOM } from "./shape";
 import ALL_SHAPES_ATOM, { ALL_SHAPES, PLANE_SHAPES_ATOM } from "./shapes";
 
 // ===== TYPES =====
@@ -311,7 +311,7 @@ export const NEW_UNDO_REDO = atom(null, (get, set, args: UndoShapeValues) => {
 });
 
 export const UPDATE_UNDO_REDO = atom(null, (get, set) => {
-  const shapeIds = get(SHAPE_IDS_ATOM);
+  const shapeIds = get(SELECTED_SHAPES_BY_IDS_ATOM);
   const allShapes = get(PLANE_SHAPES_ATOM);
   const selectedShapes = allShapes.filter((shape) =>
     shapeIds.some((selectedId) => selectedId.id === shape.id)
