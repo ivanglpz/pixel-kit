@@ -117,8 +117,8 @@ export const ShapeText = (props: IShapeEvents) => {
           setY(evt.target.y());
         }}
         onDragEnd={() => {
-          // if (!box.parentId) return;
-          // applyLayout({ id: box.parentId });
+          if (!parentId) return;
+          applyLayout({ id: parentId });
         }}
         onTransform={(e) => {
           const scaleX = e.target.scaleX();
@@ -130,9 +130,8 @@ export const ShapeText = (props: IShapeEvents) => {
           setHeight(Math.max(e.target.height() * scaleY));
         }}
         onTransformEnd={() => {
-          // if (box?.parentId) {
-          //   applyLayout({ id: box.parentId });
-          // }
+          if (!parentId) return;
+          applyLayout({ id: parentId });
         }}
       />
     </>
