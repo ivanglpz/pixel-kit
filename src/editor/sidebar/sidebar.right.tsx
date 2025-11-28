@@ -3,14 +3,14 @@ import { useConfiguration } from "@/editor/hooks/useConfiguration";
 import { css } from "@stylespixelkit/css";
 import { useAtomValue } from "jotai";
 import { FC } from "react";
-import { SHAPE_IDS_ATOM } from "../states/shape";
+import { SELECTED_SHAPES_BY_IDS_ATOM } from "../states/shape";
 import TOOL_ATOM from "../states/tool";
 import { StageCanvasColor } from "./canvas";
 
 const SidebarRight: FC = () => {
   const { config } = useConfiguration();
 
-  const shapeIds = useAtomValue(SHAPE_IDS_ATOM);
+  const shapeIds = useAtomValue(SELECTED_SHAPES_BY_IDS_ATOM);
   const tool = useAtomValue(TOOL_ATOM);
 
   return (

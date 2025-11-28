@@ -5,7 +5,7 @@ import { EVENT_ATOM } from "./event";
 import { CURRENT_PAGE, IPageShapeIds } from "./pages";
 import { ALL_SHAPES, PLANE_SHAPES_ATOM } from "./shapes";
 import { UndoShape } from "./undo-redo";
-export const SHAPE_IDS_ATOM = atom(
+export const SELECTED_SHAPES_BY_IDS_ATOM = atom(
   (get) => {
     return get(get(CURRENT_PAGE).SHAPES.ID);
   },
@@ -51,7 +51,7 @@ export const RESET_SHAPES_IDS_ATOM = atom(null, (get, set) => {
 });
 
 export const SHAPE_SELECTED_ATOM = atom((get) => {
-  const selectedIds = get(SHAPE_IDS_ATOM);
+  const selectedIds = get(SELECTED_SHAPES_BY_IDS_ATOM);
 
   const planeShapes = get(PLANE_SHAPES_ATOM);
 
@@ -75,7 +75,7 @@ export const SHAPE_SELECTED_ATOM = atom((get) => {
 export const SHAPE_UPDATE_ATOM = atom(
   null,
   (get, set, args: Partial<IShape>) => {
-    const shapesSelected = get(SHAPE_IDS_ATOM);
+    const shapesSelected = get(SELECTED_SHAPES_BY_IDS_ATOM);
     const planeShapes = get(PLANE_SHAPES_ATOM);
 
     shapesSelected.forEach((selected) => {

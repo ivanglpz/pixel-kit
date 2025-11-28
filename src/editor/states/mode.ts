@@ -10,7 +10,7 @@ import {
   exportAndDownloadStages,
 } from "../utils/export";
 import { typeExportAtom } from "./export";
-import { SHAPE_IDS_ATOM } from "./shape";
+import { SELECTED_SHAPES_BY_IDS_ATOM } from "./shape";
 import { PLANE_SHAPES_ATOM } from "./shapes";
 import { cloneShapeRecursive } from "./undo-redo";
 
@@ -136,7 +136,7 @@ export const CONFIG_ATOM = atom(
 );
 
 export const GET_EXPORT_JSON = atom(null, (get) => {
-  const selectedIds = get(SHAPE_IDS_ATOM);
+  const selectedIds = get(SELECTED_SHAPES_BY_IDS_ATOM);
   const planeShapes = get(PLANE_SHAPES_ATOM);
   const cloner = cloneShapeRecursive(get);
   const shapes = planeShapes
@@ -155,7 +155,7 @@ export const GET_EXPORT_JSON = atom(null, (get) => {
 });
 
 export const GET_EXPORT_SHAPES = atom(null, async (get, set) => {
-  const selectedIds = get(SHAPE_IDS_ATOM);
+  const selectedIds = get(SELECTED_SHAPES_BY_IDS_ATOM);
   const planeShapes = get(PLANE_SHAPES_ATOM);
   const format = get(typeExportAtom);
   const cloner = cloneShapeRecursive(get);

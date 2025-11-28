@@ -4,7 +4,7 @@ import { Line } from "react-konva";
 import { IShapeEvents } from "./type.shape";
 
 /* eslint-disable react/display-name */
-import { SHAPE_IDS_ATOM } from "../states/shape";
+import { SELECTED_SHAPES_BY_IDS_ATOM } from "../states/shape";
 
 import { useMemo } from "react";
 import { useFillColor } from "../hooks/useFillColor";
@@ -43,7 +43,7 @@ export const ShapeDraw = (props: IShapeEvents) => {
   const opacity = useAtomValue(box.opacity);
 
   // const shadow = useAtomValue(effects.at(0)?.color)
-  const [shapeId, setShapeId] = useAtom(SHAPE_IDS_ATOM);
+  const [shapeId, setShapeId] = useAtom(SELECTED_SHAPES_BY_IDS_ATOM);
   const isSelected = useMemo(
     () => shapeId.some((w) => w.id === box.id),
     [shapeId, box.id]
