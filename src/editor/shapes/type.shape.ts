@@ -62,12 +62,12 @@ export type IShape = {
   // Position & Transform
   x: JotaiState<number>;
   y: JotaiState<number>;
-  copyX: number;
-  copyY: number;
-  offsetX: number;
-  offsetY: number;
-  offsetCopyX: number;
-  offsetCopyY: number;
+  copyX: JotaiState<number>;
+  copyY: JotaiState<number>;
+  offsetX: JotaiState<number>;
+  offsetY: JotaiState<number>;
+  offsetCopyX: JotaiState<number>;
+  offsetCopyY: JotaiState<number>;
   rotation: JotaiState<number>;
   width: JotaiState<number>;
   height: JotaiState<number>;
