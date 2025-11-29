@@ -14,7 +14,6 @@ import { useMemo, useState } from "react";
 import { constants } from "../constants/color";
 import { useAutoSave } from "../hooks/useAutoSave";
 import { flexLayoutAtom } from "../shapes/layout-flex";
-import { SELECTED_SHAPES_BY_IDS_ATOM } from "../states/shape";
 import {
   ALL_SHAPES,
   DELETE_SHAPES_ATOM,
@@ -89,7 +88,6 @@ export const NodesDefault = ({
   dragControls: externalDragControls, // ✅ Recibimos controles externos
 }: NodeProps) => {
   const shape = useAtomValue(item.state);
-  const [shapeId, setShapeId] = useAtom(SELECTED_SHAPES_BY_IDS_ATOM);
   const [show, setShow] = useState(false);
   const setPause = useSetAtom(PAUSE_MODE_ATOM);
   const setTool = useSetAtom(TOOL_ATOM);
@@ -182,14 +180,14 @@ export const NodesDefault = ({
               flexDirection: "row",
               alignItems: "center",
               borderRadius: "4",
-              _dark: {
-                backgroundColor: shapeId.some((w) => w.id === shape.id)
-                  ? "gray.600"
-                  : "transparent",
-              },
-              backgroundColor: shapeId.some((w) => w.id === shape.id)
-                ? "gray.200"
-                : "transparent",
+              // _dark: {
+              //   backgroundColor: shapeId.some((w) => w.id === shape.id)
+              //     ? "gray.600"
+              //     : "transparent",
+              // },
+              // backgroundColor: shapeId.some((w) => w.id === shape.id)
+              //   ? "gray.200"
+              //   : "transparent",
               _hover: {
                 backgroundColor: "gray.100",
                 _dark: {
@@ -204,10 +202,10 @@ export const NodesDefault = ({
               e.preventDefault(); // puedes dejar esto si quieres
               e.stopPropagation();
               setTool("MOVE");
-              setShapeId({
-                id: shape?.id,
-                parentId: parentId,
-              });
+              // setShapeId({
+              //   id: shape?.id,
+              //   parentId: parentId,
+              // });
             }}
           >
             {/* ✅ Drag Handle mejorado */}

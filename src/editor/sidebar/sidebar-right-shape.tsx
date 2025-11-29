@@ -286,7 +286,6 @@ export const LayoutShapeConfig = () => {
   const [showImage, setShowImage] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const { shape, count } = useAtomValue(SHAPE_SELECTED_ATOM);
-  const myHook = useShapeUpdate();
   const shapeUpdate = useSetAtom(SHAPE_UPDATE_ATOM);
   const setUpdateUndoRedo = useSetAtom(UPDATE_UNDO_REDO);
   const [type, setType] = useState<"UPLOAD" | "CHOOSE">("UPLOAD");
@@ -871,7 +870,7 @@ export const LayoutShapeConfig = () => {
                 </p>
               </Input.IconContainer>
               <Input.withPause>
-                <Input.withChange atom={shape.x}>
+                <Input.withChange shape={shape} type="x">
                   <Input.Number
                     step={1}
                     // value={shape.x}
@@ -897,7 +896,7 @@ export const LayoutShapeConfig = () => {
                 </p>
               </Input.IconContainer>
               <Input.withPause>
-                <Input.withChange atom={shape.y}>
+                <Input.withChange shape={shape} type="y">
                   <Input.Number
                     step={1}
                     // value={shape.y}
@@ -1026,7 +1025,7 @@ export const LayoutShapeConfig = () => {
                 {/* <MoveHorizontal size={constants.icon.size} /> */}
               </Input.IconContainer>
               <Input.withPause>
-                <Input.withChange atom={shape.width}>
+                <Input.withChange shape={shape} type="width">
                   <Input.Number
                     step={1}
                     // value={Number(shape.width || 0)}
@@ -1054,7 +1053,7 @@ export const LayoutShapeConfig = () => {
                 </p>
               </Input.IconContainer>
               <Input.withPause>
-                <Input.withChange atom={shape.height}>
+                <Input.withChange shape={shape} type="height">
                   <Input.Number
                     step={1}
                     // value={Number(shape.height) || 0}
@@ -1071,118 +1070,6 @@ export const LayoutShapeConfig = () => {
             </Input.Grid>
           </Input.Container>
         </div>
-        {/*
-        <Input.Label text="Min" />
-
-        <div className={commonStyles.twoColumnGrid}>
-          <Input.Container>
-            <Input.Grid>
-              <Input.IconContainer>
-                <p
-                  className={css({
-                    fontWeight: 600,
-                    fontSize: "x-small",
-                  })}
-                >
-                  W
-                </p>
-              </Input.IconContainer>
-              <Input.withPause>
-                <Input.Number
-                  min={0}
-                  max={9999}
-                  step={1}
-                  value={shape.minWidth}
-                  onChange={(e) => {
-                    shapeUpdate({ minWidth: e });
-                    execute();
-                  }}
-                />
-              </Input.withPause>
-            </Input.Grid>
-          </Input.Container>
-          <Input.Container>
-            <Input.Grid>
-              <Input.IconContainer>
-                <p
-                  className={css({
-                    fontWeight: 600,
-                    fontSize: "x-small",
-                  })}
-                >
-                  H
-                </p>
-              </Input.IconContainer>
-              <Input.withPause>
-                <Input.Number
-                  min={0}
-                  max={9999}
-                  step={1}
-                  value={shape.minHeight || 0}
-                  onChange={(v) => {
-                    shapeUpdate({ minHeight: v });
-                    execute();
-                  }}
-                />
-              </Input.withPause>
-            </Input.Grid>
-          </Input.Container>
-        </div>
-        <Input.Label text="Max" />
-        <div className={commonStyles.twoColumnGrid}>
-          <Input.Container>
-            <Input.Grid>
-              <Input.IconContainer>
-                <p
-                  className={css({
-                    fontWeight: 600,
-                    fontSize: "x-small",
-                  })}
-                >
-                  W
-                </p>
-              </Input.IconContainer>
-              <Input.withPause>
-                <Input.Number
-                  min={0}
-                  max={9999}
-                  step={1}
-                  value={shape.maxWidth || 0}
-                  onChange={(v) => {
-                    shapeUpdate({ maxWidth: v });
-                    execute();
-                  }}
-                />
-              </Input.withPause>
-            </Input.Grid>
-          </Input.Container>
-          <Input.Container>
-            <Input.Grid>
-              <Input.IconContainer>
-                <p
-                  className={css({
-                    fontWeight: 600,
-                    fontSize: "x-small",
-                  })}
-                >
-                  H
-                </p>
-              </Input.IconContainer>
-              <Input.withPause>
-                <Input.Number
-                  min={0}
-                  max={9999}
-                  step={1}
-                  value={shape.maxHeight || 0}
-                  onChange={(v) => {
-                    shapeUpdate({ maxHeight: v });
-                    execute();
-                  }}
-                />
-              </Input.withPause>
-            </Input.Grid>
-          </Input.Container>
-        </div> */}
       </section>
 
       <Separator />
@@ -1430,7 +1317,7 @@ export const LayoutShapeConfig = () => {
                         </Input.IconContainer>
                         {shape.isAllPadding ? (
                           <Input.withPause>
-                            <Input.withChange atom={shape.padding}>
+                            <Input.withChange shape={shape} type="padding">
                               <Input.Number
                                 min={0}
                                 max={9999}
@@ -1508,7 +1395,7 @@ export const LayoutShapeConfig = () => {
                           <ArrowUp size={constants.icon.size} />
                         </Input.IconContainer>
                         <Input.withPause>
-                          <Input.withChange atom={shape.paddingTop}>
+                          <Input.withChange shape={shape} type="paddingTop">
                             <Input.Number
                               min={0}
                               max={9999}
@@ -1529,7 +1416,7 @@ export const LayoutShapeConfig = () => {
                           <ArrowRight size={constants.icon.size} />
                         </Input.IconContainer>
                         <Input.withPause>
-                          <Input.withChange atom={shape.paddingRight}>
+                          <Input.withChange shape={shape} type="paddingRight">
                             <Input.Number
                               min={0}
                               max={9999}
@@ -1550,7 +1437,7 @@ export const LayoutShapeConfig = () => {
                           <ArrowDown size={constants.icon.size} />
                         </Input.IconContainer>
                         <Input.withPause>
-                          <Input.withChange atom={shape.paddingBottom}>
+                          <Input.withChange shape={shape} type="paddingBottom">
                             <Input.Number
                               min={0}
                               max={9999}
@@ -1571,7 +1458,7 @@ export const LayoutShapeConfig = () => {
                           <ArrowLeft size={constants.icon.size} />
                         </Input.IconContainer>
                         <Input.withPause>
-                          <Input.withChange atom={shape.paddingLeft}>
+                          <Input.withChange shape={shape} type="paddingLeft">
                             <Input.Number
                               min={0}
                               max={9999}
@@ -1604,7 +1491,7 @@ export const LayoutShapeConfig = () => {
                 <Blend size={constants.icon.size} />
               </Input.IconContainer>
               <Input.withPause>
-                <Input.withChange atom={shape.opacity}>
+                <Input.withChange shape={shape} type="opacity">
                   <Input.Number
                     min={0}
                     max={1}
@@ -1644,7 +1531,7 @@ export const LayoutShapeConfig = () => {
                     </Input.IconContainer>
                     {shape.isAllBorderRadius ? (
                       <Input.withPause>
-                        <Input.withChange atom={shape.borderRadius}>
+                        <Input.withChange shape={shape} type="borderRadius">
                           <Input.Number
                             min={0}
                             max={9999}
@@ -1719,7 +1606,10 @@ export const LayoutShapeConfig = () => {
                       <CornerUpLeft size={constants.icon.size} />
                     </Input.IconContainer>
                     <Input.withPause>
-                      <Input.withChange atom={shape.borderTopLeftRadius}>
+                      <Input.withChange
+                        shape={shape}
+                        type="borderTopLeftRadius"
+                      >
                         <Input.Number
                           min={0}
                           max={9999}
@@ -1740,7 +1630,10 @@ export const LayoutShapeConfig = () => {
                       <CornerUpRight size={constants.icon.size} />
                     </Input.IconContainer>
                     <Input.withPause>
-                      <Input.withChange atom={shape.borderTopRightRadius}>
+                      <Input.withChange
+                        shape={shape}
+                        type="borderTopRightRadius"
+                      >
                         <Input.Number
                           min={0}
                           max={9999}
@@ -1761,7 +1654,10 @@ export const LayoutShapeConfig = () => {
                       <CornerDownLeft size={constants.icon.size} />
                     </Input.IconContainer>
                     <Input.withPause>
-                      <Input.withChange atom={shape.borderBottomLeftRadius}>
+                      <Input.withChange
+                        shape={shape}
+                        type="borderBottomLeftRadius"
+                      >
                         <Input.Number
                           min={0}
                           max={9999}
@@ -1782,7 +1678,10 @@ export const LayoutShapeConfig = () => {
                       <CornerDownRight size={constants.icon.size} />
                     </Input.IconContainer>
                     <Input.withPause>
-                      <Input.withChange atom={shape.borderBottomRightRadius}>
+                      <Input.withChange
+                        shape={shape}
+                        type="borderBottomRightRadius"
+                      >
                         <Input.Number
                           min={0}
                           max={9999}
@@ -1810,7 +1709,7 @@ export const LayoutShapeConfig = () => {
           <SectionHeader title="Typography" />
 
           <Input.Container>
-            <Input.withChange atom={shape.fontFamily}>
+            <Input.withChange shape={shape} type="fontFamily">
               <Input.Select
                 // value={shape.fontFamily ?? "Roboto"}
                 // onChange={(e) => {
@@ -1824,7 +1723,7 @@ export const LayoutShapeConfig = () => {
 
           <div className={commonStyles.twoColumnGrid}>
             <Input.Container>
-              <Input.withChange atom={shape.fontWeight}>
+              <Input.withChange shape={shape} type="fontWeight">
                 <Input.Select
                   // value={shape.fontWeight ?? "normal"}
                   // onChange={(e) => {
@@ -1841,7 +1740,7 @@ export const LayoutShapeConfig = () => {
                   <Scaling size={constants.icon.size} />
                 </Input.IconContainer>
                 <Input.withPause>
-                  <Input.withChange atom={shape.fontSize}>
+                  <Input.withChange shape={shape} type="fontSize">
                     <Input.Number
                       min={4}
                       max={180}
@@ -1862,7 +1761,7 @@ export const LayoutShapeConfig = () => {
           <div className={css({ gridColumn: 2, gridRow: 3 })}>
             <Input.Container>
               <Input.withPause>
-                <Input.withChange atom={shape.text}>
+                <Input.withChange shape={shape} type="text">
                   <Input.TextArea
                     rows={6}
                     // onChange={(e) => {
@@ -2287,7 +2186,7 @@ export const LayoutShapeConfig = () => {
               </p>
             </Input.IconContainer>
             <Input.withPause>
-              <Input.withChange atom={shape.shadowOffsetX}>
+              <Input.withChange shape={shape} type="shadowOffsetX">
                 <Input.Number
                   step={1}
                   // value={shape.shadowOffsetX || 0}
@@ -2313,7 +2212,7 @@ export const LayoutShapeConfig = () => {
               </p>
             </Input.IconContainer>
             <Input.withPause key={"test"}>
-              <Input.withChange atom={shape.shadowOffsetY}>
+              <Input.withChange shape={shape} type="shadowOffsetY">
                 <Input.Number
                   step={1}
                   // value={shape.shadowOffsetY}
@@ -2335,7 +2234,7 @@ export const LayoutShapeConfig = () => {
               />
             </Input.IconContainer>
             <Input.withPause>
-              <Input.withChange atom={shape.shadowBlur}>
+              <Input.withChange shape={shape} type="shadowBlur">
                 <Input.Number
                   min={0}
                   step={1}
@@ -2358,7 +2257,7 @@ export const LayoutShapeConfig = () => {
               />
             </Input.IconContainer>
             <Input.withPause>
-              <Input.withChange atom={shape.shadowOpacity}>
+              <Input.withChange shape={shape} type="shadowOpacity">
                 <Input.Number
                   min={0}
                   max={1}
