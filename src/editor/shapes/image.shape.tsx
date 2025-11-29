@@ -84,10 +84,10 @@ export const ShapeImage = (props: IShapeEvents) => {
       calculateCoverCrop(
         IMG?.width || 0,
         IMG?.height || 0,
-        Number(box.width),
-        Number(box.height)
+        Number(width),
+        Number(height)
       ),
-    [IMG?.width, IMG?.height, box.width, box.height]
+    [IMG?.width, IMG?.height, width, height]
   );
   if (!visible) return null;
 
