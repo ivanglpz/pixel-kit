@@ -2,7 +2,7 @@
 /* eslint-disable jsx-a11y/alt-text */
 import { Valid } from "@/components/valid";
 import { IPhoto } from "@/db/schemas/types";
-import { IShape } from "@/editor/shapes/type.shape";
+import { IShape, IShapeJSON } from "@/editor/shapes/type.shape";
 import { SHAPE_SELECTED_ATOM, SHAPE_UPDATE_ATOM } from "@/editor/states/shape";
 import { uploadPhoto } from "@/services/photo";
 import { fetchListPhotosProject } from "@/services/photos";
@@ -284,12 +284,20 @@ export const SectionHeader = ({
   </div>
 );
 
+export const useShapeUpdate = () => {
+  const update = useSetAtom(SHAPE_UPDATE_ATOM);
+
+  return <K extends keyof IShape>(type: K, value: IShapeJSON[K]) => {
+    update({ type, value });
+  };
+};
+
 export const LayoutShapeConfig = () => {
   const [showIcons, setshowIcons] = useState(false);
   const [showImage, setShowImage] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const { shape, count } = useAtomValue(SHAPE_SELECTED_ATOM);
-
+  const myHook = useShapeUpdate();
   const shapeUpdate = useSetAtom(SHAPE_UPDATE_ATOM);
   const setUpdateUndoRedo = useSetAtom(UPDATE_UNDO_REDO);
   const [type, setType] = useState<"UPLOAD" | "CHOOSE">("UPLOAD");
@@ -344,74 +352,75 @@ export const LayoutShapeConfig = () => {
       return photoChoose;
     },
     onSuccess: (values) => {
-      if (type === "UPLOAD") {
-        if (!shape) return;
-        const scale: number = calculateScale(
-          values.width,
-          values.height,
-          shape.width ?? 500,
-          shape.height ?? 500
-        );
-        const newWidth: number = values.width * scale;
-        const newHeight: number = values.height * scale;
-        shapeUpdate({
-          width: newWidth,
-          height: newHeight,
-          fills: [
-            {
-              id: uuidv4(),
-              color: "#ffffff",
-              opacity: 1,
-              visible: true,
-              type: "image",
-              image: {
-                src: values?.url,
-                width: values.width,
-                height: values.height,
-                name: values?.name,
-              },
-            },
-            ...(shape.fills || []),
-          ],
-        });
-        execute();
-        handleResetDialogImage();
-        QueryListPhotos.refetch();
-
-        return;
-      }
-      if (!shape) return;
-      const scale: number = calculateScale(
-        values.width,
-        values.height,
-        shape.width ?? 500,
-        shape.height ?? 500
-      );
-      const newWidth: number = values.width * scale;
-      const newHeight: number = values.height * scale;
-      shapeUpdate({
-        width: newWidth,
-        height: newHeight,
-        fills: [
-          {
-            id: uuidv4(),
-            color: "#ffffff",
-            opacity: 1,
-            visible: true,
-            type: "image",
-            image: {
-              src: values?.url,
-              width: values.width,
-              height: values.height,
-              name: values?.name,
-            },
-          },
-          ...(shape.fills || []),
-        ],
-      });
-
-      execute();
-      handleResetDialogImage();
+      // if (type === "UPLOAD") {
+      //   if (!shape) return;
+      //   const scale: number = calculateScale(
+      //     values.width,
+      //     values.height,
+      //     shape.width ?? 500,
+      //     shape.height ?? 500
+      //   );
+      //   const newWidth: number = values.width * scale;
+      //   const newHeight: number = values.height * scale;
+      //   myHook("align", "center");
+      //   myHook("width", newWidth);
+      //   myHook("height", newHeight);
+      //   shapeUpdate({
+      //     width: newWidth,
+      //     height: newHeight,
+      //     fills: [
+      //       {
+      //         id: uuidv4(),
+      //         color: "#ffffff",
+      //         opacity: 1,
+      //         visible: true,
+      //         type: "image",
+      //         image: {
+      //           src: values?.url,
+      //           width: values.width,
+      //           height: values.height,
+      //           name: values?.name,
+      //         },
+      //       },
+      //       ...(shape.fills || []),
+      //     ],
+      //   });
+      //   execute();
+      //   handleResetDialogImage();
+      //   QueryListPhotos.refetch();
+      //   return;
+      // }
+      // if (!shape) return;
+      // const scale: number = calculateScale(
+      //   values.width,
+      //   values.height,
+      //   shape.width ?? 500,
+      //   shape.height ?? 500
+      // );
+      // const newWidth: number = values.width * scale;
+      // const newHeight: number = values.height * scale;
+      // shapeUpdate({
+      //   width: newWidth,
+      //   height: newHeight,
+      //   fills: [
+      //     {
+      //       id: uuidv4(),
+      //       color: "#ffffff",
+      //       opacity: 1,
+      //       visible: true,
+      //       type: "image",
+      //       image: {
+      //         src: values?.url,
+      //         width: values.width,
+      //         height: values.height,
+      //         name: values?.name,
+      //       },
+      //     },
+      //     ...(shape.fills || []),
+      //   ],
+      // });
+      // execute();
+      // handleResetDialogImage();
     },
     onError: (error) => {
       toast.error(error.message);
@@ -427,26 +436,26 @@ export const LayoutShapeConfig = () => {
       canvas.width = img.width;
       canvas.height = img.height;
       ctx?.drawImage(img, 0, 0);
-      shapeUpdate({
-        fills: [
-          {
-            color: "#fff",
-            id: uuidv4(),
-            image: {
-              src:
-                "data:image/svg+xml;charset=utf-8," +
-                encodeURIComponent(svgString),
-              width: img.width,
-              height: img.height,
-              name: svgName,
-            },
-            opacity: 1,
-            type: "image",
-            visible: true,
-          },
-          ...(shape.fills || []),
-        ],
-      });
+      // shapeUpdate({
+      //   fills: [
+      //     {
+      //       color: "#fff",
+      //       id: uuidv4(),
+      //       image: {
+      //         src:
+      //           "data:image/svg+xml;charset=utf-8," +
+      //           encodeURIComponent(svgString),
+      //         width: img.width,
+      //         height: img.height,
+      //         name: svgName,
+      //       },
+      //       opacity: 1,
+      //       type: "image",
+      //       visible: true,
+      //     },
+      //     ...(shape.fills || []),
+      //   ],
+      // });
       execute();
     };
     const dataImage =
@@ -472,49 +481,56 @@ export const LayoutShapeConfig = () => {
   };
 
   const handleAddFill = () => {
-    shapeUpdate({
-      fills: [
-        ...(shape.fills || []),
-        {
-          id: uuidv4(),
-          color: "#ffffff",
-          opacity: 1,
-          visible: true,
-          type: "fill",
-          image: {
-            src: "",
-            width: 100,
-            height: 100,
-            name: "fill",
-          },
-        },
-      ],
-    });
+    // shapeUpdate({
+    //   fills: [
+    //     ...(shape.fills || []),
+    //     {
+    //       id: uuidv4(),
+    //       color: "#ffffff",
+    //       opacity: 1,
+    //       visible: true,
+    //       type: "fill",
+    //       image: {
+    //         src: "",
+    //         width: 100,
+    //         height: 100,
+    //         name: "fill",
+    //       },
+    //     },
+    //   ],
+    // });
     execute();
   };
 
   const handleFillColorChange = (index: number, color: string) => {
-    const newFills = [...shape.fills];
-    newFills[index].color = color;
-    shapeUpdate({ fills: newFills });
-    execute();
+    // const newFills = [...shape.fills];
+    // newFills[index].color = color;
+    // shapeUpdate({ fills: newFills });
+    // execute();
   };
 
   const handleFillVisibilityToggle = (index: number) => {
-    const newFills = [...shape.fills];
-    newFills[index].visible = !newFills[index].visible;
-    shapeUpdate({ fills: newFills });
-    execute();
+    // const newFills = [...shape.fills];
+    // newFills[index].visible = !newFills[index].visible;
+    // shapeUpdate({ fills: newFills });
+    // execute();
   };
 
   const handleFillRemove = (index: number) => {
-    const newFills = [...shape.fills];
-    newFills.splice(index, 1);
-    shapeUpdate({ fills: newFills });
-    execute();
+    // const newFills = [...shape.fills];
+    // newFills.splice(index, 1);
+    // shapeUpdate({ fills: newFills });
+    // execute();
   };
 
   const handleAddStroke = () => {
+    myHook("strokes", [
+      {
+        id: uuidv4(),
+        color: "#000000",
+        visible: true,
+      },
+    ]);
     shapeUpdate({
       strokes: [
         ...(shape.strokes || []),

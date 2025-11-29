@@ -15,9 +15,6 @@ import { Image as KonvaImage } from "react-konva";
 import { IShapeEvents } from "./type.shape";
 
 // Eventos de shape
-import { useFillColor } from "../hooks/useFillColor";
-import { useShadowColor } from "../hooks/useShadowColor";
-import { useStrokeColor } from "../hooks/useStrokeColor";
 import { calculateCoverCrop } from "../utils/crop";
 import { flexLayoutAtom } from "./layout-flex";
 
@@ -44,11 +41,10 @@ export const SHAPE_ICON = (props: IShapeEvents) => {
   const visible = useAtomValue(box.visible);
   const applyLayout = useSetAtom(flexLayoutAtom);
   const isLocked = useAtomValue(box.isLocked);
-  const shadow = useShadowColor(box.effects);
   const parentId = useAtomValue(box.parentId);
-  const fills = useAtomValue(box.fills);
-  const strokeColor = useStrokeColor(box.strokes);
-  const fillColor = useFillColor(box.fills);
+  const shadowColor = useAtomValue(box.shadowColor);
+  const strokeColor = useAtomValue(box.strokeColor);
+  const fillColor = useAtomValue(box.fillColor);
   const strokeWidth = useAtomValue(box.strokeWidth);
   const dash = useAtomValue(box.dash);
   const isAllBorderRadius = useAtomValue(box.isAllBorderRadius);
@@ -69,16 +65,15 @@ export const SHAPE_ICON = (props: IShapeEvents) => {
     () => shapeId.some((w) => w.id === box.id),
     [shapeId, box.id]
   );
-  const IMG = useMemo(
-    () => fills?.filter((e) => e?.visible && e?.type === "image").at(0),
-    [fills]
-  );
+
+  const IMG = useAtomValue(box.image);
+
   const IMAGE_ICON = useMemo(() => {
     const img = new Image();
-    if (!IMG?.image?.src) return img;
+    if (!IMG?.src) return img;
     const CONTENT = "data:image/svg+xml;charset=utf-8,";
 
-    const svgText = decodeURIComponent(IMG.image.src.replace(CONTENT, ""));
+    const svgText = decodeURIComponent(IMG.src.replace(CONTENT, ""));
 
     const newSvg = svgText
       .replace(/stroke-width="[^"]*"/g, `stroke-width="${strokeWidth}"`)
@@ -89,27 +84,21 @@ export const SHAPE_ICON = (props: IShapeEvents) => {
 
     img.src = CONTENT + encodeURIComponent(newSvg);
     img.crossOrigin = "Anonymous";
-    img.width = IMG.image.width;
-    img.height = IMG.image.height;
+    img.width = IMG.width;
+    img.height = IMG.height;
     return img;
-  }, [
-    IMG?.image?.src,
-    IMG?.image?.width,
-    IMG?.image?.height,
-    strokeColor,
-    strokeWidth,
-  ]);
+  }, [IMG?.src, IMG?.width, IMG?.height, strokeColor, strokeWidth]);
 
   // Configuración de crop para object-fit cover
   const cropConfig = useMemo(
     () =>
       calculateCoverCrop(
-        IMG?.image?.width || 0,
-        IMG?.image?.height || 0,
+        IMG?.width || 0,
+        IMG?.height || 0,
         Number(box.width),
         Number(box.height)
       ),
-    [IMG?.image?.width, IMG?.image?.height, box.width, box.height]
+    [IMG?.width, IMG?.height, box.width, box.height]
   );
 
   if (!box.visible) return null;
@@ -157,12 +146,12 @@ export const SHAPE_ICON = (props: IShapeEvents) => {
             : borderRadius
         }
         // 5. Sombras
-        shadowColor={shadow.color}
+        shadowColor={shadowColor}
         shadowOpacity={shadowOpacity}
         shadowOffsetX={shadowOffsetX}
         shadowOffsetY={shadowOffsetY}
         shadowBlur={shadowBlur}
-        shadowEnabled={Boolean(shadow.enabled)}
+        shadowEnabled
         // 6. Apariencia y opacidad
         opacity={opacity}
         // 7. Interactividad y arrastre

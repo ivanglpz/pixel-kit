@@ -1,12 +1,8 @@
 import {
   Align,
-  Effect,
-  Fill,
   FontWeight,
   IShape,
-  IShapeChildren,
   JotaiState,
-  Stroke,
   VerticalAlign,
 } from "@/editor/shapes/type.shape";
 import { atom, Getter } from "jotai";
@@ -20,6 +16,8 @@ import {
   FlexWrap,
   JustifyContent,
 } from "../shapes/layout-flex";
+import { ShapeBase } from "../shapes/types/shape.base";
+import { ShapeState } from "../shapes/types/shape.state";
 import { capitalize } from "../utils/capitalize";
 import CURRENT_ITEM_ATOM, {
   CLEAR_CURRENT_ITEM_ATOM,
@@ -43,11 +41,11 @@ export type ALL_SHAPES = {
   id: string;
   tool: IShapesKeys;
   // pageId: string | null;
-  state: JotaiState<IShape>;
+  state: JotaiState<ShapeState>;
 };
 
-export type ALL_SHAPES_CHILDREN = Omit<ALL_SHAPES, "state"> & {
-  state: IShapeChildren;
+export type SHAPE_BASE_CHILDREN = Omit<ALL_SHAPES, "state"> & {
+  state: ShapeBase;
 };
 
 type ExcludedKeys = "DRAW" | "MOVE" | "ICON";
@@ -157,12 +155,12 @@ export const DELETE_SHAPES_ATOM = atom(null, (get, set) => {
 });
 export const GET_ALL_SHAPES_BY_ID = atom(
   null,
-  (get, set, id: string): ALL_SHAPES_CHILDREN[] => {
+  (get, set, id: string): SHAPE_BASE_CHILDREN[] => {
     const PLANE_SHAPES = get(PLANE_SHAPES_ATOM);
     const FIND_SHAPE = PLANE_SHAPES.find((e) => e.id === id);
     if (!FIND_SHAPE) return [];
 
-    const sanitizemap = (shape: ALL_SHAPES): ALL_SHAPES_CHILDREN => {
+    const sanitizemap = (shape: ALL_SHAPES): SHAPE_BASE_CHILDREN => {
       const state = get(shape.state);
       return {
         ...shape,
@@ -611,27 +609,9 @@ export const EVENT_COPY_START_SHAPES = atom(
       shape: ALL_SHAPES,
       parentId: string | null = null,
       isRootCopy = false
-    ): IShape => {
+    ): ShapeState => {
       const state = get(shape.state);
       const newId = uuidv4();
-
-      const rootParams = isRootCopy
-        ? {
-            x: atom(args.x - get(state.x) - getInheritedOffset(parentId).x),
-            y: atom(args.y - get(state.y) - getInheritedOffset(parentId).y),
-            offsetX: atom(args.x - get(state.x)),
-            offsetY: atom(args.y - get(state.y)),
-            offsetCopyX: atom(
-              args.x - get(state.x) - getInheritedOffset(parentId).x
-            ),
-            offsetCopyY: atom(
-              args.y - get(state.y) - getInheritedOffset(parentId).y
-            ),
-          }
-        : {
-            x: atom(get(state.x)),
-            y: atom(get(state.y)),
-          };
 
       const originalChildren = get(state.children) ?? [];
 
@@ -647,18 +627,34 @@ export const EVENT_COPY_START_SHAPES = atom(
       });
 
       return {
-        // ...cloneDeep(state),
         id: newId,
-        ...rootParams,
-
+        x: atom(
+          isRootCopy
+            ? args.x - get(state.x) - getInheritedOffset(parentId).x
+            : get(state.x)
+        ),
+        y: atom(
+          isRootCopy
+            ? args.y - get(state.y) - getInheritedOffset(parentId).y
+            : get(state.y)
+        ),
+        offsetX: atom(isRootCopy ? args.x - get(state.x) : 0),
+        offsetY: atom(isRootCopy ? args.y - get(state.y) : 0),
+        offsetCopyX: atom(
+          isRootCopy
+            ? args.x - get(state.x) - getInheritedOffset(parentId).x
+            : 0
+        ),
+        offsetCopyY: atom(
+          isRootCopy
+            ? args.y - get(state.y) - getInheritedOffset(parentId).y
+            : 0
+        ),
         tool: state.tool,
         align: atom<Align>(get(state.align)),
-        // offsetX: atom(get(state.offsetX)),
         copyX: atom(get(state.copyX)),
         copyY: atom(get(state.copyY)),
-        // offsetCopyX: atom(get(state.offsetCopyX)),
-        // offsetCopyY: atom(get(state.offsetCopyY)),
-        // offsetY: atom(get(state.offsetY)),
+        image: atom(get(state.image)),
         verticalAlign: atom<VerticalAlign>(get(state.verticalAlign)),
         paddingBottom: atom(get(state.paddingBottom)),
         paddingTop: atom(get(state.paddingTop)),
@@ -674,7 +670,6 @@ export const EVENT_COPY_START_SHAPES = atom(
         maxWidth: atom(get(state.maxWidth)),
         minHeight: atom(get(state.minHeight)),
         minWidth: atom(get(state.minWidth)),
-        effects: atom<Effect[]>(get(state.effects)),
         isLocked: atom(get(state.isLocked)),
         fillContainerHeight: atom(get(state.fillContainerHeight)),
         fillContainerWidth: atom(get(state.fillContainerWidth)),
@@ -682,14 +677,15 @@ export const EVENT_COPY_START_SHAPES = atom(
         parentId: atom<string | null>(get(state.parentId)),
         rotation: atom(get(state.rotation)),
         opacity: atom(get(state.opacity)),
-        fills: atom<Fill[]>(get(state.fills)),
+        fillColor: atom(get(state.fillColor)),
+        shadowColor: atom(get(state.shadowColor)),
         isLayout: atom(get(state.isLayout)),
         alignItems: atom<AlignItems>(get(state.alignItems)),
         flexDirection: atom<FlexDirection>(get(state.flexDirection)),
         flexWrap: atom<FlexWrap>(get(state.flexWrap)),
         justifyContent: atom<JustifyContent>(get(state.justifyContent)),
         gap: atom(get(state.gap)),
-        strokes: atom<Stroke[]>(get(state.strokes)),
+        strokeColor: atom(get(state.strokeColor)),
         visible: atom(get(state.visible)),
         height: atom(get(state.height)),
         width: atom(get(state.width)),
@@ -711,7 +707,7 @@ export const EVENT_COPY_START_SHAPES = atom(
         fontSize: atom(get(state.fontSize)),
         text: atom(get(state.text)),
         children: atom<ALL_SHAPES[]>(clonedChildren),
-      } as IShape;
+      };
     };
 
     const newShapes = shapesSelected.map((shape) =>
@@ -768,145 +764,35 @@ export const EVENT_DOWN_START_SHAPES = atom(
     const drawConfig = get(DRAW_START_CONFIG_ATOM);
     const tool = get(TOOL_ATOM);
     if (TOOLS_BOX_BASED.includes(tool as FirstArrayKeys)) {
-      const createStartElement = CreateShapeSchema({
-        tool: tool as IShape["tool"],
-        x: atom(x),
-        y: atom(y),
-        label: atom<string>(tool),
-        // x,
-        // y,
-        id: uuidv4(),
-        fills: atom<Fill[]>([
-          {
-            color: atom("#ffffff"),
-            id: uuidv4(),
-            image: {
-              height: 0,
-              name: "default.png",
-              src: "/placeholder.svg",
-              width: 0,
-            },
-            opacity: atom(1),
-            type: "fill",
-            visible: atom(true),
-          },
-          {
-            visible: atom(true),
-            color: atom("#ffffff"),
-            opacity: atom(1),
-            type: "fill",
-            id: uuidv4(),
-            image: {
-              height: 0,
-              name: "default.png",
-              src: "/placeholder.svg",
-              width: 0,
-            },
-          },
-        ]),
-        // label: capitalize(tool),
-      });
-      set(CREATE_CURRENT_ITEM_ATOM, [createStartElement]);
+      set(CREATE_CURRENT_ITEM_ATOM, [
+        CreateShapeSchema({
+          tool: tool as IShape["tool"],
+          x: atom(x),
+          y: atom(y),
+          label: atom<string>(tool),
+        }),
+      ]);
     }
     if (TOOLS_ICON_BASED.includes(tool as SecondArrayKeys)) {
-      const createStartElement = CreateShapeSchema({
-        id: uuidv4(),
-        tool: tool as IShape["tool"],
-        x: atom(x),
-        y: atom(y),
-        label: atom<string>(tool),
-        strokes: atom<Stroke[]>([
-          {
-            id: uuidv4(),
-            visible: atom(true),
-            color: atom("#ffffff"),
-          },
-        ]),
-        fills: atom<Fill[]>([
-          {
-            color: atom("#ffffff"),
-            id: uuidv4(),
-            image: {
-              src: "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20class%3D%22lucide%20lucide-smile%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22currentColor%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%0A%20%20%3Ccircle%20cx%3D%2212%22%20cy%3D%2212%22%20r%3D%2210%22%2F%3E%0A%20%20%3Cpath%20d%3D%22M8%2014s1.5%202%204%202%204-2%204-2%22%2F%3E%0A%20%20%3Cline%20x1%3D%229%22%20x2%3D%229.01%22%20y1%3D%229%22%20y2%3D%229%22%2F%3E%0A%20%20%3Cline%20x1%3D%2215%22%20x2%3D%2215.01%22%20y1%3D%229%22%20y2%3D%229%22%2F%3E%0A%3C%2Fsvg%3E",
-              width: 24,
-              height: 24,
-              name: "Smile",
-            },
-            opacity: atom(1),
-            type: "image",
-            visible: atom(true),
-          },
-          {
-            visible: atom(true),
-            color: atom("#ffffff"),
-            opacity: atom(1),
-            type: "fill",
-            id: uuidv4(),
-            image: {
-              height: 0,
-              name: "default.png",
-              src: "/placeholder.svg",
-              width: 0,
-            },
-          },
-        ]),
-        // strokes: [
-
-        // ],
-        // fills: [
-        //   {
-        //     color: "#fff",
-        //     id: uuidv4(),
-        //     image: {
-        //       src: "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20class%3D%22lucide%20lucide-smile%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22currentColor%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%0A%20%20%3Ccircle%20cx%3D%2212%22%20cy%3D%2212%22%20r%3D%2210%22%2F%3E%0A%20%20%3Cpath%20d%3D%22M8%2014s1.5%202%204%202%204-2%204-2%22%2F%3E%0A%20%20%3Cline%20x1%3D%229%22%20x2%3D%229.01%22%20y1%3D%229%22%20y2%3D%229%22%2F%3E%0A%20%20%3Cline%20x1%3D%2215%22%20x2%3D%2215.01%22%20y1%3D%229%22%20y2%3D%229%22%2F%3E%0A%3C%2Fsvg%3E",
-        //       width: 24,
-        //       height: 24,
-        //       name: "Smile",
-        //     },
-        //     opacity: 1,
-        //     type: "image",
-        //     visible: true,
-        //   },
-        //   {
-        //     visible: true,
-        //     color: "#ffffff",
-        //     opacity: 1,
-        //     type: "fill",
-        //     id: uuidv4(),
-        //     image: {
-        //       height: 0,
-        //       name: "default.png",
-        //       src: "/placeholder.svg",
-        //       width: 0,
-        //     },
-        //   },
-        // ],
-      });
-      set(CREATE_CURRENT_ITEM_ATOM, [createStartElement]);
+      set(CREATE_CURRENT_ITEM_ATOM, [
+        CreateShapeSchema({
+          tool: tool as IShape["tool"],
+          x: atom(x),
+          y: atom(y),
+          label: atom<string>(tool),
+        }),
+      ]);
     }
-    // if (TOOLS_LINE_BASED.includes(tool)) {
-    //   const createStartElement = CreateShapeSchema({
-    //     ...drawConfig,
-    //     tool: tool as IShape["tool"],
-    //     x: 0,
-    //     y: 0,
-    //     points: [x, y],
-    //     id: uuidv4(),
-    //     label: capitalize(tool),
-    //   });
-    //   set(CREATE_CURRENT_ITEM_ATOM, [createStartElement]);
-    // }
+
     if (TOOLS_DRAW_BASED.includes(tool as DrawBasedTools)) {
-      const createStartElement = CreateShapeSchema({
-        ...drawConfig,
-        tool: tool as IShape["tool"],
-        x: atom(0),
-        y: atom(0),
-        points: atom<number[]>([x, y, x, y]),
-        id: uuidv4(),
-        label: atom(capitalize(tool)),
-      });
-      set(CREATE_CURRENT_ITEM_ATOM, [createStartElement]);
+      set(CREATE_CURRENT_ITEM_ATOM, [
+        CreateShapeSchema({
+          ...drawConfig,
+          tool: tool as IShape["tool"],
+          points: atom<number[]>([x, y, x, y]),
+          label: atom(capitalize(tool)),
+        }),
+      ]);
     }
     set(TOOL_ATOM, "MOVE");
     set(EVENT_ATOM, "CREATING");
@@ -959,9 +845,7 @@ export const EVENT_DOWN_FINISH_SHAPES = atom(null, (get, set) => {
 });
 // ----------- DOWN SHAPES -------------- //
 
-export const CREATE_SHAPE_ATOM = atom(null, (get, set, args: IShape) => {
-  console.log(args, "args");
-
+export const CREATE_SHAPE_ATOM = atom(null, (get, set, args: ShapeState) => {
   if (!args || !args?.id) return;
 
   if (get(args.parentId)) {
@@ -979,7 +863,7 @@ export const CREATE_SHAPE_ATOM = atom(null, (get, set, args: IShape) => {
         {
           id: args?.id,
           tool: args?.tool,
-          state: atom<IShape>(args),
+          state: atom<ShapeState>(args),
           pageId: get(PAGE_ID_ATOM),
         },
       ]),
@@ -1003,10 +887,9 @@ export const CREATE_SHAPE_ATOM = atom(null, (get, set, args: IShape) => {
   const newAllShape: ALL_SHAPES = {
     id: args?.id,
     tool: args?.tool,
-    state: atom<IShape>(args),
+    state: atom<ShapeState>(args),
     // pageId: get(PAGE_ID_ATOM),
   };
-  console.log(newAllShape);
 
   set(ALL_SHAPES_ATOM, [...get(ALL_SHAPES_ATOM), newAllShape]);
   // set(NEW_UNDO_REDO, {

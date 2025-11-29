@@ -23,7 +23,6 @@ const DraggableRootItem = ({
   isSelected,
   onClick,
   onDebounce,
-  lengthPage,
 }: {
   page: IPage;
   isSelected: boolean;

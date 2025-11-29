@@ -7,9 +7,6 @@ import { IShapeEvents } from "./type.shape";
 import { SELECTED_SHAPES_BY_IDS_ATOM } from "../states/shape";
 
 import { useMemo } from "react";
-import { useFillColor } from "../hooks/useFillColor";
-import { useShadowColor } from "../hooks/useShadowColor";
-import { useStrokeColor } from "../hooks/useStrokeColor";
 import { flexLayoutAtom } from "./layout-flex";
 export const ShapeText = (props: IShapeEvents) => {
   const { shape: item } = props;
@@ -22,10 +19,10 @@ export const ShapeText = (props: IShapeEvents) => {
   const visible = useAtomValue(box.visible);
   const applyLayout = useSetAtom(flexLayoutAtom);
   const isLocked = useAtomValue(box.isLocked);
-  const shadow = useShadowColor(box.effects);
   const parentId = useAtomValue(box.parentId);
-  const strokeColor = useStrokeColor(box.strokes);
-  const fillColor = useFillColor(box.fills);
+  const shadowColor = useAtomValue(box.shadowColor);
+  const strokeColor = useAtomValue(box.strokeColor);
+  const fillColor = useAtomValue(box.fillColor);
   const strokeWidth = useAtomValue(box.strokeWidth);
   const dash = useAtomValue(box.dash);
   const isAllBorderRadius = useAtomValue(box.isAllBorderRadius);
@@ -95,12 +92,12 @@ export const ShapeText = (props: IShapeEvents) => {
             : borderRadius
         }
         // 5. Sombras
-        shadowColor={shadow.color}
+        shadowColor={shadowColor}
         shadowOpacity={shadowOpacity}
         shadowOffsetX={shadowOffsetX}
         shadowOffsetY={shadowOffsetY}
         shadowBlur={shadowBlur}
-        shadowEnabled={Boolean(shadow.enabled)}
+        shadowEnabled
         // 6. Apariencia y opacidad
         opacity={opacity}
         // 7. Interactividad y arrastre

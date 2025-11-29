@@ -17,6 +17,8 @@ import {
   FlexWrap,
   JustifyContent,
 } from "../shapes/layout-flex";
+import { ShapeImage } from "../shapes/types/shape.base";
+import { ShapeState } from "../shapes/types/shape.state";
 import { ALL_SHAPES } from "../states/shapes";
 import { UndoShape } from "../states/undo-redo";
 
@@ -110,21 +112,27 @@ export const cloneDeep = (value: Object) => {
 //   fontSize: 24,
 //   text: "Hello World",
 // };
-export const CreateShapeSchema = (
-  props?: Partial<IShape>
-): Exclude<IShape, "children"> => {
+export const CreateShapeSchema = (props?: Partial<ShapeState>): ShapeState => {
   return {
     id: uuidv4(),
     x: atom(0),
     y: atom(0),
     tool: "FRAME",
     align: atom<Align>("left"),
+    fillColor: atom("#ffffff"),
+    strokeColor: atom("#ffffff"),
     offsetX: atom(0),
     copyX: atom(0),
     copyY: atom(0),
     offsetCopyX: atom(0),
     offsetCopyY: atom(0),
     offsetY: atom(0),
+    image: atom({
+      height: 100,
+      name: "default.png",
+      src: "/placeholder.svg",
+      width: 100,
+    } as ShapeImage),
     verticalAlign: atom<VerticalAlign>("top"),
     paddingBottom: atom(10),
     paddingTop: atom(10),
@@ -140,7 +148,7 @@ export const CreateShapeSchema = (
     maxWidth: atom(0),
     minHeight: atom(0),
     minWidth: atom(0),
-    effects: atom<Effect[]>([]),
+    shadowColor: atom("#ffffff"),
     isLocked: atom(false),
     fillContainerHeight: atom(false),
     fillContainerWidth: atom(false),
@@ -148,14 +156,12 @@ export const CreateShapeSchema = (
     parentId: atom<string | null>(null),
     rotation: atom(0),
     opacity: atom(1),
-    fills: atom<Fill[]>([]),
     isLayout: atom(false),
     alignItems: atom<AlignItems>("flex-start"),
     flexDirection: atom<FlexDirection>("row"),
     flexWrap: atom<FlexWrap>("nowrap"),
     justifyContent: atom<JustifyContent>("flex-start"),
     gap: atom(0),
-    strokes: atom<Stroke[]>([]),
     visible: atom(true),
     height: atom(100),
     width: atom(100),
