@@ -2,7 +2,7 @@
 /* eslint-disable jsx-a11y/alt-text */
 import { Valid } from "@/components/valid";
 import { IPhoto } from "@/db/schemas/types";
-import { IShape, IShapeJSON } from "@/editor/shapes/type.shape";
+import { IShape } from "@/editor/shapes/type.shape";
 import { SHAPE_SELECTED_ATOM, SHAPE_UPDATE_ATOM } from "@/editor/states/shape";
 import { uploadPhoto } from "@/services/photo";
 import { fetchListPhotosProject } from "@/services/photos";
@@ -15,34 +15,21 @@ import {
   ArrowRight,
   ArrowUp,
   Blend,
-  Brush,
-  Columns,
   CornerDownLeft,
   CornerDownRight,
-  CornerRightDown,
   CornerUpLeft,
   CornerUpRight,
   Expand,
-  Eye,
-  EyeOff,
   File,
-  ImageIcon,
   Layout,
-  Minus,
   MoveHorizontal,
   MoveVertical,
-  PenTool,
-  Plus,
-  Ruler,
   Scaling,
   Sliders,
-  Smile,
   Square,
-  SquareDashed,
 } from "lucide-react";
 import React, { ChangeEvent, ReactNode, useRef, useState } from "react";
 import { toast } from "sonner";
-import { v4 as uuidv4 } from "uuid";
 import { Button, ButtonBase } from "../components/button";
 import { Dialog } from "../components/dialog";
 import { Input } from "../components/input";
@@ -53,6 +40,8 @@ import { fontFamilyOptions, fontWeightOptions } from "../constants/fonts";
 import { useAutoSave } from "../hooks/useAutoSave";
 import { useDelayedExecutor } from "../hooks/useDelayExecutor";
 import { AlignItems, JustifyContent } from "../shapes/layout-flex";
+import { ShapeBase } from "../shapes/types/shape.base";
+import { ShapeState } from "../shapes/types/shape.state";
 import { PROJECT_ID_ATOM } from "../states/projects";
 import { UPDATE_UNDO_REDO } from "../states/undo-redo";
 import { getObjectUrl } from "../utils/getObjectUrl";
@@ -287,7 +276,7 @@ export const SectionHeader = ({
 export const useShapeUpdate = () => {
   const update = useSetAtom(SHAPE_UPDATE_ATOM);
 
-  return <K extends keyof IShape>(type: K, value: IShapeJSON[K]) => {
+  return <K extends keyof ShapeState>(type: K, value: ShapeBase[K]) => {
     update({ type, value });
   };
 };
@@ -426,6 +415,7 @@ export const LayoutShapeConfig = () => {
       toast.error(error.message);
     },
   });
+
   if (shape === null) return null;
 
   const createImageFromSVG = (svgString: string, svgName: string) => {
@@ -524,90 +514,90 @@ export const LayoutShapeConfig = () => {
   };
 
   const handleAddStroke = () => {
-    myHook("strokes", [
-      {
-        id: uuidv4(),
-        color: "#000000",
-        visible: true,
-      },
-    ]);
-    shapeUpdate({
-      strokes: [
-        ...(shape.strokes || []),
-        {
-          id: uuidv4(),
-          color: "#000000",
-          visible: true,
-        },
-      ],
-    });
-    execute();
+    // myHook("strokes", [
+    //   {
+    //     id: uuidv4(),
+    //     color: "#000000",
+    //     visible: true,
+    //   },
+    // ]);
+    // shapeUpdate({
+    //   strokes: [
+    //     ...(shape.strokes || []),
+    //     {
+    //       id: uuidv4(),
+    //       color: "#000000",
+    //       visible: true,
+    //     },
+    //   ],
+    // });
+    // execute();
   };
 
   const handleStrokeColorChange = (index: number, color: string) => {
-    const newStrokes = [...shape.strokes];
-    newStrokes[index].color = color;
-    shapeUpdate({ strokes: newStrokes });
-    execute();
+    // const newStrokes = [...shape.strokes];
+    // newStrokes[index].color = color;
+    // shapeUpdate({ strokes: newStrokes });
+    // execute();
   };
 
   const handleStrokeVisibilityToggle = (index: number) => {
-    const newStrokes = [...shape.strokes];
-    newStrokes[index].visible = !newStrokes[index].visible;
-    shapeUpdate({ strokes: newStrokes });
-    execute();
+    // const newStrokes = [...shape.strokes];
+    // newStrokes[index].visible = !newStrokes[index].visible;
+    // shapeUpdate({ strokes: newStrokes });
+    // execute();
   };
 
   const handleStrokeRemove = (index: number) => {
-    const newStrokes = [...shape.strokes];
-    newStrokes.splice(index, 1);
-    shapeUpdate({ strokes: newStrokes });
-    execute();
+    // const newStrokes = [...shape.strokes];
+    // newStrokes.splice(index, 1);
+    // shapeUpdate({ strokes: newStrokes });
+    // execute();
   };
 
   // Manejadores para effects
   const handleAddEffect = () => {
-    shapeUpdate({
-      effects: [
-        ...(shape.effects || []),
-        {
-          id: uuidv4(),
-          type: "shadow",
-          visible: true,
-          color: "#000",
-        },
-      ],
-    });
-    execute();
+    // shapeUpdate({
+    //   effects: [
+    //     ...(shape.effects || []),
+    //     {
+    //       id: uuidv4(),
+    //       type: "shadow",
+    //       visible: true,
+    //       color: "#000",
+    //     },
+    //   ],
+    // });
+    // execute();
   };
 
   const handleEffectColorChange = (index: number, color: string) => {
-    const newEffects = [...(shape.effects ?? [])];
-    newEffects[index].color = color;
-    shapeUpdate({ effects: newEffects });
-    execute();
+    // const newEffects = [...(shape.effects ?? [])];
+    // newEffects[index].color = color;
+    // shapeUpdate({ effects: newEffects });
+    // execute();
   };
 
   const handleEffectVisibilityToggle = (index: number) => {
-    const newEffects = [...(shape.effects ?? [])];
-    newEffects[index].visible = !newEffects[index].visible;
-    shapeUpdate({ effects: newEffects });
-    execute();
+    // const newEffects = [...(shape.effects ?? [])];
+    // newEffects[index].visible = !newEffects[index].visible;
+    // shapeUpdate({ effects: newEffects });
+    // execute();
   };
 
   const handleEffectRemove = (index: number) => {
-    const newEffects = [...(shape.effects ?? [])];
-    newEffects.splice(index, 1);
-    shapeUpdate({ effects: newEffects });
-    execute();
+    // const newEffects = [...(shape.effects ?? [])];
+    // newEffects.splice(index, 1);
+    // shapeUpdate({ effects: newEffects });
+    // execute();
   };
 
   const handleLineStyleChange = (
     lineJoin: IShape["lineJoin"],
     lineCap: IShape["lineCap"]
   ) => {
-    shapeUpdate({ lineJoin, lineCap });
-    execute();
+    // shapeUpdate({ lineJoin, lineCap });
+    // execute();
   };
 
   const handleResetDialogImage = () => {
@@ -881,14 +871,16 @@ export const LayoutShapeConfig = () => {
                 </p>
               </Input.IconContainer>
               <Input.withPause>
-                <Input.Number
-                  step={1}
-                  value={shape.x}
-                  onChange={(v) => {
-                    shapeUpdate({ x: v });
-                    execute();
-                  }}
-                />
+                <Input.withChange atom={shape.x}>
+                  <Input.Number
+                    step={1}
+                    // value={shape.x}
+                    // onChange={(v) => {
+                    //   shapeUpdate({ x: v });
+                    //   execute();
+                    // }}
+                  />
+                </Input.withChange>
               </Input.withPause>
             </Input.Grid>
           </Input.Container>
@@ -905,14 +897,16 @@ export const LayoutShapeConfig = () => {
                 </p>
               </Input.IconContainer>
               <Input.withPause>
-                <Input.Number
-                  step={1}
-                  value={shape.y}
-                  onChange={(v) => {
-                    shapeUpdate({ y: v });
-                    execute();
-                  }}
-                />
+                <Input.withChange atom={shape.y}>
+                  <Input.Number
+                    step={1}
+                    // value={shape.y}
+                    // onChange={(v) => {
+                    //   shapeUpdate({ y: v });
+                    //   execute();
+                    // }}
+                  />
+                </Input.withChange>
               </Input.withPause>
             </Input.Grid>
           </Input.Container>
@@ -942,10 +936,10 @@ export const LayoutShapeConfig = () => {
           <div className="flex flex-row gap-2">
             <button
               onClick={() => {
-                shapeUpdate({
-                  fillContainerWidth: !shape.fillContainerWidth,
-                });
-                execute();
+                // shapeUpdate({
+                //   fillContainerWidth: !shape.fillContainerWidth,
+                // });
+                // execute();
               }}
               className={css({
                 cursor: "pointer",
@@ -979,10 +973,10 @@ export const LayoutShapeConfig = () => {
             </button>
             <button
               onClick={() => {
-                shapeUpdate({
-                  fillContainerHeight: !shape.fillContainerHeight,
-                });
-                execute();
+                // shapeUpdate({
+                //   fillContainerHeight: !shape.fillContainerHeight,
+                // });
+                // execute();
               }}
               className={css({
                 cursor: "pointer",
@@ -1032,16 +1026,18 @@ export const LayoutShapeConfig = () => {
                 {/* <MoveHorizontal size={constants.icon.size} /> */}
               </Input.IconContainer>
               <Input.withPause>
-                <Input.Number
-                  step={1}
-                  value={Number(shape.width || 0)}
-                  onChange={(v) => {
-                    shapeUpdate({
-                      width: v,
-                    });
-                    execute();
-                  }}
-                />
+                <Input.withChange atom={shape.width}>
+                  <Input.Number
+                    step={1}
+                    // value={Number(shape.width || 0)}
+                    // onChange={(v) => {
+                    //   shapeUpdate({
+                    //     width: v,
+                    //   });
+                    //   execute();
+                    // }}
+                  />
+                </Input.withChange>
               </Input.withPause>
             </Input.Grid>
           </Input.Container>
@@ -1058,17 +1054,19 @@ export const LayoutShapeConfig = () => {
                 </p>
               </Input.IconContainer>
               <Input.withPause>
-                <Input.Number
-                  step={1}
-                  // value={Number(shape.height) || 0}
-                  value={Number(shape.height || 0)}
-                  onChange={(v) => {
-                    shapeUpdate({
-                      height: v,
-                    });
-                    execute();
-                  }}
-                />
+                <Input.withChange atom={shape.height}>
+                  <Input.Number
+                    step={1}
+                    // value={Number(shape.height) || 0}
+                    // value={Number(shape.height || 0)}
+                    // onChange={(v) => {
+                    //   shapeUpdate({
+                    //     height: v,
+                    //   });
+                    //   execute();
+                    // }}
+                  />
+                </Input.withChange>
               </Input.withPause>
             </Input.Grid>
           </Input.Container>
@@ -1195,8 +1193,8 @@ export const LayoutShapeConfig = () => {
             <SectionHeader title="Layouts">
               <button
                 onClick={() => {
-                  shapeUpdate({ isLayout: !shape.isLayout });
-                  execute();
+                  // shapeUpdate({ isLayout: !shape.isLayout });
+                  // execute();
                 }}
                 className={css({
                   cursor: "pointer",
@@ -1239,7 +1237,7 @@ export const LayoutShapeConfig = () => {
                     gap: "md",
                   })}
                 >
-                  <div className={commonStyles.twoColumnGrid}>
+                  {/* <div className={commonStyles.twoColumnGrid}>
                     <LayoutGrid
                       flexDirection={shape.flexDirection}
                       justifyContent={shape.justifyContent}
@@ -1389,23 +1387,25 @@ export const LayoutShapeConfig = () => {
                             <Columns size={constants.icon.size} />
                           </Input.IconContainer>
                           <Input.withPause>
-                            <Input.Number
-                              min={0}
-                              max={9999}
-                              step={1}
-                              value={shape.gap}
-                              onChange={(e) => {
-                                shapeUpdate({
-                                  gap: e,
-                                });
-                                execute();
-                              }}
-                            />
+                            <Input.withChange atom={shape.gap}>
+                              <Input.Number
+                                min={0}
+                                max={9999}
+                                step={1}
+                                // value={shape.gap}
+                                // onChange={(e) => {
+                                //   // shapeUpdate({
+                                //   //   gap: e,
+                                //   // });
+                                //   // execute();
+                                // }}
+                              />
+                            </Input.withChange>
                           </Input.withPause>
                         </Input.Grid>
                       </Input.Container>
                     </section>
-                  </div>
+                  </div> */}
                 </div>
                 {/* NEW: Padding Section */}
                 <div
@@ -1430,18 +1430,20 @@ export const LayoutShapeConfig = () => {
                         </Input.IconContainer>
                         {shape.isAllPadding ? (
                           <Input.withPause>
-                            <Input.Number
-                              min={0}
-                              max={9999}
-                              step={1}
-                              value={shape.padding}
-                              onChange={(e) => {
-                                shapeUpdate({
-                                  padding: e,
-                                });
-                                execute();
-                              }}
-                            />
+                            <Input.withChange atom={shape.padding}>
+                              <Input.Number
+                                min={0}
+                                max={9999}
+                                step={1}
+                                // value={shape.padding}
+                                // onChange={(e) => {
+                                //   shapeUpdate({
+                                //     padding: e,
+                                //   });
+                                //   execute();
+                                // }}
+                              />
+                            </Input.withChange>
                           </Input.withPause>
                         ) : null}
                         {!shape.isAllPadding ? (
@@ -1462,10 +1464,10 @@ export const LayoutShapeConfig = () => {
                         borderRadius: "md",
                       })}
                       onClick={() => {
-                        shapeUpdate({
-                          isAllPadding: !shape.isAllPadding,
-                        });
-                        execute();
+                        // shapeUpdate({
+                        //   isAllPadding: !shape.isAllPadding,
+                        // });
+                        // execute();
                       }}
                       style={{
                         backgroundColor: !shape.isAllPadding
@@ -1506,16 +1508,18 @@ export const LayoutShapeConfig = () => {
                           <ArrowUp size={constants.icon.size} />
                         </Input.IconContainer>
                         <Input.withPause>
-                          <Input.Number
-                            min={0}
-                            max={9999}
-                            step={1}
-                            value={shape.paddingTop || 0}
-                            onChange={(e) => {
-                              shapeUpdate({ paddingTop: e });
-                              execute();
-                            }}
-                          />
+                          <Input.withChange atom={shape.paddingTop}>
+                            <Input.Number
+                              min={0}
+                              max={9999}
+                              step={1}
+                              // value={shape.paddingTop || 0}
+                              // onChange={(e) => {
+                              //   shapeUpdate({ paddingTop: e });
+                              //   execute();
+                              // }}
+                            />
+                          </Input.withChange>
                         </Input.withPause>
                       </Input.Grid>
                     </Input.Container>
@@ -1525,16 +1529,18 @@ export const LayoutShapeConfig = () => {
                           <ArrowRight size={constants.icon.size} />
                         </Input.IconContainer>
                         <Input.withPause>
-                          <Input.Number
-                            min={0}
-                            max={9999}
-                            step={1}
-                            value={shape.paddingRight || 0}
-                            onChange={(e) => {
-                              shapeUpdate({ paddingRight: e });
-                              execute();
-                            }}
-                          />
+                          <Input.withChange atom={shape.paddingRight}>
+                            <Input.Number
+                              min={0}
+                              max={9999}
+                              step={1}
+                              // value={shape.paddingRight || 0}
+                              // onChange={(e) => {
+                              //   shapeUpdate({ paddingRight: e });
+                              //   execute();
+                              // }}
+                            />
+                          </Input.withChange>
                         </Input.withPause>
                       </Input.Grid>
                     </Input.Container>
@@ -1544,16 +1550,18 @@ export const LayoutShapeConfig = () => {
                           <ArrowDown size={constants.icon.size} />
                         </Input.IconContainer>
                         <Input.withPause>
-                          <Input.Number
-                            min={0}
-                            max={9999}
-                            step={1}
-                            value={shape.paddingBottom || 0}
-                            onChange={(e) => {
-                              shapeUpdate({ paddingBottom: e });
-                              execute();
-                            }}
-                          />
+                          <Input.withChange atom={shape.paddingBottom}>
+                            <Input.Number
+                              min={0}
+                              max={9999}
+                              step={1}
+                              // value={shape.paddingBottom || 0}
+                              // onChange={(e) => {
+                              //   shapeUpdate({ paddingBottom: e });
+                              //   execute();
+                              // }}
+                            />
+                          </Input.withChange>
                         </Input.withPause>
                       </Input.Grid>
                     </Input.Container>
@@ -1563,16 +1571,18 @@ export const LayoutShapeConfig = () => {
                           <ArrowLeft size={constants.icon.size} />
                         </Input.IconContainer>
                         <Input.withPause>
-                          <Input.Number
-                            min={0}
-                            max={9999}
-                            step={1}
-                            value={shape.paddingLeft || 0}
-                            onChange={(e) => {
-                              shapeUpdate({ paddingLeft: e });
-                              execute();
-                            }}
-                          />
+                          <Input.withChange atom={shape.paddingLeft}>
+                            <Input.Number
+                              min={0}
+                              max={9999}
+                              step={1}
+                              // value={shape.paddingLeft || 0}
+                              // onChange={(e) => {
+                              //   shapeUpdate({ paddingLeft: e });
+                              //   execute();
+                              // }}
+                            />
+                          </Input.withChange>
                         </Input.withPause>
                       </Input.Grid>
                     </Input.Container>
@@ -1594,16 +1604,18 @@ export const LayoutShapeConfig = () => {
                 <Blend size={constants.icon.size} />
               </Input.IconContainer>
               <Input.withPause>
-                <Input.Number
-                  min={0}
-                  max={1}
-                  step={0.1}
-                  value={shape.opacity}
-                  onChange={(e) => {
-                    shapeUpdate({ opacity: e });
-                    execute();
-                  }}
-                />
+                <Input.withChange atom={shape.opacity}>
+                  <Input.Number
+                    min={0}
+                    max={1}
+                    step={0.1}
+                    // value={shape.opacity}
+                    // onChange={(e) => {
+                    //   shapeUpdate({ opacity: e });
+                    //   execute();
+                    // }}
+                  />
+                </Input.withChange>
               </Input.withPause>
             </Input.Grid>
           </Input.Container>
@@ -1632,18 +1644,20 @@ export const LayoutShapeConfig = () => {
                     </Input.IconContainer>
                     {shape.isAllBorderRadius ? (
                       <Input.withPause>
-                        <Input.Number
-                          min={0}
-                          max={9999}
-                          step={1}
-                          value={shape.borderRadius}
-                          onChange={(e) => {
-                            shapeUpdate({
-                              borderRadius: e,
-                            });
-                            execute();
-                          }}
-                        />
+                        <Input.withChange atom={shape.borderRadius}>
+                          <Input.Number
+                            min={0}
+                            max={9999}
+                            step={1}
+                            // value={shape.borderRadius}
+                            // onChange={(e) => {
+                            //   shapeUpdate({
+                            //     borderRadius: e,
+                            //   });
+                            //   execute();
+                            // }}
+                          />
+                        </Input.withChange>
                       </Input.withPause>
                     ) : null}
                     {!shape.isAllBorderRadius ? (
@@ -1664,10 +1678,10 @@ export const LayoutShapeConfig = () => {
                     borderRadius: "md",
                   })}
                   onClick={() => {
-                    shapeUpdate({
-                      isAllBorderRadius: !shape.isAllBorderRadius,
-                    });
-                    execute();
+                    // shapeUpdate({
+                    //   isAllBorderRadius: !shape.isAllBorderRadius,
+                    // });
+                    // execute();
                   }}
                   style={{
                     backgroundColor: !shape.isAllBorderRadius
@@ -1705,16 +1719,18 @@ export const LayoutShapeConfig = () => {
                       <CornerUpLeft size={constants.icon.size} />
                     </Input.IconContainer>
                     <Input.withPause>
-                      <Input.Number
-                        min={0}
-                        max={9999}
-                        step={1}
-                        value={shape.borderTopLeftRadius || 0}
-                        onChange={(e) => {
-                          shapeUpdate({ borderTopLeftRadius: e });
-                          execute();
-                        }}
-                      />
+                      <Input.withChange atom={shape.borderTopLeftRadius}>
+                        <Input.Number
+                          min={0}
+                          max={9999}
+                          step={1}
+                          // value={shape.borderTopLeftRadius || 0}
+                          // onChange={(e) => {
+                          //   shapeUpdate({ borderTopLeftRadius: e });
+                          //   execute();
+                          // }}
+                        />
+                      </Input.withChange>
                     </Input.withPause>
                   </Input.Grid>
                 </Input.Container>
@@ -1724,16 +1740,18 @@ export const LayoutShapeConfig = () => {
                       <CornerUpRight size={constants.icon.size} />
                     </Input.IconContainer>
                     <Input.withPause>
-                      <Input.Number
-                        min={0}
-                        max={9999}
-                        step={1}
-                        value={shape.borderTopRightRadius || 0}
-                        onChange={(e) => {
-                          shapeUpdate({ borderTopRightRadius: e });
-                          execute();
-                        }}
-                      />
+                      <Input.withChange atom={shape.borderTopRightRadius}>
+                        <Input.Number
+                          min={0}
+                          max={9999}
+                          step={1}
+                          // value={shape.borderTopRightRadius || 0}
+                          // onChange={(e) => {
+                          //   shapeUpdate({ borderTopRightRadius: e });
+                          //   execute();
+                          // }}
+                        />
+                      </Input.withChange>
                     </Input.withPause>
                   </Input.Grid>
                 </Input.Container>
@@ -1743,16 +1761,18 @@ export const LayoutShapeConfig = () => {
                       <CornerDownLeft size={constants.icon.size} />
                     </Input.IconContainer>
                     <Input.withPause>
-                      <Input.Number
-                        min={0}
-                        max={9999}
-                        step={1}
-                        value={shape.borderBottomLeftRadius || 0}
-                        onChange={(e) => {
-                          shapeUpdate({ borderBottomLeftRadius: e });
-                          execute();
-                        }}
-                      />
+                      <Input.withChange atom={shape.borderBottomLeftRadius}>
+                        <Input.Number
+                          min={0}
+                          max={9999}
+                          step={1}
+                          // value={shape.borderBottomLeftRadius || 0}
+                          // onChange={(e) => {
+                          //   shapeUpdate({ borderBottomLeftRadius: e });
+                          //   execute();
+                          // }}
+                        />
+                      </Input.withChange>
                     </Input.withPause>
                   </Input.Grid>
                 </Input.Container>
@@ -1762,16 +1782,18 @@ export const LayoutShapeConfig = () => {
                       <CornerDownRight size={constants.icon.size} />
                     </Input.IconContainer>
                     <Input.withPause>
-                      <Input.Number
-                        min={0}
-                        max={9999}
-                        step={1}
-                        value={shape.borderBottomRightRadius || 0}
-                        onChange={(e) => {
-                          shapeUpdate({ borderBottomRightRadius: e });
-                          execute();
-                        }}
-                      />
+                      <Input.withChange atom={shape.borderBottomRightRadius}>
+                        <Input.Number
+                          min={0}
+                          max={9999}
+                          step={1}
+                          // value={shape.borderBottomRightRadius || 0}
+                          // onChange={(e) => {
+                          //   shapeUpdate({ borderBottomRightRadius: e });
+                          //   execute();
+                          // }}
+                        />
+                      </Input.withChange>
                     </Input.withPause>
                   </Input.Grid>
                 </Input.Container>
@@ -1788,26 +1810,30 @@ export const LayoutShapeConfig = () => {
           <SectionHeader title="Typography" />
 
           <Input.Container>
-            <Input.Select
-              value={shape.fontFamily ?? "Roboto"}
-              onChange={(e) => {
-                shapeUpdate({ fontFamily: e as IShape["fontFamily"] });
-                execute();
-              }}
-              options={fontFamilyOptions}
-            />
+            <Input.withChange atom={shape.fontFamily}>
+              <Input.Select
+                // value={shape.fontFamily ?? "Roboto"}
+                // onChange={(e) => {
+                //   shapeUpdate({ fontFamily: e as IShape["fontFamily"] });
+                //   execute();
+                // }}
+                options={fontFamilyOptions}
+              />
+            </Input.withChange>
           </Input.Container>
 
           <div className={commonStyles.twoColumnGrid}>
             <Input.Container>
-              <Input.Select
-                value={shape.fontWeight ?? "normal"}
-                onChange={(e) => {
-                  shapeUpdate({ fontWeight: e as IShape["fontWeight"] });
-                  execute();
-                }}
-                options={fontWeightOptions}
-              />
+              <Input.withChange atom={shape.fontWeight}>
+                <Input.Select
+                  // value={shape.fontWeight ?? "normal"}
+                  // onChange={(e) => {
+                  //   shapeUpdate({ fontWeight: e as IShape["fontWeight"] });
+                  //   execute();
+                  // }}
+                  options={fontWeightOptions}
+                />
+              </Input.withChange>
             </Input.Container>
             <Input.Container>
               <Input.Grid>
@@ -1815,16 +1841,18 @@ export const LayoutShapeConfig = () => {
                   <Scaling size={constants.icon.size} />
                 </Input.IconContainer>
                 <Input.withPause>
-                  <Input.Number
-                    min={4}
-                    max={180}
-                    step={4}
-                    onChange={(e) => {
-                      shapeUpdate({ fontSize: e });
-                      execute();
-                    }}
-                    value={shape.fontSize || 0}
-                  />
+                  <Input.withChange atom={shape.fontSize}>
+                    <Input.Number
+                      min={4}
+                      max={180}
+                      step={4}
+                      // onChange={(e) => {
+                      //   shapeUpdate({ fontSize: e });
+                      //   execute();
+                      // }}
+                      // value={shape.fontSize || 0}
+                    />
+                  </Input.withChange>
                 </Input.withPause>
               </Input.Grid>
             </Input.Container>
@@ -1834,14 +1862,16 @@ export const LayoutShapeConfig = () => {
           <div className={css({ gridColumn: 2, gridRow: 3 })}>
             <Input.Container>
               <Input.withPause>
-                <Input.TextArea
-                  rows={6}
-                  onChange={(e) => {
-                    shapeUpdate({ text: e });
-                    execute();
-                  }}
-                  value={shape.text || ""}
-                />
+                <Input.withChange atom={shape.text}>
+                  <Input.TextArea
+                    rows={6}
+                    // onChange={(e) => {
+                    //   shapeUpdate({ text: e });
+                    //   execute();
+                    // }}
+                    // value={shape.text || ""}
+                  />
+                </Input.withChange>
               </Input.withPause>
             </Input.Container>
           </div>
@@ -1850,7 +1880,7 @@ export const LayoutShapeConfig = () => {
       </Valid>
 
       <section className={commonStyles.container}>
-        <SectionHeader title="Fill">
+        {/* <SectionHeader title="Fill">
           {shape.tool === "ICON" ? (
             <button
               className={commonStyles.addButton}
@@ -1872,9 +1902,9 @@ export const LayoutShapeConfig = () => {
           <button className={commonStyles.addButton} onClick={handleAddFill}>
             <Plus size={14} />
           </button>
-        </SectionHeader>
+        </SectionHeader> */}
 
-        {shape.fills?.length
+        {/* {shape.fills?.length
           ? shape.fills.map((fill, index) => (
               <div
                 key={`pixel-kit-shape-fill-${shape.id}-${shape.tool}-${index}`}
@@ -1891,7 +1921,6 @@ export const LayoutShapeConfig = () => {
                           value={fill.color}
                           onChange={(e) => handleFillColorChange(index, e)}
                         />
-                        {/* <Scaling size={constants.icon.size} /> */}
                       </Input.IconContainer>
                       <Input.Label
                         text={`#${fill.color?.replace(/#/, "") ?? "ffffff"}`}
@@ -1959,7 +1988,7 @@ export const LayoutShapeConfig = () => {
                 </button>
               </div>
             ))
-          : null}
+          : null} */}
       </section>
 
       {shape.tool !== "TEXT" ? (
@@ -1967,15 +1996,15 @@ export const LayoutShapeConfig = () => {
           <Separator />
 
           <section className={commonStyles.container}>
-            <SectionHeader title="Stroke">
+            {/* <SectionHeader title="Stroke">
               <button
                 className={commonStyles.addButton}
                 onClick={handleAddStroke}
               >
                 <Plus size={14} />
               </button>
-            </SectionHeader>
-
+            </SectionHeader> */}
+            {/*
             {shape.strokes?.length ? (
               <>
                 {shape.strokes.map((stroke, index) => (
@@ -2184,7 +2213,7 @@ export const LayoutShapeConfig = () => {
                   </Input.Container>
                 ) : null}
               </>
-            ) : null}
+            ) : null} */}
           </section>
         </>
       ) : null}
@@ -2192,13 +2221,13 @@ export const LayoutShapeConfig = () => {
       <Separator />
 
       <section className={commonStyles.container}>
-        <SectionHeader title="Effects">
+        {/* <SectionHeader title="Effects">
           <button className={commonStyles.addButton} onClick={handleAddEffect}>
             <Plus size={14} />
           </button>
-        </SectionHeader>
+        </SectionHeader> */}
 
-        {shape.effects?.length
+        {/* {shape.effects?.length
           ? shape.effects.map((effect, index) => (
               <div
                 key={`pixel-kit-shape-effect-${shape.id}-${shape.tool}-${index}`}
@@ -2235,110 +2264,116 @@ export const LayoutShapeConfig = () => {
                 </button>
               </div>
             ))
-          : null}
+          : null} */}
       </section>
-      <Valid isValid={shape.effects.length > 0}>
-        <div
-          className={css({
-            display: "grid",
-            flexDirection: "column",
-            gap: "md",
-            gridTemplateColumns: "2",
-          })}
-        >
-          <Input.Container>
-            <Input.Grid>
-              <Input.IconContainer>
-                <p
-                  className={css({
-                    fontWeight: 600,
-                    fontSize: "x-small",
-                  })}
-                >
-                  X
-                </p>
-              </Input.IconContainer>
-              <Input.withPause>
+      <div
+        className={css({
+          display: "grid",
+          flexDirection: "column",
+          gap: "md",
+          gridTemplateColumns: "2",
+        })}
+      >
+        <Input.Container>
+          <Input.Grid>
+            <Input.IconContainer>
+              <p
+                className={css({
+                  fontWeight: 600,
+                  fontSize: "x-small",
+                })}
+              >
+                X
+              </p>
+            </Input.IconContainer>
+            <Input.withPause>
+              <Input.withChange atom={shape.shadowOffsetX}>
                 <Input.Number
                   step={1}
-                  value={shape.shadowOffsetX || 0}
-                  onChange={(v) => {
-                    shapeUpdate({ shadowOffsetX: v });
-                    execute();
-                  }}
+                  // value={shape.shadowOffsetX || 0}
+                  // onChange={(v) => {
+                  //   shapeUpdate({ shadowOffsetX: v });
+                  //   execute();
+                  // }}
                 />
-              </Input.withPause>
-            </Input.Grid>
-          </Input.Container>
-          <Input.Container>
-            <Input.Grid>
-              <Input.IconContainer>
-                <p
-                  className={css({
-                    fontWeight: 600,
-                    fontSize: "x-small",
-                  })}
-                >
-                  Y
-                </p>
-              </Input.IconContainer>
-              <Input.withPause>
+              </Input.withChange>
+            </Input.withPause>
+          </Input.Grid>
+        </Input.Container>
+        <Input.Container>
+          <Input.Grid>
+            <Input.IconContainer>
+              <p
+                className={css({
+                  fontWeight: 600,
+                  fontSize: "x-small",
+                })}
+              >
+                Y33a
+              </p>
+            </Input.IconContainer>
+            <Input.withPause key={"test"}>
+              <Input.withChange atom={shape.shadowOffsetY}>
                 <Input.Number
                   step={1}
-                  value={shape.shadowOffsetY}
-                  onChange={(e) => {
-                    shapeUpdate({ shadowOffsetY: e });
-                    execute();
-                  }}
+                  // value={shape.shadowOffsetY}
+                  // onChange={(e) => {
+                  //   shapeUpdate({ shadowOffsetY: e });
+                  //   execute();
+                  // }}
                 />
-              </Input.withPause>
-            </Input.Grid>
-          </Input.Container>
-          <Input.Container>
-            <Input.Grid>
-              <Input.IconContainer>
-                <Square
-                  size={constants.icon.size}
-                  strokeWidth={constants.icon.strokeWidth}
-                />
-              </Input.IconContainer>
-              <Input.withPause>
+              </Input.withChange>
+            </Input.withPause>
+          </Input.Grid>
+        </Input.Container>
+        <Input.Container>
+          <Input.Grid>
+            <Input.IconContainer>
+              <Square
+                size={constants.icon.size}
+                strokeWidth={constants.icon.strokeWidth}
+              />
+            </Input.IconContainer>
+            <Input.withPause>
+              <Input.withChange atom={shape.shadowBlur}>
                 <Input.Number
                   min={0}
                   step={1}
-                  onChange={(e) => {
-                    shapeUpdate({ shadowBlur: e });
-                    execute();
-                  }}
-                  value={shape.shadowBlur}
+                  // onChange={(e) => {
+                  //   shapeUpdate({ shadowBlur: e });
+                  //   execute();
+                  // }}
+                  // value={shape.shadowBlur}
                 />
-              </Input.withPause>
-            </Input.Grid>
-          </Input.Container>
-          <Input.Container>
-            <Input.Grid>
-              <Input.IconContainer>
-                <Blend
-                  size={constants.icon.size}
-                  strokeWidth={constants.icon.strokeWidth}
-                />
-              </Input.IconContainer>
-              <Input.withPause>
+              </Input.withChange>
+            </Input.withPause>
+          </Input.Grid>
+        </Input.Container>
+        <Input.Container>
+          <Input.Grid>
+            <Input.IconContainer>
+              <Blend
+                size={constants.icon.size}
+                strokeWidth={constants.icon.strokeWidth}
+              />
+            </Input.IconContainer>
+            <Input.withPause>
+              <Input.withChange atom={shape.shadowOpacity}>
                 <Input.Number
                   min={0}
                   max={1}
                   step={0.1}
-                  onChange={(e) => {
-                    shapeUpdate({ shadowOpacity: e });
-                    execute();
-                  }}
-                  value={shape.shadowOpacity}
+                  // onChange={(e) => {
+                  //   shapeUpdate({ shadowOpacity: e });
+                  //   execute();
+                  // }}
+                  // value={shape.shadowOpacity}
                 />
-              </Input.withPause>
-            </Input.Grid>
-          </Input.Container>
-        </div>
-      </Valid>
+              </Input.withChange>
+            </Input.withPause>
+          </Input.Grid>
+        </Input.Container>
+      </div>
       <Separator />
       <ExportShape />
 

@@ -1,7 +1,9 @@
 import { atom, Getter, Setter } from "jotai";
 import React from "react";
 import { ALL_SHAPES, PLANE_SHAPES_ATOM } from "../states/shapes";
-import { IShape } from "./type.shape";
+import { JotaiState } from "./type.shape";
+import { ShapeBase } from "./types/shape.base";
+import { ShapeState } from "./types/shape.state";
 
 export type JustifyContent =
   | "flex-start"
@@ -14,46 +16,49 @@ export type AlignItems = "flex-start" | "center" | "flex-end";
 export type FlexDirection = "row" | "column";
 export type FlexWrap = "nowrap" | "wrap";
 
-export type LayoutFlexProps = {
-  width: number;
-  height: number;
-  display: "flex";
-  flexDirection: FlexDirection;
-  justifyContent: JustifyContent;
-  alignItems: AlignItems;
-  flexWrap: FlexWrap;
-  gap: number;
+export type LayoutFlexProps = Pick<
+  ShapeBase,
+  | "width"
+  | "height"
+  | "flexDirection"
+  | "justifyContent"
+  | "alignItems"
+  | "flexWrap"
+  | "gap"
+> & {
+  shape: ShapeState;
   children: React.ReactElement[];
-  shape: IShape;
 };
 
-// Cache de valores derivados del shape
-interface ShapeCache {
-  flexDirection: FlexDirection;
-  justifyContent: JustifyContent;
-  alignItems: AlignItems;
-  flexWrap: FlexWrap;
-  gap: number;
+type ShapeCache = Pick<
+  ShapeBase,
+  | "flexDirection"
+  | "justifyContent"
+  | "alignItems"
+  | "flexWrap"
+  | "gap"
+  | "paddingTop"
+  | "paddingLeft"
+> & {
   effectiveWidth: number;
   effectiveHeight: number;
-  paddingTop: number;
-  paddingLeft: number;
-}
+};
 
-// Cache de valores del child
-interface ChildCache {
-  id: string;
-  width: number;
-  height: number;
-  fillContainerWidth: boolean;
-  fillContainerHeight: boolean;
-  minWidth: number;
-  maxWidth: number;
-  minHeight: number;
-  maxHeight: number;
-  atom: any;
-  state: IShape;
-}
+type ChildCache = Pick<
+  ShapeBase,
+  | "id"
+  | "width"
+  | "height"
+  | "fillContainerWidth"
+  | "fillContainerHeight"
+  | "minWidth"
+  | "minHeight"
+  | "maxWidth"
+  | "maxHeight"
+> & {
+  atom: JotaiState<ShapeState>;
+  state: ShapeState;
+};
 
 export const flexLayoutAtom = atom(null, (get, set, { id }: { id: string }) => {
   const FIND_SHAPE = get(PLANE_SHAPES_ATOM).find((s) => s.id === id);
@@ -81,7 +86,10 @@ export const flexLayoutAtom = atom(null, (get, set, { id }: { id: string }) => {
 
 // --- FUNCIONES DE CACHE ---
 
-function buildContainerCache(get: Getter, shape: IShape): ShapeCache | null {
+function buildContainerCache(
+  get: Getter,
+  shape: ShapeState
+): ShapeCache | null {
   const containerWidth = get(shape.width);
   const containerHeight = get(shape.height);
 

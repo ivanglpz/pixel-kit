@@ -6,6 +6,7 @@ import { FC } from "react";
 import { SELECTED_SHAPES_BY_IDS_ATOM } from "../states/shape";
 import TOOL_ATOM from "../states/tool";
 import { StageCanvasColor } from "./canvas";
+import { LayoutShapeConfig } from "./sidebar-right-shape";
 
 const SidebarRight: FC = () => {
   const { config } = useConfiguration();
@@ -40,9 +41,9 @@ const SidebarRight: FC = () => {
       <Valid isValid={!shapeIds.length}>
         <Drawing />
       </Valid> */}
-      {/* <Valid isValid={shapeIds.length > 0}>
-        <LayoutShapeConfig />
-      </Valid> */}
+      {/* <Valid isValid={shapeIds.length > 0}> */}
+      <LayoutShapeConfig />
+      {/* </Valid> */}
 
       {/* <Valid isValid={tool === "MOVE"}> */}
       {/* <Valid isValid={!shapeIds.length}> */}
