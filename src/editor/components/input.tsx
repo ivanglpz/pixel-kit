@@ -1,11 +1,12 @@
 import { css } from "@stylespixelkit/css";
-import { useSetAtom } from "jotai";
+import { useAtom, useSetAtom } from "jotai";
 import React, {
   CSSProperties,
   FocusEvent,
   ReactElement,
   ReactNode,
 } from "react";
+import { JotaiState } from "../shapes/type.shape";
 import { PAUSE_MODE_ATOM } from "../states/tool";
 
 // HOC para inyectar pausa
@@ -14,6 +15,28 @@ type PauseWrapperProps = {
   children: JSX.Element;
 };
 
+type ChangeWrapperProps<T> = {
+  children: JSX.Element;
+  atom: JotaiState<T>;
+};
+
+export const ChangeWrapper = <T,>({
+  children,
+  atom,
+}: ChangeWrapperProps<T>): ReactElement => {
+  const [value, setValue] = useAtom(atom);
+
+  const enhanceChild = (child: ReactNode): ReactNode => {
+    if (!React.isValidElement(child)) return child;
+
+    return React.cloneElement(child as ReactElement, {
+      value,
+      onChange: (value: T) => setValue(value),
+    });
+  };
+
+  return <>{React.Children.map(children, enhanceChild)}</>;
+};
 export const PauseWrapper = ({ children }: PauseWrapperProps): ReactElement => {
   const setPause = useSetAtom(PAUSE_MODE_ATOM);
 
@@ -153,8 +176,8 @@ const IconContainer = ({ children }: { children: ReactNode }) => {
 };
 
 type InputNumberProps = {
-  value: number;
-  onChange: (value: number) => void;
+  value?: number;
+  onChange?: (value: number) => void;
   min?: number;
   max?: number;
   step?: number;
@@ -171,7 +194,7 @@ const NumberComponent = ({
   const handleNumberChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = Number(event.target.value);
     if (!isNaN(newValue)) {
-      onChange(newValue);
+      onChange?.(newValue);
     }
   };
   return (
@@ -200,8 +223,8 @@ const NumberComponent = ({
 };
 
 type InputTextProps = {
-  value: string;
-  onChange: (value: string) => void;
+  value?: string;
+  onChange?: (value: string) => void;
   style?: CSSProperties;
   placeholder?: string;
   rows?: number;
@@ -213,7 +236,7 @@ const TextComponent = ({ onChange, value, style, ...rest }: InputTextProps) => {
       {...rest}
       type="text"
       value={value}
-      onChange={(event) => onChange(event.target.value)}
+      onChange={(event) => onChange?.(event.target.value)}
       className={css({
         width: "auto",
         borderWidth: 1,
@@ -247,7 +270,7 @@ export const TextArea = ({
     <textarea
       {...rest}
       value={value}
-      onChange={(event) => onChange(event.target.value)}
+      onChange={(event) => onChange?.(event.target.value)}
       // onFocus={() => setPause(true)} // Inicia pausa al entrar en el input
       // onBlur={() => setPause(false)} // Quita pausa al salir del input
       placeholder={placeholder}
@@ -267,13 +290,13 @@ export const TextArea = ({
 };
 
 type Props<T> = {
-  value: T;
+  value?: T;
   options: {
     id: string | number;
     label: string;
     value: string;
   }[];
-  onChange: (value: T) => void;
+  onChange?: (value: T) => void;
 };
 
 const Select = <T,>({ options, value, onChange, ...rest }: Props<T>) => {
@@ -287,7 +310,7 @@ const Select = <T,>({ options, value, onChange, ...rest }: Props<T>) => {
         fontSize: "sm",
         backgroundColor: "transparent",
       })}
-      onChange={(event) => onChange(event.target.value as T)}
+      onChange={(event) => onChange?.(event.target.value as T)}
     >
       {options?.map((e) => (
         <option key={e.id} value={e.value}>
@@ -337,7 +360,7 @@ const ColorComponent = ({
             width: 0,
           })}
           value={value}
-          onChange={(event) => onChange(event.target.value)}
+          onChange={(event) => onChange?.(event.target.value)}
         />
       </div>
     </>
@@ -355,4 +378,5 @@ export const Input = {
   TextArea,
   Select,
   withPause: PauseWrapper, // <- aquí
+  withChange: ChangeWrapper,
 };
