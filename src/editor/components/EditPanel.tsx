@@ -8,8 +8,8 @@ import { constants } from "../constants/color";
 import { IShapeEvents } from "../shapes/type.shape";
 import {
   ALL_SHAPES,
-  ALL_SHAPES_CHILDREN,
   GET_ALL_SHAPES_BY_ID,
+  SHAPE_BASE_CHILDREN,
 } from "../states/shapes";
 import { Input } from "./input";
 export const EditPanel = ({ shape }: IShapeEvents) => {
@@ -29,10 +29,10 @@ export const EditPanel = ({ shape }: IShapeEvents) => {
       return response;
     },
     onSuccess: ({ data }) => {
-      const newShape: ALL_SHAPES_CHILDREN = JSON.parse(data.content);
+      const newShape: SHAPE_BASE_CHILDREN = JSON.parse(data.content);
 
       const createAtomRecursively = (
-        shape: ALL_SHAPES_CHILDREN
+        shape: SHAPE_BASE_CHILDREN
       ): ALL_SHAPES => {
         return {
           ...shape,

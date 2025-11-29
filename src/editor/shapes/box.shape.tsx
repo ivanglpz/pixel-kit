@@ -1,9 +1,6 @@
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { useMemo } from "react";
 import { Rect } from "react-konva";
-import { useFillColor } from "../hooks/useFillColor";
-import { useShadowColor } from "../hooks/useShadowColor";
-import { useStrokeColor } from "../hooks/useStrokeColor";
 import { SELECTED_SHAPES_BY_IDS_ATOM } from "../states/shape";
 import { flexLayoutAtom } from "./layout-flex";
 import { IShapeEvents } from "./type.shape";
@@ -19,10 +16,10 @@ const ShapeBox = (props: IShapeEvents) => {
   const visible = useAtomValue(box.visible);
   const applyLayout = useSetAtom(flexLayoutAtom);
   const isLocked = useAtomValue(box.isLocked);
-  const shadow = useShadowColor(box.effects);
+  const shadowColor = useAtomValue(box.shadowColor);
+  const strokeColor = useAtomValue(box.strokeColor);
+  const fillColor = useAtomValue(box.fillColor);
   const parentId = useAtomValue(box.parentId);
-  const strokeColor = useStrokeColor(box.strokes);
-  const fillColor = useFillColor(box.fills);
   const strokeWidth = useAtomValue(box.strokeWidth);
   const dash = useAtomValue(box.dash);
   const isAllBorderRadius = useAtomValue(box.isAllBorderRadius);
@@ -83,12 +80,12 @@ const ShapeBox = (props: IShapeEvents) => {
             : borderRadius
         }
         // 5. Sombras
-        shadowColor={shadow.color}
+        shadowColor={shadowColor}
         shadowOpacity={shadowOpacity}
         shadowOffsetX={shadowOffsetX}
         shadowOffsetY={shadowOffsetY}
         shadowBlur={shadowBlur}
-        shadowEnabled={Boolean(shadow.enabled)}
+        shadowEnabled
         // 6. Apariencia y opacidad
         opacity={opacity}
         // 7. Interactividad y arrastre

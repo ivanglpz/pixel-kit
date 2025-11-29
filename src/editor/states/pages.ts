@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from "uuid";
 import { canvasTheme } from "./canvas";
 import { MODE_ATOM } from "./mode";
 import { PROJECT_ATOM } from "./projects";
-import { ALL_SHAPES, ALL_SHAPES_CHILDREN, WithInitialValue } from "./shapes";
+import { ALL_SHAPES, SHAPE_BASE_CHILDREN, WithInitialValue } from "./shapes";
 import { UndoRedoAction } from "./undo-redo";
 
 export type IPageShapeIds = { id: string; parentId: string | null };
@@ -30,7 +30,7 @@ export type IPageJSON = {
   color: string;
   isVisible: boolean;
   SHAPES: {
-    LIST: ALL_SHAPES_CHILDREN[];
+    LIST: SHAPE_BASE_CHILDREN[];
   };
 };
 export const GET_MODE = atom((get) => {

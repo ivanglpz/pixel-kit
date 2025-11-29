@@ -10,19 +10,12 @@ import {
   FlexWrap,
   JustifyContent,
 } from "../shapes/layout-flex";
-import {
-  Align,
-  Effect,
-  Fill,
-  FontWeight,
-  IShape,
-  Stroke,
-  VerticalAlign,
-} from "../shapes/type.shape";
+import { Align, FontWeight, VerticalAlign } from "../shapes/type.shape";
+import { ShapeState } from "../shapes/types/shape.state";
 import { IStageEvents } from "./event";
 import { MODE } from "./mode";
 import { IPage, IPageJSON, IPageShapeIds } from "./pages";
-import { ALL_SHAPES, ALL_SHAPES_CHILDREN, WithInitialValue } from "./shapes";
+import { ALL_SHAPES, SHAPE_BASE_CHILDREN, WithInitialValue } from "./shapes";
 import { GET_PROJECTS_BY_USER, TABS_PERSIST_ATOM } from "./tabs";
 import { IKeyTool } from "./tool";
 import { UndoRedoAction } from "./undo-redo";
@@ -52,10 +45,9 @@ export const PROJECT_ID_ATOM = atomWithDefault<string | null>(() => {
 
   return ID ?? null;
 });
-const cloneShapeRecursive = (shape: ALL_SHAPES_CHILDREN): ALL_SHAPES => {
+const cloneShapeRecursive = (shape: SHAPE_BASE_CHILDREN): ALL_SHAPES => {
   return {
     id: shape.id,
-    // pageId: shape.pageId,
     tool: shape.tool,
     state: atom({
       id: shape.id,
@@ -84,16 +76,18 @@ const cloneShapeRecursive = (shape: ALL_SHAPES_CHILDREN): ALL_SHAPES => {
       maxWidth: atom(shape.state.maxWidth),
       minHeight: atom(shape.state.minHeight),
       minWidth: atom(shape.state.minWidth),
-      effects: atom<Effect[]>(
-        shape.state.effects.map((e) => {
-          return {
-            id: e.id,
-            type: e.type,
-            visible: atom(e.visible),
-            color: atom(e.color),
-          };
-        })
+      shadowColor: atom(shape?.state?.shadowColor ?? "#ffffff"),
+      fillColor: atom(shape?.state?.fillColor ?? "#ffffffffffff"),
+      strokeColor: atom(shape?.state?.strokeColor ?? "#ffffff"),
+      image: atom(
+        shape?.state?.image ?? {
+          height: 100,
+          name: "default.png",
+          src: "/placeholder.svg",
+          width: 100,
+        }
       ),
+
       isLocked: atom(shape.state.isLocked),
       fillContainerHeight: atom(shape.state.fillContainerHeight),
       fillContainerWidth: atom(shape.state.fillContainerWidth),
@@ -101,33 +95,13 @@ const cloneShapeRecursive = (shape: ALL_SHAPES_CHILDREN): ALL_SHAPES => {
       parentId: atom<string | null>(shape.state.parentId),
       rotation: atom(shape.state.rotation),
       opacity: atom(shape.state.opacity),
-      fills: atom<Fill[]>(
-        shape.state.fills.map((e) => {
-          return {
-            id: e.id,
-            color: atom(e.color),
-            opacity: atom(e.opacity),
-            visible: atom(e.visible),
-            type: e.type,
-            image: e.image,
-          };
-        })
-      ),
       isLayout: atom(shape.state.isLayout),
       alignItems: atom<AlignItems>(shape.state.alignItems),
       flexDirection: atom<FlexDirection>(shape.state.flexDirection),
       flexWrap: atom<FlexWrap>(shape.state.flexWrap),
       justifyContent: atom<JustifyContent>(shape.state.justifyContent),
       gap: atom(shape.state.gap),
-      strokes: atom<Stroke[]>(
-        shape.state.strokes.map((e) => {
-          return {
-            id: e.id,
-            color: atom(e.color),
-            visible: atom(e.visible),
-          };
-        })
-      ),
+
       visible: atom(shape.state.visible),
       height: atom(shape.state.height),
       width: atom(shape.state.width),
@@ -148,9 +122,8 @@ const cloneShapeRecursive = (shape: ALL_SHAPES_CHILDREN): ALL_SHAPES => {
       fontFamily: atom(shape.state.fontFamily),
       fontSize: atom(shape.state.fontSize),
       text: atom(shape.state.text),
-
       children: atom(shape.state.children.map((c) => cloneShapeRecursive(c))),
-    } as IShape),
+    } as ShapeState),
   };
 };
 
@@ -263,13 +236,14 @@ export const PROJECT_ATOM = atom((get) => {
 export const GET_JSON_PROJECTS_ATOM = atom(null, (get, set) => {
   const project = get(PROJECT_ATOM);
 
-  const cloneShapeJson = (shape: ALL_SHAPES): ALL_SHAPES_CHILDREN => {
+  const cloneShapeJson = (shape: ALL_SHAPES): SHAPE_BASE_CHILDREN => {
     return {
       id: shape.id,
       // pageId: shape.pageId,
       tool: shape.tool,
       state: {
-        ...CreateShapeSchema(get(shape.state)),
+        ...CreateShapeSchema(),
+        ...get(shape.state),
         children: get(get(shape.state).children).map((c) => cloneShapeJson(c)),
       },
     };
