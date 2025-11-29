@@ -1,12 +1,14 @@
 import { css } from "@stylespixelkit/css";
-import { useAtom, useSetAtom } from "jotai";
+import { useAtomValue, useSetAtom } from "jotai";
 import React, {
   CSSProperties,
   FocusEvent,
   ReactElement,
   ReactNode,
 } from "react";
-import { JotaiState } from "../shapes/type.shape";
+import { ShapeBase } from "../shapes/types/shape.base";
+import { ShapeState } from "../shapes/types/shape.state";
+import { useShapeUpdate } from "../sidebar/sidebar-right-shape";
 import { PAUSE_MODE_ATOM } from "../states/tool";
 
 // HOC para inyectar pausa
@@ -15,23 +17,34 @@ type PauseWrapperProps = {
   children: JSX.Element;
 };
 
-type ChangeWrapperProps<T> = {
+type ChangeWrapperProps = {
   children: JSX.Element;
-  atom: JotaiState<T>;
+  shape: ShapeState;
+  type: keyof Omit<ShapeState, "id" | "tool">;
 };
 
-export const ChangeWrapper = <T,>({
+export const ChangeWrapper = <K extends keyof ShapeState>({
   children,
-  atom,
-}: ChangeWrapperProps<T>): ReactElement => {
-  const [value, setValue] = useAtom(atom);
+  shape,
+  type,
+}: ChangeWrapperProps): ReactElement => {
+  if (!shape[type]) return children;
+  const atom = shape[type];
+
+  if (!atom) return children;
+
+  const shapeValue = useAtomValue(atom);
+  const spHook = useShapeUpdate();
 
   const enhanceChild = (child: ReactNode): ReactNode => {
     if (!React.isValidElement(child)) return child;
 
     return React.cloneElement(child as ReactElement, {
-      value,
-      onChange: (value: T) => setValue(value),
+      ...child.props,
+      value: shapeValue,
+      onChange: (value: ShapeBase[K]) => {
+        spHook(type, value);
+      },
     });
   };
 
@@ -63,6 +76,7 @@ export const PauseWrapper = ({ children }: PauseWrapperProps): ReactElement => {
     const originalOnBlur = child.props.onBlur;
 
     return React.cloneElement(child as ReactElement, {
+      ...child.props,
       onFocus: (e: FocusEvent<HTMLElement>) => handleFocus(e, originalOnFocus),
       onBlur: (e: FocusEvent<HTMLElement>) => handleBlur(e, originalOnBlur),
     });
