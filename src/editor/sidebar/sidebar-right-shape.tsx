@@ -7,7 +7,7 @@ import { uploadPhoto } from "@/services/photo";
 import { fetchListPhotosProject } from "@/services/photos";
 import { css } from "@stylespixelkit/css";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { useAtomValue, useSetAtom } from "jotai";
+import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import {
   ArrowDown,
   ArrowLeft,
@@ -39,6 +39,7 @@ import { fontFamilyOptions, fontWeightOptions } from "../constants/fonts";
 import { useAutoSave } from "../hooks/useAutoSave";
 import { useDelayedExecutor } from "../hooks/useDelayExecutor";
 import { AlignItems, JustifyContent } from "../shapes/layout-flex";
+import { JotaiState } from "../shapes/type.shape";
 import { ShapeBase } from "../shapes/types/shape.base";
 import { ShapeState } from "../shapes/types/shape.state";
 import { PROJECT_ID_ATOM } from "../states/projects";
@@ -278,6 +279,159 @@ export const useShapeUpdate = () => {
   return <K extends keyof ShapeState>(type: K, value: ShapeBase[K]) => {
     update({ type, value });
   };
+};
+
+const ICON_SHAPE = {
+  width: MoveHorizontal,
+  height: MoveVertical,
+  layout: Layout,
+  isAllPadding: Sliders,
+  isAllBorderRadius: Sliders,
+};
+type ShapeAtomButtonProps = {
+  atomo: JotaiState<boolean>;
+  type: keyof typeof ICON_SHAPE;
+};
+const ShapeAtomButton = ({ atomo, type }: ShapeAtomButtonProps) => {
+  const [value, setValue] = useAtom(atomo);
+  const Icon = ICON_SHAPE[type];
+  return (
+    <button
+      onClick={() => {
+        setValue(!value);
+      }}
+      className={css({
+        cursor: "pointer",
+        width: 30,
+        height: 30,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        borderWidth: "1px",
+        borderStyle: "solid",
+        borderRadius: "md",
+      })}
+      style={{
+        backgroundColor: value
+          ? constants.theme.colors.background
+          : "transparent",
+        borderColor: value ? constants.theme.colors.primary : "transparent",
+      }}
+    >
+      <Icon
+        size={constants.icon.size}
+        color={
+          value ? constants.theme.colors.primary : constants.theme.colors.white
+        }
+        strokeWidth={constants.icon.strokeWidth}
+      />
+    </button>
+  );
+};
+type ShapeIsAllPaddingProps = {
+  shape: ShapeState;
+};
+const ShapePaddings = ({ shape }: ShapeIsAllPaddingProps) => {
+  const isAllPadding = useAtomValue(shape.isAllPadding);
+
+  if (isAllPadding) return null;
+  return (
+    <div
+      className={css({
+        display: "grid",
+        flexDirection: "column",
+        gap: "md",
+        gridTemplateColumns: "2",
+      })}
+    >
+      <Input.Container>
+        <Input.Grid>
+          <Input.IconContainer>
+            <ArrowUp size={constants.icon.size} />
+          </Input.IconContainer>
+          <Input.withPause>
+            <Input.withChange shape={shape} type="paddingTop">
+              <Input.Number min={0} max={9999} step={1} />
+            </Input.withChange>
+          </Input.withPause>
+        </Input.Grid>
+      </Input.Container>
+      <Input.Container>
+        <Input.Grid>
+          <Input.IconContainer>
+            <ArrowRight size={constants.icon.size} />
+          </Input.IconContainer>
+          <Input.withPause>
+            <Input.withChange shape={shape} type="paddingRight">
+              <Input.Number min={0} max={9999} step={1} />
+            </Input.withChange>
+          </Input.withPause>
+        </Input.Grid>
+      </Input.Container>
+      <Input.Container>
+        <Input.Grid>
+          <Input.IconContainer>
+            <ArrowDown size={constants.icon.size} />
+          </Input.IconContainer>
+          <Input.withPause>
+            <Input.withChange shape={shape} type="paddingBottom">
+              <Input.Number min={0} max={9999} step={1} />
+            </Input.withChange>
+          </Input.withPause>
+        </Input.Grid>
+      </Input.Container>
+      <Input.Container>
+        <Input.Grid>
+          <Input.IconContainer>
+            <ArrowLeft size={constants.icon.size} />
+          </Input.IconContainer>
+          <Input.withPause>
+            <Input.withChange shape={shape} type="paddingLeft">
+              <Input.Number min={0} max={9999} step={1} />
+            </Input.withChange>
+          </Input.withPause>
+        </Input.Grid>
+      </Input.Container>
+    </div>
+  );
+};
+
+const ShapeIsAllPadding = ({ shape }: ShapeIsAllPaddingProps) => {
+  return (
+    <Input.Container>
+      <Input.Grid>
+        <Input.IconContainer>
+          <Expand size={constants.icon.size} />
+        </Input.IconContainer>
+        <ShapeShowAtomProvider atomo={shape.isAllPadding} ctx={(e) => e}>
+          <Input.withPause>
+            <Input.withChange shape={shape} type="padding">
+              <Input.Number min={0} max={9999} step={1} />
+            </Input.withChange>
+          </Input.withPause>
+        </ShapeShowAtomProvider>
+        <ShapeShowAtomProvider atomo={shape.isAllPadding} ctx={(e) => !e}>
+          <Input.Label text="Mixed" />
+        </ShapeShowAtomProvider>
+      </Input.Grid>
+    </Input.Container>
+  );
+};
+
+type ShapeShowAtomProviderProps = {
+  atomo: ShapeAtomButtonProps["atomo"];
+  children: ReactNode;
+  ctx: (value: boolean) => boolean;
+};
+
+const ShapeShowAtomProvider = ({
+  atomo,
+  children,
+  ctx,
+}: ShapeShowAtomProviderProps) => {
+  const value = useAtomValue(atomo);
+  if (ctx(value)) return null;
+  return <>{children}</>;
 };
 
 export const LayoutShapeConfig = () => {
@@ -702,6 +856,10 @@ export const LayoutShapeConfig = () => {
           </section>
         </Dialog.Container>
       </Dialog.Provider>
+      {/* SHAPE PROPS FIELDS */}
+      {/* SHAPE PROPS FIELDS */}
+      {/* SHAPE PROPS FIELDS */}
+      {/* SHAPE PROPS FIELDS */}
 
       <section className={commonStyles.container}>
         <div
@@ -740,14 +898,7 @@ export const LayoutShapeConfig = () => {
               </Input.IconContainer>
               <Input.withPause>
                 <Input.withChange shape={shape} type="x">
-                  <Input.Number
-                    step={1}
-                    // value={shape.x}
-                    // onChange={(v) => {
-                    //   shapeUpdate({ x: v });
-                    //   execute();
-                    // }}
-                  />
+                  <Input.Number step={1} />
                 </Input.withChange>
               </Input.withPause>
             </Input.Grid>
@@ -766,14 +917,7 @@ export const LayoutShapeConfig = () => {
               </Input.IconContainer>
               <Input.withPause>
                 <Input.withChange shape={shape} type="y">
-                  <Input.Number
-                    step={1}
-                    // value={shape.y}
-                    // onChange={(v) => {
-                    //   shapeUpdate({ y: v });
-                    //   execute();
-                    // }}
-                  />
+                  <Input.Number step={1} />
                 </Input.withChange>
               </Input.withPause>
             </Input.Grid>
@@ -785,97 +929,10 @@ export const LayoutShapeConfig = () => {
       <section className={commonStyles.container}>
         <header className="flex flex-row justify-between items-center">
           <p className={commonStyles.sectionTitle}>Dimensions</p>
-          {/* <Input.Container>
-            <Input.withPause>
-              <Input.Select
-                value={D_TYPE}
-                options={Object.values(DIMENSIONS_SHAPE).map((e, index) => {
-                  return {
-                    id: `dimension-${index}`,
-                    label: e.label,
-                    value: e.value,
-                  };
-                })}
-                onChange={(e) => SET_DTYPE(e)}
-              />
-            </Input.withPause>
-          </Input.Container> */}
 
           <div className="flex flex-row gap-2">
-            <button
-              onClick={() => {
-                // shapeUpdate({
-                //   fillContainerWidth: !shape.fillContainerWidth,
-                // });
-                // execute();
-              }}
-              className={css({
-                cursor: "pointer",
-                width: 30,
-                height: 30,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                borderWidth: "1px",
-                borderStyle: "solid",
-                borderRadius: "md",
-              })}
-              style={{
-                backgroundColor: shape.fillContainerWidth
-                  ? constants.theme.colors.background
-                  : "transparent",
-                borderColor: shape.fillContainerWidth
-                  ? constants.theme.colors.primary
-                  : "transparent",
-              }}
-            >
-              <MoveHorizontal
-                size={constants.icon.size}
-                color={
-                  shape.fillContainerWidth
-                    ? constants.theme.colors.primary
-                    : constants.theme.colors.white
-                }
-                strokeWidth={constants.icon.strokeWidth}
-              />
-            </button>
-            <button
-              onClick={() => {
-                // shapeUpdate({
-                //   fillContainerHeight: !shape.fillContainerHeight,
-                // });
-                // execute();
-              }}
-              className={css({
-                cursor: "pointer",
-                width: 30,
-                height: 30,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                borderWidth: "1px",
-                borderStyle: "solid",
-                borderRadius: "md",
-              })}
-              style={{
-                backgroundColor: shape.fillContainerHeight
-                  ? constants.theme.colors.background
-                  : "transparent",
-                borderColor: shape.fillContainerHeight
-                  ? constants.theme.colors.primary
-                  : "transparent",
-              }}
-            >
-              <MoveVertical
-                size={constants.icon.size}
-                color={
-                  shape.fillContainerHeight
-                    ? constants.theme.colors.primary
-                    : constants.theme.colors.white
-                }
-                strokeWidth={constants.icon.strokeWidth}
-              />
-            </button>
+            <ShapeAtomButton type="width" atomo={shape.fillContainerWidth} />
+            <ShapeAtomButton type="height" atomo={shape.fillContainerHeight} />
           </div>
         </header>
 
@@ -891,20 +948,10 @@ export const LayoutShapeConfig = () => {
                 >
                   W
                 </p>
-                {/* <MoveHorizontal size={constants.icon.size} /> */}
               </Input.IconContainer>
               <Input.withPause>
                 <Input.withChange shape={shape} type="width">
-                  <Input.Number
-                    step={1}
-                    // value={Number(shape.width || 0)}
-                    // onChange={(v) => {
-                    //   shapeUpdate({
-                    //     width: v,
-                    //   });
-                    //   execute();
-                    // }}
-                  />
+                  <Input.Number step={1} />
                 </Input.withChange>
               </Input.withPause>
             </Input.Grid>
@@ -923,17 +970,7 @@ export const LayoutShapeConfig = () => {
               </Input.IconContainer>
               <Input.withPause>
                 <Input.withChange shape={shape} type="height">
-                  <Input.Number
-                    step={1}
-                    // value={Number(shape.height) || 0}
-                    // value={Number(shape.height || 0)}
-                    // onChange={(v) => {
-                    //   shapeUpdate({
-                    //     height: v,
-                    //   });
-                    //   execute();
-                    // }}
-                  />
+                  <Input.Number step={1} />
                 </Input.withChange>
               </Input.withPause>
             </Input.Grid>
@@ -947,53 +984,17 @@ export const LayoutShapeConfig = () => {
         <>
           <section className={commonStyles.container}>
             <SectionHeader title="Layouts">
-              <button
-                onClick={() => {
-                  // shapeUpdate({ isLayout: !shape.isLayout });
-                  // execute();
-                }}
-                className={css({
-                  cursor: "pointer",
-                  width: 30,
-                  height: 30,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  borderWidth: "1px",
-                  borderStyle: "solid",
-                  borderRadius: "md",
-                })}
-                style={{
-                  backgroundColor: shape.isLayout
-                    ? constants.theme.colors.background
-                    : "transparent",
-                  borderColor: shape.isLayout
-                    ? constants.theme.colors.primary
-                    : "transparent",
-                }}
-              >
-                <Layout
-                  size={constants.icon.size}
-                  color={
-                    shape.isLayout
-                      ? constants.theme.colors.primary
-                      : constants.theme.colors.white
-                  }
-                  strokeWidth={constants.icon.strokeWidth}
-                />
-              </button>
+              <ShapeAtomButton type="layout" atomo={shape.isLayout} />
             </SectionHeader>
-
-            {shape.isLayout ? (
-              <>
-                <div
-                  className={css({
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: "md",
-                  })}
-                >
-                  {/* <div className={commonStyles.twoColumnGrid}>
+            <ShapeShowAtomProvider atomo={shape.isLayout} ctx={(e) => e}>
+              <div
+                className={css({
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "md",
+                })}
+              >
+                {/* <div className={commonStyles.twoColumnGrid}>
                     <LayoutGrid
                       flexDirection={shape.flexDirection}
                       justifyContent={shape.justifyContent}
@@ -1162,190 +1163,35 @@ export const LayoutShapeConfig = () => {
                       </Input.Container>
                     </section>
                   </div> */}
-                </div>
-                {/* NEW: Padding Section */}
+              </div>
+              {/* NEW: Padding Section */}
+              <div
+                className={css({
+                  display: "flex",
+                  flexDir: "column",
+                  gap: "md",
+                })}
+              >
+                <Input.Label text="Padding" />
                 <div
                   className={css({
-                    display: "flex",
-                    flexDir: "column",
+                    display: "grid",
+                    gridTemplateColumns: "1fr 30px",
                     gap: "md",
                   })}
                 >
-                  <Input.Label text="Padding" />
-                  <div
-                    className={css({
-                      display: "grid",
-                      gridTemplateColumns: "1fr 30px",
-                      gap: "md",
-                    })}
-                  >
-                    <Input.Container>
-                      <Input.Grid>
-                        <Input.IconContainer>
-                          <Expand size={constants.icon.size} />
-                        </Input.IconContainer>
-                        {shape.isAllPadding ? (
-                          <Input.withPause>
-                            <Input.withChange shape={shape} type="padding">
-                              <Input.Number
-                                min={0}
-                                max={9999}
-                                step={1}
-                                // value={shape.padding}
-                                // onChange={(e) => {
-                                //   shapeUpdate({
-                                //     padding: e,
-                                //   });
-                                //   execute();
-                                // }}
-                              />
-                            </Input.withChange>
-                          </Input.withPause>
-                        ) : null}
-                        {!shape.isAllPadding ? (
-                          <Input.Label text="Mixed" />
-                        ) : null}
-                      </Input.Grid>
-                    </Input.Container>
-                    <button
-                      className={css({
-                        cursor: "pointer",
-                        width: 30,
-                        height: 30,
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        borderWidth: "1px",
-                        borderStyle: "solid",
-                        borderRadius: "md",
-                      })}
-                      onClick={() => {
-                        // shapeUpdate({
-                        //   isAllPadding: !shape.isAllPadding,
-                        // });
-                        // execute();
-                      }}
-                      style={{
-                        backgroundColor: !shape.isAllPadding
-                          ? constants.theme.colors.background
-                          : "transparent",
-                        borderColor: !shape.isAllPadding
-                          ? constants.theme.colors.primary
-                          : "transparent",
-                      }}
-                    >
-                      <Sliders
-                        size={constants.icon.size}
-                        strokeWidth={constants.icon.strokeWidth}
-                        color={
-                          !shape.isAllPadding
-                            ? constants.theme.colors.primary
-                            : constants.theme.colors.white
-                        }
-                      />
-                    </button>
-                  </div>
-                  {/* Botón toggle para padding individual */}
+                  <ShapeIsAllPadding shape={shape} />
+                  <ShapeAtomButton
+                    atomo={shape.isAllPadding}
+                    type="isAllPadding"
+                  />
                 </div>
+                {/* Botón toggle para padding individual */}
+              </div>
 
-                {/* Individual Padding Controls */}
-                {!shape.isAllPadding && (
-                  <div
-                    className={css({
-                      display: "grid",
-                      flexDirection: "column",
-                      gap: "md",
-                      gridTemplateColumns: "2",
-                    })}
-                  >
-                    <Input.Container>
-                      <Input.Grid>
-                        <Input.IconContainer>
-                          <ArrowUp size={constants.icon.size} />
-                        </Input.IconContainer>
-                        <Input.withPause>
-                          <Input.withChange shape={shape} type="paddingTop">
-                            <Input.Number
-                              min={0}
-                              max={9999}
-                              step={1}
-                              // value={shape.paddingTop || 0}
-                              // onChange={(e) => {
-                              //   shapeUpdate({ paddingTop: e });
-                              //   execute();
-                              // }}
-                            />
-                          </Input.withChange>
-                        </Input.withPause>
-                      </Input.Grid>
-                    </Input.Container>
-                    <Input.Container>
-                      <Input.Grid>
-                        <Input.IconContainer>
-                          <ArrowRight size={constants.icon.size} />
-                        </Input.IconContainer>
-                        <Input.withPause>
-                          <Input.withChange shape={shape} type="paddingRight">
-                            <Input.Number
-                              min={0}
-                              max={9999}
-                              step={1}
-                              // value={shape.paddingRight || 0}
-                              // onChange={(e) => {
-                              //   shapeUpdate({ paddingRight: e });
-                              //   execute();
-                              // }}
-                            />
-                          </Input.withChange>
-                        </Input.withPause>
-                      </Input.Grid>
-                    </Input.Container>
-                    <Input.Container>
-                      <Input.Grid>
-                        <Input.IconContainer>
-                          <ArrowDown size={constants.icon.size} />
-                        </Input.IconContainer>
-                        <Input.withPause>
-                          <Input.withChange shape={shape} type="paddingBottom">
-                            <Input.Number
-                              min={0}
-                              max={9999}
-                              step={1}
-                              // value={shape.paddingBottom || 0}
-                              // onChange={(e) => {
-                              //   shapeUpdate({ paddingBottom: e });
-                              //   execute();
-                              // }}
-                            />
-                          </Input.withChange>
-                        </Input.withPause>
-                      </Input.Grid>
-                    </Input.Container>
-                    <Input.Container>
-                      <Input.Grid>
-                        <Input.IconContainer>
-                          <ArrowLeft size={constants.icon.size} />
-                        </Input.IconContainer>
-                        <Input.withPause>
-                          <Input.withChange shape={shape} type="paddingLeft">
-                            <Input.Number
-                              min={0}
-                              max={9999}
-                              step={1}
-                              // value={shape.paddingLeft || 0}
-                              // onChange={(e) => {
-                              //   shapeUpdate({ paddingLeft: e });
-                              //   execute();
-                              // }}
-                            />
-                          </Input.withChange>
-                        </Input.withPause>
-                      </Input.Grid>
-                    </Input.Container>
-                  </div>
-                )}
-              </>
-            ) : null}
+              {/* Individual Padding Controls */}
+              <ShapePaddings shape={shape} />
+            </ShapeShowAtomProvider>
           </section>
           <Separator />
         </>
@@ -1361,16 +1207,7 @@ export const LayoutShapeConfig = () => {
               </Input.IconContainer>
               <Input.withPause>
                 <Input.withChange shape={shape} type="opacity">
-                  <Input.Number
-                    min={0}
-                    max={1}
-                    step={0.1}
-                    // value={shape.opacity}
-                    // onChange={(e) => {
-                    //   shapeUpdate({ opacity: e });
-                    //   execute();
-                    // }}
-                  />
+                  <Input.Number min={0} max={1} step={0.1} />
                 </Input.withChange>
               </Input.withPause>
             </Input.Grid>
@@ -1398,69 +1235,34 @@ export const LayoutShapeConfig = () => {
                     <Input.IconContainer>
                       <Expand size={constants.icon.size} />
                     </Input.IconContainer>
-                    {shape.isAllBorderRadius ? (
+                    <ShapeShowAtomProvider
+                      atomo={shape.isAllBorderRadius}
+                      ctx={(e) => e}
+                    >
                       <Input.withPause>
                         <Input.withChange shape={shape} type="borderRadius">
-                          <Input.Number
-                            min={0}
-                            max={9999}
-                            step={1}
-                            // value={shape.borderRadius}
-                            // onChange={(e) => {
-                            //   shapeUpdate({
-                            //     borderRadius: e,
-                            //   });
-                            //   execute();
-                            // }}
-                          />
+                          <Input.Number min={0} max={9999} step={1} />
                         </Input.withChange>
                       </Input.withPause>
-                    ) : null}
-                    {!shape.isAllBorderRadius ? (
+                    </ShapeShowAtomProvider>
+                    <ShapeShowAtomProvider
+                      atomo={shape.isAllBorderRadius}
+                      ctx={(e) => !e}
+                    >
                       <Input.Label text="Mixed" />
-                    ) : null}
+                    </ShapeShowAtomProvider>
                   </Input.Grid>
                 </Input.Container>
-                <button
-                  className={css({
-                    cursor: "pointer",
-                    width: 30,
-                    height: 30,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    borderWidth: "1px",
-                    borderStyle: "solid",
-                    borderRadius: "md",
-                  })}
-                  onClick={() => {
-                    // shapeUpdate({
-                    //   isAllBorderRadius: !shape.isAllBorderRadius,
-                    // });
-                    // execute();
-                  }}
-                  style={{
-                    backgroundColor: !shape.isAllBorderRadius
-                      ? constants.theme.colors.background
-                      : "transparent",
-                    borderColor: !shape.isAllBorderRadius
-                      ? constants.theme.colors.primary
-                      : "transparent",
-                  }}
-                >
-                  <Sliders
-                    size={constants.icon.size}
-                    strokeWidth={constants.icon.strokeWidth}
-                    color={
-                      !shape.isAllBorderRadius
-                        ? constants.theme.colors.primary
-                        : constants.theme.colors.white
-                    }
-                  />
-                </button>
+                <ShapeAtomButton
+                  type="isAllBorderRadius"
+                  atomo={shape.isAllBorderRadius}
+                />
               </div>
             </div>
-            {!shape.isAllBorderRadius ? (
+            <ShapeShowAtomProvider
+              atomo={shape.isAllBorderRadius}
+              ctx={(value) => !value}
+            >
               <div
                 className={css({
                   display: "grid",
@@ -1479,16 +1281,7 @@ export const LayoutShapeConfig = () => {
                         shape={shape}
                         type="borderTopLeftRadius"
                       >
-                        <Input.Number
-                          min={0}
-                          max={9999}
-                          step={1}
-                          // value={shape.borderTopLeftRadius || 0}
-                          // onChange={(e) => {
-                          //   shapeUpdate({ borderTopLeftRadius: e });
-                          //   execute();
-                          // }}
-                        />
+                        <Input.Number min={0} max={9999} step={1} />
                       </Input.withChange>
                     </Input.withPause>
                   </Input.Grid>
@@ -1503,16 +1296,7 @@ export const LayoutShapeConfig = () => {
                         shape={shape}
                         type="borderTopRightRadius"
                       >
-                        <Input.Number
-                          min={0}
-                          max={9999}
-                          step={1}
-                          // value={shape.borderTopRightRadius || 0}
-                          // onChange={(e) => {
-                          //   shapeUpdate({ borderTopRightRadius: e });
-                          //   execute();
-                          // }}
-                        />
+                        <Input.Number min={0} max={9999} step={1} />
                       </Input.withChange>
                     </Input.withPause>
                   </Input.Grid>
@@ -1527,16 +1311,7 @@ export const LayoutShapeConfig = () => {
                         shape={shape}
                         type="borderBottomLeftRadius"
                       >
-                        <Input.Number
-                          min={0}
-                          max={9999}
-                          step={1}
-                          // value={shape.borderBottomLeftRadius || 0}
-                          // onChange={(e) => {
-                          //   shapeUpdate({ borderBottomLeftRadius: e });
-                          //   execute();
-                          // }}
-                        />
+                        <Input.Number min={0} max={9999} step={1} />
                       </Input.withChange>
                     </Input.withPause>
                   </Input.Grid>
@@ -1551,22 +1326,13 @@ export const LayoutShapeConfig = () => {
                         shape={shape}
                         type="borderBottomRightRadius"
                       >
-                        <Input.Number
-                          min={0}
-                          max={9999}
-                          step={1}
-                          // value={shape.borderBottomRightRadius || 0}
-                          // onChange={(e) => {
-                          //   shapeUpdate({ borderBottomRightRadius: e });
-                          //   execute();
-                          // }}
-                        />
+                        <Input.Number min={0} max={9999} step={1} />
                       </Input.withChange>
                     </Input.withPause>
                   </Input.Grid>
                 </Input.Container>
               </div>
-            ) : null}
+            </ShapeShowAtomProvider>
           </>
         ) : null}
       </section>
@@ -1579,28 +1345,14 @@ export const LayoutShapeConfig = () => {
 
           <Input.Container>
             <Input.withChange shape={shape} type="fontFamily">
-              <Input.Select
-                // value={shape.fontFamily ?? "Roboto"}
-                // onChange={(e) => {
-                //   shapeUpdate({ fontFamily: e as IShape["fontFamily"] });
-                //   execute();
-                // }}
-                options={fontFamilyOptions}
-              />
+              <Input.Select options={fontFamilyOptions} />
             </Input.withChange>
           </Input.Container>
 
           <div className={commonStyles.twoColumnGrid}>
             <Input.Container>
               <Input.withChange shape={shape} type="fontWeight">
-                <Input.Select
-                  // value={shape.fontWeight ?? "normal"}
-                  // onChange={(e) => {
-                  //   shapeUpdate({ fontWeight: e as IShape["fontWeight"] });
-                  //   execute();
-                  // }}
-                  options={fontWeightOptions}
-                />
+                <Input.Select options={fontWeightOptions} />
               </Input.withChange>
             </Input.Container>
             <Input.Container>
@@ -1610,35 +1362,17 @@ export const LayoutShapeConfig = () => {
                 </Input.IconContainer>
                 <Input.withPause>
                   <Input.withChange shape={shape} type="fontSize">
-                    <Input.Number
-                      min={4}
-                      max={180}
-                      step={4}
-                      // onChange={(e) => {
-                      //   shapeUpdate({ fontSize: e });
-                      //   execute();
-                      // }}
-                      // value={shape.fontSize || 0}
-                    />
+                    <Input.Number min={4} max={180} step={4} />
                   </Input.withChange>
                 </Input.withPause>
               </Input.Grid>
             </Input.Container>
-
-            {/* Text Content */}
           </div>
           <div className={css({ gridColumn: 2, gridRow: 3 })}>
             <Input.Container>
               <Input.withPause>
                 <Input.withChange shape={shape} type="text">
-                  <Input.TextArea
-                    rows={6}
-                    // onChange={(e) => {
-                    //   shapeUpdate({ text: e });
-                    //   execute();
-                    // }}
-                    // value={shape.text || ""}
-                  />
+                  <Input.TextArea rows={6} />
                 </Input.withChange>
               </Input.withPause>
             </Input.Container>

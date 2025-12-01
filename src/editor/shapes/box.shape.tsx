@@ -70,7 +70,7 @@ const ShapeBox = (props: IShapeEvents) => {
         dash={[dash]}
         dashEnabled={dash > 0}
         cornerRadius={
-          !isAllBorderRadius
+          isAllBorderRadius
             ? [
                 borderTopLeftRadius,
                 borderTopRightRadius,

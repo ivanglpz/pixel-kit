@@ -14,6 +14,8 @@ import { useMemo, useState } from "react";
 import { constants } from "../constants/color";
 import { useAutoSave } from "../hooks/useAutoSave";
 import { flexLayoutAtom } from "../shapes/layout-flex";
+import { JotaiState } from "../shapes/type.shape";
+import { SELECTED_SHAPES_BY_IDS_ATOM } from "../states/shape";
 import {
   ALL_SHAPES,
   DELETE_SHAPES_ATOM,
@@ -82,17 +84,70 @@ const GripVertical = withStableMemo(Luicde.GripVertical);
 const Lock = withStableMemo(Luicde.Lock);
 const Trash = withStableMemo(Luicde.Trash);
 const Unlock = withStableMemo(Luicde.Unlock);
+
+const NodeInput = ({
+  atomo,
+}: {
+  atomo: JotaiState<number> | JotaiState<string>;
+}) => {
+  const [show, setShow] = useState(false);
+  const setPause = useSetAtom(PAUSE_MODE_ATOM);
+  const [value, setValue] = useAtom(atomo);
+
+  return (
+    <div
+      onDoubleClick={() => {
+        setShow(true);
+      }}
+      onBlur={() => {
+        setPause(false);
+        setShow(false);
+      }}
+    >
+      {show ? (
+        <Input.withPause>
+          <Input.Text
+            value={value?.toString()}
+            onChange={(e) => setValue(e)}
+            style={{
+              width: "auto",
+              border: "none",
+              backgroundColor: "transparent",
+              color: "text",
+              paddingLeft: "0px",
+              padding: "sm",
+              height: "15px",
+              borderRadius: "0px",
+              fontSize: "x-small",
+            }}
+          />
+        </Input.withPause>
+      ) : (
+        <p
+          className={css({
+            textTransform: "capitalize",
+            fontSize: "x-small",
+            lineClamp: 1,
+          })}
+        >
+          {value}
+        </p>
+      )}
+    </div>
+  );
+};
+
 export const NodesDefault = ({
   shape: item,
   options = {},
   dragControls: externalDragControls, // ✅ Recibimos controles externos
 }: NodeProps) => {
   const shape = useAtomValue(item.state);
-  const [show, setShow] = useState(false);
-  const setPause = useSetAtom(PAUSE_MODE_ATOM);
   const setTool = useSetAtom(TOOL_ATOM);
   const [isExpanded, setIsExpanded] = useState(true);
   const [isHovered, setIsHovered] = useState(false);
+  const [shapeId, setShapeId] = useAtom(SELECTED_SHAPES_BY_IDS_ATOM);
+
   const setUpdateUndoRedo = useSetAtom(UPDATE_UNDO_REDO);
   const applyLayout = useSetAtom(flexLayoutAtom);
   const DELETE_SHAPE = useSetAtom(DELETE_SHAPES_ATOM);
@@ -116,7 +171,14 @@ export const NodesDefault = ({
       id: shape.id,
       parentId: parentId,
     };
-  }, [isLockedByParent, isHiddenByParent, isLocked, visible, parentId]);
+  }, [
+    isLockedByParent,
+    isHiddenByParent,
+    isLocked,
+    visible,
+    parentId,
+    shape.id,
+  ]);
 
   const [children, setChildren] = useAtom(shape.children);
   const { debounce } = useAutoSave();
@@ -135,10 +197,6 @@ export const NodesDefault = ({
     e.stopPropagation(); // ✅ Prevenir propagación
     if (!isLockedByParent) {
       setIsLocked((e) => !e);
-      // setShape({
-      //   ...shape,
-      //   isLocked: !shape.isLocked,
-      // });
     }
   };
 
@@ -147,10 +205,6 @@ export const NodesDefault = ({
     e.stopPropagation(); // ✅ Prevenir propagación
     if (!isHiddenByParent) {
       setVisible((e) => !e);
-      // setShape({
-      //   ...shape,
-      //   visible: !shape.visible,
-      // });
     }
   };
 
@@ -180,14 +234,14 @@ export const NodesDefault = ({
               flexDirection: "row",
               alignItems: "center",
               borderRadius: "4",
-              // _dark: {
-              //   backgroundColor: shapeId.some((w) => w.id === shape.id)
-              //     ? "gray.600"
-              //     : "transparent",
-              // },
-              // backgroundColor: shapeId.some((w) => w.id === shape.id)
-              //   ? "gray.200"
-              //   : "transparent",
+              _dark: {
+                backgroundColor: shapeId.some((w) => w.id === shape.id)
+                  ? "gray.600"
+                  : "transparent",
+              },
+              backgroundColor: shapeId.some((w) => w.id === shape.id)
+                ? "gray.200"
+                : "transparent",
               _hover: {
                 backgroundColor: "gray.100",
                 _dark: {
@@ -202,10 +256,10 @@ export const NodesDefault = ({
               e.preventDefault(); // puedes dejar esto si quieres
               e.stopPropagation();
               setTool("MOVE");
-              // setShapeId({
-              //   id: shape?.id,
-              //   parentId: parentId,
-              // });
+              setShapeId({
+                id: shape?.id,
+                parentId: parentId,
+              });
             }}
           >
             {/* ✅ Drag Handle mejorado */}
@@ -249,51 +303,7 @@ export const NodesDefault = ({
             )}
 
             {iconsWithTools[shape.tool]}
-
-            <div
-              onDoubleClick={() => {
-                setShow(true);
-              }}
-              onBlur={() => {
-                setPause(false);
-                setShow(false);
-              }}
-            >
-              {show ? (
-                <Input.withPause>
-                  <Input.Text
-                    // value={shape?.label}
-                    value="test"
-                    onChange={(e) => {
-                      // setShape({ ...shape, label: e });
-                      // debounce.execute();
-                    }}
-                    style={{
-                      width: "auto",
-                      border: "none",
-                      backgroundColor: "transparent",
-                      color: "text",
-                      paddingLeft: "0px",
-                      padding: "sm",
-                      height: "15px",
-                      borderRadius: "0px",
-                      fontSize: "x-small",
-                    }}
-                  />
-                </Input.withPause>
-              ) : (
-                <p
-                  className={css({
-                    textTransform: "capitalize",
-                    fontSize: "x-small",
-                    lineClamp: 1,
-                  })}
-                >
-                  {/* {shape.label} */}
-                  test
-                </p>
-              )}
-            </div>
+            <NodeInput atomo={shape.label} />
 
             <div
               className={css({
@@ -393,13 +403,13 @@ export const NodesDefault = ({
               Move to
             </ContextMenuItem>
           ) : null}
-          <ContextMenuItem
+          {/* <ContextMenuItem
             className="text-[12px]"
             onClick={() => setShow(true)}
           >
             <FolderCog size={14} />
             Rename
-          </ContextMenuItem>
+          </ContextMenuItem> */}
           <ContextMenuItem
             className="text-[12px]"
             onClick={() => {
