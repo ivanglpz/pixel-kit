@@ -7,7 +7,7 @@ import { uploadPhoto } from "@/services/photo";
 import { fetchListPhotosProject } from "@/services/photos";
 import { css } from "@stylespixelkit/css";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { useAtom, useAtomValue, useSetAtom } from "jotai";
+import { useAtomValue, useSetAtom } from "jotai";
 import { LineCap, LineJoin } from "konva/lib/Shape";
 import {
   ArrowDown,
@@ -148,12 +148,14 @@ interface LayoutGridProps {
 }
 
 const LayoutGrid: React.FC<LayoutGridProps> = ({ shape }) => {
-  const [flexDirection, setFlexDirection] = useAtom(shape.flexDirection);
-  const [justifyContent, setJustifyContent] = useAtom(shape.justifyContent);
-  const [alignItems, setAlignItems] = useAtom(shape.alignItems);
+  const flexDirection = useAtomValue(shape.flexDirection);
+  const justifyContent = useAtomValue(shape.justifyContent);
+  const alignItems = useAtomValue(shape.alignItems);
+  const spHook = useShapeUpdate();
+
   const onLayoutChange = (justify: JustifyContent, align: AlignItems) => {
-    setJustifyContent(justify);
-    setAlignItems(align);
+    spHook("justifyContent", justify);
+    spHook("alignItems", align);
   };
 
   const justifyContentValues: JustifyContent[] = [
@@ -292,27 +294,28 @@ export const useShapeUpdate = () => {
 const ICON_SHAPE = {
   width: MoveHorizontal,
   height: MoveVertical,
-  layout: Layout,
+  isLayout: Layout,
   isAllPadding: Sliders,
   isAllBorderRadius: Sliders,
   brush: Brush,
   penTool: PenTool,
   ruler: Ruler,
-  ArrowDown: ArrowDown,
-  ArrowRight: ArrowRight,
-  CornerRightDown: CornerRightDown,
 };
 type ShapeAtomButtonProps = {
   atomo: JotaiState<boolean>;
-  type: keyof typeof ICON_SHAPE;
+  iconType: keyof typeof ICON_SHAPE;
+  type: keyof ShapeState;
 };
-const ShapeAtomButton = ({ atomo, type }: ShapeAtomButtonProps) => {
-  const [value, setValue] = useAtom(atomo);
-  const Icon = ICON_SHAPE[type];
+const ShapeAtomButton = ({ atomo, type, iconType }: ShapeAtomButtonProps) => {
+  const value = useAtomValue(atomo);
+  const spHook = useShapeUpdate();
+
+  const Icon = ICON_SHAPE[iconType];
   return (
     <button
       onClick={() => {
-        setValue(!value);
+        spHook(type, !value);
+        // setValue(!value);
       }}
       className={css({
         cursor: "pointer",
@@ -343,21 +346,33 @@ const ShapeAtomButton = ({ atomo, type }: ShapeAtomButtonProps) => {
   );
 };
 
+const ICONS_FLEX = {
+  ArrowDown: ArrowDown,
+  ArrowRight: ArrowRight,
+};
+
 const ShapeAtomButtonFlex = ({
   atomo,
-  type,
+  iconType,
   direction,
-}: Omit<ShapeAtomButtonProps, "atomo"> & {
+  type,
+}: {
   atomo: JotaiState<FlexDirection>;
   direction: FlexDirection;
+  iconType: keyof typeof ICONS_FLEX;
+  type: keyof ShapeState;
 }) => {
-  const [value, setValue] = useAtom(atomo);
-  const Icon = ICON_SHAPE[type];
+  const value = useAtomValue(atomo);
+  const Icon = ICONS_FLEX[iconType];
   const isValid = value === direction;
+  const spHook = useShapeUpdate();
+
   return (
     <button
       onClick={() => {
-        setValue(direction);
+        spHook(type, direction);
+
+        // setValue(direction);
       }}
       className={css({
         cursor: "pointer",
@@ -389,19 +404,26 @@ const ShapeAtomButtonFlex = ({
     </button>
   );
 };
+
+const ICONS_FLEXWRAP = {
+  CornerRightDown: CornerRightDown,
+};
 const ShapeAtomButtonFlexWrap = ({
   atomo,
-  type,
-}: Omit<ShapeAtomButtonProps, "atomo"> & {
+  iconType,
+}: {
   atomo: JotaiState<FlexWrap>;
+  iconType: keyof typeof ICONS_FLEXWRAP;
 }) => {
-  const [value, setValue] = useAtom(atomo);
-  const Icon = ICON_SHAPE[type];
+  const value = useAtomValue(atomo);
+  const Icon = ICONS_FLEXWRAP[iconType];
   const isValid = value === "wrap";
+  const spHook = useShapeUpdate();
+
   return (
     <button
       onClick={() => {
-        setValue(value === "wrap" ? "nowrap" : "wrap");
+        spHook("flexWrap", value === "wrap" ? "nowrap" : "wrap");
       }}
       className={css({
         cursor: "pointer",
@@ -445,8 +467,9 @@ const ShapeAtomButtonStroke = ({
   type,
   values = ["round", "round"],
 }: ShapeAtomButtonStrokeProps) => {
-  const [lineJoin, setLineJoin] = useAtom(shape.lineJoin);
-  const [lineCap, setLineCap] = useAtom(shape.lineCap);
+  const lineJoin = useAtomValue(shape.lineJoin);
+  const lineCap = useAtomValue(shape.lineCap);
+  const spHook = useShapeUpdate();
 
   const Icon = ICON_SHAPE[type];
   const isValid = lineJoin === values[0] && lineCap === values[1];
@@ -454,8 +477,8 @@ const ShapeAtomButtonStroke = ({
     <button
       onClick={() => {
         if (values.length <= 0) return;
-        setLineJoin(values[0]);
-        setLineCap(values[1]);
+        spHook("lineJoin", values[0]);
+        spHook("lineCap", values[1]);
       }}
       className={css({
         cursor: "pointer",
@@ -1084,8 +1107,16 @@ export const LayoutShapeConfig = () => {
           <p className={commonStyles.sectionTitle}>Dimensions</p>
 
           <div className="flex flex-row gap-2">
-            <ShapeAtomButton type="width" atomo={shape.fillContainerWidth} />
-            <ShapeAtomButton type="height" atomo={shape.fillContainerHeight} />
+            <ShapeAtomButton
+              iconType="width"
+              type="fillContainerWidth"
+              atomo={shape.fillContainerWidth}
+            />
+            <ShapeAtomButton
+              iconType="height"
+              type="fillContainerHeight"
+              atomo={shape.fillContainerHeight}
+            />
           </div>
         </header>
 
@@ -1137,7 +1168,11 @@ export const LayoutShapeConfig = () => {
         <>
           <section className={commonStyles.container}>
             <SectionHeader title="Layouts">
-              <ShapeAtomButton type="layout" atomo={shape.isLayout} />
+              <ShapeAtomButton
+                iconType="isLayout"
+                type="isLayout"
+                atomo={shape.isLayout}
+              />
             </SectionHeader>
             <ShapeShowAtomProvider atomo={shape.isLayout} ctx={(e) => !e}>
               <div
@@ -1148,16 +1183,7 @@ export const LayoutShapeConfig = () => {
                 })}
               >
                 <div className={commonStyles.twoColumnGrid}>
-                  <LayoutGrid
-                    // flexDirection={shape.flexDirection}
-                    // justifyContent={shape.justifyContent}
-                    // alignItems={shape.alignItems}
-                    // onLayoutChange={(justifyContent, alignItems) => {
-                    //   shapeUpdate({ justifyContent, alignItems });
-                    //   execute();
-                    // }}
-                    shape={shape}
-                  />
+                  <LayoutGrid shape={shape} />
                   <section
                     className={css({
                       display: "flex",
@@ -1174,17 +1200,19 @@ export const LayoutShapeConfig = () => {
                     >
                       <ShapeAtomButtonFlex
                         atomo={shape.flexDirection}
-                        type="ArrowDown"
+                        iconType="ArrowDown"
+                        type="flexDirection"
                         direction="column"
                       />
                       <ShapeAtomButtonFlex
                         atomo={shape.flexDirection}
-                        type="ArrowRight"
+                        iconType="ArrowRight"
+                        type="flexDirection"
                         direction="row"
                       />
                       <ShapeAtomButtonFlexWrap
                         atomo={shape.flexWrap}
-                        type="CornerRightDown"
+                        iconType="CornerRightDown"
                       />
                     </div>
 
@@ -1222,6 +1250,7 @@ export const LayoutShapeConfig = () => {
                   <ShapeIsAllPadding shape={shape} />
                   <ShapeAtomButton
                     atomo={shape.isAllPadding}
+                    iconType="isAllPadding"
                     type="isAllPadding"
                   />
                 </div>
@@ -1293,6 +1322,7 @@ export const LayoutShapeConfig = () => {
                   </Input.Grid>
                 </Input.Container>
                 <ShapeAtomButton
+                  iconType="isAllBorderRadius"
                   type="isAllBorderRadius"
                   atomo={shape.isAllBorderRadius}
                 />
