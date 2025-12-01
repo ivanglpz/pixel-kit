@@ -523,7 +523,7 @@ const paddings: KeyShapes[] = [
 const ShapePaddings = ({ shape }: ShapeIsAllPaddingProps) => {
   const isAllPadding = useAtomValue(shape.isAllPadding);
 
-  if (isAllPadding) return null;
+  if (!isAllPadding) return null;
   return (
     <div
       className={css({
