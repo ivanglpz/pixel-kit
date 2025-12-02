@@ -615,7 +615,6 @@ export const LayoutShapeConfig = () => {
   const [showImage, setShowImage] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const { shape, count } = useAtomValue(SHAPE_SELECTED_ATOM);
-  const shapeUpdate = useSetAtom(SHAPE_UPDATE_ATOM);
   const setUpdateUndoRedo = useSetAtom(UPDATE_UNDO_REDO);
   const [type, setType] = useState<"UPLOAD" | "CHOOSE">("UPLOAD");
   const { debounce } = useAutoSave();

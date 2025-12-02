@@ -128,10 +128,10 @@ export const CreateShapeSchema = (props?: Partial<ShapeState>): ShapeState => {
     offsetCopyY: atom(0),
     offsetY: atom(0),
     image: atom({
-      height: 100,
+      width: 1200,
+      height: 1200,
       name: "default.png",
       src: "/placeholder.svg",
-      width: 100,
     } as ShapeImage),
     verticalAlign: atom<VerticalAlign>("top"),
     paddingBottom: atom(10),
