@@ -128,7 +128,7 @@ export const SHAPE_ICON = (props: IShapeEvents) => {
         listening={!isLocked}
         // 3. Relleno y color
         fillEnabled
-        fill={fillColor}
+        fill={"transparent"}
         // 4. Bordes y trazos
         // dash={[dash, dash, dash, dash]}
         dash={[dash]}
