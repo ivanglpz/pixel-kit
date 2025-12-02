@@ -99,6 +99,7 @@ export const ShapeImage = (props: IShapeEvents) => {
         image={RENDER_IMAGE}
         crop={cropConfig}
         parentId={parentId}
+        globalCompositeOperation="source-over"
         // 2. Posición y tamaño - calculada manualmente para rotación
         x={x}
         y={y}
