@@ -3,7 +3,7 @@ import { IPhoto } from "@/db/schemas/types";
 import TOOL_ATOM, { IKeyTool, PAUSE_MODE_ATOM } from "@/editor/states/tool";
 import { uploadPhoto } from "@/services/photo";
 import { useMutation } from "@tanstack/react-query";
-import { useAtom, useAtomValue, useSetAtom } from "jotai";
+import { atom, useAtom, useAtomValue, useSetAtom } from "jotai";
 import Konva from "konva";
 import { KonvaEventObject } from "konva/lib/Node";
 import { useEffect, useRef } from "react";
@@ -13,6 +13,7 @@ import { MOUSE } from "../constants/mouse";
 import { STAGE_IDS } from "../constants/stage";
 import stageAbsolutePosition from "../helpers/position";
 import { CreateShapeSchema } from "../helpers/shape-schema";
+import { ShapeImage } from "../shapes/types/shape.base";
 import { CLEAR_CURRENT_ITEM_ATOM } from "../states/currentItem";
 import { EVENT_ATOM } from "../states/event";
 import { MOVING_MOUSE_BUTTON_ATOM } from "../states/moving";
@@ -36,6 +37,7 @@ import {
   GROUP_SHAPES_IN_LAYOUT,
 } from "../states/shapes";
 import { REDO_ATOM, UNDO_ATOM } from "../states/undo-redo";
+import { SVG } from "../utils/svg";
 import { useAutoSave } from "./useAutoSave";
 import { useConfiguration } from "./useConfiguration";
 
@@ -170,25 +172,16 @@ export const useEventStage = () => {
       const createStartElement = CreateShapeSchema({
         id: uuidv4(),
         tool: "IMAGE",
-        x: 0,
-        y: 0,
-        width: values.width / 3,
-        height: values.height / 3,
-        fills: [
-          {
-            color: "#fff",
-            id: uuidv4(),
-            image: {
-              src: values.url,
-              width: values.width,
-              height: values.height,
-              name: values.name,
-            },
-            opacity: 1,
-            type: "image",
-            visible: true,
-          },
-        ],
+        x: atom(0),
+        y: atom(0),
+        width: atom(values.width / 3),
+        height: atom(values.height / 3),
+        image: atom<ShapeImage>({
+          src: values.url,
+          width: values.width,
+          height: values.height,
+          name: values.name,
+        }),
       });
       SET_CREATE(createStartElement);
 
@@ -219,9 +212,9 @@ export const useEventStage = () => {
     const createStartElement = CreateShapeSchema({
       id: uuidv4(),
       tool: "TEXT",
-      x: 0,
-      y: 0,
-      text,
+      x: atom(0),
+      y: atom(0),
+      text: atom(text),
     });
     SET_CREATE(createStartElement);
   };
@@ -239,25 +232,14 @@ export const useEventStage = () => {
       const createStartElement = CreateShapeSchema({
         id: uuidv4(),
         tool: "ICON",
-        x: 0,
-        y: 0,
-        fills: [
-          {
-            color: "#fff",
-            id: uuidv4(),
-            image: {
-              src:
-                "data:image/svg+xml;charset=utf-8," +
-                encodeURIComponent(svgString),
-              width: img.width,
-              height: img.height,
-              name: `svg ${uuidv4().slice(0, 2)}`,
-            },
-            opacity: 1,
-            type: "image",
-            visible: true,
-          },
-        ],
+        x: atom(0),
+        y: atom(0),
+        image: atom({
+          src: SVG.Encode(svgString),
+          width: img.width,
+          height: img.height,
+          name: `svg ${uuidv4().slice(0, 2)}`,
+        }),
       });
       SET_CREATE(createStartElement);
     };
