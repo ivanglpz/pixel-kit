@@ -1399,7 +1399,9 @@ export const LayoutShapeConfig = () => {
             </button>
           ) : null}
         </SectionHeader>
-        <ShapeInputColor shape={shape} type="fillColor" />
+        {shape.tool !== "ICON" ? (
+          <ShapeInputColor shape={shape} type="fillColor" />
+        ) : null}
       </section>
 
       {shape.tool !== "TEXT" ? (
