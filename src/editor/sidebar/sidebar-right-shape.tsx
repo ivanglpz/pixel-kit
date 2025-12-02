@@ -23,6 +23,7 @@ import {
   CornerUpRight,
   Expand,
   File,
+  ImageIcon,
   Layout,
   MoveHorizontal,
   MoveVertical,
@@ -30,6 +31,7 @@ import {
   Ruler,
   Scaling,
   Sliders,
+  Smile,
   Square,
   SquareDashed,
 } from "lucide-react";
@@ -56,6 +58,7 @@ import { ShapeState } from "../shapes/types/shape.state";
 import { PROJECT_ID_ATOM } from "../states/projects";
 import { UPDATE_UNDO_REDO } from "../states/undo-redo";
 import { getObjectUrl } from "../utils/getObjectUrl";
+import { SVG } from "../utils/svg";
 import { ExportShape } from "./export-shape";
 
 export const calculateScale = (
@@ -614,6 +617,8 @@ export const LayoutShapeConfig = () => {
   const [showIcons, setshowIcons] = useState(false);
   const [showImage, setShowImage] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+  const spHook = useShapeUpdate();
+
   const { shape, count } = useAtomValue(SHAPE_SELECTED_ATOM);
   const setUpdateUndoRedo = useSetAtom(UPDATE_UNDO_REDO);
   const [type, setType] = useState<"UPLOAD" | "CHOOSE">("UPLOAD");
@@ -668,75 +673,16 @@ export const LayoutShapeConfig = () => {
       return photoChoose;
     },
     onSuccess: (values) => {
-      // if (type === "UPLOAD") {
-      //   if (!shape) return;
-      //   const scale: number = calculateScale(
-      //     values.width,
-      //     values.height,
-      //     shape.width ?? 500,
-      //     shape.height ?? 500
-      //   );
-      //   const newWidth: number = values.width * scale;
-      //   const newHeight: number = values.height * scale;
-      //   myHook("align", "center");
-      //   myHook("width", newWidth);
-      //   myHook("height", newHeight);
-      //   shapeUpdate({
-      //     width: newWidth,
-      //     height: newHeight,
-      //     fills: [
-      //       {
-      //         id: uuidv4(),
-      //         color: "#ffffff",
-      //         opacity: 1,
-      //         visible: true,
-      //         type: "image",
-      //         image: {
-      //           src: values?.url,
-      //           width: values.width,
-      //           height: values.height,
-      //           name: values?.name,
-      //         },
-      //       },
-      //       ...(shape.fills || []),
-      //     ],
-      //   });
-      //   execute();
-      //   handleResetDialogImage();
-      //   QueryListPhotos.refetch();
-      //   return;
-      // }
-      // if (!shape) return;
-      // const scale: number = calculateScale(
-      //   values.width,
-      //   values.height,
-      //   shape.width ?? 500,
-      //   shape.height ?? 500
-      // );
-      // const newWidth: number = values.width * scale;
-      // const newHeight: number = values.height * scale;
-      // shapeUpdate({
-      //   width: newWidth,
-      //   height: newHeight,
-      //   fills: [
-      //     {
-      //       id: uuidv4(),
-      //       color: "#ffffff",
-      //       opacity: 1,
-      //       visible: true,
-      //       type: "image",
-      //       image: {
-      //         src: values?.url,
-      //         width: values.width,
-      //         height: values.height,
-      //         name: values?.name,
-      //       },
-      //     },
-      //     ...(shape.fills || []),
-      //   ],
-      // });
-      // execute();
-      // handleResetDialogImage();
+      spHook("image", {
+        height: values.height,
+        name: values.name,
+        width: values.width,
+        src: values.url,
+      });
+      if (type === "UPLOAD") {
+        QueryListPhotos.refetch();
+      }
+      handleResetDialogImage();
     },
     onError: (error) => {
       toast.error(error.message);
@@ -753,31 +699,14 @@ export const LayoutShapeConfig = () => {
       canvas.width = img.width;
       canvas.height = img.height;
       ctx?.drawImage(img, 0, 0);
-      // shapeUpdate({
-      //   fills: [
-      //     {
-      //       color: "#fff",
-      //       id: uuidv4(),
-      //       image: {
-      //         src:
-      //           "data:image/svg+xml;charset=utf-8," +
-      //           encodeURIComponent(svgString),
-      //         width: img.width,
-      //         height: img.height,
-      //         name: svgName,
-      //       },
-      //       opacity: 1,
-      //       type: "image",
-      //       visible: true,
-      //     },
-      //     ...(shape.fills || []),
-      //   ],
-      // });
-      execute();
+      spHook("image", {
+        height: img.height,
+        name: svgName,
+        width: img.width,
+        src: SVG.Encode(svgString),
+      });
     };
-    const dataImage =
-      "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svgString);
-    img.src = dataImage;
+    img.src = SVG.Encode(svgString);
   };
 
   // Manejadores de eventos
@@ -1451,7 +1380,7 @@ export const LayoutShapeConfig = () => {
 
       <section className={commonStyles.container}>
         <SectionHeader title="Fill">
-          {/* {shape.tool === "ICON" ? (
+          {shape.tool === "ICON" ? (
             <button
               className={commonStyles.addButton}
               onClick={() => setshowIcons(true)}
@@ -1469,9 +1398,6 @@ export const LayoutShapeConfig = () => {
               <ImageIcon size={14} />
             </button>
           ) : null}
-          <button className={commonStyles.addButton} onClick={handleAddFill}>
-            <Plus size={14} />
-          </button> */}
         </SectionHeader>
         <ShapeInputColor shape={shape} type="fillColor" />
       </section>

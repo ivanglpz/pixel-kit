@@ -7,6 +7,7 @@ import {
 } from "@/editor/shapes/type.shape";
 import { atom, Getter } from "jotai";
 import { LineCap, LineJoin } from "konva/lib/Shape";
+import { Smile } from "lucide-static";
 import { v4 as uuidv4 } from "uuid";
 import { CreateShapeSchema, isNotNegative } from "../helpers/shape-schema";
 import {
@@ -16,9 +17,10 @@ import {
   FlexWrap,
   JustifyContent,
 } from "../shapes/layout-flex";
-import { ShapeBase } from "../shapes/types/shape.base";
+import { ShapeBase, ShapeImage } from "../shapes/types/shape.base";
 import { ShapeState } from "../shapes/types/shape.state";
 import { capitalize } from "../utils/capitalize";
+import { SVG } from "../utils/svg";
 import CURRENT_ITEM_ATOM, {
   CLEAR_CURRENT_ITEM_ATOM,
   CREATE_CURRENT_ITEM_ATOM,
@@ -774,12 +776,22 @@ export const EVENT_DOWN_START_SHAPES = atom(
       ]);
     }
     if (TOOLS_ICON_BASED.includes(tool as SecondArrayKeys)) {
+      console.log(SVG.Encode(Smile), "Smile");
+
       set(CREATE_CURRENT_ITEM_ATOM, [
         CreateShapeSchema({
           tool: tool as IShape["tool"],
           x: atom(x),
           y: atom(y),
           label: atom<string>(tool),
+          strokeWidth: atom(1),
+          strokeColor: atom("#000000"),
+          image: atom({
+            src: SVG.Encode(Smile),
+            height: 24,
+            width: 24,
+            name: "smile",
+          } as ShapeImage),
         }),
       ]);
     }

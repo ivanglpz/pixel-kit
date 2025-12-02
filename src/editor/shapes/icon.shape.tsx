@@ -16,6 +16,7 @@ import { IShapeEvents } from "./type.shape";
 
 // Eventos de shape
 import { calculateCoverCrop } from "../utils/crop";
+import { SVG } from "../utils/svg";
 import { flexLayoutAtom } from "./layout-flex";
 
 // Transformer
@@ -67,13 +68,13 @@ export const SHAPE_ICON = (props: IShapeEvents) => {
   );
 
   const IMG = useAtomValue(box.image);
+  console.log(IMG);
 
   const IMAGE_ICON = useMemo(() => {
     const img = new Image();
     if (!IMG?.src) return img;
-    const CONTENT = "data:image/svg+xml;charset=utf-8,";
 
-    const svgText = decodeURIComponent(IMG.src.replace(CONTENT, ""));
+    const svgText = SVG.Decode(IMG.src);
 
     const newSvg = svgText
       .replace(/stroke-width="[^"]*"/g, `stroke-width="${strokeWidth}"`)
@@ -82,7 +83,7 @@ export const SHAPE_ICON = (props: IShapeEvents) => {
         `stroke="${strokeColor || "#000000"}"`
       );
 
-    img.src = CONTENT + encodeURIComponent(newSvg);
+    img.src = SVG.Encode(newSvg);
     img.crossOrigin = "Anonymous";
     img.width = IMG.width;
     img.height = IMG.height;
@@ -101,7 +102,7 @@ export const SHAPE_ICON = (props: IShapeEvents) => {
     [IMG?.width, IMG?.height, width, height]
   );
 
-  if (!box.visible) return null;
+  if (!visible) return null;
 
   // =========================
   // Renderizado
@@ -129,9 +130,6 @@ export const SHAPE_ICON = (props: IShapeEvents) => {
         fillEnabled
         fill={fillColor}
         // 4. Bordes y trazos
-        stroke={strokeColor}
-        strokeWidth={strokeWidth}
-        strokeEnabled={strokeWidth > 0}
         // dash={[dash, dash, dash, dash]}
         dash={[dash]}
         dashEnabled={dash > 0}
