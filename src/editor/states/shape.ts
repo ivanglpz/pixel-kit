@@ -2,7 +2,7 @@ import { atom } from "jotai";
 import { ShapeState } from "../shapes/types/shape.state";
 import { EVENT_ATOM } from "./event";
 import { CURRENT_PAGE, IPageShapeIds } from "./pages";
-import { ALL_SHAPES, PLANE_SHAPES_ATOM } from "./shapes";
+import { PLANE_SHAPES_ATOM } from "./shapes";
 import { UndoShape } from "./undo-redo";
 export const SELECTED_SHAPES_BY_IDS_ATOM = atom(
   (get) => {
@@ -84,18 +84,6 @@ export const SHAPE_UPDATE_ATOM = atom(
     }
   }
 );
-
-const cloneShapeRecursive = (shape: UndoShape): ALL_SHAPES => {
-  return {
-    id: shape.id,
-    tool: shape.tool,
-    // state: atom<IShape>({
-    //   ...CreateShapeSchema(shape.state),
-    //   children: atom(shape.state.children.map((c) => cloneShapeRecursive(c))),
-    // }),
-    state: atom({} as ShapeState),
-  };
-};
 
 export const SHAPE_XD_DATA = atom(null, (get, set, args: UndoShape[]) => {
   const planeShapes = get(PLANE_SHAPES_ATOM);
