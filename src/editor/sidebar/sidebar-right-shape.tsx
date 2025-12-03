@@ -2,12 +2,16 @@
 /* eslint-disable jsx-a11y/alt-text */
 import { Valid } from "@/components/valid";
 import { IPhoto } from "@/db/schemas/types";
-import { SHAPE_SELECTED_ATOM, SHAPE_UPDATE_ATOM } from "@/editor/states/shape";
+import {
+  SHAPE_SELECTED_ATOM,
+  SHAPE_UPDATE_ATOM,
+  UpdatableKeys,
+} from "@/editor/states/shape";
 import { uploadPhoto } from "@/services/photo";
 import { fetchListPhotosProject } from "@/services/photos";
 import { css } from "@stylespixelkit/css";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { useAtomValue, useSetAtom } from "jotai";
+import { PrimitiveAtom, useAtomValue, useSetAtom } from "jotai";
 import { LineCap, LineJoin } from "konva/lib/Shape";
 import {
   ArrowDown,
@@ -52,7 +56,6 @@ import {
   FlexWrap,
   JustifyContent,
 } from "../shapes/layout-flex";
-import { JotaiState } from "../shapes/type.shape";
 import { ShapeBase } from "../shapes/types/shape.base";
 import { ShapeState } from "../shapes/types/shape.state";
 import { PROJECT_ID_ATOM } from "../states/projects";
@@ -289,7 +292,10 @@ export const SectionHeader = ({
 export const useShapeUpdate = () => {
   const update = useSetAtom(SHAPE_UPDATE_ATOM);
 
-  return <K extends keyof ShapeState>(type: K, value: ShapeBase[K]) => {
+  return <K extends keyof ShapeState>(
+    type: UpdatableKeys,
+    value: Omit<ShapeBase[K], "id" | "tool" | "children" | "parentId">
+  ) => {
     update({ type, value });
   };
 };
@@ -305,9 +311,9 @@ const ICON_SHAPE = {
   ruler: Ruler,
 };
 type ShapeAtomButtonProps = {
-  atomo: JotaiState<boolean>;
+  atomo: PrimitiveAtom<boolean>;
   iconType: keyof typeof ICON_SHAPE;
-  type: keyof ShapeState;
+  type: UpdatableKeys;
 };
 const ShapeAtomButton = ({ atomo, type, iconType }: ShapeAtomButtonProps) => {
   const value = useAtomValue(atomo);
@@ -360,10 +366,10 @@ const ShapeAtomButtonFlex = ({
   direction,
   type,
 }: {
-  atomo: JotaiState<FlexDirection>;
+  atomo: PrimitiveAtom<FlexDirection>;
   direction: FlexDirection;
   iconType: keyof typeof ICONS_FLEX;
-  type: keyof ShapeState;
+  type: UpdatableKeys;
 }) => {
   const value = useAtomValue(atomo);
   const Icon = ICONS_FLEX[iconType];
@@ -415,7 +421,7 @@ const ShapeAtomButtonFlexWrap = ({
   atomo,
   iconType,
 }: {
-  atomo: JotaiState<FlexWrap>;
+  atomo: PrimitiveAtom<FlexWrap>;
   iconType: keyof typeof ICONS_FLEXWRAP;
 }) => {
   const value = useAtomValue(atomo);
@@ -465,7 +471,7 @@ type ShapeAtomButtonStrokeProps = {
   values: [LineJoin, LineCap];
 };
 
-const ShapeAtomButtonStroke = ({
+export const ShapeAtomButtonStroke = ({
   shape,
   type,
   values = ["round", "round"],
@@ -516,7 +522,10 @@ const ShapeAtomButtonStroke = ({
 type ShapeIsAllPaddingProps = {
   shape: ShapeState;
 };
-type KeyShapes = keyof Omit<ShapeState, "id" | "tool">;
+type KeyShapes = keyof Omit<
+  ShapeState,
+  "id" | "tool" | "children" | "parentId"
+>;
 const paddings: KeyShapes[] = [
   "paddingTop",
   "paddingRight",
@@ -556,11 +565,11 @@ const ShapePaddings = ({ shape }: ShapeIsAllPaddingProps) => {
   );
 };
 
-const ShapeInputColor = ({
+export const ShapeInputColor = ({
   shape,
   type,
 }: ShapeIsAllPaddingProps & { type: KeyShapes }) => {
-  const value = useAtomValue(shape[type] as JotaiState<string>);
+  const value = useAtomValue(shape[type] as PrimitiveAtom<string>);
   return (
     <Input.Container id={`pixel-kit-${type}`}>
       <Input.Grid>

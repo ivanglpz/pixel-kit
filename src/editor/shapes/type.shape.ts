@@ -13,7 +13,7 @@ import {
 export type WithInitialValue<Value> = {
   init: Value;
 };
-export type JotaiState<T> = PrimitiveAtom<T> & WithInitialValue<T>;
+
 type FillImage = {
   src: string;
   width: number;
@@ -22,24 +22,24 @@ type FillImage = {
 };
 export type Fill = {
   id: string;
-  color: JotaiState<string>;
-  opacity: JotaiState<number>;
-  visible: JotaiState<boolean>;
+  color: PrimitiveAtom<string>;
+  opacity: PrimitiveAtom<number>;
+  visible: PrimitiveAtom<boolean>;
   type: "fill" | "image";
   image: FillImage;
 };
 
 export type Stroke = {
   id: string;
-  color: JotaiState<string>;
-  visible: JotaiState<boolean>;
+  color: PrimitiveAtom<string>;
+  visible: PrimitiveAtom<boolean>;
 };
 
 export type Effect = {
   id: string;
   type: "shadow" | "blur" | "glow";
-  visible: JotaiState<boolean>;
-  color: JotaiState<string>;
+  visible: PrimitiveAtom<boolean>;
+  color: PrimitiveAtom<string>;
 };
 export type FontWeight =
   | "bold"
@@ -55,84 +55,84 @@ export type VerticalAlign = "top" | "middle" | "bottom";
 export type IShape = {
   // Identity
   id: string;
-  label: JotaiState<string>;
+  label: PrimitiveAtom<string>;
   tool: IShapesKeys;
-  parentId: JotaiState<string | null>;
+  parentId: PrimitiveAtom<string | null>;
 
   // Position & Transform
-  x: JotaiState<number>;
-  y: JotaiState<number>;
-  copyX: JotaiState<number>;
-  copyY: JotaiState<number>;
-  offsetX: JotaiState<number>;
-  offsetY: JotaiState<number>;
-  offsetCopyX: JotaiState<number>;
-  offsetCopyY: JotaiState<number>;
-  rotation: JotaiState<number>;
-  width: JotaiState<number>;
-  height: JotaiState<number>;
-  points: JotaiState<number[]>;
+  x: PrimitiveAtom<number>;
+  y: PrimitiveAtom<number>;
+  copyX: PrimitiveAtom<number>;
+  copyY: PrimitiveAtom<number>;
+  offsetX: PrimitiveAtom<number>;
+  offsetY: PrimitiveAtom<number>;
+  offsetCopyX: PrimitiveAtom<number>;
+  offsetCopyY: PrimitiveAtom<number>;
+  rotation: PrimitiveAtom<number>;
+  width: PrimitiveAtom<number>;
+  height: PrimitiveAtom<number>;
+  points: PrimitiveAtom<number[]>;
 
   // Visibility & Lock
-  visible: JotaiState<boolean>;
-  isLocked: JotaiState<boolean>;
-  opacity: JotaiState<number>;
+  visible: PrimitiveAtom<boolean>;
+  isLocked: PrimitiveAtom<boolean>;
+  opacity: PrimitiveAtom<number>;
 
   // Fill & Stroke
-  fills: JotaiState<Fill[]>;
-  strokes: JotaiState<Stroke[]>;
-  strokeWidth: JotaiState<number>;
-  lineCap: JotaiState<LineCap>;
-  lineJoin: JotaiState<LineJoin>;
-  dash: JotaiState<number>;
+  fills: PrimitiveAtom<Fill[]>;
+  strokes: PrimitiveAtom<Stroke[]>;
+  strokeWidth: PrimitiveAtom<number>;
+  lineCap: PrimitiveAtom<LineCap>;
+  lineJoin: PrimitiveAtom<LineJoin>;
+  dash: PrimitiveAtom<number>;
 
   // Effects
-  effects: JotaiState<Effect[]>;
-  shadowBlur: JotaiState<number>;
-  shadowOffsetX: JotaiState<number>;
-  shadowOffsetY: JotaiState<number>;
-  shadowOpacity: JotaiState<number>;
+  effects: PrimitiveAtom<Effect[]>;
+  shadowBlur: PrimitiveAtom<number>;
+  shadowOffsetX: PrimitiveAtom<number>;
+  shadowOffsetY: PrimitiveAtom<number>;
+  shadowOpacity: PrimitiveAtom<number>;
 
   // Typography
-  text: JotaiState<string>;
-  fontFamily: JotaiState<string>;
-  fontSize: JotaiState<number>;
-  fontStyle: JotaiState<string>;
-  fontWeight: JotaiState<FontWeight>;
-  textDecoration: JotaiState<string>;
-  align: JotaiState<Align>;
-  verticalAlign: JotaiState<VerticalAlign>;
+  text: PrimitiveAtom<string>;
+  fontFamily: PrimitiveAtom<string>;
+  fontSize: PrimitiveAtom<number>;
+  fontStyle: PrimitiveAtom<string>;
+  fontWeight: PrimitiveAtom<FontWeight>;
+  textDecoration: PrimitiveAtom<string>;
+  align: PrimitiveAtom<Align>;
+  verticalAlign: PrimitiveAtom<VerticalAlign>;
 
   // Layout
-  isLayout: JotaiState<boolean>;
-  flexDirection: JotaiState<FlexDirection>;
-  justifyContent: JotaiState<JustifyContent>;
-  alignItems: JotaiState<AlignItems>;
-  flexWrap: JotaiState<FlexWrap>;
+  isLayout: PrimitiveAtom<boolean>;
+  flexDirection: PrimitiveAtom<FlexDirection>;
+  justifyContent: PrimitiveAtom<JustifyContent>;
+  alignItems: PrimitiveAtom<AlignItems>;
+  flexWrap: PrimitiveAtom<FlexWrap>;
   // visible: boolean;
-  gap: JotaiState<number>;
-  fillContainerWidth: JotaiState<boolean>;
-  fillContainerHeight: JotaiState<boolean>;
+  gap: PrimitiveAtom<number>;
+  fillContainerWidth: PrimitiveAtom<boolean>;
+  fillContainerHeight: PrimitiveAtom<boolean>;
 
   // Border Radius
-  borderRadius: JotaiState<number>;
-  isAllBorderRadius: JotaiState<boolean>;
-  borderTopLeftRadius: JotaiState<number>;
-  borderTopRightRadius: JotaiState<number>;
-  borderBottomRightRadius: JotaiState<number>;
-  borderBottomLeftRadius: JotaiState<number>;
-  minWidth: JotaiState<number>;
-  minHeight: JotaiState<number>;
-  maxWidth: JotaiState<number>;
-  maxHeight: JotaiState<number>;
-  isAllPadding: JotaiState<boolean>;
-  paddingTop: JotaiState<number>;
-  paddingRight: JotaiState<number>;
-  paddingBottom: JotaiState<number>;
-  paddingLeft: JotaiState<number>;
-  padding: JotaiState<number>;
+  borderRadius: PrimitiveAtom<number>;
+  isAllBorderRadius: PrimitiveAtom<boolean>;
+  borderTopLeftRadius: PrimitiveAtom<number>;
+  borderTopRightRadius: PrimitiveAtom<number>;
+  borderBottomRightRadius: PrimitiveAtom<number>;
+  borderBottomLeftRadius: PrimitiveAtom<number>;
+  minWidth: PrimitiveAtom<number>;
+  minHeight: PrimitiveAtom<number>;
+  maxWidth: PrimitiveAtom<number>;
+  maxHeight: PrimitiveAtom<number>;
+  isAllPadding: PrimitiveAtom<boolean>;
+  paddingTop: PrimitiveAtom<number>;
+  paddingRight: PrimitiveAtom<number>;
+  paddingBottom: PrimitiveAtom<number>;
+  paddingLeft: PrimitiveAtom<number>;
+  padding: PrimitiveAtom<number>;
   // Children
-  children: JotaiState<ALL_SHAPES[]>;
+  children: PrimitiveAtom<ALL_SHAPES[]>;
 };
 
 export type IShapeJSON = {

@@ -1,9 +1,11 @@
-import { atom } from "jotai";
+import { atom, Getter, Setter } from "jotai";
+import { ShapeBase } from "../shapes/types/shape.base";
 import { ShapeState } from "../shapes/types/shape.state";
 import { EVENT_ATOM } from "./event";
 import { CURRENT_PAGE, IPageShapeIds } from "./pages";
 import { PLANE_SHAPES_ATOM } from "./shapes";
 import { UndoShape } from "./undo-redo";
+
 export const SELECTED_SHAPES_BY_IDS_ATOM = atom(
   (get) => {
     return get(get(CURRENT_PAGE).SHAPES.ID);
@@ -71,15 +73,29 @@ export const SHAPE_SELECTED_ATOM = atom((get) => {
   };
 });
 
+export type UpdatableKeys = keyof Omit<
+  ShapeState,
+  "id" | "tool" | "children" | "parentId"
+>;
+
+export type ShapeUpdateAtomProps<K extends UpdatableKeys> = {
+  type: UpdatableKeys;
+  value: Omit<ShapeBase[K], "id" | "tool" | "children" | "parentId">;
+};
 export const SHAPE_UPDATE_ATOM = atom(
   null,
-  (get, set, args: { type: keyof ShapeState; value: unknown }) => {
+  <K extends UpdatableKeys>(
+    get: Getter,
+    set: Setter,
+    args: ShapeUpdateAtomProps<K>
+  ) => {
     const { type, value } = args;
 
     const selected = get(SHAPE_SELECTED_ATOM);
-
     for (const shape of selected.shapes) {
       const target = shape[type];
+      if (!target) continue;
+      target.write;
       set(target as any, value);
     }
   }

@@ -1,5 +1,5 @@
 import { css } from "@stylespixelkit/css";
-import { useAtomValue, useSetAtom } from "jotai";
+import { SetStateAction, useAtom, useSetAtom } from "jotai";
 import React, {
   CSSProperties,
   FocusEvent,
@@ -19,21 +19,28 @@ type PauseWrapperProps = {
 
 type ChangeWrapperProps = {
   children: JSX.Element;
-  shape: ShapeState;
-  type: keyof Omit<ShapeState, "id" | "tool">;
+  shape: Omit<ShapeState, "children" | "parentId">;
+  type: keyof Omit<ShapeState, "id" | "tool" | "children" | "parentId">;
+  updateSelectedShapes?: boolean;
 };
+
+type SetActionVariants<T> = {
+  [K in keyof T]: SetStateAction<T[K]>;
+}[keyof T];
 
 export const ChangeWrapper = <K extends keyof ShapeState>({
   children,
   shape,
   type,
+  updateSelectedShapes = true,
 }: ChangeWrapperProps): ReactElement => {
   if (!shape[type]) return children;
   const atom = shape[type];
 
   if (!atom) return children;
 
-  const shapeValue = useAtomValue(atom);
+  const [shapeValue, setShapeValue] = useAtom(atom);
+
   const spHook = useShapeUpdate();
 
   const enhanceChild = (child: ReactNode): ReactNode => {
@@ -42,8 +49,14 @@ export const ChangeWrapper = <K extends keyof ShapeState>({
     return React.cloneElement(child as ReactElement, {
       ...child.props,
       value: shapeValue,
-      onChange: (value: ShapeBase[K]) => {
-        spHook(type, value);
+      onChange: (
+        value: Omit<ShapeBase[K], "id" | "tool" | "children" | "parentId">
+      ) => {
+        if (updateSelectedShapes) {
+          spHook(type, value);
+        } else {
+          setShapeValue(value as SetActionVariants<typeof shapeValue>);
+        }
       },
     });
   };
