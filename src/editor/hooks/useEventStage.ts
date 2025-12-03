@@ -244,8 +244,7 @@ export const useEventStage = () => {
       SET_CREATE(createStartElement);
     };
 
-    const dataImage =
-      "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svgString);
+    const dataImage = SVG.Encode(svgString);
     img.src = dataImage;
   };
 
