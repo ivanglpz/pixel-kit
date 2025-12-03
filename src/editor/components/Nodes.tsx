@@ -1,7 +1,7 @@
 import { iconsWithTools } from "@/editor/icons/tool-icons";
 import { css } from "@stylespixelkit/css";
 import { DragControls, Reorder, useDragControls } from "framer-motion";
-import { useAtom, useAtomValue, useSetAtom } from "jotai";
+import { PrimitiveAtom, useAtom, useAtomValue, useSetAtom } from "jotai";
 
 import {
   ContextMenu,
@@ -14,7 +14,6 @@ import { useMemo, useState } from "react";
 import { constants } from "../constants/color";
 import { useAutoSave } from "../hooks/useAutoSave";
 import { flexLayoutAtom } from "../shapes/layout-flex";
-import { JotaiState } from "../shapes/type.shape";
 import { SELECTED_SHAPES_BY_IDS_ATOM } from "../states/shape";
 import {
   ALL_SHAPES,
@@ -88,7 +87,7 @@ const Unlock = withStableMemo(Luicde.Unlock);
 const NodeInput = ({
   atomo,
 }: {
-  atomo: JotaiState<number> | JotaiState<string>;
+  atomo: PrimitiveAtom<number> | PrimitiveAtom<string>;
 }) => {
   const [show, setShow] = useState(false);
   const setPause = useSetAtom(PAUSE_MODE_ATOM);

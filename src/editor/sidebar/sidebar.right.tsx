@@ -6,6 +6,7 @@ import { FC } from "react";
 import { SELECTED_SHAPES_BY_IDS_ATOM } from "../states/shape";
 import TOOL_ATOM from "../states/tool";
 import { StageCanvasColor } from "./canvas";
+import { Drawing } from "./drawing";
 import { LayoutShapeConfig } from "./sidebar-right-shape";
 
 const SidebarRight: FC = () => {
@@ -37,10 +38,9 @@ const SidebarRight: FC = () => {
           </Valid>
         </Valid>
       </Valid>
-      {/*
       <Valid isValid={!shapeIds.length}>
         <Drawing />
-      </Valid> */}
+      </Valid>
       {/* <Valid isValid={shapeIds.length > 0}> */}
       <LayoutShapeConfig />
       {/* </Valid> */}

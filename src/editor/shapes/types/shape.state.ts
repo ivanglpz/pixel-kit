@@ -1,5 +1,5 @@
 import { ALL_SHAPES } from "@/editor/states/shapes";
-import { JotaiState } from "../type.shape";
+import { PrimitiveAtom } from "jotai";
 import { ShapeBase } from "./shape.base";
 
 type ExtraProps = {
@@ -7,7 +7,7 @@ type ExtraProps = {
 };
 
 type WrappedExtraProps = {
-  [K in keyof ExtraProps]: JotaiState<ExtraProps[K]>;
+  [K in keyof ExtraProps]: PrimitiveAtom<ExtraProps[K]>;
 };
 
 type BaseWithoutChildren = Omit<ShapeBase, "children">;
@@ -15,5 +15,5 @@ type BaseWithoutChildren = Omit<ShapeBase, "children">;
 export type ShapeState = {
   [K in keyof BaseWithoutChildren]: K extends "id" | "tool"
     ? BaseWithoutChildren[K]
-    : JotaiState<BaseWithoutChildren[K]>;
+    : PrimitiveAtom<BaseWithoutChildren[K]>;
 } & WrappedExtraProps;

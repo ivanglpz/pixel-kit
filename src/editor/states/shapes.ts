@@ -2,10 +2,9 @@ import {
   Align,
   FontWeight,
   IShape,
-  JotaiState,
   VerticalAlign,
 } from "@/editor/shapes/type.shape";
-import { atom, Getter } from "jotai";
+import { atom, Getter, PrimitiveAtom } from "jotai";
 import { LineCap, LineJoin } from "konva/lib/Shape";
 import { Smile } from "lucide-static";
 import { v4 as uuidv4 } from "uuid";
@@ -43,7 +42,7 @@ export type ALL_SHAPES = {
   id: string;
   tool: IShapesKeys;
   // pageId: string | null;
-  state: JotaiState<ShapeState>;
+  state: PrimitiveAtom<ShapeState>;
 };
 
 export type SHAPE_BASE_CHILDREN = Omit<ALL_SHAPES, "state"> & {
