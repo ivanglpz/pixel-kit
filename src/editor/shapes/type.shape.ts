@@ -1,7 +1,7 @@
 import { PrimitiveAtom } from "jotai";
 import { LineCap, LineJoin } from "konva/lib/Shape";
 import { FC } from "react";
-import { ALL_SHAPES, SHAPE_BASE_CHILDREN } from "../states/shapes";
+import { ALL_SHAPES } from "../states/shapes";
 import { IShapesKeys } from "../states/tool";
 import {
   AlignItems,
@@ -133,89 +133,6 @@ export type IShape = {
   padding: PrimitiveAtom<number>;
   // Children
   children: PrimitiveAtom<ALL_SHAPES[]>;
-};
-
-export type IShapeJSON = {
-  id: string;
-  label: string;
-  tool: IShapesKeys;
-  parentId: string | null;
-
-  // Position & Transform
-  x: number;
-  y: number;
-  copyX: number;
-  copyY: number;
-  offsetX: number;
-  offsetY: number;
-  offsetCopyX: number;
-  offsetCopyY: number;
-  rotation: number;
-  width: number;
-  height: number;
-  points: number[];
-
-  // Visibility & Lock
-  visible: boolean;
-  isLocked: boolean;
-  opacity: number;
-
-  // Fill & Stroke
-  fills: Fill[];
-  strokes: Stroke[];
-  strokeWidth: number;
-  lineCap: LineCap;
-  lineJoin: LineJoin;
-  dash: number;
-
-  // Effects
-  effects: Effect[];
-  shadowBlur: number;
-  shadowOffsetX: number;
-  shadowOffsetY: number;
-  shadowOpacity: number;
-
-  // Typography
-  text: string;
-  fontFamily: string;
-  fontSize: number;
-  fontStyle: string;
-  fontWeight: FontWeight;
-  textDecoration: string;
-  align: Align;
-  verticalAlign: VerticalAlign;
-
-  // Layout
-  isLayout: boolean;
-  flexDirection: FlexDirection;
-  justifyContent: JustifyContent;
-  alignItems: AlignItems;
-  flexWrap: FlexWrap;
-  // visible: boolean;
-  gap: number;
-  fillContainerWidth: boolean;
-  fillContainerHeight: boolean;
-
-  // Border Radius
-  borderRadius: number;
-  isAllBorderRadius: boolean;
-  borderTopLeftRadius: number;
-  borderTopRightRadius: number;
-  borderBottomRightRadius: number;
-  borderBottomLeftRadius: number;
-  minWidth: number;
-  minHeight: number;
-  maxWidth: number;
-  maxHeight: number;
-  isAllPadding: boolean;
-  paddingTop: number;
-  paddingRight: number;
-  paddingBottom: number;
-  paddingLeft: number;
-  padding: number;
-  // Children
-  ///children
-  children: SHAPE_BASE_CHILDREN[];
 };
 
 export type IShapeEvents = {

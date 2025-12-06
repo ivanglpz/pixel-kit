@@ -11,13 +11,9 @@ export type IMapperElements = {
 };
 
 export const Shapes: IMapperElements = {
-  // BOX: ShapeGroup,
   FRAME: SHAPE_FRAME,
   TEXT: ShapeText,
-  // CIRCLE: ShapeCircle,
-  // LINE: ShapeLine,
   IMAGE: ShapeImage,
   DRAW: ShapeDraw,
   ICON: SHAPE_ICON,
-  // GROUP: ShapeGroup,
 };
