@@ -1,10 +1,7 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-/* eslint-disable react/display-name */
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { Text } from "react-konva";
-import { IShapeEvents } from "./type.shape";
-/* eslint-disable react/display-name */
 import { SELECTED_SHAPES_BY_IDS_ATOM } from "../states/shape";
+import { IShapeEvents } from "./type.shape";
 
 import { useMemo } from "react";
 import { flexLayoutAtom } from "./layout-flex";
@@ -40,7 +37,6 @@ export const ShapeText = (props: IShapeEvents) => {
   const fontVariant = useAtomValue(box.fontWeight);
   const text = useAtomValue(box.text);
   const fontSize = useAtomValue(box.fontSize);
-  // const shadow = useAtomValue(effects.at(0)?.color)
   const [shapeId, setShapeId] = useAtom(SELECTED_SHAPES_BY_IDS_ATOM);
   const isSelected = useMemo(
     () => shapeId.some((w) => w.id === box.id),

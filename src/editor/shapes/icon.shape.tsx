@@ -1,35 +1,13 @@
-/* eslint-disable react/display-name */
-/* eslint-disable jsx-a11y/alt-text */
-
-// React
 import { useMemo } from "react";
 
-// Estado global (jotai)
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { SELECTED_SHAPES_BY_IDS_ATOM } from "../states/shape";
 
-// Konva
 import { Image as KonvaImage } from "react-konva";
-
-// Tipos
-import { IShapeEvents } from "./type.shape";
-
-// Eventos de shape
 import { calculateCoverCrop } from "../utils/crop";
 import { SVG } from "../utils/svg";
 import { flexLayoutAtom } from "./layout-flex";
-
-// Transformer
-
-// =========================
-// Utilidades
-// =========================
-
-// Calcula un recorte de imagen estilo "object-fit: cover"
-
-// =========================
-// Componente ShapeImage
-// =========================
+import { IShapeEvents } from "./type.shape";
 
 export const SHAPE_ICON = (props: IShapeEvents) => {
   const { shape: item } = props;
@@ -45,7 +23,6 @@ export const SHAPE_ICON = (props: IShapeEvents) => {
   const parentId = useAtomValue(box.parentId);
   const shadowColor = useAtomValue(box.shadowColor);
   const strokeColor = useAtomValue(box.strokeColor);
-  const fillColor = useAtomValue(box.fillColor);
   const strokeWidth = useAtomValue(box.strokeWidth);
   const dash = useAtomValue(box.dash);
   const isAllBorderRadius = useAtomValue(box.isAllBorderRadius);
@@ -68,7 +45,6 @@ export const SHAPE_ICON = (props: IShapeEvents) => {
   );
 
   const IMG = useAtomValue(box.image);
-  console.log(IMG);
 
   const IMAGE_ICON = useMemo(() => {
     const img = new Image();

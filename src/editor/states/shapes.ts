@@ -19,6 +19,7 @@ import {
 import { ShapeBase, ShapeImage } from "../shapes/types/shape.base";
 import { ShapeState } from "../shapes/types/shape.state";
 import { capitalize } from "../utils/capitalize";
+import { delay } from "../utils/delay";
 import { SVG } from "../utils/svg";
 import CURRENT_ITEM_ATOM, {
   CLEAR_CURRENT_ITEM_ATOM,
@@ -126,13 +127,11 @@ export const DELETE_SHAPES_ATOM = atom(null, (get, set) => {
 
       if (!FIND_SHAPE) continue;
       set(flexLayoutAtom, { id: FIND_SHAPE.id }); // aplicar layout si es flex
-
-      set(FIND_SHAPE.state, {
-        ...get(FIND_SHAPE.state),
-        children: atom(
-          get(get(FIND_SHAPE.state).children).filter((e) => e.id !== element.id)
-        ),
-      });
+      const children = get(FIND_SHAPE.state).children;
+      set(
+        children,
+        get(children).filter((e) => e.id !== element.id)
+      );
       set(flexLayoutAtom, { id: element.parentId }); // aplicar layout si es flex
     } else {
       set(
@@ -141,18 +140,18 @@ export const DELETE_SHAPES_ATOM = atom(null, (get, set) => {
       );
     }
   }
-  const selected = currentShapes.filter((e) =>
-    shapesSelected.some((w) => w.id === e.id)
-  );
+  // const selected = currentShapes.filter((e) =>
+  //   shapesSelected.some((w) => w.id === e.id)
+  // );
 
   // registrar acción de tipo UPDATE
   const SHAPE_IDS_ = get(CURRENT_PAGE).SHAPES.ID;
 
   set(SHAPE_IDS_, []);
-  set(NEW_UNDO_REDO, {
-    type: "DELETE",
-    shapes: selected,
-  });
+  // set(NEW_UNDO_REDO, {
+  //   type: "DELETE",
+  //   shapes: selected,
+  // });
 });
 export const GET_ALL_SHAPES_BY_ID = atom(
   null,
@@ -161,189 +160,187 @@ export const GET_ALL_SHAPES_BY_ID = atom(
     const FIND_SHAPE = PLANE_SHAPES.find((e) => e.id === id);
     if (!FIND_SHAPE) return [];
 
-    const sanitizemap = (shape: ALL_SHAPES): SHAPE_BASE_CHILDREN => {
-      const state = get(shape.state);
-      return {
-        ...shape,
-        state: {
-          ...state,
-          children: get(state.children).map((child) => sanitizemap(child)),
-        },
-      };
-    };
+    // const sanitizemap = (shape: ALL_SHAPES): SHAPE_BASE_CHILDREN => {
+    //   const state = get(shape.state);
+    //   return {
+    //     ...shape,
+    //     state: {
+    //       ...state,
+    //       children: get(state.children).map((child) => sanitizemap(child)),
+    //     },
+    //   };
+    // };
 
-    return [sanitizemap(FIND_SHAPE)];
+    // return [sanitizemap(FIND_SHAPE)];
+    return [];
   }
 );
 export const DELETE_ALL_SHAPES_ATOM = atom(null, (get, set) => {
-  const currentShapes = get(PLANE_SHAPES_ATOM);
+  // const currentShapes = get(PLANE_SHAPES_ATOM);
 
-  for (const element of currentShapes) {
-    if (get(element.state).parentId) {
-      const FIND_SHAPE = currentShapes.find(
-        (w) => w.id === get(element.state).parentId
-      );
+  // for (const element of currentShapes) {
+  //   if (get(element.state).parentId) {
+  //     const FIND_SHAPE = currentShapes.find(
+  //       (w) => w.id === get(element.state).parentId
+  //     );
 
-      if (!FIND_SHAPE) continue;
-      set(FIND_SHAPE.state, {
-        ...get(FIND_SHAPE.state),
-        children: atom(
-          get(get(FIND_SHAPE.state).children).filter((e) => e.id !== element.id)
-        ),
-      });
-    } else {
-      set(
-        ALL_SHAPES_ATOM,
-        get(ALL_SHAPES_ATOM).filter((e) => e.id !== element.id)
-      );
-    }
-  }
+  //     if (!FIND_SHAPE) continue;
+  //     set(FIND_SHAPE.state, {
+  //       ...get(FIND_SHAPE.state),
+  //       children: atom(
+  //         get(get(FIND_SHAPE.state).children).filter((e) => e.id !== element.id)
+  //       ),
+  //     });
+  //   } else {
+  //     set(
+  //       ALL_SHAPES_ATOM,
+  //       get(ALL_SHAPES_ATOM).filter((e) => e.id !== element.id)
+  //     );
+  //   }
+  // }
 
-  // registrar acción de tipo UPDATE
+  // // registrar acción de tipo UPDATE
   const SHAPE_IDS_ = get(CURRENT_PAGE).SHAPES.ID;
 
   set(SHAPE_IDS_, []);
   set(ALL_SHAPES_ATOM, []);
-  set(NEW_UNDO_REDO, {
-    type: "DELETE",
-    shapes: currentShapes,
-  });
+  // set(NEW_UNDO_REDO, {
+  //   type: "DELETE",
+  //   shapes: currentShapes,
+  // });
 });
 
 // ===== Funciones de movimiento actualizadas =====
-export const MOVE_SHAPES_BY_ID = atom(null, (get, set, targetId: string) => {
-  const allShapes = get(PLANE_SHAPES_ATOM);
-  const selectedShapeIds = get(SELECTED_SHAPES_BY_IDS_ATOM);
+export const MOVE_SHAPES_BY_ID = atom(
+  null,
+  async (get, set, targetId: string) => {
+    const allShapes = get(PLANE_SHAPES_ATOM);
+    const selectedShapeIds = get(SELECTED_SHAPES_BY_IDS_ATOM);
 
-  // Early exits
-  if (!allShapes?.length || !selectedShapeIds?.length) return;
+    // Early exits
+    if (!allShapes?.length || !selectedShapeIds?.length) return;
 
-  // Selection and target
-  const selectedShapes = allShapes.filter((shape) =>
-    selectedShapeIds.some((sel) => sel.id === shape.id)
-  );
-  const targetShape = allShapes.find((shape) => shape.id === targetId);
-  if (!targetShape) return;
-
-  // Prevent moving a node into itself or into its descendants
-  const isDescendant = (parent: ALL_SHAPES, childId: string): boolean => {
-    const children = get(get(parent.state).children);
-    if (children.some((c) => c.id === childId)) return true;
-    return children.some((c) => isDescendant(c, childId));
-  };
-  if (selectedShapes.some((s) => s.id === targetShape.id)) return;
-  for (const shape of selectedShapes) {
-    if (isDescendant(shape, targetShape.id)) return;
-  }
-
-  // Save previous state for undo
-  const prevShapes = [...selectedShapes];
-
-  // Precompute lookup map and helper to compute cumulative ancestor offsets
-  const flatMap = new Map(allShapes.map((s) => [s.id, s] as const));
-  const getInheritedOffset = (id: string | null): { x: number; y: number } => {
-    if (!id) return { x: 0, y: 0 };
-    let current = flatMap.get(id);
-    let totalX = 0;
-    let totalY = 0;
-    while (current) {
-      const st = get(current.state);
-      totalX += st.x;
-      totalY += st.y;
-      current = st.parentId ? flatMap.get(st.parentId) : undefined;
-    }
-    return { x: totalX, y: totalY };
-  };
-
-  // Compute the target cumulative offset once (used when fixing positions)
-  const targetAccum = getInheritedOffset(targetId);
-
-  // Pure clone: returns a fresh ALL_SHAPES where state is a new atom
-  const cloneShapeRecursive = (
-    shape: ALL_SHAPES,
-    parentId: string,
-    fixPosition: boolean
-  ): ALL_SHAPES => {
-    const st = get(shape.state);
-    const baseX = st.x;
-    const baseY = st.y;
-
-    const newX = fixPosition ? baseX - targetAccum.x : baseX;
-    const newY = fixPosition ? baseY - targetAccum.y : baseY;
-
-    const clonedChildren = get(st.children).map((child) =>
-      cloneShapeRecursive(child, shape.id, false)
+    // Selection and target
+    const selectedShapes = allShapes.filter((shape) =>
+      selectedShapeIds.some((sel) => sel.id === shape.id)
     );
 
-    return {
-      id: shape.id,
-      tool: shape.tool,
-      state: atom<IShape>({
-        ...st,
-        x: newX,
-        y: newY,
-        parentId,
-        children: atom(clonedChildren),
-      }),
-    };
-  };
+    const targetShape = allShapes.find((shape) => shape.id === targetId);
+    if (!targetShape) return;
+    const targetChildren = get(get(targetShape.state).children);
 
-  const targetChildren = get(get(targetShape.state).children);
+    // Determine which selected shapes will be detached from their original parents
+    const detachedShapes = selectedShapes.filter(
+      (s) => !targetChildren.some((c) => c.id === s.id || s.id === targetId)
+    );
+    for (const shape of detachedShapes) {
+      const parentId = get(get(shape.state).parentId);
 
-  // Determine which selected shapes will be detached from their original parents
-  const detachedShapes = selectedShapes.filter(
-    (s) => !targetChildren.some((c) => c.id === s.id || s.id === targetId)
-  );
+      if (parentId) {
+        const parent = allShapes.find((p) => p.id === parentId);
+        if (!parent) continue;
 
-  // Build cloned shapes that will be appended to the target
-  const clonedShapes = selectedShapes.map((s) =>
-    cloneShapeRecursive(s, get(targetShape.state).id, true)
-  );
-
-  const newChildren = clonedShapes.filter(
-    (s) => !targetChildren.some((c) => c.id === s.id || s.id === targetId)
-  );
-  // Actualizar hijos del destino
-  set(targetShape.state, {
-    ...get(targetShape.state),
-    children: atom([...targetChildren, ...newChildren]),
-  });
-
-  // Eliminar shapes de sus padres originales o nivel raíz
-  for (const shape of detachedShapes) {
-    const parentId = get(shape.state).parentId;
-
-    if (parentId) {
-      const parent = allShapes.find((p) => p.id === parentId);
-      if (!parent) continue;
-
-      const updatedChildren = get(get(parent.state).children).filter(
-        (c) => c.id !== shape.id
-      );
-      set(parent.state, {
-        ...get(parent.state),
-        children: atom(updatedChildren),
-      });
-    } else {
-      set(
-        ALL_SHAPES_ATOM,
-        get(ALL_SHAPES_ATOM).filter((s) => s.id !== shape.id)
-      );
+        const updatedChildren = get(get(parent.state).children).filter(
+          (c) => c.id !== shape.id
+        );
+        set(get(parent.state).children, updatedChildren);
+      } else {
+        set(
+          ALL_SHAPES_ATOM,
+          get(ALL_SHAPES_ATOM).filter((s) => s.id !== shape.id)
+        );
+      }
     }
-  }
-  const updateShapesIds = get(SELECTED_SHAPES_BY_IDS_ATOM)?.map((e) => ({
-    ...e,
-    parentId: get(targetShape.state).id,
-  }));
-  set(UPDATE_SHAPES_IDS_ATOM, updateShapesIds);
+    // Prevent moving a node into itself or into its descendants
+    const isDescendant = (parent: ALL_SHAPES, childId: string): boolean => {
+      const children = get(get(parent.state).children);
+      if (children.some((c) => c.id === childId)) return true;
+      return children.some((c) => isDescendant(c, childId));
+    };
+    if (selectedShapes.some((s) => s.id === targetShape.id)) return;
+    for (const shape of selectedShapes) {
+      if (isDescendant(shape, targetShape.id)) return;
+    }
 
-  // Register MOVE for undo/redo
-  set(NEW_UNDO_REDO, {
-    type: "MOVE",
-    shapes: clonedShapes,
-    prevShapes,
-  });
-});
+    // Save previous state for undo
+    const prevShapes = [...selectedShapes];
+
+    // Precompute lookup map and helper to compute cumulative ancestor offsets
+    const flatMap = new Map(allShapes.map((s) => [s.id, s] as const));
+    const getInheritedOffset = (
+      id: string | null
+    ): { x: number; y: number } => {
+      if (!id) return { x: 0, y: 0 };
+      let current = flatMap.get(id);
+      let totalX = 0;
+      let totalY = 0;
+      while (current) {
+        const st = get(current.state);
+        totalX += get(st.x);
+        totalY += get(st.y);
+        current = get(st.parentId)
+          ? flatMap.get(get(st.parentId) ?? "")
+          : undefined;
+      }
+      return { x: totalX, y: totalY };
+    };
+
+    // Compute the target cumulative offset once (used when fixing positions)
+    const targetAccum = getInheritedOffset(targetId);
+
+    // Pure clone: returns a fresh ALL_SHAPES where state is a new atom
+    const cloneShapeRecursive = (
+      shape: ALL_SHAPES,
+      parentId: string,
+      fixPosition: boolean
+    ) => {
+      const st = get(shape.state);
+      const baseX = get(st.x);
+      const baseY = get(st.y);
+
+      const newX = fixPosition ? baseX - targetAccum.x : baseX;
+      const newY = fixPosition ? baseY - targetAccum.y : baseY;
+
+      set(get(shape.state).x, newX);
+      set(get(shape.state).y, newY);
+      set(get(shape.state).parentId, parentId);
+
+      for (const child of get(st.children)) {
+        cloneShapeRecursive(child, shape.id, false);
+      }
+      return shape;
+    };
+
+    // Build cloned shapes that will be appended to the target
+    const clonedShapes = selectedShapes.map((s) =>
+      cloneShapeRecursive(s, get(targetShape.state).id, true)
+    );
+
+    const newChildren = clonedShapes.filter(
+      (s) => !targetChildren.some((c) => c.id === s.id || s.id === targetId)
+    );
+    console.log(newChildren, "newChildren");
+
+    // Actualizar hijos del destino
+    set(get(targetShape.state).children, [...targetChildren, ...newChildren]);
+
+    // Eliminar shapes de sus padres originales o nivel raíz
+    await delay(500);
+
+    const updateShapesIds = get(SELECTED_SHAPES_BY_IDS_ATOM)?.map((e) => ({
+      ...e,
+      parentId: get(targetShape.state).id,
+    }));
+    set(UPDATE_SHAPES_IDS_ATOM, updateShapesIds);
+
+    // // Register MOVE for undo/redo
+    // set(NEW_UNDO_REDO, {
+    //   type: "MOVE",
+    //   shapes: clonedShapes,
+    //   prevShapes,
+    // });
+  }
+);
 
 export const GROUP_SHAPES_IN_LAYOUT = atom(null, (get, set) => {
   const PLANE_SHAPES = get(PLANE_SHAPES_ATOM);

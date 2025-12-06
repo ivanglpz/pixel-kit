@@ -10,6 +10,7 @@ export const SHAPE_FRAME = (props: IShapeEvents) => {
   const { shape: item } = props;
 
   const box = useAtomValue(item.state);
+
   const x = useAtomValue(box.x);
   const y = useAtomValue(box.y);
   const width = useAtomValue(box.width);
@@ -19,8 +20,23 @@ export const SHAPE_FRAME = (props: IShapeEvents) => {
   const visible = useAtomValue(box.visible);
   const childrens = useAtomValue(box.children);
   const parentId = useAtomValue(box.parentId);
-  const applyLayout = useSetAtom(flexLayoutAtom);
+
   const isLayout = useAtomValue(box.isLayout);
+  const justifyContent = useAtomValue(box.justifyContent);
+  const alignItems = useAtomValue(box.alignItems);
+  const flexDirection = useAtomValue(box.flexDirection);
+  const flexWrap = useAtomValue(box.flexWrap);
+  const gap = useAtomValue(box.gap);
+  const isAllPadding = useAtomValue(box.isAllPadding);
+  const padding = useAtomValue(box.padding);
+  const paddingTop = useAtomValue(box.paddingTop);
+  const paddingRight = useAtomValue(box.paddingRight);
+  const paddingBottom = useAtomValue(box.paddingBottom);
+  const paddingLeft = useAtomValue(box.paddingLeft);
+  const fillContainerWidth = useAtomValue(box.fillContainerWidth);
+  const fillContainerHeight = useAtomValue(box.fillContainerHeight);
+
+  const applyLayout = useSetAtom(flexLayoutAtom);
 
   useEffect(() => {
     if (isLayout) {
@@ -28,36 +44,35 @@ export const SHAPE_FRAME = (props: IShapeEvents) => {
     }
   }, [
     isLayout,
-    // box.isLayout,
-    // box.justifyContent,
-    // box.alignItems,
-    // box.flexDirection,
-    // box.flexWrap,
-    // box.width,
-    // box.height,
-    // box.gap,
-    // box.id,
-    // box.isAllPadding,
-    // box.padding,
-    // box.paddingTop,
-    // box.paddingRight,
-    // box.paddingBottom,
-    // box.paddingLeft,
-    // box.fillContainerWidth,
-    // box.fillContainerHeight,
-    // childrens,
+    justifyContent,
+    alignItems,
+    flexDirection,
+    flexWrap,
+    width,
+    height,
+    gap,
+    isAllPadding,
+    padding,
+    paddingTop,
+    paddingRight,
+    paddingBottom,
+    paddingLeft,
+    fillContainerWidth,
+    fillContainerHeight,
+    childrens,
+    box.id,
   ]);
 
   if (!visible) return null;
 
   const children = useMemo(
     () =>
-      childrens?.map((item) => {
-        const Component = Shapes?.[item?.tool] as FCShapeWEvents;
+      childrens?.map((child) => {
+        const Component = Shapes?.[child?.tool] as FCShapeWEvents;
         return (
           <Component
-            shape={item}
-            key={`pixel-group-shapes-${item?.id}-${item.tool}`}
+            shape={child}
+            key={`pixel-group-shapes-${child?.id}-${child.tool}`}
           />
         );
       }),
@@ -80,8 +95,8 @@ export const SHAPE_FRAME = (props: IShapeEvents) => {
         clip={{
           x: 0,
           y: 0,
-          width: width,
-          height: height,
+          width,
+          height,
         }}
       >
         {children}
