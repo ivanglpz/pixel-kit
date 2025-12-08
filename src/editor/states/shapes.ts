@@ -536,13 +536,12 @@ export const GROUP_SHAPES_IN_LAYOUT = atom(null, (get, set) => {
 
 export const EVENT_COPY_START_SHAPES = atom(
   null,
-  (get, set, args: { x: number; y: number }) => {
+  (get, set, initial_args: { x: number; y: number }) => {
     const rootShapes = get(PLANE_SHAPES_ATOM) ?? [];
     const selectedIds = get(SELECTED_SHAPES_BY_IDS_ATOM) ?? [];
 
     if (rootShapes.length === 0 || selectedIds.length === 0) return [];
 
-    // Precompute a lookup map for ancestor traversal
     const flatMap = new Map(rootShapes.map((s) => [s.id, s] as const));
 
     const getInheritedOffset = (
@@ -570,7 +569,7 @@ export const EVENT_COPY_START_SHAPES = atom(
     const recursiveCloneShape = (
       shape: ALL_SHAPES,
       parentId: string | null = null,
-      isRootCopy = false
+      IS_ROOT = false
     ): ShapeState => {
       const state = get(shape.state);
       const newId = uuidv4();
@@ -588,30 +587,19 @@ export const EVENT_COPY_START_SHAPES = atom(
         } as ALL_SHAPES;
       });
 
+      const x = get(state.x);
+      const y = get(state.y);
+      const inheritedX = getInheritedOffset(parentId).x;
+      const inheritedY = getInheritedOffset(parentId).y;
+
       return {
         id: newId,
-        x: atom(
-          isRootCopy
-            ? args.x - get(state.x) - getInheritedOffset(parentId).x
-            : get(state.x)
-        ),
-        y: atom(
-          isRootCopy
-            ? args.y - get(state.y) - getInheritedOffset(parentId).y
-            : get(state.y)
-        ),
-        offsetX: atom(isRootCopy ? args.x - get(state.x) : 0),
-        offsetY: atom(isRootCopy ? args.y - get(state.y) : 0),
-        offsetCopyX: atom(
-          isRootCopy
-            ? args.x - get(state.x) - getInheritedOffset(parentId).x
-            : 0
-        ),
-        offsetCopyY: atom(
-          isRootCopy
-            ? args.y - get(state.y) - getInheritedOffset(parentId).y
-            : 0
-        ),
+        x: atom(IS_ROOT ? initial_args.x - x - inheritedX : x),
+        y: atom(IS_ROOT ? initial_args.y - y - inheritedY : y),
+        offsetX: atom(IS_ROOT ? initial_args.x - x : 0),
+        offsetY: atom(IS_ROOT ? initial_args.y - y : 0),
+        offsetCopyX: atom(IS_ROOT ? initial_args.x - x - inheritedX : 0),
+        offsetCopyY: atom(IS_ROOT ? initial_args.y - y - inheritedY : 0),
         tool: state.tool,
         align: atom<Align>(get(state.align)),
         copyX: atom(get(state.copyX)),
@@ -701,7 +689,11 @@ export const EVENT_COPY_CREATING_SHAPES = atom(
 export const EVENT_COPY_FINISH_SHAPES = atom(null, (get, set) => {
   const CURRENT_ITEMS = get(CURRENT_ITEM_ATOM);
   for (const newShape of CURRENT_ITEMS) {
-    set(CREATE_SHAPE_ATOM, newShape);
+    set(CREATE_SHAPE_ATOM, {
+      ...newShape,
+      x: newShape.copyX,
+      y: newShape.copyY,
+    });
   }
   Promise.resolve().then(() => {
     set(
