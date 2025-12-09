@@ -624,7 +624,7 @@ export const EVENT_COPY_START_SHAPES = atom(
         fillContainerHeight: atom(get(state.fillContainerHeight)),
         fillContainerWidth: atom(get(state.fillContainerWidth)),
         label: atom(get(state.label)),
-        parentId: atom<string | null>(get(state.parentId)),
+        parentId: atom<string | null>(parentId),
         rotation: atom(get(state.rotation)),
         opacity: atom(get(state.opacity)),
         fillColor: atom(get(state.fillColor)),
