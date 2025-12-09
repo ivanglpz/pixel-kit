@@ -1,5 +1,5 @@
 import { useAtomValue, useSetAtom } from "jotai";
-import { useEffect, useMemo } from "react";
+import { useEffect } from "react";
 import { Group } from "react-konva";
 import ShapeBox from "./box.shape";
 import { flexLayoutAtom } from "./layout-flex";
@@ -59,25 +59,10 @@ export const SHAPE_FRAME = (props: IShapeEvents) => {
     paddingLeft,
     fillContainerWidth,
     fillContainerHeight,
-    childrens,
     box.id,
   ]);
 
   if (!visible) return null;
-
-  const children = useMemo(
-    () =>
-      childrens?.map((child) => {
-        const Component = Shapes?.[child?.tool] as FCShapeWEvents;
-        return (
-          <Component
-            shape={child}
-            key={`pixel-group-shapes-${child?.id}-${child.tool}`}
-          />
-        );
-      }),
-    [childrens]
-  );
 
   return (
     <>
@@ -99,7 +84,15 @@ export const SHAPE_FRAME = (props: IShapeEvents) => {
           height,
         }}
       >
-        {children}
+        {childrens?.map((child) => {
+          const Component = Shapes?.[child?.tool] as FCShapeWEvents;
+          return (
+            <Component
+              shape={child}
+              key={`pixel-group-shapes--${box.id}${child?.id}-${child.tool}`}
+            />
+          );
+        })}
       </Group>
     </>
   );
