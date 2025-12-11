@@ -40,7 +40,6 @@ export const LayerShapes = () => {
     trRef.current?.nodes(selected);
     trRef.current?.getLayer()?.batchDraw();
   }, [selectedIds, ALL_SHAPES]);
-  console.log(ALL_SHAPES);
 
   return (
     <>
