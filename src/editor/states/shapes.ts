@@ -728,8 +728,6 @@ export const EVENT_DOWN_START_SHAPES = atom(
       ]);
     }
     if (TOOLS_ICON_BASED.includes(tool as SecondArrayKeys)) {
-      console.log(SVG.Encode(Smile), "Smile");
-
       set(CREATE_CURRENT_ITEM_ATOM, [
         CreateShapeSchema({
           tool: tool as IShape["tool"],
