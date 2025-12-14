@@ -144,7 +144,7 @@ export const GET_EXPORT_JSON = atom(null, (get) => {
       selectedIds.some(
         (selected) =>
           shape.id === selected.id &&
-          get(shape.state).parentId === selected.parentId
+          get(get(shape.state).parentId) === selected.parentId
       )
     )
     .map(cloner);
@@ -158,18 +158,15 @@ export const GET_EXPORT_SHAPES = atom(null, async (get, set) => {
   const selectedIds = get(SELECTED_SHAPES_BY_IDS_ATOM);
   const planeShapes = get(PLANE_SHAPES_ATOM);
   const format = get(typeExportAtom);
-  const cloner = cloneShapeRecursive(get);
-  const shapes = planeShapes
-    .filter((shape) =>
-      selectedIds.some(
-        (selected) =>
-          shape.id === selected.id &&
-          get(shape.state).parentId === selected.parentId
-      )
+  const shapes = planeShapes.filter((shape) =>
+    selectedIds.some(
+      (selected) =>
+        shape.id === selected.id &&
+        get(get(shape.state).parentId) === selected.parentId
     )
-    .map(cloner);
-  const stagesWithContainers = await createStagesFromShapes(shapes);
-  await new Promise((resolve) => setTimeout(resolve, 5000)); // wait for stage to render
+  );
+  const stagesWithContainers = await createStagesFromShapes(shapes, { get });
+  await new Promise((resolve) => setTimeout(resolve, 5000));
   const stages = stagesWithContainers.map((s) => s.stage);
 
   exportAndDownloadStages(
