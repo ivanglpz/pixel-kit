@@ -38,16 +38,35 @@ export const ChangeWrapper = <K extends keyof ShapeState>({
   const atom = shape[type];
 
   if (!atom) return children;
+  const setPause = useSetAtom(PAUSE_MODE_ATOM);
 
+  const handleFocus = (
+    event: FocusEvent<HTMLElement>,
+    original?: (e: FocusEvent<HTMLElement>) => void
+  ) => {
+    setPause(true);
+    original?.(event);
+  };
+
+  const handleBlur = (
+    event: FocusEvent<HTMLElement>,
+    original?: (e: FocusEvent<HTMLElement>) => void
+  ) => {
+    setPause(false);
+    original?.(event);
+  };
   const [shapeValue, setShapeValue] = useAtom(atom);
 
   const spHook = useShapeUpdate();
 
   const enhanceChild = (child: ReactNode): ReactNode => {
     if (!React.isValidElement(child)) return child;
-
+    const originalOnFocus = child.props.onFocus;
+    const originalOnBlur = child.props.onBlur;
     return React.cloneElement(child as ReactElement, {
       ...child.props,
+      onFocus: (e: FocusEvent<HTMLElement>) => handleFocus(e, originalOnFocus),
+      onBlur: (e: FocusEvent<HTMLElement>) => handleBlur(e, originalOnBlur),
       value: shapeValue,
       onChange: (
         value: Omit<ShapeBase[K], "id" | "tool" | "children" | "parentId">
