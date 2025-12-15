@@ -65,7 +65,6 @@ export const ALL_SHAPES_ATOM = atom(
   },
   (get, set, newTool: ALL_SHAPES[]) => {
     set(get(CURRENT_PAGE).SHAPES.LIST, newTool);
-    return;
   }
 );
 

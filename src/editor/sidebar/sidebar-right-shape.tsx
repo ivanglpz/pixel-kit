@@ -1378,7 +1378,7 @@ export const LayoutShapeConfig = () => {
             <Input.Container>
               <Input.withPause>
                 <Input.withChange shape={shape} type="text">
-                  <Input.TextArea rows={6} />
+                  <Input.TextArea rows={5} />
                 </Input.withChange>
               </Input.withPause>
             </Input.Container>
