@@ -240,6 +240,7 @@ export const useEventStage = () => {
           height: img.height,
           name: `svg ${uuidv4().slice(0, 2)}`,
         }),
+        label: atom(`svg ${uuidv4().slice(0, 2)}`),
       });
       SET_CREATE(createStartElement);
     };
@@ -390,7 +391,7 @@ export const useEventStage = () => {
       if (!clipboardText) return;
 
       const trimmed = clipboardText.trim();
-      if (trimmed.startsWith("<svg")) {
+      if (trimmed.startsWith("<svg") && trimmed.endsWith("</svg>")) {
         handleSVG(trimmed);
         return;
       }
