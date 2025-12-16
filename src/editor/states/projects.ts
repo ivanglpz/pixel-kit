@@ -93,11 +93,11 @@ const cloneShapeRecursive = (shape: SHAPE_BASE_CHILDREN): ALL_SHAPES => {
       minHeight: atom(shape.state.minHeight),
       minWidth: atom(shape.state.minWidth),
       shadowColor: atom(
-        shadow?.color ?? shape?.state?.shadowColor ?? "#ffffff"
+        shadow?.color ?? shape?.state?.shadowColor ?? "transparent"
       ),
-      fillColor: atom(fill?.color ?? shape?.state?.fillColor ?? "#ffffff"),
+      fillColor: atom(fill?.color ?? shape?.state?.fillColor ?? "transparent"),
       strokeColor: atom(
-        stroke?.color ?? shape?.state?.strokeColor ?? "#ffffff"
+        stroke?.color ?? shape?.state?.strokeColor ?? "transparent"
       ),
       image: atom(
         SHAPE_IMAGE ?? {
