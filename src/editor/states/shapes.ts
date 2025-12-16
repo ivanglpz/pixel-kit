@@ -1,9 +1,4 @@
-import {
-  Align,
-  FontWeight,
-  IShape,
-  VerticalAlign,
-} from "@/editor/shapes/type.shape";
+import { Align, FontWeight, VerticalAlign } from "@/editor/shapes/type.shape";
 import { atom, Getter, PrimitiveAtom } from "jotai";
 import { LineCap, LineJoin } from "konva/lib/Shape";
 import { Smile } from "lucide-static";
@@ -32,14 +27,14 @@ import {
   SELECTED_SHAPES_BY_IDS_ATOM,
   UPDATE_SHAPES_IDS_ATOM,
 } from "./shape";
-import TOOL_ATOM, { IKeyTool, IShapesKeys } from "./tool";
+import TOOL_ATOM, { IKeyTool, IShapeTool } from "./tool";
 
 export type WithInitialValue<Value> = {
   init: Value;
 };
 export type ALL_SHAPES = {
   id: string;
-  tool: IShapesKeys;
+  tool: IShapeTool;
   // pageId: string | null;
   state: PrimitiveAtom<ShapeState>;
 };
@@ -580,7 +575,7 @@ export const EVENT_COPY_START_SHAPES = atom(
         return {
           ...child,
           id: newChildState.id,
-          tool: newChildState.tool as IShapesKeys,
+          tool: newChildState.tool as IShapeTool,
           pageId: get(PAGE_ID_ATOM),
           state: atom(newChildState),
         } as ALL_SHAPES;
@@ -719,7 +714,7 @@ export const EVENT_DOWN_START_SHAPES = atom(
     if (TOOLS_BOX_BASED.includes(tool as FirstArrayKeys)) {
       set(CREATE_CURRENT_ITEM_ATOM, [
         CreateShapeSchema({
-          tool: tool as IShape["tool"],
+          tool: tool as ShapeBase["tool"],
           x: atom(x),
           y: atom(y),
           label: atom<string>(tool),
@@ -729,7 +724,7 @@ export const EVENT_DOWN_START_SHAPES = atom(
     if (TOOLS_ICON_BASED.includes(tool as SecondArrayKeys)) {
       set(CREATE_CURRENT_ITEM_ATOM, [
         CreateShapeSchema({
-          tool: tool as IShape["tool"],
+          tool: tool as IShapeTool,
           x: atom(x),
           y: atom(y),
           label: atom<string>(tool),
@@ -749,7 +744,7 @@ export const EVENT_DOWN_START_SHAPES = atom(
       set(CREATE_CURRENT_ITEM_ATOM, [
         CreateShapeSchema({
           ...drawConfig,
-          tool: tool as IShape["tool"],
+          tool: tool as IShapeTool,
           points: atom<number[]>([x, y, x, y]),
           label: atom(capitalize(tool)),
         }),
