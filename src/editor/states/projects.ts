@@ -55,11 +55,13 @@ const cloneShapeRecursive = (shape: SHAPE_BASE_CHILDREN): ALL_SHAPES => {
   const SHAPE_IMAGE = shape.state.fills?.find(
     (f) => f.visible && f.type === "image"
   )?.image;
+
   const theTool = SHAPE_IMAGE?.src
     ? SVG.IsEncode(SHAPE_IMAGE.src)
       ? "ICON"
       : shape.tool
     : shape.tool;
+
   return {
     id: shape.id,
     tool: theTool,
@@ -67,7 +69,7 @@ const cloneShapeRecursive = (shape: SHAPE_BASE_CHILDREN): ALL_SHAPES => {
       id: shape.id,
       x: atom(shape.state.x),
       y: atom(shape.state.y),
-      tool: shape.state.tool,
+      tool: theTool,
       align: atom<Align>(shape.state.align),
       offsetX: atom(shape.state.offsetX),
       copyX: atom(shape.state.copyX),
