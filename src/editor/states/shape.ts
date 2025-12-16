@@ -107,9 +107,5 @@ export const SHAPE_XD_DATA = atom(null, (get, set, args: UndoShape[]) => {
     const find_shape = planeShapes.find((e) => e.id === element.id);
 
     if (!find_shape) continue;
-    // set(find_shape.state, {
-    //   ...CreateShapeSchema(element.state),
-    //   children: atom(element.state.children.map((c) => cloneShapeRecursive(c))),
-    // });
   }
 });

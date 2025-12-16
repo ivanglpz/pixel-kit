@@ -22,7 +22,7 @@ const SidebarRight: FC = () => {
         backgroundColor: "bg",
         borderLeftWidth: "1px",
         borderLeftStyle: "solid",
-        borderLeftColor: "border", // ← usa el semantic token
+        borderLeftColor: "border",
         overflow: "hidden",
         overflowY: "scroll",
         gap: "lg",
@@ -32,7 +32,6 @@ const SidebarRight: FC = () => {
     >
       <Valid isValid={tool === "MOVE"}>
         <Valid isValid={!shapeIds.length}>
-          {/* <StageMode /> */}
           <Valid isValid={config?.show_canvas_config}>
             <StageCanvasColor />
           </Valid>
@@ -41,14 +40,7 @@ const SidebarRight: FC = () => {
       <Valid isValid={!shapeIds.length}>
         <Drawing />
       </Valid>
-      {/* <Valid isValid={shapeIds.length > 0}> */}
       <LayoutShapeConfig />
-      {/* </Valid> */}
-
-      {/* <Valid isValid={tool === "MOVE"}> */}
-      {/* <Valid isValid={!shapeIds.length}> */}
-      {/* </Valid> */}
-      {/* </Valid> */}
     </aside>
   );
 };

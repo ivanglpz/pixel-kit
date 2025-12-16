@@ -1,7 +1,7 @@
 // shape.base.ts
 import { LineCap, LineJoin } from "konva/lib/Shape";
 import { SHAPE_BASE_CHILDREN } from "../../states/shapes";
-import { IShapesKeys } from "../../states/tool";
+import { IShapeTool } from "../../states/tool";
 import {
   AlignItems,
   FlexDirection,
@@ -30,7 +30,7 @@ export type ShapeImage = {
 export type ShapeBase = {
   id: string;
   label: string;
-  tool: IShapesKeys;
+  tool: IShapeTool;
   parentId: string | null;
 
   x: number;
