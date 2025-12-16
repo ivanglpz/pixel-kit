@@ -374,7 +374,8 @@ const ColorComponent = ({
 }: InputTextProps & { id: string }) => {
   return (
     <>
-      <div
+      <label
+        htmlFor={id}
         className={css({
           height: "20px",
           width: "20px",
@@ -408,7 +409,7 @@ const ColorComponent = ({
           value={value}
           onChange={(event) => onChange?.(event.target.value)}
         />
-      </div>
+      </label>
     </>
   );
 };
