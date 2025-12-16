@@ -19,12 +19,14 @@ import {
   ArrowUp,
   Blend,
   Brush,
+  Clipboard,
   Columns,
   CornerDownLeft,
   CornerDownRight,
   CornerRightDown,
   CornerUpLeft,
   CornerUpRight,
+  DropletOff,
   Expand,
   File,
   ImageIcon,
@@ -569,18 +571,58 @@ export const ShapeInputColor = ({
   shape,
   type,
 }: ShapeIsAllPaddingProps & { type: KeyShapes }) => {
-  const value = useAtomValue(shape[type] as PrimitiveAtom<string>);
+  const atom = shape[type] as PrimitiveAtom<string>;
+  const value = useAtomValue(atom);
+  const spHook = useShapeUpdate();
+
+  const handleCopy = async () => {
+    try {
+      const color =
+        value === "transparent" ? "transparent" : `#${value.replace(/#/, "")}`;
+
+      await navigator.clipboard.writeText(color);
+      toast.success("Color copied to clipboard");
+    } catch {
+      toast.error("Failed to copy color");
+    }
+  };
+
+  const handleTransparent = () => {
+    spHook(type, "transparent");
+  };
+
+  const label =
+    value === "transparent"
+      ? "Transparent"
+      : `#${value?.replace(/#/, "") ?? "ffffff"}`;
+
   return (
-    <Input.Container id={`pixel-kit-${type}`}>
-      <Input.Grid>
-        <Input.IconContainer>
-          <Input.withChange shape={shape} type={type}>
-            <Input.Color id={`pixel-kit-${type}`} />
-          </Input.withChange>
-        </Input.IconContainer>
-        <Input.Label text={`#${value?.replace(/#/, "") ?? "ffffff"}`} />
-      </Input.Grid>
-    </Input.Container>
+    <>
+      <Input.Container>
+        <Input.Grid>
+          <Input.IconContainer>
+            <Input.withChange shape={shape} type={type}>
+              <Input.Color id={`pixel-kit-${type}`} />
+            </Input.withChange>
+          </Input.IconContainer>
+
+          <section className="flex flex-row justify-between items-center gap-2">
+            <label htmlFor={`pixel-kit-${type}`}>
+              <Input.Label text={label} />
+            </label>
+            <div className="flex flex-row justify-between items-center gap-2">
+              <button type="button" onClick={handleCopy}>
+                <Clipboard size={constants.icon.size} />
+              </button>
+
+              <button type="button" onClick={handleTransparent}>
+                <DropletOff size={constants.icon.size} />
+              </button>
+            </div>
+          </section>
+        </Input.Grid>
+      </Input.Container>
+    </>
   );
 };
 
