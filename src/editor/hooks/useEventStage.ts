@@ -342,6 +342,29 @@ export const useEventStage = () => {
         SET_EVENT_STAGE(keysActions[KEY].eventStage);
       }
     };
+    const normalizeSvg = (raw: string): string => {
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(raw, "image/svg+xml");
+      const svg = doc.querySelector("svg");
+
+      if (!svg) {
+        throw new Error("Invalid SVG");
+      }
+
+      if (!svg.getAttribute("xmlns")) {
+        svg.setAttribute("xmlns", "http://www.w3.org/2000/svg");
+      }
+
+      if (!svg.getAttribute("width")) {
+        svg.setAttribute("width", "32");
+      }
+
+      if (!svg.getAttribute("height")) {
+        svg.setAttribute("height", "32");
+      }
+
+      return new XMLSerializer().serializeToString(svg);
+    };
 
     const handleSVG = (svgText: string): void => {
       const parser = new DOMParser();
@@ -350,8 +373,8 @@ export const useEventStage = () => {
         .querySelector("svg");
       if (!svgDOM) return;
 
-      const serializer = new XMLSerializer();
-      createImageFromSVG(serializer.serializeToString(svgDOM));
+      const normalizedSvg = normalizeSvg(svgText);
+      createImageFromSVG(normalizedSvg);
     };
 
     const handlePaste = (event: ClipboardEvent): void => {
