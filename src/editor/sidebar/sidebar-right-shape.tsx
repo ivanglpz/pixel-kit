@@ -535,7 +535,7 @@ const paddings: KeyShapes[] = [
 const ShapePaddings = ({ shape }: ShapeIsAllPaddingProps) => {
   const isAllPadding = useAtomValue(shape.isAllPadding);
 
-  if (isAllPadding) return null;
+  if (!isAllPadding) return null;
   return (
     <div
       className={css({
@@ -591,14 +591,14 @@ const ShapeIsAllPadding = ({ shape }: ShapeIsAllPaddingProps) => {
         <Input.IconContainer>
           <Expand size={constants.icon.size} />
         </Input.IconContainer>
-        <ShapeShowAtomProvider atomo={shape.isAllPadding} ctx={(e) => !e}>
+        <ShapeShowAtomProvider atomo={shape.isAllPadding} ctx={(e) => e}>
           <Input.withPause>
             <Input.withChange shape={shape} type="padding">
               <Input.Number min={0} max={9999} step={1} />
             </Input.withChange>
           </Input.withPause>
         </ShapeShowAtomProvider>
-        <ShapeShowAtomProvider atomo={shape.isAllPadding} ctx={(e) => e}>
+        <ShapeShowAtomProvider atomo={shape.isAllPadding} ctx={(e) => !e}>
           <Input.Label text="Mixed" />
         </ShapeShowAtomProvider>
       </Input.Grid>

@@ -94,7 +94,7 @@ function buildContainerCache(
 
   if (containerWidth === 0 || containerHeight === 0) return null;
 
-  const isAllPadding = get(shape.isAllPadding);
+  const isAllPadding = !get(shape.isAllPadding);
   const padding = get(shape.padding);
   const paddingTop = isAllPadding ? padding : get(shape.paddingTop);
   const paddingRight = isAllPadding ? padding : get(shape.paddingRight);
