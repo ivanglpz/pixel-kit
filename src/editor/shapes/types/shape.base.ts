@@ -27,6 +27,34 @@ export type ShapeImage = {
   name: string;
 };
 
+type FillImage = {
+  src: string;
+  width: number;
+  height: number;
+  name: string;
+};
+export type Fill = {
+  id: string;
+  color: string;
+  opacity: number;
+  visible: boolean;
+  type: "fill" | "image";
+  image: FillImage;
+};
+
+export type Stroke = {
+  id: string;
+  color: string;
+  visible: boolean;
+};
+
+export type Effect = {
+  id: string;
+  type: "shadow" | "blur" | "glow";
+  visible: boolean;
+  color: string;
+};
+
 export type ShapeBase = {
   id: string;
   label: string;
@@ -50,15 +78,13 @@ export type ShapeBase = {
   isLocked: boolean;
   opacity: number;
   fillColor: string;
-  // fills: Fill[];
-  // strokes: Stroke[];
+
   strokeColor: string;
   strokeWidth: number;
   lineCap: LineCap;
   lineJoin: LineJoin;
   dash: number;
 
-  // effects: Effect[];
   shadowColor: string;
   shadowBlur: number;
   shadowOffsetX: number;
@@ -103,4 +129,19 @@ export type ShapeBase = {
   padding: number;
 
   children: SHAPE_BASE_CHILDREN[];
+
+  /**
+   * @deprecated This property will be removed. Use the new rendering pipeline.
+   */
+  fills?: Fill[];
+
+  /**
+   * @deprecated This property will be removed. Use the new rendering pipeline.
+   */
+  strokes?: Stroke[];
+
+  /**
+   * @deprecated This property will be removed. Use the new rendering pipeline.
+   */
+  effects?: Effect[];
 };

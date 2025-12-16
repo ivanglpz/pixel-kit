@@ -12,6 +12,7 @@ import {
 } from "../shapes/layout-flex";
 import { Align, FontWeight, VerticalAlign } from "../shapes/type.shape";
 import { ShapeState } from "../shapes/types/shape.state";
+import { SVG } from "../utils/svg";
 import { IStageEvents } from "./event";
 import { MODE } from "./mode";
 import { IPage, IPageJSON, IPageShapeIds } from "./pages";
@@ -46,9 +47,22 @@ export const PROJECT_ID_ATOM = atomWithDefault<string | null>(() => {
   return ID ?? null;
 });
 const cloneShapeRecursive = (shape: SHAPE_BASE_CHILDREN): ALL_SHAPES => {
+  const fill = shape.state.fills?.find((f) => f.visible && f.type === "fill");
+  const stroke = shape.state?.strokes?.filter((e) => e?.visible)?.at(0);
+  const shadow = shape.state?.effects
+    ?.filter((e) => e?.visible && e?.type === "shadow")
+    .at(0);
+  const SHAPE_IMAGE = shape.state.fills?.find(
+    (f) => f.visible && f.type === "image"
+  )?.image;
+  const theTool = SHAPE_IMAGE?.src
+    ? SVG.IsEncode(SHAPE_IMAGE.src)
+      ? "ICON"
+      : shape.tool
+    : shape.tool;
   return {
     id: shape.id,
-    tool: shape.tool,
+    tool: theTool,
     state: atom({
       id: shape.id,
       x: atom(shape.state.x),
@@ -77,20 +91,14 @@ const cloneShapeRecursive = (shape: SHAPE_BASE_CHILDREN): ALL_SHAPES => {
       minHeight: atom(shape.state.minHeight),
       minWidth: atom(shape.state.minWidth),
       shadowColor: atom(
-        shape?.state?.effects?.[0]?.color ??
-          shape?.state?.shadowColor ??
-          "#ffffff"
+        shadow?.color ?? shape?.state?.shadowColor ?? "#ffffff"
       ),
-      fillColor: atom(
-        shape?.state?.fills?.[0]?.color ?? shape?.state?.fillColor ?? "#ffffff"
-      ),
+      fillColor: atom(fill?.color ?? shape?.state?.fillColor ?? "#ffffff"),
       strokeColor: atom(
-        shape?.state?.strokes?.[0]?.color ??
-          shape?.state?.strokeColor ??
-          "#ffffff"
+        stroke?.color ?? shape?.state?.strokeColor ?? "#ffffff"
       ),
       image: atom(
-        shape?.state?.image ?? {
+        SHAPE_IMAGE ?? {
           height: 100,
           name: "default.png",
           src: "/placeholder.svg",
