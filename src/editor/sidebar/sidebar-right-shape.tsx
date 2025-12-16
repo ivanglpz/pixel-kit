@@ -61,7 +61,7 @@ import {
 import { ShapeBase } from "../shapes/types/shape.base";
 import { ShapeState } from "../shapes/types/shape.state";
 import { PROJECT_ID_ATOM } from "../states/projects";
-import { UPDATE_UNDO_REDO } from "../states/undo-redo";
+
 import { getObjectUrl } from "../utils/getObjectUrl";
 import { SVG } from "../utils/svg";
 import { ExportShape } from "./export-shape";
@@ -293,12 +293,22 @@ export const SectionHeader = ({
 
 export const useShapeUpdate = () => {
   const update = useSetAtom(SHAPE_UPDATE_ATOM);
+  const { debounce } = useAutoSave();
+
+  const { execute, isRunning } = useDelayedExecutor({
+    callback: () => {
+      // setUpdateUndoRedo();
+      // debounce.execute();
+    },
+    timer: 1000,
+  });
 
   return <K extends keyof ShapeState>(
     type: UpdatableKeys,
     value: Omit<ShapeBase[K], "id" | "tool" | "children" | "parentId">
   ) => {
     update({ type, value });
+    execute();
   };
 };
 
@@ -326,7 +336,6 @@ const ShapeAtomButton = ({ atomo, type, iconType }: ShapeAtomButtonProps) => {
     <button
       onClick={() => {
         spHook(type, !value);
-        // setValue(!value);
       }}
       className={css({
         cursor: "pointer",
@@ -382,8 +391,6 @@ const ShapeAtomButtonFlex = ({
     <button
       onClick={() => {
         spHook(type, direction);
-
-        // setValue(direction);
       }}
       className={css({
         cursor: "pointer",
@@ -669,25 +676,14 @@ export const LayoutShapeConfig = () => {
   const [showImage, setShowImage] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const spHook = useShapeUpdate();
-
   const { shape, count } = useAtomValue(SHAPE_SELECTED_ATOM);
-  const setUpdateUndoRedo = useSetAtom(UPDATE_UNDO_REDO);
   const [type, setType] = useState<"UPLOAD" | "CHOOSE">("UPLOAD");
-  const { debounce } = useAutoSave();
   const PROJECT_ID = useAtomValue(PROJECT_ID_ATOM);
   const [photoUpload, setPhotoUpload] = useState<File | null>(null);
   const [photoChoose, setPhotocChoose] = useState<Omit<
     IPhoto,
     "createdBy" | "folder" | "projectId"
   > | null>(null);
-
-  const { execute, isRunning } = useDelayedExecutor({
-    callback: () => {
-      setUpdateUndoRedo();
-      debounce.execute();
-    },
-    timer: 500,
-  });
 
   const QueryListPhotos = useQuery({
     queryKey: ["list_photos_project", PROJECT_ID],
@@ -1028,14 +1024,6 @@ export const LayoutShapeConfig = () => {
           <p
             className={commonStyles.sectionTitle}
           >{`[${count}] Shap${count > 1 ? "es" : "e"} `}</p>
-          {isRunning ? (
-            <div className="lds-ring">
-              <div></div>
-              <div></div>
-              <div></div>
-              <div></div>
-            </div>
-          ) : null}
         </div>
 
         <div className={commonStyles.twoColumnGrid}>
