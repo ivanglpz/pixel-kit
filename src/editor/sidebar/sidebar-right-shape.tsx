@@ -959,7 +959,7 @@ export const LayoutShapeConfig = () => {
                     >
                       <img
                         src={e?.url}
-                        alt={e?.name}
+                        alt={e?.name.slice(0, 4)}
                         className={css({
                           height: "100%",
                           width: "100%",
