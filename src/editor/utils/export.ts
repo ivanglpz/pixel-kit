@@ -189,8 +189,8 @@ const createNodeFromShape = async (
         const crop = calculateCoverCrop(
           imageFill.width || 0,
           imageFill.height || 0,
-          Number(shape.width),
-          Number(shape.height)
+          width,
+          height
         );
 
         return new Konva.Image({
