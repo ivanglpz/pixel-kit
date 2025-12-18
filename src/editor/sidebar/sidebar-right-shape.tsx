@@ -530,6 +530,7 @@ export const ShapeAtomButtonStroke = ({
 };
 type ShapeIsAllPaddingProps = {
   shape: ShapeState;
+  isGlobalUpdate?: boolean;
 };
 type KeyShapes = keyof Omit<
   ShapeState,
@@ -577,6 +578,7 @@ const ShapePaddings = ({ shape }: ShapeIsAllPaddingProps) => {
 export const ShapeInputColor = ({
   shape,
   type,
+  isGlobalUpdate = true,
 }: ShapeIsAllPaddingProps & { type: KeyShapes }) => {
   const atom = shape[type] as PrimitiveAtom<string>;
   const value = useAtomValue(atom);
@@ -608,7 +610,11 @@ export const ShapeInputColor = ({
       <Input.Container>
         <Input.Grid>
           <Input.IconContainer>
-            <Input.withChange shape={shape} type={type}>
+            <Input.withChange
+              shape={shape}
+              type={type}
+              isGlobalUpdate={isGlobalUpdate}
+            >
               <Input.Color id={`pixel-kit-${type}`} />
             </Input.withChange>
           </Input.IconContainer>

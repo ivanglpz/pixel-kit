@@ -30,17 +30,19 @@ const SidebarRight: FC = () => {
         flexDirection: "column",
       })}
     >
-      <Valid isValid={tool === "MOVE"}>
-        <Valid isValid={!shapeIds.length}>
-          <Valid isValid={config?.show_canvas_config}>
-            <StageCanvasColor />
-          </Valid>
-        </Valid>
+      <Valid
+        isValid={
+          tool === "MOVE" && shapeIds.length === 0 && config?.show_canvas_config
+        }
+      >
+        <StageCanvasColor />
       </Valid>
-      <Valid isValid={!shapeIds.length}>
+      <Valid isValid={tool === "MOVE" && shapeIds.length > 0}>
+        <LayoutShapeConfig />
+      </Valid>
+      <Valid isValid={tool === "DRAW"}>
         <Drawing />
       </Valid>
-      <LayoutShapeConfig />
     </aside>
   );
 };
