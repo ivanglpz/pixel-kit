@@ -22,6 +22,7 @@ export const SELECT_AREA_SHAPES_ATOM = atom(null, (get, set) => {
     get(a.x) + get(a.width) > b.x &&
     get(a.y) < b.y + b.height &&
     get(a.y) + get(a.height) > b.y;
+
   const normalizeRect = (rect: Rect): Rect => {
     const x = rect.width < 0 ? rect.x + rect.width : rect.x;
     const y = rect.height < 0 ? rect.y + rect.height : rect.y;

@@ -1,5 +1,5 @@
 import { css } from "@stylespixelkit/css";
-import { useAtom, useAtomValue } from "jotai";
+import { useAtomValue } from "jotai";
 import { Blend, Square, SquareDashed } from "lucide-react";
 import { Input } from "../components/input";
 import { constants } from "../constants/color";
@@ -15,7 +15,7 @@ import {
 export const Drawing = () => {
   const tool = useAtomValue(TOOL_ATOM);
 
-  const [shape, setShape] = useAtom(DRAW_START_CONFIG_ATOM);
+  const shape = useAtomValue(DRAW_START_CONFIG_ATOM);
 
   if (!["DRAW", "LINE"].includes(tool)) return null;
 
@@ -30,7 +30,11 @@ export const Drawing = () => {
       <SectionHeader title="Stroke"></SectionHeader>
 
       <section className={commonStyles.container}>
-        <ShapeInputColor shape={shape} type="strokeColor" />
+        <ShapeInputColor
+          shape={shape}
+          type="strokeColor"
+          isGlobalUpdate={false}
+        />
         <div className={commonStyles.twoColumnGrid}>
           <Input.Container>
             <Input.Grid>
@@ -48,7 +52,7 @@ export const Drawing = () => {
                 <Input.withChange
                   shape={shape}
                   type="strokeWidth"
-                  updateSelectedShapes={false}
+                  isGlobalUpdate={false}
                 >
                   <Input.Number
                     min={0}
@@ -90,7 +94,11 @@ export const Drawing = () => {
                 <SquareDashed size={constants.icon.size} />
               </Input.IconContainer>
               <Input.withPause>
-                <Input.withChange shape={shape} type="dash">
+                <Input.withChange
+                  shape={shape}
+                  type="dash"
+                  isGlobalUpdate={false}
+                >
                   <Input.Number min={0} step={1} />
                 </Input.withChange>
               </Input.withPause>
@@ -124,7 +132,11 @@ export const Drawing = () => {
                 </p>
               </Input.IconContainer>
               <Input.withPause>
-                <Input.withChange shape={shape} type="shadowOffsetX">
+                <Input.withChange
+                  shape={shape}
+                  type="shadowOffsetX"
+                  isGlobalUpdate={false}
+                >
                   <Input.Number step={1} />
                 </Input.withChange>
               </Input.withPause>
@@ -143,7 +155,11 @@ export const Drawing = () => {
                 </p>
               </Input.IconContainer>
               <Input.withPause key={"test"}>
-                <Input.withChange shape={shape} type="shadowOffsetY">
+                <Input.withChange
+                  shape={shape}
+                  type="shadowOffsetY"
+                  isGlobalUpdate={false}
+                >
                   <Input.Number step={1} />
                 </Input.withChange>
               </Input.withPause>
@@ -158,7 +174,11 @@ export const Drawing = () => {
                 />
               </Input.IconContainer>
               <Input.withPause>
-                <Input.withChange shape={shape} type="shadowBlur">
+                <Input.withChange
+                  shape={shape}
+                  type="shadowBlur"
+                  isGlobalUpdate={false}
+                >
                   <Input.Number min={0} step={1} />
                 </Input.withChange>
               </Input.withPause>
@@ -173,7 +193,11 @@ export const Drawing = () => {
                 />
               </Input.IconContainer>
               <Input.withPause>
-                <Input.withChange shape={shape} type="shadowOpacity">
+                <Input.withChange
+                  shape={shape}
+                  type="shadowOpacity"
+                  isGlobalUpdate={false}
+                >
                   <Input.Number min={0} max={1} step={0.1} />
                 </Input.withChange>
               </Input.withPause>

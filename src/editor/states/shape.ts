@@ -6,6 +6,9 @@ import { CURRENT_PAGE, IPageShapeIds } from "./pages";
 import { PLANE_SHAPES_ATOM } from "./shapes";
 import { UndoShape } from "./undo-redo";
 
+const filterListId = (id: string, parentId: string | null) => {
+  return (e: IPageShapeIds) => e?.id === id && e?.parentId === parentId;
+};
 export const SELECTED_SHAPES_BY_IDS_ATOM = atom(
   (get) => {
     return get(get(CURRENT_PAGE).SHAPES.ID);
@@ -16,24 +19,16 @@ export const SELECTED_SHAPES_BY_IDS_ATOM = atom(
     const listIds = get(ids);
 
     if (event === "MULTI_SELECT") {
-      const findId = listIds?.some(
-        (e) => e?.id === shape.id && e?.parentId === shape.parentId
-      );
+      const findId = listIds?.some(filterListId(shape.id, shape.parentId));
 
       if (findId) {
-        _set(
-          ids,
-          listIds?.filter(
-            (e) => e?.id === shape.id && e?.parentId === shape.parentId
-          )
-        );
+        _set(ids, listIds?.filter(filterListId(shape.id, shape.parentId)));
 
         return;
       }
       _set(ids, [...listIds, shape]);
       return;
     }
-
     _set(ids, [shape]);
   }
 );
@@ -47,7 +42,6 @@ export const UPDATE_SHAPES_IDS_ATOM = atom(
 
 export const RESET_SHAPES_IDS_ATOM = atom(null, (get, set) => {
   const SHAPE_IDS_ATOM = get(CURRENT_PAGE).SHAPES.ID;
-
   set(SHAPE_IDS_ATOM, []);
 });
 
@@ -95,7 +89,6 @@ export const SHAPE_UPDATE_ATOM = atom(
     for (const shape of selected.shapes) {
       const target = shape[type];
       if (!target) continue;
-      target.write;
       set(target as any, value);
     }
   }

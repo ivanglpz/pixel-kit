@@ -21,61 +21,42 @@ type ChangeWrapperProps = {
   children: JSX.Element;
   shape: Omit<ShapeState, "children" | "parentId">;
   type: keyof Omit<ShapeState, "id" | "tool" | "children" | "parentId">;
-  updateSelectedShapes?: boolean;
+  isGlobalUpdate?: boolean;
 };
 
 type SetActionVariants<T> = {
   [K in keyof T]: SetStateAction<T[K]>;
 }[keyof T];
 
-export const ChangeWrapper = <K extends keyof ShapeState>({
-  children,
-  shape,
-  type,
-  updateSelectedShapes = true,
-}: ChangeWrapperProps): ReactElement => {
+export const ChangeWrapper = <K extends keyof ShapeState>(
+  props: ChangeWrapperProps
+): ReactElement => {
+  const { children, shape, type, isGlobalUpdate = true } = props;
   if (!shape[type]) return children;
   const atom = shape[type];
 
   if (!atom) return children;
   const setPause = useSetAtom(PAUSE_MODE_ATOM);
 
-  const handleFocus = (
-    event: FocusEvent<HTMLElement>,
-    original?: (e: FocusEvent<HTMLElement>) => void
-  ) => {
-    setPause(true);
-    original?.(event);
-  };
-
-  const handleBlur = (
-    event: FocusEvent<HTMLElement>,
-    original?: (e: FocusEvent<HTMLElement>) => void
-  ) => {
-    setPause(false);
-    original?.(event);
-  };
   const [shapeValue, setShapeValue] = useAtom(atom);
 
   const spHook = useShapeUpdate();
 
   const enhanceChild = (child: ReactNode): ReactNode => {
     if (!React.isValidElement(child)) return child;
-    const originalOnFocus = child.props.onFocus;
-    const originalOnBlur = child.props.onBlur;
     return React.cloneElement(child as ReactElement, {
       ...child.props,
-      onFocus: (e: FocusEvent<HTMLElement>) => handleFocus(e, originalOnFocus),
-      onBlur: (e: FocusEvent<HTMLElement>) => handleBlur(e, originalOnBlur),
+      onFocus: () => setPause(true),
+      onBlur: () => setPause(false),
       value: shapeValue,
       onChange: (
         value: Omit<ShapeBase[K], "id" | "tool" | "children" | "parentId">
       ) => {
-        if (updateSelectedShapes) {
+        if (isGlobalUpdate) {
           spHook(type, value);
-        } else {
-          setShapeValue(value as SetActionVariants<typeof shapeValue>);
+          return;
         }
+        setShapeValue(value as SetActionVariants<typeof shapeValue>);
       },
     });
   };

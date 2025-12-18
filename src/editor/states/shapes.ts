@@ -92,12 +92,8 @@ const getStageBounds = (get: Getter) => (shapes: ALL_SHAPES[]) => {
   };
 };
 
-export const STAGE_BOUNDS = atom((get) => {
-  return getStageBounds(get)(get(ALL_SHAPES_ATOM));
-});
-
 export const GET_STAGE_BOUNDS_ATOM = atom(null, (get, set) => {
-  return get(STAGE_BOUNDS);
+  return getStageBounds(get)(get(ALL_SHAPES_ATOM));
 });
 
 export const PLANE_SHAPES_ATOM = atom((get) => {
@@ -155,29 +151,6 @@ export const DELETE_ALL_SHAPES_ATOM = atom(null, (get, set) => {
   //   shapes: currentShapes,
   // });
 });
-
-export const GET_ALL_SHAPES_BY_ID = atom(
-  null,
-  (get, set, id: string): SHAPE_BASE_CHILDREN[] => {
-    const PLANE_SHAPES = get(PLANE_SHAPES_ATOM);
-    const FIND_SHAPE = PLANE_SHAPES.find((e) => e.id === id);
-    if (!FIND_SHAPE) return [];
-
-    // const sanitizemap = (shape: ALL_SHAPES): SHAPE_BASE_CHILDREN => {
-    //   const state = get(shape.state);
-    //   return {
-    //     ...shape,
-    //     state: {
-    //       ...state,
-    //       children: get(state.children).map((child) => sanitizemap(child)),
-    //     },
-    //   };
-    // };
-
-    // return [sanitizemap(FIND_SHAPE)];
-    return [];
-  }
-);
 
 // ===== Funciones de movimiento actualizadas =====
 export const MOVE_SHAPES_BY_ID = atom(
@@ -445,15 +418,8 @@ export const GROUP_SHAPES_IN_LAYOUT = atom(null, (get, set) => {
     height: atom(layoutHeight),
     label: atom("LAYOUT"),
     isLayout: atom(false),
-    // x: minX,
-    // y: minY,
-    // width: layoutWidth,
-    // height: layoutHeight,
     id: newLayoutId,
-    // label: "Layout",
-    // isLayout: true,
     parentId: atom(firstParentId),
-    // fills: [],
   });
 
   // Clonar shapes y ajustar posiciones relativas al nuevo layout
@@ -709,7 +675,6 @@ export const EVENT_DOWN_START_SHAPES = atom(
   null,
   (get, set, args: { x: number; y: number }) => {
     const { x, y } = args;
-    const drawConfig = get(DRAW_START_CONFIG_ATOM);
     const tool = get(TOOL_ATOM);
     if (TOOLS_BOX_BASED.includes(tool as FirstArrayKeys)) {
       set(CREATE_CURRENT_ITEM_ATOM, [
@@ -741,12 +706,78 @@ export const EVENT_DOWN_START_SHAPES = atom(
     }
 
     if (TOOLS_DRAW_BASED.includes(tool as DrawBasedTools)) {
+      const drawConfig = get(DRAW_START_CONFIG_ATOM);
       set(CREATE_CURRENT_ITEM_ATOM, [
         CreateShapeSchema({
-          ...drawConfig,
           tool: tool as IShapeTool,
           points: atom<number[]>([x, y, x, y]),
           label: atom(capitalize(tool)),
+          align: atom(get(drawConfig.align)),
+          id: uuidv4(),
+          x: atom(get(drawConfig.x)),
+          y: atom(get(drawConfig.y)),
+          fillColor: atom(get(drawConfig.fillColor)),
+          strokeColor: atom(get(drawConfig.strokeColor)),
+          offsetX: atom(0),
+          copyX: atom(0),
+          copyY: atom(0),
+          offsetCopyX: atom(0),
+          offsetCopyY: atom(0),
+          offsetY: atom(0),
+          image: atom({
+            width: 1200,
+            height: 1200,
+            name: "default.png",
+            src: "/placeholder.svg",
+          } as ShapeImage),
+          verticalAlign: atom<VerticalAlign>("top"),
+          paddingBottom: atom(10),
+          paddingTop: atom(10),
+          borderBottomLeftRadius: atom(0),
+          isAllPadding: atom(true),
+          borderBottomRightRadius: atom(0),
+          borderTopLeftRadius: atom(0),
+          borderTopRightRadius: atom(0),
+          paddingLeft: atom(0),
+          paddingRight: atom(0),
+          padding: atom(0),
+          maxHeight: atom(0),
+          maxWidth: atom(0),
+          minHeight: atom(0),
+          minWidth: atom(0),
+          shadowColor: atom(get(drawConfig.shadowColor)),
+          isLocked: atom(false),
+          fillContainerHeight: atom(false),
+          fillContainerWidth: atom(false),
+          parentId: atom<string | null>(null),
+          rotation: atom(0),
+          opacity: atom(1),
+          isLayout: atom(false),
+          alignItems: atom<AlignItems>("flex-start"),
+          flexDirection: atom<FlexDirection>("row"),
+          flexWrap: atom<FlexWrap>("nowrap"),
+          justifyContent: atom<JustifyContent>("flex-start"),
+          gap: atom(0),
+          visible: atom(true),
+          height: atom(100),
+          width: atom(100),
+          strokeWidth: atom(get(drawConfig.strokeWidth)),
+          lineCap: atom<LineCap>(get(drawConfig.lineCap)),
+          lineJoin: atom<LineJoin>(get(drawConfig.lineJoin)),
+          shadowBlur: atom(get(drawConfig.shadowBlur)),
+          shadowOffsetY: atom(get(drawConfig.shadowOffsetY)),
+          shadowOffsetX: atom(get(drawConfig.shadowOffsetX)),
+          shadowOpacity: atom(get(drawConfig.shadowOpacity)),
+          isAllBorderRadius: atom(true),
+          borderRadius: atom(0),
+          dash: atom(get(drawConfig.dash)),
+          fontStyle: atom("Roboto"),
+          textDecoration: atom("none"),
+          fontWeight: atom<FontWeight>("normal"),
+          fontFamily: atom("Roboto"),
+          fontSize: atom(24),
+          text: atom("Hello World"),
+          children: atom<ALL_SHAPES[]>([]),
         }),
       ]);
     }
@@ -821,31 +852,14 @@ export const CREATE_SHAPE_ATOM = atom(null, (get, set, args: ShapeState) => {
       },
     ]);
 
-    // const newElement = {
-    //   ...get(FIND_SHAPE.state),
-    //   children: atom(),
-    // };
-
-    // set(FIND_SHAPE.state, newElement);
     set(flexLayoutAtom, { id: FIND_SHAPE.id }); // aplicar layout si es flex
-    // set(NEW_UNDO_REDO, {
-    //   shapes: [
-    //     {
-    //       ...FIND_SHAPE,
-    //       state: atom(newElement),
-    //       // pageId: get(PAGE_ID_ATOM),
-    //     },
-    //   ],
-    //   type: "CREATE",
-    // });
+
     return;
   }
-  // const result = args?.children ? get(args?.children) : [];
   const newAllShape: ALL_SHAPES = {
     id: args?.id,
     tool: args?.tool,
     state: atom<ShapeState>(args),
-    // pageId: get(PAGE_ID_ATOM),
   };
 
   set(ALL_SHAPES_ATOM, [...get(ALL_SHAPES_ATOM), newAllShape]);
