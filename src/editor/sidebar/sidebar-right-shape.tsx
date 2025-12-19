@@ -298,7 +298,7 @@ export const useShapeUpdate = () => {
   const { execute, isRunning } = useDelayedExecutor({
     callback: () => {
       // setUpdateUndoRedo();
-      // debounce.execute();
+      debounce.execute();
     },
     timer: 1000,
   });

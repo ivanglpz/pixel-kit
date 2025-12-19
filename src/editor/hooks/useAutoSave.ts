@@ -14,7 +14,9 @@ export const useAutoSave = () => {
   const mutation = useMutation({
     mutationKey: ["auto_save"],
     mutationFn: async () => {
-      // const JSON_ = GET_JSON();
+      const JSON_ = GET_JSON();
+      console.log(JSON_);
+
       // const previewUrl = ref?.current?.toDataURL({
       //   quality: 0.5,
       //   pixelRatio: 1,
@@ -36,7 +38,7 @@ export const useAutoSave = () => {
     callback: () => {
       mutation.mutate();
     },
-    timer: 5000, // opcional
+    timer: 1000, // opcional
   });
   return {
     debounce,
