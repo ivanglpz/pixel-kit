@@ -2,15 +2,7 @@ import { IProject } from "@/db/schemas/types";
 import { api } from "@/services/axios";
 import { atom, PrimitiveAtom } from "jotai";
 import { atomWithDefault } from "jotai/utils";
-import { LineCap, LineJoin } from "konva/lib/Shape";
-import { CreateShapeSchema } from "../helpers/shape-schema";
-import {
-  AlignItems,
-  FlexDirection,
-  FlexWrap,
-  JustifyContent,
-} from "../shapes/layout-flex";
-import { Align, FontWeight, VerticalAlign } from "../shapes/type.shape";
+import { ShapeBase } from "../shapes/types/shape.base";
 import { ShapeState } from "../shapes/types/shape.state";
 import { SVG } from "../utils/svg";
 import { IStageEvents } from "./event";
@@ -62,36 +54,29 @@ const cloneShapeRecursive = (shape: SHAPE_BASE_CHILDREN): ALL_SHAPES => {
       : shape.tool
     : shape.tool;
 
+  const data: ShapeState = Object.fromEntries(
+    Object.entries(shape.state).map(([key, value]) => {
+      if (key === "children") {
+        return [
+          key,
+          atom(shape.state.children.map((c) => cloneShapeRecursive(c))),
+        ];
+      }
+      if (key === "id") {
+        return [key, value];
+      }
+      if (key === "tool") {
+        return [key, theTool];
+      }
+      return [key, atom(value as ShapeBase[keyof ShapeBase])];
+    })
+  );
+
   return {
     id: shape.id,
     tool: theTool,
     state: atom({
-      id: shape.id,
-      x: atom(shape.state.x),
-      y: atom(shape.state.y),
-      tool: theTool,
-      align: atom<Align>(shape.state.align),
-      offsetX: atom(shape.state.offsetX),
-      copyX: atom(shape.state.copyX),
-      copyY: atom(shape.state.copyY),
-      offsetCopyX: atom(shape.state.offsetCopyX),
-      offsetCopyY: atom(shape.state.offsetCopyY),
-      offsetY: atom(shape.state.offsetY),
-      verticalAlign: atom<VerticalAlign>(shape.state.verticalAlign),
-      paddingBottom: atom(shape.state.paddingBottom),
-      paddingTop: atom(shape.state.paddingTop),
-      borderBottomLeftRadius: atom(shape.state.borderBottomLeftRadius),
-      isAllPadding: atom(shape.state.isAllPadding),
-      borderBottomRightRadius: atom(shape.state.borderBottomRightRadius),
-      borderTopLeftRadius: atom(shape.state.borderTopLeftRadius),
-      borderTopRightRadius: atom(shape.state.borderTopRightRadius),
-      paddingLeft: atom(shape.state.paddingLeft),
-      paddingRight: atom(shape.state.paddingRight),
-      padding: atom(shape.state.padding),
-      maxHeight: atom(shape.state.maxHeight),
-      maxWidth: atom(shape.state.maxWidth),
-      minHeight: atom(shape.state.minHeight),
-      minWidth: atom(shape.state.minWidth),
+      ...data,
       shadowColor: atom(
         shadow?.color ?? shape?.state?.shadowColor ?? "transparent"
       ),
@@ -107,42 +92,6 @@ const cloneShapeRecursive = (shape: SHAPE_BASE_CHILDREN): ALL_SHAPES => {
           width: 100,
         }
       ),
-
-      isLocked: atom(shape.state.isLocked),
-      fillContainerHeight: atom(shape.state.fillContainerHeight),
-      fillContainerWidth: atom(shape.state.fillContainerWidth),
-      label: atom(shape.state.label),
-      parentId: atom<string | null>(shape.state.parentId),
-      rotation: atom(shape.state.rotation),
-      opacity: atom(shape.state.opacity),
-      isLayout: atom(shape.state.isLayout),
-      alignItems: atom<AlignItems>(shape.state.alignItems),
-      flexDirection: atom<FlexDirection>(shape.state.flexDirection),
-      flexWrap: atom<FlexWrap>(shape.state.flexWrap),
-      justifyContent: atom<JustifyContent>(shape.state.justifyContent),
-      gap: atom(shape.state.gap),
-
-      visible: atom(shape.state.visible),
-      height: atom(shape.state.height),
-      width: atom(shape.state.width),
-      points: atom<number[]>(shape.state.points),
-      strokeWidth: atom(shape.state.strokeWidth),
-      lineCap: atom<LineCap>(shape.state.lineCap),
-      lineJoin: atom<LineJoin>(shape.state.lineJoin),
-      shadowBlur: atom(shape.state.shadowBlur),
-      shadowOffsetY: atom(shape.state.shadowOffsetY),
-      shadowOffsetX: atom(shape.state.shadowOffsetX),
-      shadowOpacity: atom(shape.state.shadowOpacity),
-      isAllBorderRadius: atom(shape.state.isAllBorderRadius),
-      borderRadius: atom(shape.state.borderRadius),
-      dash: atom(shape.state.dash),
-      fontStyle: atom(shape.state.fontStyle),
-      textDecoration: atom(shape.state.textDecoration),
-      fontWeight: atom<FontWeight>(shape.state.fontWeight),
-      fontFamily: atom(shape.state.fontFamily),
-      fontSize: atom(shape.state.fontSize),
-      text: atom(shape.state.text),
-      children: atom(shape.state.children.map((c) => cloneShapeRecursive(c))),
     } as ShapeState),
   };
 };
@@ -253,21 +202,37 @@ export const PROJECT_ATOM = atom((get) => {
   return FIND_PROJECT ?? MOCKUP_PROJECT;
 });
 
+export type UpdatableKeys = keyof Omit<
+  ShapeState,
+  "id" | "tool" | "children" | "parentId"
+>;
+
 export const GET_JSON_PROJECTS_ATOM = atom(null, (get, set) => {
   const project = get(PROJECT_ATOM);
 
   const cloneShapeJson = (shape: ALL_SHAPES): SHAPE_BASE_CHILDREN => {
+    const state = get(shape.state);
+    const data: ShapeBase = Object.fromEntries(
+      Object.entries(state).map(([key, value]) => {
+        if (key === "children")
+          return [
+            key,
+            get(get(shape.state).children).map((c) => cloneShapeJson(c)),
+          ];
+        if (key === "id" || key === "tool") {
+          return [key, value];
+        }
+        return [key, get(value as PrimitiveAtom<ShapeBase[keyof ShapeBase]>)];
+      })
+    );
+
     return {
       id: shape.id,
-      // pageId: shape.pageId,
       tool: shape.tool,
-      state: {
-        ...CreateShapeSchema(),
-        ...get(shape.state),
-        children: get(get(shape.state).children).map((c) => cloneShapeJson(c)),
-      },
+      state: data,
     };
   };
+
   const LIST = get(project.MODE[get(project.MODE_ATOM)].LIST)?.map(
     (element) => {
       return {
@@ -281,6 +246,7 @@ export const GET_JSON_PROJECTS_ATOM = atom(null, (get, set) => {
       };
     }
   );
+  console.log(LIST);
 
   return {
     projectId: project.ID,
