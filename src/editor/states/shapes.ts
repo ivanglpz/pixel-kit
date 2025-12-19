@@ -1,8 +1,13 @@
+// =====================================
+// Imports
+// =====================================
+
 import { Align, FontWeight, VerticalAlign } from "@/editor/shapes/type.shape";
 import { atom, Getter, PrimitiveAtom, Setter } from "jotai";
 import { LineCap, LineJoin } from "konva/lib/Shape";
 import { Smile } from "lucide-static";
 import { v4 as uuidv4 } from "uuid";
+
 import { CreateShapeSchema, isNotNegative } from "../helpers/shape-schema";
 import {
   AlignItems,
@@ -15,6 +20,7 @@ import { ShapeBase, ShapeImage } from "../shapes/types/shape.base";
 import { ShapeState } from "../shapes/types/shape.state";
 import { capitalize } from "../utils/capitalize";
 import { SVG } from "../utils/svg";
+
 import CURRENT_ITEM_ATOM, {
   CLEAR_CURRENT_ITEM_ATOM,
   CREATE_CURRENT_ITEM_ATOM,
@@ -29,9 +35,14 @@ import {
 } from "./shape";
 import TOOL_ATOM, { IKeyTool, IShapeTool } from "./tool";
 
+// =====================================
+// Public types
+// =====================================
+
 export type WithInitialValue<Value> = {
   init: Value;
 };
+
 export type ALL_SHAPES = {
   id: string;
   tool: IShapeTool;
@@ -43,24 +54,36 @@ export type SHAPE_BASE_CHILDREN = Omit<ALL_SHAPES, "state"> & {
   state: ShapeBase;
 };
 
+// =====================================
+// Tool typing and constants
+// =====================================
+
 type ExcludedKeys = "DRAW" | "MOVE" | "ICON";
 type FirstArrayKeys = Exclude<IKeyTool, ExcludedKeys>; // ["IMAGE", "TEXT", "FRAME"]
 type SecondArrayKeys = Extract<IKeyTool, "ICON">; // ["ICON"]
 
 type DrawBasedTools = Extract<IKeyTool, "DRAW">;
+
+// Tools that create a rectangular box (frame, image, text).
 const TOOLS_BOX_BASED: FirstArrayKeys[] = ["FRAME", "IMAGE", "TEXT"];
+
+// Tools that create an icon-based shape.
 const TOOLS_ICON_BASED: SecondArrayKeys[] = ["ICON"];
 
+// Tools that produce a polyline/path through point accumulation.
 const TOOLS_DRAW_BASED: DrawBasedTools[] = ["DRAW"];
+
+// Keyboard keys that should trigger deletion behavior.
 export const DELETE_KEYS = ["DELETE", "BACKSPACE"];
 
-/* =========================
-   Helpers (pure / reusable)
-   ========================= */
+// =====================================
+// Helpers (pure / reusable)
+// =====================================
 
 type XY = { x: number; y: number };
 type Bounds = { width: number; height: number; startX: number; startY: number };
 
+// Default bounds used when there are no shapes in the scene.
 const DEFAULT_BOUNDS: Bounds = {
   width: 1000,
   height: 1000,
@@ -68,21 +91,32 @@ const DEFAULT_BOUNDS: Bounds = {
   startY: 0,
 };
 
+// Small helper to keep atom creation consistent.
 const asAtom = <T>(value: T) => atom(value);
 
+/**
+ * Flattens a hierarchical shape tree into a single array (pre-order traversal).
+ * This is useful for "plane" operations (selection, lookup, moving).
+ */
 const flattenShapes =
   (get: Getter) =>
   (nodes: ALL_SHAPES[]): ALL_SHAPES[] => {
     const walk = (acc: ALL_SHAPES[], node: ALL_SHAPES): ALL_SHAPES[] => {
       const children = get(get(node.state).children);
       const nextAcc = acc.concat([{ ...node }]);
+
       return children.length === 0
         ? nextAcc
         : children.reduce((a, c) => walk(a, c), nextAcc);
     };
+
     return nodes.reduce<ALL_SHAPES[]>((acc, n) => walk(acc, n), []);
   };
 
+/**
+ * Computes a bounding box that contains all shapes (based on x/y/width/height).
+ * Returns DEFAULT_BOUNDS if there are no shapes.
+ */
 const computeStageBounds =
   (get: Getter) =>
   (shapes: ALL_SHAPES[]): Bounds => {
@@ -97,6 +131,7 @@ const computeStageBounds =
 
     const { minX, minY, maxX, maxY } = shapes.reduce((acc, shape) => {
       const st = get(shape.state);
+
       const x = get(st.x);
       const y = get(st.y);
       const width = get(st.width);
@@ -118,9 +153,16 @@ const computeStageBounds =
     };
   };
 
+/**
+ * Creates an O(1) lookup map from shape id -> shape reference.
+ */
 const buildLookup = (shapes: ALL_SHAPES[]) =>
   new Map(shapes.map((s) => [s.id, s] as const));
 
+/**
+ * Sums x/y offsets from a node up through all ancestors.
+ * Used to translate between local coordinates and global-like coordinates.
+ */
 const computeAncestorOffset =
   (get: Getter) =>
   (lookup: Map<string, ALL_SHAPES>) =>
@@ -143,14 +185,24 @@ const computeAncestorOffset =
     return { x: totalX, y: totalY };
   };
 
+/**
+ * Checks whether `childId` is contained anywhere inside `candidateAncestor`'s subtree.
+ * This protects against invalid moves (e.g. dropping a parent into its own child).
+ */
 const isDescendantOf =
   (get: Getter) =>
   (candidateAncestor: ALL_SHAPES, childId: string): boolean => {
     const children = get(get(candidateAncestor.state).children);
+
     if (children.some((c) => c.id === childId)) return true;
     return children.some((c) => isDescendantOf(get)(c, childId));
   };
 
+/**
+ * Removes a shape from its current location in the tree.
+ * If it has a parent, it is removed from the parent's children list.
+ * Otherwise, it is removed from the root shapes atom.
+ */
 const detachShapeFromTree =
   (get: Getter) =>
   (set: Setter) =>
@@ -178,21 +230,34 @@ const detachShapeFromTree =
     );
   };
 
+/**
+ * Attaches incoming shapes to a target shape children list,
+ * preventing duplicates and preventing self-attachment.
+ */
 const attachShapesToTarget =
   (get: Getter) =>
   (set: Setter) =>
   (targetShape: ALL_SHAPES) =>
   (incoming: ALL_SHAPES[]): void => {
     const targetChildrenAtom = get(targetShape.state).children;
+
     const existing = get(targetChildrenAtom);
     const existingIds = new Set(existing.map((c) => c.id));
 
     const toAppend = incoming.filter(
       (s) => !existingIds.has(s.id) && s.id !== targetShape.id
     );
+
     set(targetChildrenAtom, existing.concat(toAppend));
   };
 
+/**
+ * Re-parents a shape (and all its descendants) by updating parentId,
+ * and optionally adjusting the top-level shape's x/y by a given offset.
+ *
+ * `adjustSelf` should be true only for the root of the moved subtree,
+ * and false for its descendants (they preserve local coordinates).
+ */
 const relocateShapeTree =
   (get: Getter) =>
   (set: Setter) =>
@@ -203,6 +268,7 @@ const relocateShapeTree =
     adjustSelf: boolean
   ): ALL_SHAPES => {
     const st = get(shape.state);
+
     const baseX = get(st.x);
     const baseY = get(st.y);
 
@@ -221,10 +287,15 @@ const relocateShapeTree =
     return shape;
   };
 
-/* =========================
-   Atoms (names protected)
-   ========================= */
+// =====================================
+// Atoms (names protected)
+// =====================================
 
+/**
+ * Root list of shapes for the current page.
+ * Read: returns CURRENT_PAGE.SHAPES.LIST
+ * Write: sets CURRENT_PAGE.SHAPES.LIST
+ */
 export const ALL_SHAPES_ATOM = atom(
   (get) => get(get(CURRENT_PAGE).SHAPES.LIST),
   (get, set, newTool: ALL_SHAPES[]) => {
@@ -232,14 +303,27 @@ export const ALL_SHAPES_ATOM = atom(
   }
 );
 
+/**
+ * Computes stage bounds from all root shapes.
+ * Note: this is a write-only atom that returns a value in its write function.
+ */
 export const GET_STAGE_BOUNDS_ATOM = atom(null, (get) => {
   return computeStageBounds(get)(get(ALL_SHAPES_ATOM));
 });
 
+/**
+ * A flattened view of all shapes in the page (root + descendants).
+ */
 export const PLANE_SHAPES_ATOM = atom((get) => {
   return flattenShapes(get)(get(ALL_SHAPES_ATOM));
 });
 
+/**
+ * Deletes currently selected shapes:
+ * - If shape has a parent, it is removed from parent's children list.
+ * - If shape is root, it is removed from ALL_SHAPES_ATOM.
+ * Also clears page SHAPES.ID after deletion.
+ */
 export const DELETE_SHAPES_ATOM = atom(null, (get, set) => {
   const plane = get(PLANE_SHAPES_ATOM);
   const selected = get(SELECTED_SHAPES_BY_IDS_ATOM);
@@ -251,12 +335,14 @@ export const DELETE_SHAPES_ATOM = atom(null, (get, set) => {
       const parent = plane.find((s) => s.id === sel.parentId);
       if (!parent) return;
 
+      // Ensure layout atoms are synced for this parent before removing children.
       set(flexLayoutAtom, { id: parent.id });
 
       const childrenAtom = get(parent.state).children;
       const nextChildren = get(childrenAtom).filter((c) => c.id !== sel.id);
       set(childrenAtom, nextChildren);
 
+      // Re-sync to the selected's parent after change.
       set(flexLayoutAtom, { id: sel.parentId });
       return;
     }
@@ -271,14 +357,26 @@ export const DELETE_SHAPES_ATOM = atom(null, (get, set) => {
   set(SHAPE_IDS_, []);
 });
 
+/**
+ * Deletes everything in the current page (root shapes + ids).
+ */
 export const DELETE_ALL_SHAPES_ATOM = atom(null, (get, set) => {
   const SHAPE_IDS_ = get(CURRENT_PAGE).SHAPES.ID;
   set(SHAPE_IDS_, []);
   set(ALL_SHAPES_ATOM, []);
 });
 
-// ===== Movement =====
+// =====================================
+// Movement
+// =====================================
 
+/**
+ * Moves selected shapes into a target shape (by id), re-parenting and adjusting coordinates.
+ * Prevents:
+ * - Moving into itself
+ * - Moving an ancestor into its descendant
+ * - Duplicating children already under the target
+ */
 export const MOVE_SHAPES_BY_ID = atom(null, (get, set, targetId: string) => {
   const plane = get(PLANE_SHAPES_ATOM);
   const selectedRefs = get(SELECTED_SHAPES_BY_IDS_ATOM);
@@ -291,32 +389,38 @@ export const MOVE_SHAPES_BY_ID = atom(null, (get, set, targetId: string) => {
   const targetShape = plane.find((s) => s.id === targetId);
   if (!targetShape) return;
 
+  // Do not move something into itself.
   if (selectedIdSet.has(targetShape.id)) return;
 
   const targetChildren = get(get(targetShape.state).children);
   const targetChildrenSet = new Set(targetChildren.map((c) => c.id));
 
+  // Prevent moving a node into its own descendant (cycle).
   const invalidMove = selectedShapes.some((shape) =>
     isDescendantOf(get)(shape, targetShape.id)
   );
   if (invalidMove) return;
 
-  // Detach each selected from its current container unless it is already under target
+  // Detach each selected from its current container unless it is already under target.
   const shouldDetach = (shape: ALL_SHAPES) =>
     !targetChildrenSet.has(shape.id) && shape.id !== targetShape.id;
 
   const detacher = detachShapeFromTree(get)(set)(ALL_SHAPES_ATOM)(plane);
   selectedShapes.filter(shouldDetach).forEach(detacher);
 
+  // Compute coordinate offset for the target's ancestor chain.
   const lookup = buildLookup(plane);
   const targetOffset = computeAncestorOffset(get)(lookup)(targetId);
 
+  // Update parentId + adjust root coordinates (descendants keep local coordinates).
   const relocated = selectedShapes.map((shape) =>
     relocateShapeTree(get)(set)(shape, targetShape.id, targetOffset, true)
   );
 
+  // Attach relocated subtrees under target.
   attachShapesToTarget(get)(set)(targetShape)(relocated);
 
+  // Update selection references to reflect new parent.
   const updatedRefs = selectedRefs.map((ref) => ({
     ...ref,
     parentId: targetShape.id,
@@ -325,6 +429,12 @@ export const MOVE_SHAPES_BY_ID = atom(null, (get, set, targetId: string) => {
   set(UPDATE_SHAPES_IDS_ATOM, updatedRefs);
 });
 
+/**
+ * Moves selected shapes to the root level:
+ * - Removes them from their previous parent's children list
+ * - Adjusts x/y to keep the same visual position (adds ancestor offsets)
+ * - Sets parentId to null
+ */
 export const MOVE_SHAPES_TO_ROOT = atom(null, (get, set) => {
   const plane = get(PLANE_SHAPES_ATOM);
   const selectedRefs = get(SELECTED_SHAPES_BY_IDS_ATOM);
@@ -339,13 +449,16 @@ export const MOVE_SHAPES_TO_ROOT = atom(null, (get, set) => {
 
   const relocateToRoot = (shape: ALL_SHAPES): ALL_SHAPES => {
     const st = get(shape.state);
+
     const parentId = get(st.parentId);
     const offset = parentId ? offsetOf(parentId) : { x: 0, y: 0 };
 
+    // Convert from parent-local coordinates to root coordinates.
     set(st.x, get(st.x) + offset.x);
     set(st.y, get(st.y) + offset.y);
     set(st.parentId, null);
 
+    // Keep descendants consistent; do not adjust their local coordinates.
     const children = get(st.children);
     children.forEach((child) => {
       relocateShapeTree(get)(set)(child, shape.id, { x: 0, y: 0 }, false);
@@ -354,7 +467,7 @@ export const MOVE_SHAPES_TO_ROOT = atom(null, (get, set) => {
     return shape;
   };
 
-  // Remove from previous parents
+  // Remove from previous parents.
   selectedRefs.forEach((ref) => {
     if (!ref.parentId) return;
 
@@ -370,14 +483,27 @@ export const MOVE_SHAPES_TO_ROOT = atom(null, (get, set) => {
 
   const relocated = selectedShapes.map(relocateToRoot);
 
+  // Update selection references to root parent.
   set(
     UPDATE_SHAPES_IDS_ATOM,
     selectedRefs.map((r) => ({ ...r, parentId: null }))
   );
 
+  // Append to root list.
   set(ALL_SHAPES_ATOM, get(ALL_SHAPES_ATOM).concat(relocated));
 });
 
+/**
+ * Creates a new "layout" frame that groups selected shapes under the same parent.
+ * Requirements:
+ * - At least 1 selected shape
+ * - All selected shapes share the same parentId
+ * Behavior:
+ * - Computes bounding box of selection
+ * - Creates a new FRAME shape sized to that bbox
+ * - Re-parents selected shapes into the new layout and adjusts their coordinates
+ * - Replaces selected shapes in the original parent children list (or root list)
+ */
 export const GROUP_SHAPES_IN_LAYOUT = atom(null, (get, set) => {
   const plane = get(PLANE_SHAPES_ATOM);
   const selectedRefs = get(SELECTED_SHAPES_BY_IDS_ATOM);
@@ -394,9 +520,11 @@ export const GROUP_SHAPES_IN_LAYOUT = atom(null, (get, set) => {
   );
   if (!allSameParent) return;
 
+  // Compute bounding box in the parent's local coordinate space.
   const bbox = selectedShapes.reduce(
     (acc, shape) => {
       const st = get(shape.state);
+
       const x1 = get(st.x);
       const y1 = get(st.y);
       const x2 = x1 + (get(st.width) || 0);
@@ -413,6 +541,8 @@ export const GROUP_SHAPES_IN_LAYOUT = atom(null, (get, set) => {
   );
 
   const newLayoutId = uuidv4();
+
+  // Create the layout container with bbox dimensions.
   const newLayout = CreateShapeSchema({
     tool: "FRAME",
     x: atom(bbox.minX),
@@ -425,6 +555,7 @@ export const GROUP_SHAPES_IN_LAYOUT = atom(null, (get, set) => {
     parentId: atom(firstParentId),
   });
 
+  // Re-parent each selected shape into the new layout; translate into layout-local coordinates.
   const reparentIntoLayout = (
     shape: ALL_SHAPES,
     parentId: string
@@ -449,6 +580,7 @@ export const GROUP_SHAPES_IN_LAYOUT = atom(null, (get, set) => {
     state: atom<ShapeState>({ ...newLayout, children: atom(layoutChildren) }),
   };
 
+  // Replace selected shapes with the new layout under the same original parent/root.
   if (firstParentId) {
     const parent = plane.find((s) => s.id === firstParentId);
     if (!parent) return;
@@ -467,12 +599,22 @@ export const GROUP_SHAPES_IN_LAYOUT = atom(null, (get, set) => {
     );
   }
 
+  // Reset selection and select only the new layout.
   set(RESET_SHAPES_IDS_ATOM);
   set(UPDATE_SHAPES_IDS_ATOM, [{ id: newLayoutId, parentId: firstParentId }]);
 });
 
-// ----------- COPY SHAPES -------------- //
+// =====================================
+// Copy shapes
+// =====================================
 
+/**
+ * Starts a copy operation:
+ * - Clones selected shapes recursively (new ids)
+ * - Computes offsets so the copy follows the cursor
+ * - Stores cloned shapes in CURRENT_ITEM_ATOM (via CREATE_CURRENT_ITEM_ATOM)
+ * - Switches tool/event into "COPYING" state
+ */
 export const EVENT_COPY_START_SHAPES = atom(
   null,
   (get, set, initial_args: { x: number; y: number }) => {
@@ -495,6 +637,7 @@ export const EVENT_COPY_START_SHAPES = atom(
       const state = get(shape.state);
       const newId = uuidv4();
 
+      // Clone children first so we can link them to the new parent id.
       const originalChildren = get(state.children) ?? [];
       const clonedChildren: ALL_SHAPES[] = originalChildren.map((child) => {
         const childState = cloneStateRecursive(child, newId, false);
@@ -507,6 +650,7 @@ export const EVENT_COPY_START_SHAPES = atom(
         } as ALL_SHAPES;
       });
 
+      // Root shapes get special offsets so they follow the cursor position.
       const x = get(state.x);
       const y = get(state.y);
       const inherited = offsetOf(parentId);
@@ -521,6 +665,8 @@ export const EVENT_COPY_START_SHAPES = atom(
         id: newId,
         x: asAtom(isRoot ? rootX : x),
         y: asAtom(isRoot ? rootY : y),
+
+        // Used for interactive copy dragging.
         offsetX: asAtom(isRoot ? offsetX : 0),
         offsetY: asAtom(isRoot ? offsetY : 0),
         offsetCopyX: asAtom(isRoot ? rootX : 0),
@@ -528,6 +674,7 @@ export const EVENT_COPY_START_SHAPES = atom(
 
         tool: state.tool,
 
+        // Style and layout props.
         align: asAtom<Align>(get(state.align)),
         copyX: asAtom(get(state.copyX)),
         copyY: asAtom(get(state.copyY)),
@@ -590,6 +737,7 @@ export const EVENT_COPY_START_SHAPES = atom(
         fontSize: asAtom(get(state.fontSize)),
         text: asAtom(get(state.text)),
 
+        // Link cloned children as atoms.
         children: asAtom<ALL_SHAPES[]>(clonedChildren),
       };
     };
@@ -602,14 +750,19 @@ export const EVENT_COPY_START_SHAPES = atom(
     set(CREATE_CURRENT_ITEM_ATOM, newShapes);
     set(TOOL_ATOM, "MOVE");
     set(EVENT_ATOM, "COPYING");
+
     return newShapes;
   }
 );
 
+/**
+ * While copying, updates the in-progress copy positions based on the cursor.
+ */
 export const EVENT_COPY_CREATING_SHAPES = atom(
   null,
   (get, set, args: { x: number; y: number }) => {
     const CURRENT_ITEMS = get(CURRENT_ITEM_ATOM);
+
     CURRENT_ITEMS.forEach((element) => {
       set(element.x, args.x - get(element.offsetCopyX));
       set(element.y, args.y - get(element.offsetCopyY));
@@ -619,6 +772,12 @@ export const EVENT_COPY_CREATING_SHAPES = atom(
   }
 );
 
+/**
+ * Finishes copy:
+ * - Materializes the copied shapes into the scene via CREATE_SHAPE_ATOM
+ * - Updates selection ids after shapes exist
+ * - Returns tool/event to idle and clears current items
+ */
 export const EVENT_COPY_FINISH_SHAPES = atom(null, (get, set) => {
   const CURRENT_ITEMS = get(CURRENT_ITEM_ATOM);
 
@@ -642,8 +801,17 @@ export const EVENT_COPY_FINISH_SHAPES = atom(null, (get, set) => {
   set(CLEAR_CURRENT_ITEM_ATOM);
 });
 
-// ----------- DOWN SHAPES -------------- //
+// =====================================
+// Down shapes (mouse down / create)
+// =====================================
 
+/**
+ * Starts creating a shape on pointer down:
+ * - BOX tools: create initial shape with x/y and label
+ * - ICON tools: create icon shape with default SVG (Smile)
+ * - DRAW tools: create a draw shape with initial points and draw config defaults
+ * Then switches tool to MOVE and sets event to CREATING.
+ */
 export const EVENT_DOWN_START_SHAPES = atom(
   null,
   (get, set, args: { x: number; y: number }) => {
@@ -690,22 +858,41 @@ export const EVENT_DOWN_START_SHAPES = atom(
           label: atom(capitalize(tool)),
           align: atom(get(drawConfig.align)),
           id: uuidv4(),
+
+          // Start position is taken from draw config.
           x: atom(get(drawConfig.x)),
           y: atom(get(drawConfig.y)),
+
+          // Style defaults are taken from draw config.
           fillColor: atom(get(drawConfig.fillColor)),
           strokeColor: atom(get(drawConfig.strokeColor)),
+          strokeWidth: atom(get(drawConfig.strokeWidth)),
+          lineCap: atom<LineCap>(get(drawConfig.lineCap)),
+          lineJoin: atom<LineJoin>(get(drawConfig.lineJoin)),
+          shadowColor: atom(get(drawConfig.shadowColor)),
+          shadowBlur: atom(get(drawConfig.shadowBlur)),
+          shadowOffsetY: atom(get(drawConfig.shadowOffsetY)),
+          shadowOffsetX: atom(get(drawConfig.shadowOffsetX)),
+          shadowOpacity: atom(get(drawConfig.shadowOpacity)),
+          dash: atom(get(drawConfig.dash)),
+
+          // Copy/move interaction fields default to zero.
           offsetX: atom(0),
           copyX: atom(0),
           copyY: atom(0),
           offsetCopyX: atom(0),
           offsetCopyY: atom(0),
           offsetY: atom(0),
+
+          // Placeholder image until a real one is set.
           image: atom({
             width: 1200,
             height: 1200,
             name: "default.png",
             src: "/placeholder.svg",
           } as ShapeImage),
+
+          // Layout/text defaults.
           verticalAlign: atom<VerticalAlign>("top"),
           paddingBottom: atom(10),
           paddingTop: atom(10),
@@ -717,11 +904,12 @@ export const EVENT_DOWN_START_SHAPES = atom(
           paddingLeft: atom(0),
           paddingRight: atom(0),
           padding: atom(0),
+
           maxHeight: atom(0),
           maxWidth: atom(0),
           minHeight: atom(0),
           minWidth: atom(0),
-          shadowColor: atom(get(drawConfig.shadowColor)),
+
           isLocked: atom(false),
           fillContainerHeight: atom(false),
           fillContainerWidth: atom(false),
@@ -729,30 +917,27 @@ export const EVENT_DOWN_START_SHAPES = atom(
           rotation: atom(0),
           opacity: atom(1),
           isLayout: atom(false),
+
           alignItems: atom<AlignItems>("flex-start"),
           flexDirection: atom<FlexDirection>("row"),
           flexWrap: atom<FlexWrap>("nowrap"),
           justifyContent: atom<JustifyContent>("flex-start"),
           gap: atom(0),
+
           visible: atom(true),
           height: atom(100),
           width: atom(100),
-          strokeWidth: atom(get(drawConfig.strokeWidth)),
-          lineCap: atom<LineCap>(get(drawConfig.lineCap)),
-          lineJoin: atom<LineJoin>(get(drawConfig.lineJoin)),
-          shadowBlur: atom(get(drawConfig.shadowBlur)),
-          shadowOffsetY: atom(get(drawConfig.shadowOffsetY)),
-          shadowOffsetX: atom(get(drawConfig.shadowOffsetX)),
-          shadowOpacity: atom(get(drawConfig.shadowOpacity)),
+
           isAllBorderRadius: atom(true),
           borderRadius: atom(0),
-          dash: atom(get(drawConfig.dash)),
+
           fontStyle: atom("Roboto"),
           textDecoration: atom("none"),
           fontWeight: atom<FontWeight>("normal"),
           fontFamily: atom("Roboto"),
           fontSize: atom(24),
           text: atom("Hello World"),
+
           children: atom<ALL_SHAPES[]>([]),
         }),
       ]);
@@ -763,6 +948,11 @@ export const EVENT_DOWN_START_SHAPES = atom(
   }
 );
 
+/**
+ * While creating a shape (pointer move):
+ * - BOX/ICON: update width/height from initial x/y
+ * - DRAW: append points
+ */
 export const EVENT_DOWN_CREATING_SHAPES = atom(
   null,
   (get, set, args: { x: number; y: number }) => {
@@ -790,6 +980,12 @@ export const EVENT_DOWN_CREATING_SHAPES = atom(
   }
 );
 
+/**
+ * Finishes creation:
+ * - Materializes each current item into the scene via CREATE_SHAPE_ATOM
+ * - Updates selection ids after shapes exist
+ * - Returns tool/event to idle and clears current items
+ */
 export const EVENT_DOWN_FINISH_SHAPES = atom(null, (get, set) => {
   const CURRENT_ITEMS = get(CURRENT_ITEM_ATOM);
 
@@ -809,11 +1005,19 @@ export const EVENT_DOWN_FINISH_SHAPES = atom(null, (get, set) => {
   set(CLEAR_CURRENT_ITEM_ATOM);
 });
 
-// ----------- CREATE SHAPE -------------- //
+// =====================================
+// Create shape
+// =====================================
 
+/**
+ * Persists a ShapeState into the scene graph:
+ * - If parentId exists, appends under parent's children
+ * - Otherwise, appends at the root
+ */
 export const CREATE_SHAPE_ATOM = atom(null, (get, set, args: ShapeState) => {
   if (!args || !args.id) return;
 
+  // Append as child if there is a parent id.
   if (get(args.parentId)) {
     const parentId = get(args.parentId);
     const FIND_SHAPE = get(PLANE_SHAPES_ATOM).find((e) => e.id === parentId);
@@ -830,10 +1034,12 @@ export const CREATE_SHAPE_ATOM = atom(null, (get, set, args: ShapeState) => {
       },
     ]);
 
+    // Trigger flex re-layout for the parent container.
     set(flexLayoutAtom, { id: FIND_SHAPE.id });
     return;
   }
 
+  // Otherwise, append as a root shape.
   const newAllShape: ALL_SHAPES = {
     id: args.id,
     tool: args.tool,
