@@ -134,22 +134,32 @@ export const computeStageBounds =
 
       const x = get(st.x);
       const y = get(st.y);
-      const width = get(st.width);
-      const height = get(st.height);
+      const w = get(st.width);
+      const h = get(st.height);
+
+      const stroke = get(st.strokeWidth) || 0;
+      const shadowBlur = get(st.shadowBlur) || 0;
+      const shadowOffsetX = get(st.shadowOffsetX) || 0;
+      const shadowOffsetY = get(st.shadowOffsetY) || 0;
+
+      const visualPad = Math.max(
+        stroke / 2,
+        shadowBlur + Math.max(Math.abs(shadowOffsetX), Math.abs(shadowOffsetY))
+      );
 
       return {
-        minX: Math.min(acc.minX, x),
-        minY: Math.min(acc.minY, y),
-        maxX: Math.max(acc.maxX, x + width),
-        maxY: Math.max(acc.maxY, y + height),
+        minX: Math.min(acc.minX, x - visualPad),
+        minY: Math.min(acc.minY, y - visualPad),
+        maxX: Math.max(acc.maxX, x + w + visualPad),
+        maxY: Math.max(acc.maxY, y + h + visualPad),
       };
     }, initial);
 
     return {
-      width: maxX - minX,
-      height: maxY - minY,
-      startX: minX,
-      startY: minY,
+      width: Math.ceil(maxX - minX),
+      height: Math.ceil(maxY - minY),
+      startX: Math.floor(minX),
+      startY: Math.floor(minY),
     };
   };
 

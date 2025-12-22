@@ -1,20 +1,19 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { icons } from "@/editor/icons/tool-icons";
 import { atom } from "jotai";
+import Konva from "konva";
 import { formats } from "../constants/formats";
-import { CreateShapeSchema } from "../helpers/shape-schema";
-import { ShapeState } from "../shapes/types/shape.state";
 import { IStageEvents } from "../states/event";
 import { PROJECT_ATOM } from "../states/projects";
 import { IKeyTool } from "../states/tool";
 import {
+  attachShapeRecursively,
   createStagesFromShapes,
   exportAndDownloadStages,
 } from "../utils/export";
 import { typeExportAtom } from "./export";
 import { SELECTED_SHAPES_BY_IDS_ATOM } from "./shape";
 import ALL_SHAPES_ATOM, {
-  ALL_SHAPES,
   computeStageBounds,
   PLANE_SHAPES_ATOM,
 } from "./shapes";
@@ -186,41 +185,34 @@ export const GET_EXPORT_ALLSHAPES_ATOM = atom(null, async (get) => {
   if (roots.length === 0) return;
 
   const bounds = computeStageBounds(get)(roots);
+  const container = document.createElement("div");
 
-  const virtualRoot: ALL_SHAPES = {
-    id: "__EXPORT_ROOT__",
-    tool: "FRAME",
-    state: atom(
-      CreateShapeSchema({
-        id: "__EXPORT_ROOT__",
-        tool: "FRAME",
-        x: atom(-bounds.startX),
-        y: atom(-bounds.startY),
-        width: atom(bounds.width),
-        height: atom(bounds.height),
-        rotation: atom(0),
-        opacity: atom(1),
-        visible: atom(true),
-        parentId: atom<string | null>(null),
-        children: atom(roots),
-        fillColor: atom("transparent"),
-        strokeColor: atom("transparent"),
-        strokeWidth: atom(0),
-      }) as ShapeState
-    ),
-  };
+  const width = bounds.width;
+  const height = bounds.height;
 
-  const [{ stage }] = await createStagesFromShapes([virtualRoot], { get });
-  // await new Promise((resolve) => setTimeout(resolve, 2000));
+  container.style.width = `${width}px`;
+  container.style.height = `${height}px`;
+
+  const stage = new Konva.Stage({
+    container,
+    width: Math.max(1, Math.round(width)),
+    height: Math.max(1, Math.round(height)),
+  });
+
+  const layer = new Konva.Layer();
+  layer.x(-bounds.startX);
+  layer.y(-bounds.startY);
+
+  stage.add(layer);
+  for (const element of roots) {
+    await attachShapeRecursively(element, layer, { get }, false);
+  }
+  layer.draw();
+
   const dataURL = stage.toDataURL({
     mimeType: "image/png",
     pixelRatio: 1,
     quality: 1,
-    x: bounds.startX,
-    y: bounds.startY,
-    width: bounds.width,
-    height: bounds.height,
   });
-
-  console.log(dataURL);
+  return dataURL;
 });
