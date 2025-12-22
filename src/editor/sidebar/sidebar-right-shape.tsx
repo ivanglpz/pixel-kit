@@ -51,7 +51,6 @@ import { Loading } from "../components/loading";
 import { constants } from "../constants/color";
 import { fontFamilyOptions, fontWeightOptions } from "../constants/fonts";
 import { useAutoSave } from "../hooks/useAutoSave";
-import { useDelayedExecutor } from "../hooks/useDelayExecutor";
 import {
   AlignItems,
   FlexDirection,
@@ -295,20 +294,12 @@ export const useShapeUpdate = () => {
   const update = useSetAtom(SHAPE_UPDATE_ATOM);
   const { debounce } = useAutoSave();
 
-  const { execute, isRunning } = useDelayedExecutor({
-    callback: () => {
-      // setUpdateUndoRedo();
-      debounce.execute();
-    },
-    timer: 1000,
-  });
-
   return <K extends keyof ShapeState>(
     type: UpdatableKeys,
     value: Omit<ShapeBase[K], "id" | "tool" | "children" | "parentId">
   ) => {
     update({ type, value });
-    execute();
+    debounce.execute();
   };
 };
 
