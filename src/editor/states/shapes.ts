@@ -117,7 +117,7 @@ const flattenShapes =
  * Computes a bounding box that contains all shapes (based on x/y/width/height).
  * Returns DEFAULT_BOUNDS if there are no shapes.
  */
-const computeStageBounds =
+export const computeStageBounds =
   (get: Getter) =>
   (shapes: ALL_SHAPES[]): Bounds => {
     if (shapes.length === 0) return DEFAULT_BOUNDS;
