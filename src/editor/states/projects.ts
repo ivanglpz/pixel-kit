@@ -246,7 +246,6 @@ export const GET_JSON_PROJECTS_ATOM = atom(null, (get, set) => {
       };
     }
   );
-  console.log(LIST);
 
   return {
     projectId: project.ID,
