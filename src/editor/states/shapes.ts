@@ -2,7 +2,7 @@
 // Imports
 // =====================================
 
-import { Align, FontWeight, VerticalAlign } from "@/editor/shapes/type.shape";
+import { FontWeight, VerticalAlign } from "@/editor/shapes/type.shape";
 import { atom, Getter, PrimitiveAtom, Setter } from "jotai";
 import { LineCap, LineJoin } from "konva/lib/Shape";
 import { Smile } from "lucide-static";
@@ -632,7 +632,7 @@ export const EVENT_COPY_START_SHAPES = atom(
     const cloneStateRecursive = (
       shape: ALL_SHAPES,
       parentId: string | null,
-      isRoot: boolean
+      IS_ROOT: boolean
     ): ShapeState => {
       const state = get(shape.state);
       const newId = uuidv4();
@@ -661,84 +661,43 @@ export const EVENT_COPY_START_SHAPES = atom(
       const offsetX = initial_args.x - x;
       const offsetY = initial_args.y - y;
 
+      const data: ShapeState = Object.fromEntries(
+        Object.entries(state).map(([key, value]) => {
+          if (
+            typeof value === "string" ||
+            typeof value === "number" ||
+            typeof value === "boolean"
+          ) {
+            return [key, value];
+          }
+          if (key === "children") {
+            return [key, asAtom<ALL_SHAPES[]>(clonedChildren)];
+          }
+          if (key === "id") {
+            return [key, newId];
+          }
+          if (key === "tool") {
+            return [key, value];
+          }
+          if (key === "parentId") {
+            return [key, asAtom<string | null>(parentId)];
+          }
+          return [
+            key,
+            asAtom(get(value as PrimitiveAtom<ShapeBase[keyof ShapeBase]>)),
+          ];
+        })
+      );
+
       return {
+        ...data,
         id: newId,
-        x: asAtom(isRoot ? rootX : x),
-        y: asAtom(isRoot ? rootY : y),
-
-        // Used for interactive copy dragging.
-        offsetX: asAtom(isRoot ? offsetX : 0),
-        offsetY: asAtom(isRoot ? offsetY : 0),
-        offsetCopyX: asAtom(isRoot ? rootX : 0),
-        offsetCopyY: asAtom(isRoot ? rootY : 0),
-
-        tool: state.tool,
-
-        // Style and layout props.
-        align: asAtom<Align>(get(state.align)),
-        copyX: asAtom(get(state.copyX)),
-        copyY: asAtom(get(state.copyY)),
-        image: asAtom(get(state.image)),
-        verticalAlign: asAtom<VerticalAlign>(get(state.verticalAlign)),
-
-        paddingBottom: asAtom(get(state.paddingBottom)),
-        paddingTop: asAtom(get(state.paddingTop)),
-        borderBottomLeftRadius: asAtom(get(state.borderBottomLeftRadius)),
-        isAllPadding: asAtom(get(state.isAllPadding)),
-        borderBottomRightRadius: asAtom(get(state.borderBottomRightRadius)),
-        borderTopLeftRadius: asAtom(get(state.borderTopLeftRadius)),
-        borderTopRightRadius: asAtom(get(state.borderTopRightRadius)),
-        paddingLeft: asAtom(get(state.paddingLeft)),
-        paddingRight: asAtom(get(state.paddingRight)),
-        padding: asAtom(get(state.padding)),
-
-        maxHeight: asAtom(get(state.maxHeight)),
-        maxWidth: asAtom(get(state.maxWidth)),
-        minHeight: asAtom(get(state.minHeight)),
-        minWidth: asAtom(get(state.minWidth)),
-
-        isLocked: asAtom(get(state.isLocked)),
-        fillContainerHeight: asAtom(get(state.fillContainerHeight)),
-        fillContainerWidth: asAtom(get(state.fillContainerWidth)),
-        label: asAtom(get(state.label)),
-        parentId: asAtom<string | null>(parentId),
-        rotation: asAtom(get(state.rotation)),
-        opacity: asAtom(get(state.opacity)),
-        fillColor: asAtom(get(state.fillColor)),
-        shadowColor: asAtom(get(state.shadowColor)),
-        isLayout: asAtom(get(state.isLayout)),
-
-        alignItems: asAtom<AlignItems>(get(state.alignItems)),
-        flexDirection: asAtom<FlexDirection>(get(state.flexDirection)),
-        flexWrap: asAtom<FlexWrap>(get(state.flexWrap)),
-        justifyContent: asAtom<JustifyContent>(get(state.justifyContent)),
-        gap: asAtom(get(state.gap)),
-
-        strokeColor: asAtom(get(state.strokeColor)),
-        visible: asAtom(get(state.visible)),
-        height: asAtom(get(state.height)),
-        width: asAtom(get(state.width)),
-        points: asAtom<number[]>(get(state.points)),
-        strokeWidth: asAtom(get(state.strokeWidth)),
-        lineCap: asAtom<LineCap>(get(state.lineCap)),
-        lineJoin: asAtom<LineJoin>(get(state.lineJoin)),
-        shadowBlur: asAtom(get(state.shadowBlur)),
-        shadowOffsetY: asAtom(get(state.shadowOffsetY)),
-        shadowOffsetX: asAtom(get(state.shadowOffsetX)),
-        shadowOpacity: asAtom(get(state.shadowOpacity)),
-        isAllBorderRadius: asAtom(get(state.isAllBorderRadius)),
-        borderRadius: asAtom(get(state.borderRadius)),
-        dash: asAtom(get(state.dash)),
-
-        fontStyle: asAtom(get(state.fontStyle)),
-        textDecoration: asAtom(get(state.textDecoration)),
-        fontWeight: asAtom<FontWeight>(get(state.fontWeight)),
-        fontFamily: asAtom(get(state.fontFamily)),
-        fontSize: asAtom(get(state.fontSize)),
-        text: asAtom(get(state.text)),
-
-        // Link cloned children as atoms.
-        children: asAtom<ALL_SHAPES[]>(clonedChildren),
+        x: asAtom(IS_ROOT ? rootX : x),
+        y: asAtom(IS_ROOT ? rootY : y),
+        offsetX: asAtom(IS_ROOT ? offsetX : 0),
+        offsetY: asAtom(IS_ROOT ? offsetY : 0),
+        offsetCopyX: asAtom(IS_ROOT ? rootX : 0),
+        offsetCopyY: asAtom(IS_ROOT ? rootY : 0),
       };
     };
 
