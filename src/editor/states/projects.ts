@@ -85,12 +85,13 @@ const cloneShapeRecursive = (shape: SHAPE_BASE_CHILDREN): ALL_SHAPES => {
         stroke?.color ?? shape?.state?.strokeColor ?? "transparent"
       ),
       image: atom(
-        SHAPE_IMAGE ?? {
-          height: 100,
-          name: "default.png",
-          src: "/placeholder.svg",
-          width: 100,
-        }
+        SHAPE_IMAGE ??
+          shape?.state?.image ?? {
+            height: 100,
+            name: "default.png",
+            src: "/placeholder.svg",
+            width: 100,
+          }
       ),
     } as ShapeState),
   };

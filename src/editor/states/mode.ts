@@ -186,9 +186,10 @@ export const GET_EXPORT_ALLSHAPES_ATOM = atom(null, async (get) => {
 
   const bounds = computeStageBounds(get)(roots);
   const container = document.createElement("div");
+  const MARGIN = 40; // px
 
-  const width = bounds.width;
-  const height = bounds.height;
+  const width = bounds.width + MARGIN * 2;
+  const height = bounds.height + MARGIN * 2;
 
   container.style.width = `${width}px`;
   container.style.height = `${height}px`;
@@ -200,8 +201,8 @@ export const GET_EXPORT_ALLSHAPES_ATOM = atom(null, async (get) => {
   });
 
   const layer = new Konva.Layer();
-  layer.x(-bounds.startX);
-  layer.y(-bounds.startY);
+  layer.x(-bounds.startX + MARGIN);
+  layer.y(-bounds.startY + MARGIN);
 
   stage.add(layer);
   for (const element of roots) {
@@ -212,7 +213,7 @@ export const GET_EXPORT_ALLSHAPES_ATOM = atom(null, async (get) => {
   const dataURL = stage.toDataURL({
     mimeType: "image/png",
     pixelRatio: 1,
-    quality: 1,
+    quality: 0.3,
   });
   return dataURL;
 });
