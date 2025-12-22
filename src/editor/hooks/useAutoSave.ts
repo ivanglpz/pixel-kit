@@ -15,7 +15,6 @@ export const useAutoSave = () => {
     mutationFn: async () => {
       const JSON_ = GET_JSON();
       const PREVIEW = await GET_PREVIEW();
-      console.log(PREVIEW);
 
       const PAYLOAD: Pick<IProject, "_id" | "name" | "previewUrl" | "data"> = {
         _id: JSON_.projectId,
@@ -34,7 +33,7 @@ export const useAutoSave = () => {
     callback: () => {
       mutation.mutate();
     },
-    timer: 1000, // opcional
+    timer: 6000, // opcional
   });
   return {
     debounce,
