@@ -1,13 +1,14 @@
 import { useMutation } from "@tanstack/react-query";
 import { useSetAtom } from "jotai";
 import { toast } from "sonner";
+import { GET_EXPORT_ALLSHAPES_ATOM } from "../states/mode";
 import { GET_JSON_PROJECTS_ATOM } from "../states/projects";
 import { useDelayedExecutor } from "./useDelayExecutor";
 import { useReference } from "./useReference";
 
 export const useAutoSave = () => {
   const GET_JSON = useSetAtom(GET_JSON_PROJECTS_ATOM);
-
+  const GET_PREVIEW = useSetAtom(GET_EXPORT_ALLSHAPES_ATOM);
   const { ref } = useReference({
     type: "STAGE_PREVIEW",
   });
@@ -15,6 +16,7 @@ export const useAutoSave = () => {
     mutationKey: ["auto_save"],
     mutationFn: async () => {
       const JSON_ = GET_JSON();
+      const PREVIEW = await GET_PREVIEW();
       console.log(JSON_);
 
       // const previewUrl = ref?.current?.toDataURL({

@@ -238,7 +238,7 @@ const createNodeFromShape = async (
    Recursion
 ======================= */
 
-const attachShapeRecursively = async (
+export const attachShapeRecursively = async (
   shape: ALL_SHAPES,
   parent: Konva.Container,
   ctx: CTX_EXP,
