@@ -9,7 +9,7 @@ import { IStageEvents } from "./event";
 import { MODE } from "./mode";
 import { IPageBase, IPageState, IShapeId } from "./pages";
 import { ALL_SHAPES, SHAPE_BASE_CHILDREN, WithInitialValue } from "./shapes";
-import { GET_PROJECTS_BY_USER, TABS_PERSIST_ATOM } from "./tabs";
+import { GET_PROJECTS_BY_USER, TABS_PERSIST_ATOM, TabsProps } from "./tabs";
 import { IKeyTool } from "./tool";
 import { UndoRedoAction } from "./undo-redo";
 
@@ -132,71 +132,94 @@ export const MOCKUP_PROJECT: IPROJECT = {
   },
 };
 export const PROJECTS_ATOM = atom<IPROJECT[]>([]);
-export const SET_PROJECTS_FROM_TABS = atom(null, async (get, set) => {
-  const PROJECTS_STORE = get(GET_PROJECTS_BY_USER);
+type ProjectApiResponse = {
+  data: IProject;
+};
 
-  const projectsResults = await Promise.allSettled(
-    PROJECTS_STORE?.map(async (item): Promise<IPROJECT | null> => {
-      try {
-        const response = await api.get<{ data: IProject }>(
-          "/projects/byId?id=" + item._id
-        );
-        const project = response.data.data;
-        const DATA_JSON = JSON.parse(response.data.data.data);
-        const LIST_PAGES = DATA_JSON[item.mode]?.LIST as IPageBase[];
-        const PAGE_SELECTED = DATA_JSON[item.mode]?.ID as string | null;
-        const FIRST_PAGE = LIST_PAGES?.[0];
+const fetchProjectById = async (id: string): Promise<IProject> => {
+  const response = await api.get<ProjectApiResponse>(`/projects/byId?id=${id}`);
+  return response.data.data;
+};
 
-        return {
-          ID: item._id,
-          name: atom(project.name),
-          MODE_ATOM: atom<MODE>(item.mode),
-          TOOL: atom<IKeyTool>("MOVE"),
-          PREVIEW_URL: item?.previewUrl ?? "./placeholder.svg",
-          PAUSE_MODE: atom<boolean>(false),
-          MODE: {
-            [item.mode]: {
-              LIST: atom(
-                LIST_PAGES?.map((page) => {
-                  const LIST = page?.SHAPES?.LIST?.map(cloneShapeRecursive);
-                  return {
-                    id: page.id,
-                    name: atom(page.name),
-                    color: atom(page.color),
-                    isVisible: atom(page.isVisible),
-                    VIEWPORT: {
-                      SCALE: atom(page.VIEWPORT?.SCALE ?? { x: 1, y: 1 }),
-                      POSITION: atom(page.VIEWPORT?.POSITION ?? { x: 0, y: 0 }),
-                    },
-                    SHAPES: {
-                      ID: atom<IShapeId[]>([]),
-                      LIST: atom<ALL_SHAPES[]>(LIST),
-                    },
-                    UNDOREDO: {
-                      COUNT_UNDO_REDO: atom<number>(0),
-                      LIST_UNDO_REDO: atom<UndoRedoAction[]>([]),
-                    },
-                  };
-                })
-              ),
-              ID: atom<string | null>(PAGE_SELECTED || FIRST_PAGE?.id || null),
-            },
-          },
-          EVENT: atom<IStageEvents>("IDLE"),
-        };
-      } catch (error) {
-        // Ignorar proyecto si falla la carga
-        return null;
-      }
+const parseProjectData = (rawData: string, mode: MODE) => {
+  const parsed = JSON.parse(rawData);
+  const modeData = parsed[mode] ?? {};
+
+  const pages = (modeData.LIST ?? []) as IPageBase[];
+  const selectedPageId = (modeData.ID ?? null) as string | null;
+
+  return {
+    pages,
+    selectedPageId,
+    firstPageId: pages[0]?.id ?? null,
+  };
+};
+
+const buildPagesAtom = (pages: IPageBase[]) =>
+  atom(
+    pages.map((page) => {
+      const shapes = page.SHAPES?.LIST?.map(cloneShapeRecursive) ?? [];
+
+      return {
+        id: page.id,
+        name: atom(page.name),
+        color: atom(page.color),
+        isVisible: atom(page.isVisible),
+        VIEWPORT: {
+          SCALE: atom(page.VIEWPORT?.SCALE ?? { x: 1, y: 1 }),
+          POSITION: atom(page.VIEWPORT?.POSITION ?? { x: 0, y: 0 }),
+        },
+        SHAPES: {
+          ID: atom<IShapeId[]>([]),
+          LIST: atom<ALL_SHAPES[]>(shapes),
+        },
+        UNDOREDO: {
+          COUNT_UNDO_REDO: atom<number>(0),
+          LIST_UNDO_REDO: atom<UndoRedoAction[]>([]),
+        },
+      };
     })
   );
 
-  const projects = projectsResults
+const buildProjectAtom = async (item: TabsProps): Promise<IPROJECT | null> => {
+  try {
+    const project = await fetchProjectById(item._id);
+    const { pages, selectedPageId, firstPageId } = parseProjectData(
+      project.data,
+      item.mode
+    );
+
+    return {
+      ID: item._id,
+      name: atom(project.name),
+      MODE_ATOM: atom<MODE>(item.mode),
+      TOOL: atom<IKeyTool>("MOVE"),
+      PREVIEW_URL: item.previewUrl ?? "./placeholder.svg",
+      PAUSE_MODE: atom<boolean>(false),
+      MODE: {
+        [item.mode]: {
+          LIST: buildPagesAtom(pages),
+          ID: atom<string | null>(selectedPageId ?? firstPageId ?? null),
+        },
+      },
+      EVENT: atom<IStageEvents>("IDLE"),
+    };
+  } catch {
+    return null;
+  }
+};
+
+export const SET_PROJECTS_FROM_TABS = atom(null, async (get, set) => {
+  const projectsStore = get(GET_PROJECTS_BY_USER) ?? [];
+
+  const results = await Promise.allSettled(projectsStore.map(buildProjectAtom));
+
+  const projects = results
     .filter(
-      (res): res is PromiseFulfilledResult<IPROJECT | null> =>
+      (res): res is PromiseFulfilledResult<IPROJECT> =>
         res.status === "fulfilled" && res.value !== null
     )
-    .map((res) => res.value as IPROJECT);
+    .map((res) => res.value);
 
   set(PROJECTS_ATOM, projects);
 });
