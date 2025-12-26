@@ -82,6 +82,7 @@ async function handler(
           width: result.width,
           height: result.height,
           name: file.originalFilename,
+          type: "PUBLIC",
         });
 
         return res.status(201).json({

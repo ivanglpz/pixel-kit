@@ -180,40 +180,43 @@ export const GET_EXPORT_SHAPES = atom(null, async (get, set) => {
     formats[format as keyof typeof formats]
   );
 });
-export const GET_EXPORT_ALLSHAPES_ATOM = atom(null, async (get) => {
-  const roots = get(ALL_SHAPES_ATOM);
-  if (roots.length === 0) return;
+export const GET_EXPORT_ALLSHAPES_ATOM = atom(
+  null,
+  async (get): Promise<string> => {
+    const roots = get(ALL_SHAPES_ATOM);
+    // if (roots.length === 0) return;
 
-  const bounds = computeStageBounds(get)(roots);
-  const container = document.createElement("div");
-  const MARGIN = 40; // px
+    const bounds = computeStageBounds(get)(roots);
+    const container = document.createElement("div");
+    const MARGIN = 40; // px
 
-  const width = bounds.width + MARGIN * 2;
-  const height = bounds.height + MARGIN * 2;
+    const width = bounds.width + MARGIN * 2;
+    const height = bounds.height + MARGIN * 2;
 
-  container.style.width = `${width}px`;
-  container.style.height = `${height}px`;
+    container.style.width = `${width}px`;
+    container.style.height = `${height}px`;
 
-  const stage = new Konva.Stage({
-    container,
-    width: Math.max(1, Math.round(width)),
-    height: Math.max(1, Math.round(height)),
-  });
+    const stage = new Konva.Stage({
+      container,
+      width: Math.max(1, Math.round(width)),
+      height: Math.max(1, Math.round(height)),
+    });
 
-  const layer = new Konva.Layer();
-  layer.x(-bounds.startX + MARGIN);
-  layer.y(-bounds.startY + MARGIN);
+    const layer = new Konva.Layer();
+    layer.x(-bounds.startX + MARGIN);
+    layer.y(-bounds.startY + MARGIN);
 
-  stage.add(layer);
-  for (const element of roots) {
-    await attachShapeRecursively(element, layer, { get }, false);
+    stage.add(layer);
+    for (const element of roots) {
+      await attachShapeRecursively(element, layer, { get }, false);
+    }
+    layer.draw();
+
+    const dataURL = stage.toDataURL({
+      mimeType: "image/png",
+      pixelRatio: 1,
+      quality: 0.3,
+    });
+    return dataURL;
   }
-  layer.draw();
-
-  const dataURL = stage.toDataURL({
-    mimeType: "image/png",
-    pixelRatio: 1,
-    quality: 0.3,
-  });
-  return dataURL;
-});
+);
