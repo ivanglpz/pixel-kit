@@ -53,7 +53,7 @@ async function handler(
     const photos = await PhotoSchema.find(
       {
         projectId: new Types.ObjectId(projectId),
-        type: "PUBLIC",
+        type: { $ne: "PREVIEW" },
       },
       { createdBy: 0, folder: 0, projectId: 0 }
     );
