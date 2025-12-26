@@ -214,8 +214,7 @@ export const GET_EXPORT_ALLSHAPES_ATOM = atom(
 
     const dataURL = stage.toDataURL({
       mimeType: "image/png",
-      pixelRatio: 1,
-      quality: 0.3,
+      pixelRatio: 0.25,
     });
     return dataURL;
   }
