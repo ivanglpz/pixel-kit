@@ -13,7 +13,7 @@ import { GET_PROJECTS_BY_USER, TABS_PERSIST_ATOM } from "./tabs";
 import { IKeyTool } from "./tool";
 import { UndoRedoAction } from "./undo-redo";
 
-export type IEDITORPROJECT = {
+export type IPROJECT = {
   ID: string;
   name: PrimitiveAtom<string> & WithInitialValue<string>;
   MODE_ATOM: PrimitiveAtom<MODE> & WithInitialValue<MODE>;
@@ -97,7 +97,7 @@ const cloneShapeRecursive = (shape: SHAPE_BASE_CHILDREN): ALL_SHAPES => {
   };
 };
 
-export const MOCKUP_PROJECT: IEDITORPROJECT = {
+export const MOCKUP_PROJECT: IPROJECT = {
   ID: "mockup-id",
   EVENT: atom<IStageEvents>("IDLE"),
   TOOL: atom<IKeyTool>("MOVE"),
@@ -131,12 +131,12 @@ export const MOCKUP_PROJECT: IEDITORPROJECT = {
     },
   },
 };
-export const PROJECTS_ATOM = atom<IEDITORPROJECT[]>([]);
+export const PROJECTS_ATOM = atom<IPROJECT[]>([]);
 export const SET_PROJECTS_FROM_TABS = atom(null, async (get, set) => {
   const DATA = get(GET_PROJECTS_BY_USER);
 
   const projectsResults = await Promise.allSettled(
-    DATA?.map(async (item): Promise<IEDITORPROJECT | null> => {
+    DATA?.map(async (item): Promise<IPROJECT | null> => {
       try {
         const response = await api.get<{ data: IProject }>(
           "/projects/byId?id=" + item._id
@@ -193,10 +193,10 @@ export const SET_PROJECTS_FROM_TABS = atom(null, async (get, set) => {
 
   const projects = projectsResults
     .filter(
-      (res): res is PromiseFulfilledResult<IEDITORPROJECT | null> =>
+      (res): res is PromiseFulfilledResult<IPROJECT | null> =>
         res.status === "fulfilled" && res.value !== null
     )
-    .map((res) => res.value as IEDITORPROJECT);
+    .map((res) => res.value as IPROJECT);
 
   set(PROJECTS_ATOM, projects);
 });
