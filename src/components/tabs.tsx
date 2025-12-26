@@ -21,6 +21,7 @@ export const TabsProjects = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const SET = useSetAtom(SET_PROJECTS_FROM_TABS);
   const user = useAtomValue(userAtom);
+
   useEffect(() => {
     SET();
   }, [user.data?.user?.userId]);
