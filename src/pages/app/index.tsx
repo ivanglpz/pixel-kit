@@ -160,13 +160,13 @@ const App: NextPageWithLayout = () => {
         {QueryProjects?.data?.map((project) => {
           return (
             <ContextMenu key={project?._id}>
-              <ContextMenuTrigger className="flex flex-col w-[320px] h-[200px] border rounded-lg ">
+              <ContextMenuTrigger className="flex flex-col w-[320px] h-[220px] border rounded-lg ">
                 <img
                   src={project?.previewUrl}
                   alt={project?.name}
                   width="100"
                   height="20"
-                  className="object-contain h-[130px] w-full bg-gray-100 dark:bg-neutral-700 rounded-t-lg"
+                  className="object-contain h-[150px] w-full bg-gray-100 dark:bg-neutral-700 rounded-t-lg"
                 />
                 <div className={"p-4 flex flex-row gap-2 items-center"}>
                   <div
