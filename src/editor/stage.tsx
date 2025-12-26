@@ -16,19 +16,8 @@ import { POSITION_PAGE_ATOM, POSITION_SCALE_ATOM } from "./states/pages";
 import { RESET_SHAPES_IDS_ATOM } from "./states/shape";
 import TOOL_ATOM, { PAUSE_MODE_ATOM } from "./states/tool";
 
-type StageScale = {
-  x: number;
-  y: number;
-};
-
-type StagePosition = {
-  x: number;
-  y: number;
-};
-
 const PxStage = ({ children }: { children: ReactNode }) => {
   const containerRef = useRef<HTMLDivElement>(null);
-  const stageRef = useRef<Konva.Stage | null>(null);
 
   const [containerSize, setContainerSize] = useState({
     width: 1,
@@ -45,7 +34,8 @@ const PxStage = ({ children }: { children: ReactNode }) => {
   const background = useAtomValue(STAGE_CANVAS_BACKGROUND);
   const MOVING = useAtomValue(MOVING_MOUSE_BUTTON_ATOM);
 
-  const { handleMouseDown, handleMouseUp, handleMouseMove } = useEventStage();
+  const { handleMouseDown, handleMouseUp, handleMouseMove, stageRef } =
+    useEventStage();
 
   const MAX_SCALE = 90;
   const MIN_SCALE = 0.1;
