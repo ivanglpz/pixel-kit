@@ -1,4 +1,19 @@
 /* eslint-disable @next/next/no-img-element */
+import {
+  ContextMenu,
+  ContextMenuCheckboxItem,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuLabel,
+  ContextMenuRadioGroup,
+  ContextMenuRadioItem,
+  ContextMenuSeparator,
+  ContextMenuShortcut,
+  ContextMenuSub,
+  ContextMenuSubContent,
+  ContextMenuSubTrigger,
+  ContextMenuTrigger,
+} from "@/components/ui/context-menu";
 import { Button } from "@/editor/components/button";
 import { Input } from "@/editor/components/input";
 import { constants } from "@/editor/constants/color";
@@ -138,96 +153,112 @@ const App: NextPageWithLayout = () => {
         </div>
       </header>
       <div
-        className={css({
-          height: "100%",
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
-          gridAutoRows: "244px",
-          gap: "xlg",
-          overflowY: "scroll",
-        })}
+        className={
+          "flex flex-row flex-wrap gap-lg overflow-auto h-full w-full gap-4"
+        }
       >
         {QueryProjects?.data?.map((project) => {
           return (
-            <div
-              key={project?._id}
-              onClick={() => {
-                setTabs(project);
-                setSelected(project._id);
-                router.push(`/app/project/${project._id}`);
-              }}
-              className={css({
-                display: "grid",
-                gridTemplateRows: "160px 1fr",
-                borderRadius: "lg",
-                backgroundColor: "gray.50",
-                // _dark: {
-                //   backgroundColor: "gray.600",
-                // },
-                borderWidth: 1,
-                borderColor: "gray.150",
-                _dark: {
-                  borderColor: "gray.450",
-                  backgroundColor: "gray.700",
-                },
-              })}
-            >
-              <img
-                src={project?.previewUrl}
-                alt={project?.name}
-                className={css({
-                  height: "100%",
-                  width: "100%",
-                  objectFit: "contain",
-                  borderTopRadius: "lg",
-                  backgroundColor: "gray.100",
-                  _dark: {
-                    backgroundColor: "gray.600",
-                  },
-                })}
-              />
-              <div
-                className={css({
-                  padding: "lg",
-                  display: "grid",
-                  gridTemplateColumns: "30px 1fr",
-                  alignContent: "center",
-                  gap: "md",
-                })}
-              >
-                <div
-                  className={css({
-                    display: "flex",
-                    flexDirection: "column",
-                    justifyContent: "center",
-                  })}
-                >
-                  <LayoutDashboard size={25} />
-                </div>
-                <div
-                  className={css({
-                    display: "flex",
-                    flexDirection: "column",
-                  })}
-                >
-                  <p
+            <ContextMenu key={project?._id}>
+              <ContextMenuTrigger className="flex flex-col w-[320px] h-[200px] border rounded-lg ">
+                <img
+                  src={project?.previewUrl}
+                  alt={project?.name}
+                  width="100"
+                  height="20"
+                  className="object-contain h-[130px] w-full bg-gray-100 dark:bg-neutral-700 rounded-t-lg"
+                />
+                <div className={"p-4 flex flex-row gap-2 items-center"}>
+                  <div
                     className={css({
-                      fontSize: "sm",
-                      fontWeight: "bold",
+                      display: "flex",
+                      flexDirection: "column",
+                      justifyContent: "center",
                     })}
                   >
-                    {project?.name}
-                  </p>
-                  <p
+                    <LayoutDashboard size={25} />
+                  </div>
+                  <div
                     className={css({
-                      fontSize: "11px",
+                      display: "flex",
+                      flexDirection: "column",
                     })}
                   >
-                    {getTimeAgoString(project.updatedAt)}
-                  </p>
+                    <button
+                      onClick={() => {
+                        setTabs(project);
+                        setSelected(project._id);
+                        router.push(`/app/project/${project._id}`);
+                      }}
+                      className="p-0 flex flex-row items-start hover:underline cursor-pointer"
+                    >
+                      <p
+                        className={css({
+                          fontSize: "sm",
+                          fontWeight: "bold",
+                        })}
+                      >
+                        {project?.name}
+                      </p>
+                    </button>
+                    <p
+                      className={css({
+                        fontSize: "11px",
+                      })}
+                    >
+                      {getTimeAgoString(project.updatedAt)}
+                    </p>
+                  </div>
                 </div>
-              </div>
-            </div>
+              </ContextMenuTrigger>
+              <ContextMenuContent className="w-52">
+                <ContextMenuItem inset>
+                  Back
+                  <ContextMenuShortcut>⌘[</ContextMenuShortcut>
+                </ContextMenuItem>
+                <ContextMenuItem inset disabled>
+                  Forward
+                  <ContextMenuShortcut>⌘]</ContextMenuShortcut>
+                </ContextMenuItem>
+                <ContextMenuItem inset>
+                  Reload
+                  <ContextMenuShortcut>⌘R</ContextMenuShortcut>
+                </ContextMenuItem>
+                <ContextMenuSub>
+                  <ContextMenuSubTrigger inset>
+                    More Tools
+                  </ContextMenuSubTrigger>
+                  <ContextMenuSubContent className="w-44">
+                    <ContextMenuItem>Save Page...</ContextMenuItem>
+                    <ContextMenuItem>Create Shortcut...</ContextMenuItem>
+                    <ContextMenuItem>Name Window...</ContextMenuItem>
+                    <ContextMenuSeparator />
+                    <ContextMenuItem>Developer Tools</ContextMenuItem>
+                    <ContextMenuSeparator />
+                    <ContextMenuItem variant="destructive">
+                      Delete
+                    </ContextMenuItem>
+                  </ContextMenuSubContent>
+                </ContextMenuSub>
+                <ContextMenuSeparator />
+                <ContextMenuCheckboxItem checked>
+                  Show Bookmarks
+                </ContextMenuCheckboxItem>
+                <ContextMenuCheckboxItem>
+                  Show Full URLs
+                </ContextMenuCheckboxItem>
+                <ContextMenuSeparator />
+                <ContextMenuRadioGroup value="pedro">
+                  <ContextMenuLabel inset>People</ContextMenuLabel>
+                  <ContextMenuRadioItem value="pedro">
+                    Pedro Duarte
+                  </ContextMenuRadioItem>
+                  <ContextMenuRadioItem value="colm">
+                    Colm Tuite
+                  </ContextMenuRadioItem>
+                </ContextMenuRadioGroup>
+              </ContextMenuContent>
+            </ContextMenu>
           );
         })}
       </div>
