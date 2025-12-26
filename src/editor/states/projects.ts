@@ -144,6 +144,7 @@ export const SET_PROJECTS_FROM_TABS = atom(null, async (get, set) => {
         const project = response.data.data;
         const DATA_JSON = JSON.parse(response.data.data.data);
         const LIST_PAGES = DATA_JSON[item.mode]?.LIST as IPageJSON[];
+        const PAGE_SELECTED = DATA_JSON[item.mode]?.ID as string | null;
         const FIRST_PAGE = LIST_PAGES?.[0];
 
         return {
@@ -178,7 +179,7 @@ export const SET_PROJECTS_FROM_TABS = atom(null, async (get, set) => {
                   };
                 })
               ),
-              ID: atom<string | null>(FIRST_PAGE?.id ?? null),
+              ID: atom<string | null>(PAGE_SELECTED || FIRST_PAGE?.id || null),
             },
           },
           EVENT: atom<IStageEvents>("IDLE"),
@@ -267,6 +268,7 @@ export const GET_JSON_PROJECTS_ATOM = atom(null, (get, set) => {
     data: JSON.stringify({
       [get(project.MODE_ATOM)]: {
         LIST: LIST,
+        ID: get(project.MODE[get(project.MODE_ATOM)].ID),
       },
     }),
   };
