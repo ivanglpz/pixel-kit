@@ -121,6 +121,10 @@ export const MOCKUP_PROJECT: IEDITORPROJECT = {
             COUNT_UNDO_REDO: atom<number>(0),
             LIST_UNDO_REDO: atom<UndoRedoAction[]>([]),
           },
+          VIEWPORT: {
+            SCALE: atom({ x: 1, y: 1 }),
+            POSITION: atom({ x: 0, y: 0 }),
+          },
         },
       ] as IPage[]),
       ID: atom<string | null>("mockup-page-one"),
@@ -159,6 +163,10 @@ export const SET_PROJECTS_FROM_TABS = atom(null, async (get, set) => {
                     name: atom(page.name),
                     color: atom(page.color),
                     isVisible: atom(page.isVisible),
+                    VIEWPORT: {
+                      SCALE: atom(page.VIEWPORT?.SCALE ?? { x: 1, y: 1 }),
+                      POSITION: atom(page.VIEWPORT?.POSITION ?? { x: 0, y: 0 }),
+                    },
                     SHAPES: {
                       ID: atom<IPageShapeIds[]>([]),
                       LIST: atom<ALL_SHAPES[]>(LIST),
@@ -243,6 +251,10 @@ export const GET_JSON_PROJECTS_ATOM = atom(null, (get, set) => {
         isVisible: get(element.isVisible),
         SHAPES: {
           LIST: get(element.SHAPES.LIST).map((e) => cloneShapeJson(e)),
+        },
+        VIEWPORT: {
+          SCALE: get(element.VIEWPORT.SCALE),
+          POSITION: get(element.VIEWPORT.POSITION),
         },
       };
     }
