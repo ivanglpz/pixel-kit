@@ -6,7 +6,7 @@ import {
 } from "@/components/ui/context-menu";
 import {
   DELETE_PAGE,
-  IPage,
+  IPageState,
   NEW_PAGE,
   PAGE_ID_ATOM,
   PAGES_ATOM,
@@ -24,7 +24,7 @@ const DraggableRootItem = ({
   onClick,
   onDebounce,
 }: {
-  page: IPage;
+  page: IPageState;
   isSelected: boolean;
   onClick: () => void;
   onDebounce: VoidFunction;

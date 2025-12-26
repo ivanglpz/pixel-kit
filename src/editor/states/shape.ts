@@ -2,18 +2,18 @@ import { atom, Getter, Setter } from "jotai";
 import { ShapeBase } from "../shapes/types/shape.base";
 import { ShapeState } from "../shapes/types/shape.state";
 import { EVENT_ATOM } from "./event";
-import { CURRENT_PAGE, IPageShapeIds } from "./pages";
+import { CURRENT_PAGE, IShapeId } from "./pages";
 import { PLANE_SHAPES_ATOM } from "./shapes";
 import { UndoShape } from "./undo-redo";
 
 const filterListId = (id: string, parentId: string | null) => {
-  return (e: IPageShapeIds) => e?.id === id && e?.parentId === parentId;
+  return (e: IShapeId) => e?.id === id && e?.parentId === parentId;
 };
 export const SELECTED_SHAPES_BY_IDS_ATOM = atom(
   (get) => {
     return get(get(CURRENT_PAGE).SHAPES.ID);
   },
-  (get, _set, shape: IPageShapeIds) => {
+  (get, _set, shape: IShapeId) => {
     const ids = get(CURRENT_PAGE).SHAPES.ID;
     const event = get(EVENT_ATOM);
     const listIds = get(ids);
@@ -34,7 +34,7 @@ export const SELECTED_SHAPES_BY_IDS_ATOM = atom(
 );
 export const UPDATE_SHAPES_IDS_ATOM = atom(
   null,
-  (get, set, args: IPageShapeIds[]) => {
+  (get, set, args: IShapeId[]) => {
     const ids = get(CURRENT_PAGE).SHAPES.ID;
     set(ids, args);
   }
