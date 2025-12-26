@@ -17,6 +17,7 @@ import { ShapeImage } from "../shapes/types/shape.base";
 import { CLEAR_CURRENT_ITEM_ATOM } from "../states/currentItem";
 import { EVENT_ATOM } from "../states/event";
 import { MOVING_MOUSE_BUTTON_ATOM } from "../states/moving";
+import { POSITION_PAGE_ATOM, POSITION_SCALE_ATOM } from "../states/pages";
 import { PROJECT_ID_ATOM } from "../states/projects";
 import {
   RECTANGLE_SELECTION_ATOM,
@@ -51,7 +52,8 @@ export const useEventStage = () => {
   const SET_MOVING = useSetAtom(MOVING_MOUSE_BUTTON_ATOM);
   // ===== READ-ONLY STATE =====
   const PAUSE = useAtomValue(PAUSE_MODE_ATOM);
-
+  const setScale = useSetAtom(POSITION_SCALE_ATOM);
+  const setPosition = useSetAtom(POSITION_PAGE_ATOM);
   const { config } = useConfiguration();
   const { debounce } = useAutoSave();
   const PROJECT_ID = useAtomValue(PROJECT_ID_ATOM);
@@ -259,11 +261,12 @@ export const useEventStage = () => {
     const scale =
       Math.min(stageWidth / bounds.width, stageHeight / bounds.height) * 0.9;
 
-    stageRef.current.scale({ x: scale, y: scale });
-    stageRef.current.position({
+    setScale({ x: scale, y: scale });
+    setPosition({
       x: -bounds.startX * scale + (stageWidth - bounds.width * scale) / 2,
       y: -bounds.startY * scale + (stageHeight - bounds.height * scale) / 2,
     });
+
     stageRef.current.batchDraw();
   };
 
