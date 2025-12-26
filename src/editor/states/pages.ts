@@ -8,11 +8,19 @@ import { UndoRedoAction } from "./undo-redo";
 
 export type IPageShapeIds = { id: string; parentId: string | null };
 
+type Position = {
+  x: number;
+  y: number;
+};
 export type IPage = {
   id: string;
   name: PrimitiveAtom<string> & WithInitialValue<string>;
   color: PrimitiveAtom<string> & WithInitialValue<string>;
   isVisible: PrimitiveAtom<boolean> & WithInitialValue<boolean>;
+  VIEWPORT: {
+    SCALE: PrimitiveAtom<Position> & WithInitialValue<Position>;
+    POSITION: PrimitiveAtom<Position> & WithInitialValue<Position>;
+  };
   SHAPES: {
     LIST: PrimitiveAtom<ALL_SHAPES[]> & WithInitialValue<ALL_SHAPES[]>;
     ID: PrimitiveAtom<IPageShapeIds[]> & WithInitialValue<IPageShapeIds[]>;
@@ -31,6 +39,10 @@ export type IPageJSON = {
   isVisible: boolean;
   SHAPES: {
     LIST: SHAPE_BASE_CHILDREN[];
+  };
+  VIEWPORT: {
+    SCALE: Position;
+    POSITION: Position;
   };
 };
 export const GET_MODE = atom((get) => {
@@ -54,6 +66,31 @@ export const PAGES_ATOM = atom(
   (_get, _set, newTool: IPage[]) => {
     const toolAtom = _get(GET_MODE).LIST;
     _set(toolAtom, newTool);
+  }
+);
+
+export const POSITION_SCALE_ATOM = atom(
+  (get) => {
+    const CURRENT = get(CURRENT_PAGE);
+    return get(CURRENT.VIEWPORT.SCALE);
+  },
+  (get, set, newPosition: Position) => {
+    const CURRENT = get(CURRENT_PAGE);
+    set(CURRENT.VIEWPORT.SCALE, newPosition);
+  }
+);
+export const POSITION_PAGE_ATOM = atom(
+  (get) => {
+    const CURRENT = get(CURRENT_PAGE);
+    return get(CURRENT.VIEWPORT.POSITION);
+  },
+  (get, set, newPosition: Position | ((prev: Position) => Position)) => {
+    const CURRENT = get(CURRENT_PAGE);
+    if (typeof newPosition === "function") {
+      const prev = get(CURRENT.VIEWPORT.POSITION);
+      newPosition = newPosition(prev);
+    }
+    set(CURRENT.VIEWPORT.POSITION, newPosition);
   }
 );
 
@@ -87,6 +124,10 @@ export const NEW_PAGE = atom(null, (get, set) => {
     id: uuidv4(),
     name: atom(`Page ${pages.length + 1}`),
     color: atom(canvasTheme.dark),
+    VIEWPORT: {
+      SCALE: atom({ x: 1, y: 1 }),
+      POSITION: atom({ x: 0, y: 0 }),
+    },
     isVisible: atom(true),
     SHAPES: {
       ID: atom<IPageShapeIds[]>([]),
