@@ -6,13 +6,13 @@ import { PROJECT_ATOM } from "./projects";
 import { ALL_SHAPES, SHAPE_BASE_CHILDREN, WithInitialValue } from "./shapes";
 import { UndoRedoAction } from "./undo-redo";
 
-export type IPageShapeIds = { id: string; parentId: string | null };
+export type IShapeId = { id: string; parentId: string | null };
 
 type Position = {
   x: number;
   y: number;
 };
-export type IPage = {
+export type IPageState = {
   id: string;
   name: PrimitiveAtom<string> & WithInitialValue<string>;
   color: PrimitiveAtom<string> & WithInitialValue<string>;
@@ -23,7 +23,7 @@ export type IPage = {
   };
   SHAPES: {
     LIST: PrimitiveAtom<ALL_SHAPES[]> & WithInitialValue<ALL_SHAPES[]>;
-    ID: PrimitiveAtom<IPageShapeIds[]> & WithInitialValue<IPageShapeIds[]>;
+    ID: PrimitiveAtom<IShapeId[]> & WithInitialValue<IShapeId[]>;
   };
   UNDOREDO: {
     COUNT_UNDO_REDO: PrimitiveAtom<number> & WithInitialValue<number>;
@@ -32,7 +32,7 @@ export type IPage = {
   };
 };
 
-export type IPageJSON = {
+export type IPageBase = {
   id: string;
   name: string;
   color: string;
@@ -63,7 +63,7 @@ export const PAGES_ATOM = atom(
   (get) => {
     return get(get(GET_MODE).LIST);
   },
-  (_get, _set, newTool: IPage[]) => {
+  (_get, _set, newTool: IPageState[]) => {
     const toolAtom = _get(GET_MODE).LIST;
     _set(toolAtom, newTool);
   }
@@ -120,7 +120,7 @@ export const PAGES_BY_TYPE_ATOM = atom((get) => {
 export const NEW_PAGE = atom(null, (get, set) => {
   const pages = get(PAGES_ATOM);
   // const pagesByType = pages.filter((p) => p.type === mode);
-  const newPage: IPage = {
+  const newPage: IPageState = {
     id: uuidv4(),
     name: atom(`Page ${pages.length + 1}`),
     color: atom(canvasTheme.dark),
@@ -130,7 +130,7 @@ export const NEW_PAGE = atom(null, (get, set) => {
     },
     isVisible: atom(true),
     SHAPES: {
-      ID: atom<IPageShapeIds[]>([]),
+      ID: atom<IShapeId[]>([]),
       LIST: atom<ALL_SHAPES[]>([]),
     },
     UNDOREDO: {

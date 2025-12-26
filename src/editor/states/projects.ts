@@ -7,7 +7,7 @@ import { ShapeState } from "../shapes/types/shape.state";
 import { SVG } from "../utils/svg";
 import { IStageEvents } from "./event";
 import { MODE } from "./mode";
-import { IPage, IPageJSON, IPageShapeIds } from "./pages";
+import { IPageBase, IPageState, IShapeId } from "./pages";
 import { ALL_SHAPES, SHAPE_BASE_CHILDREN, WithInitialValue } from "./shapes";
 import { GET_PROJECTS_BY_USER, TABS_PERSIST_ATOM } from "./tabs";
 import { IKeyTool } from "./tool";
@@ -21,7 +21,7 @@ export type IPROJECT = {
   PAUSE_MODE: PrimitiveAtom<boolean> & WithInitialValue<boolean>;
   MODE: {
     [key in MODE]: {
-      LIST: PrimitiveAtom<IPage[]> & WithInitialValue<IPage[]>;
+      LIST: PrimitiveAtom<IPageState[]> & WithInitialValue<IPageState[]>;
       ID: PrimitiveAtom<string | null> & WithInitialValue<string | null>;
     };
   };
@@ -112,9 +112,9 @@ export const MOCKUP_PROJECT: IPROJECT = {
           id: "mockup-page-one",
           color: atom("black"),
           isVisible: atom(true),
-          name: atom("Loading..."),
+          name: atom("Mockup Page One"),
           SHAPES: {
-            ID: atom<IPageShapeIds[]>([]),
+            ID: atom<IShapeId[]>([]),
             LIST: atom<ALL_SHAPES[]>([]),
           },
           UNDOREDO: {
@@ -126,24 +126,24 @@ export const MOCKUP_PROJECT: IPROJECT = {
             POSITION: atom({ x: 0, y: 0 }),
           },
         },
-      ] as IPage[]),
+      ] as IPageState[]),
       ID: atom<string | null>("mockup-page-one"),
     },
   },
 };
 export const PROJECTS_ATOM = atom<IPROJECT[]>([]);
 export const SET_PROJECTS_FROM_TABS = atom(null, async (get, set) => {
-  const DATA = get(GET_PROJECTS_BY_USER);
+  const PROJECTS_STORE = get(GET_PROJECTS_BY_USER);
 
   const projectsResults = await Promise.allSettled(
-    DATA?.map(async (item): Promise<IPROJECT | null> => {
+    PROJECTS_STORE?.map(async (item): Promise<IPROJECT | null> => {
       try {
         const response = await api.get<{ data: IProject }>(
           "/projects/byId?id=" + item._id
         );
         const project = response.data.data;
         const DATA_JSON = JSON.parse(response.data.data.data);
-        const LIST_PAGES = DATA_JSON[item.mode]?.LIST as IPageJSON[];
+        const LIST_PAGES = DATA_JSON[item.mode]?.LIST as IPageBase[];
         const PAGE_SELECTED = DATA_JSON[item.mode]?.ID as string | null;
         const FIRST_PAGE = LIST_PAGES?.[0];
 
@@ -169,7 +169,7 @@ export const SET_PROJECTS_FROM_TABS = atom(null, async (get, set) => {
                       POSITION: atom(page.VIEWPORT?.POSITION ?? { x: 0, y: 0 }),
                     },
                     SHAPES: {
-                      ID: atom<IPageShapeIds[]>([]),
+                      ID: atom<IShapeId[]>([]),
                       LIST: atom<ALL_SHAPES[]>(LIST),
                     },
                     UNDOREDO: {
