@@ -50,10 +50,10 @@ async function handler(
       });
     }
 
-    // Obtener las fotos del proyecto
     const photos = await PhotoSchema.find(
       {
         projectId: new Types.ObjectId(projectId),
+        type: "PUBLIC",
       },
       { createdBy: 0, folder: 0, projectId: 0 }
     );
