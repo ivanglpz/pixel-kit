@@ -27,42 +27,32 @@ export const TabsProjects = () => {
   }, [user.data?.user?.userId]);
   return (
     <header
-      className={css({
-        display: "grid",
-        alignItems: "center",
-        justifyContent: "center",
-        borderBottomWidth: "1px",
-        borderBottomStyle: "solid",
-        borderBottomColor: "border", // ← usa el semantic token
-        gridTemplateColumns: "20px 1fr 40px",
-        gap: "lg",
-        paddingLeft: "lg",
-        paddingRight: "lg",
-      })}
+      // className={css({
+      //   display: "grid",
+      //   alignItems: "center",
+      //   justifyContent: "center",
+      //   borderBottomWidth: "1px",
+      //   borderBottomStyle: "solid",
+      //   borderBottomColor: "border", // ← usa el semantic token
+      //   gridTemplateColumns: "36px 1fr 40px",
+      //   gap: "lg",
+      //   paddingLeft: "lg",
+      //   paddingRight: "lg",
+      // })}
+      className="grid grid-cols-[33px_1fr_40px] gap-4 border-b border-border  p-2 h-12"
     >
       <section className="flex flex-row items-center justify-center gap-4">
         <button
           onClick={() => {
             router.push("/app");
           }}
-          className={css({
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-          })}
+          className=" w-full h-full flex items-center justify-center  bg-neutral-150 p-2 rounded-sm cursor-pointer dark:bg-neutral-700"
         >
           <Home size={16} />
         </button>
       </section>
       <div
-        className={css({
-          display: "flex",
-          flexDirection: "row",
-          overflow: "hidden",
-          overflowX: "scroll",
-          alignItems: "center",
-          height: "100%",
-        })}
+        className="flex flex-row items-center justify-start h-full w-full overflow-x-scroll overflow-y-hidden [&::-webkit-scrollbar]:hidden [scrollbar-width:none]"
         ref={containerRef}
       >
         {listProjects?.map((e) => {
