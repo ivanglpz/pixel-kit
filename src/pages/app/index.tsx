@@ -11,7 +11,7 @@ import { Dialog } from "@/editor/components/dialog";
 import { Input } from "@/editor/components/input";
 import { Loading } from "@/editor/components/loading";
 import { constants } from "@/editor/constants/color";
-import { PROJECT_ID_ATOM } from "@/editor/states/projects";
+import { DELETE_PROJECT_ATOM, PROJECT_ID_ATOM } from "@/editor/states/projects";
 import { ADD_TAB_ATOM } from "@/editor/states/tabs";
 import { fetchListOrgs } from "@/services/organizations";
 import {
@@ -34,6 +34,7 @@ const App: NextPageWithLayout = () => {
   const router = useRouter();
   const setSelected = useSetAtom(PROJECT_ID_ATOM);
   const setTabs = useSetAtom(ADD_TAB_ATOM);
+  const handleDeleteProject = useSetAtom(DELETE_PROJECT_ATOM);
   const [deleteDialog, setDeleteDialog] = useState<string | null>(null);
   const mutateOrgs = useMutation({
     mutationKey: ["orgs_user"],
@@ -88,9 +89,11 @@ const App: NextPageWithLayout = () => {
   });
   const mutateDelete = useMutation({
     mutationFn: async (id: string) => {
-      return deleteProject(id);
+      await deleteProject(id);
+      return id;
     },
     onSuccess: (data) => {
+      handleDeleteProject(data);
       QueryProjects.refetch();
       toast.success("Project deleted successfully");
       setDeleteDialog(null);

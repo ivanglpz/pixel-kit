@@ -1,5 +1,5 @@
 import {
-  DELETE_PROJECT,
+  DELETE_PROJECT_ATOM,
   PROJECT_ID_ATOM,
   PROJECTS_ATOM,
   SET_PROJECTS_FROM_TABS,
@@ -17,7 +17,7 @@ export const TabsProjects = () => {
   const router = useRouter();
   const listProjects = useAtomValue(PROJECTS_ATOM);
   const [selected, setSelected] = useAtom(PROJECT_ID_ATOM);
-  const setDelete = useSetAtom(DELETE_PROJECT);
+  const setDelete = useSetAtom(DELETE_PROJECT_ATOM);
   const containerRef = useRef<HTMLDivElement>(null);
   const SET = useSetAtom(SET_PROJECTS_FROM_TABS);
   const user = useAtomValue(userAtom);
