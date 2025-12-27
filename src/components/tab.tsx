@@ -33,10 +33,11 @@ export const Tab = ({ project, onClick, onDelete, isSelected }: TabProps) => {
         },
         backgroundColor: isSelected ? "gray.150" : "transparent",
         height: "100%",
-        width: "190px",
-        minWidth: "190px",
-        paddingLeft: "md",
-        paddingRight: "md",
+        width: "200px",
+        padding: "sm",
+        borderRadius: "md",
+        flexShrink: 0,
+        cursor: "pointer",
       })}
       onClick={onClick}
       onMouseLeave={() => {
