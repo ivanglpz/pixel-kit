@@ -1,61 +1,95 @@
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 
-export async function middleware(request: NextRequest) {
-  const { pathname } = request.nextUrl;
-  const accessToken = request.cookies.get("accessToken")?.value;
-  const isPrivateRoute = pathname.startsWith("/app");
+type SessionPayload = {
+  sub: string;
+  exp: number;
+};
 
-  // ✅ 1. Si es ruta privada (/app)
-  if (isPrivateRoute) {
-    if (!accessToken) {
-      // No hay token → mandar a login
-      return NextResponse.redirect(new URL("/login", request.url));
-    }
+const SESSION_COOKIE = "accessToken";
+const AUTH_SECRET = process.env.AUTH_SECRET;
+async function verifyJwt(
+  token: string,
+  secret: string
+): Promise<SessionPayload | null> {
+  try {
+    const [header, payload, signature] = token.split(".");
+    if (!header || !payload || !signature) return null;
 
-    const isValid = await validateWithApi(accessToken, request);
-    if (!isValid) {
-      // Token inválido → mandar a login
-      return NextResponse.redirect(new URL("/login", request.url));
-    }
+    const key = await crypto.subtle.importKey(
+      "raw",
+      new TextEncoder().encode(secret),
+      { name: "HMAC", hash: "SHA-256" },
+      false,
+      ["verify"]
+    );
 
-    // Token válido → dejar pasar
-    return NextResponse.next();
+    const valid = await crypto.subtle.verify(
+      "HMAC",
+      key,
+      base64UrlToArrayBuffer(signature),
+      new TextEncoder().encode(`${header}.${payload}`)
+    );
+
+    if (!valid) return null;
+
+    const decodedPayload = JSON.parse(
+      atob(payload.replace(/-/g, "+").replace(/_/g, "/"))
+    ) as SessionPayload;
+
+    if (decodedPayload.exp * 1000 < Date.now()) return null;
+
+    return decodedPayload;
+  } catch {
+    return null;
   }
-
-  // ✅ 2. Si es ruta pública (cualquier cosa que no sea /app)
-  if (accessToken) {
-    const isValid = await validateWithApi(accessToken, request);
-    if (isValid) {
-      // Usuario logueado → redirigir al dashboard
-      return NextResponse.redirect(new URL("/app", request.url));
-    }
-  }
-
-  // Público sin token o token inválido → dejar pasar
-  return NextResponse.next();
 }
 
-// ✅ Función que valida el token con tu endpoint
-async function validateWithApi(token: string, request: NextRequest) {
-  try {
-    const res = await fetch(`${request.nextUrl.origin}/api/users/me`, {
-      method: "GET",
-      headers: {
-        authorization: token,
-      },
-      cache: "no-store",
-    });
+const base64UrlToArrayBuffer = (value: string): ArrayBuffer => {
+  const base64 = value.replace(/-/g, "+").replace(/_/g, "/");
+  const binary = atob(base64);
+  const bytes = new Uint8Array(binary.length);
 
-    if (!res.ok) {
-      return false;
+  for (let i = 0; i < binary.length; i++) {
+    bytes[i] = binary.charCodeAt(i);
+  }
+
+  return bytes.buffer;
+};
+
+export async function middleware(request: NextRequest) {
+  const { pathname } = request.nextUrl;
+  const token = request.cookies.get(SESSION_COOKIE)?.value;
+  const isPrivateRoute = pathname.startsWith("/app");
+
+  // Ruta privada sin token
+  if (isPrivateRoute && !token) {
+    return NextResponse.redirect(new URL("/login", request.url));
+  }
+
+  if (token && AUTH_SECRET) {
+    const payload = await verifyJwt(token, AUTH_SECRET);
+
+    // Token inválido
+    if (!payload) {
+      return NextResponse.redirect(new URL("/login", request.url));
     }
 
-    return true;
-  } catch (err) {
-    console.error("❌ Error validando con la API:", err);
-    return false;
+    // Usuario autenticado → continuar
+    const headers = new Headers(request.headers);
+    headers.set("x-user-id", payload.sub);
+
+    // Si está en login y ya está autenticado → redirigir
+    if (pathname === "/login") {
+      return NextResponse.redirect(new URL("/app", request.url));
+    }
+
+    return NextResponse.next({
+      request: { headers },
+    });
   }
+
+  return NextResponse.next();
 }
 
 export const config = {
