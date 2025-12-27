@@ -296,7 +296,7 @@ export const GET_JSON_PROJECTS_ATOM = atom(null, (get, set) => {
     }),
   };
 });
-export const DELETE_PROJECT = atom(null, (get, set, id: string) => {
+export const DELETE_PROJECT_ATOM = atom(null, (get, set, id: string) => {
   const persistProjects = get(TABS_PERSIST_ATOM);
   const projects = get(PROJECTS_ATOM);
 
