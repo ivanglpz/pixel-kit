@@ -52,7 +52,7 @@ export const TabsProjects = () => {
         </button>
       </section>
       <div
-        className="flex flex-row items-center justify-start h-full w-full overflow-x-scroll overflow-y-hidden [&::-webkit-scrollbar]:hidden [scrollbar-width:none]"
+        className="flex flex-row items-center justify-start h-full w-full overflow-x-scroll overflow-y-hidden gap-2 [&::-webkit-scrollbar]:hidden [scrollbar-width:none]"
         ref={containerRef}
       >
         {listProjects?.map((e) => {
