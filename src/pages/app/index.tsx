@@ -210,7 +210,7 @@ const App: NextPageWithLayout = () => {
         {QueryProjects?.data?.map((project) => {
           return (
             <ContextMenu key={project?._id}>
-              <ContextMenuTrigger className="flex flex-col  border rounded-lg ">
+              <ContextMenuTrigger className="flex flex-col  border rounded-lg  hover:border-blue-400 hover:border ">
                 <img
                   src={project?.previewUrl}
                   alt={project?.name}
