@@ -104,7 +104,7 @@ export const MOCKUP_PROJECT: IPROJECT = {
   PAUSE_MODE: atom<boolean>(false),
   name: atom<string>("mockup-project-name"),
   MODE_ATOM: atom<MODE>("DESIGN_MODE"),
-  PREVIEW_URL: "./placeholder.svg",
+  PREVIEW_URL: "./default_bg.png",
   MODE: {
     DESIGN_MODE: {
       LIST: atom([
@@ -194,7 +194,7 @@ const buildProjectAtom = async (item: TabsProps): Promise<IPROJECT | null> => {
       name: atom(project.name),
       MODE_ATOM: atom<MODE>(item.mode),
       TOOL: atom<IKeyTool>("MOVE"),
-      PREVIEW_URL: item.previewUrl ?? "./placeholder.svg",
+      PREVIEW_URL: item.previewUrl ?? "./default_bg.png",
       PAUSE_MODE: atom<boolean>(false),
       MODE: {
         [item.mode]: {
@@ -287,7 +287,7 @@ export const GET_JSON_PROJECTS_ATOM = atom(null, (get, set) => {
   return {
     projectId: project.ID,
     projectName: get(project.name),
-    previewUrl: project?.PREVIEW_URL ?? "./placeholder.svg",
+    previewUrl: project?.PREVIEW_URL ?? "./default_bg.png",
     data: JSON.stringify({
       [get(project.MODE_ATOM)]: {
         LIST: LIST,

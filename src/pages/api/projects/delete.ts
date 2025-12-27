@@ -1,10 +1,54 @@
 import { withAuth } from "@/db/middleware/auth";
 import { IOrganizationMember, Organization } from "@/db/schemas/organizations";
+import { PhotoSchema } from "@/db/schemas/photos";
 import { Project } from "@/db/schemas/projects";
 import { sanitizeInput } from "@/utils/sanitize";
+import { v2 as cloudinary } from "cloudinary";
 import type { NextApiRequest, NextApiResponse } from "next";
 
-type ResponseData = { message: string; data: any | null } | { error: string };
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME!,
+  api_key: process.env.CLOUDINARY_API_KEY!,
+  api_secret: process.env.CLOUDINARY_API_SECRET!,
+});
+
+type ResponseData =
+  | { message: string; data: unknown | null }
+  | { error: string };
+
+const deleteCloudinaryFolderIfExists = async (
+  folder: string
+): Promise<void> => {
+  try {
+    const result = await cloudinary.api.resources({
+      type: "upload",
+      prefix: folder,
+      max_results: 1,
+    });
+
+    if (result.resources.length === 0) {
+      return;
+    }
+
+    await cloudinary.api.delete_resources_by_prefix(folder);
+
+    try {
+      await cloudinary.api.delete_folder(folder);
+    } catch {
+      // ignore: folder may not exist or already deleted
+    }
+  } catch {
+    // ignore Cloudinary failures (best-effort cleanup)
+  }
+};
+
+const deleteProjectPhotos = async (projectId: string): Promise<void> => {
+  const folder = `app/pixelkit/projects/${projectId}/photos`;
+
+  await deleteCloudinaryFolderIfExists(folder);
+
+  await PhotoSchema.deleteMany({ projectId });
+};
 
 async function handler(
   req: NextApiRequest & { userId: string },
@@ -20,13 +64,11 @@ async function handler(
   }
 
   try {
-    // Obtener proyecto
     const project = await Project.findById(id);
     if (!project) {
       return res.status(404).json({ error: "Project not found" });
     }
 
-    // Verificar rol del usuario en la organización
     const org = await Organization.findById(project.organization);
     if (!org) {
       return res.status(404).json({ error: "Organization not found" });
@@ -42,6 +84,8 @@ async function handler(
         .status(403)
         .json({ error: "Not authorized to delete this project" });
     }
+
+    await deleteProjectPhotos(id);
 
     const deletedProject = await Project.findByIdAndDelete(id);
 

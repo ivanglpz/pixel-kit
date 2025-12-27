@@ -37,7 +37,7 @@ export const useAutoSave = () => {
         _id: JSON_.projectId,
         data: JSON_.data,
         name: JSON_.projectName,
-        previewUrl: response?.url ?? "./placeholder.svg",
+        previewUrl: response?.url ?? "./default_bg.png",
       };
       updateProject(PAYLOAD);
     },
