@@ -37,7 +37,7 @@ const ProjectSchema: Schema<IProject> = new Schema(
         },
       }),
     },
-    previewUrl: { type: String, default: "./placeholder.svg" },
+    previewUrl: { type: String, default: "./default_bg.png" },
     version: { type: Number, default: 1 },
     mode: { type: String, default: "DESIGN_MODE" },
   },
