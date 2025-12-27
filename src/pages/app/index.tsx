@@ -264,7 +264,7 @@ const App: NextPageWithLayout = () => {
                   </div>
                 </div>
               </ContextMenuTrigger>
-              <ContextMenuContent className="w-52">
+              <ContextMenuContent className="w-38">
                 <ContextMenuItem
                   onClick={() => {
                     setTabs(project);
@@ -277,9 +277,6 @@ const App: NextPageWithLayout = () => {
                     color={constants.theme.colors.white}
                   />
                   <p>Open</p>
-                </ContextMenuItem>
-                <ContextMenuItem inset disabled>
-                  Duplicate
                 </ContextMenuItem>
 
                 <ContextMenuSeparator />
