@@ -40,7 +40,7 @@ export const Profile = () => {
         }}
       >
         <Dialog.ContainerArea>
-          <section className="w-[60vw] h-[70vh] bg-neutral-100 dark:bg-neutral-800 p-4 rounded-lg border">
+          <section className=" flex flex-col w-[60dvw] h-[70dvh] bg-neutral-100 dark:bg-neutral-800 p-4 rounded-lg border overflow-hidden">
             <Dialog.Header>
               <p
                 className={css({
@@ -61,7 +61,7 @@ export const Profile = () => {
       </Dialog.Provider>
       <DropdownMenu>
         <DropdownMenuTrigger>
-          <div className="flex items-center justify-center">
+          <div className="flex items-center justify-center cursor-pointer">
             <img
               src={user?.data?.user?.photoUrl || ""}
               alt="Avatar"

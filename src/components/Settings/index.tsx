@@ -9,7 +9,6 @@ export const SettingsSection = () => {
         gap: "xlg",
         display: "flex",
         flexDirection: "column",
-        overflow: "hidden",
         height: "100%",
       })}
     >
