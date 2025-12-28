@@ -1,7 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Button } from "@/editor/components/button";
 import { Loading } from "@/editor/components/loading";
 import { constants } from "@/editor/constants/color";
 import { userAtom } from "@/jotai/user";
@@ -69,7 +69,7 @@ export const AccountSettings: NextPageWithLayout = () => {
   });
 
   return (
-    <section className="p-4 h-full  overflow-hidden">
+    <section className="p-4 h-full flex flex-col gap-4 overflow-hidden">
       <div className=" max-w-md flex flex-col gap-4">
         <div className="grid gap-2 wd">
           <Label>Avatar</Label>
@@ -91,13 +91,9 @@ export const AccountSettings: NextPageWithLayout = () => {
               className="w-24 h-24 rounded-full object-cover border"
             />
             <div className="flex flex-col justify-center gap-2 ">
-              <Button
-                variant={"outline"}
-                onClick={() => inputRef.current?.click()}
-                className="cursor-pointer"
-              >
+              <Button.Secondary onClick={() => inputRef.current?.click()}>
                 Change Avatar
-              </Button>
+              </Button.Secondary>
             </div>
           </section>
         </div>
@@ -128,8 +124,8 @@ export const AccountSettings: NextPageWithLayout = () => {
         </div>
       </div>
       <footer>
-        <Button
-          className="mt-4"
+        <Button.Primary
+          // className="mt-4"
           onClick={() => {
             formik.submitForm();
           }}
@@ -139,7 +135,7 @@ export const AccountSettings: NextPageWithLayout = () => {
           ) : (
             "Save"
           )}
-        </Button>
+        </Button.Primary>
       </footer>
     </section>
   );
