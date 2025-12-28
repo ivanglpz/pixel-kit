@@ -36,7 +36,7 @@ const variantStyles = {
   secondary: css({
     borderColor: "gray.150",
     color: "black",
-    _dark: { color: "white", borderColor: "gray.700" },
+    _dark: { color: "white", borderColor: "gray.500" },
   }),
   danger: css({
     borderColor: "red.500",
