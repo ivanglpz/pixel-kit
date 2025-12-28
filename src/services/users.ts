@@ -36,6 +36,7 @@ type ResponseMe = {
     email: string;
     fullName: string;
     userId: string;
+    photoUrl: string | null;
   };
 };
 export const meUser = async (): Promise<ResponseMe> => {
