@@ -74,3 +74,28 @@ export const changePassword = async ({
     }
   );
 };
+
+export const uploadUserPhoto = async (values: FormData) => {
+  const response = await api.post<{
+    data: { width: number; height: number; name: string; url: string };
+  }>(`/users/photo`, values, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+  return response?.data?.data;
+};
+
+export const updateUserProfile = async ({
+  fullName,
+  photoUrl,
+}: {
+  fullName: string;
+  photoUrl: string;
+}) => {
+  const response = await api.put<{ message: string }>(`/users/update`, {
+    fullName,
+    photoUrl,
+  });
+  return response?.data;
+};

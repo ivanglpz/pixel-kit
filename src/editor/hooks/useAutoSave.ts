@@ -1,23 +1,13 @@
 import { IProject } from "@/db/schemas/types";
 import { uploadPhotoPreview } from "@/services/photo";
 import { updateProject } from "@/services/projects";
+import { base64ToFile } from "@/utils/base64toFile";
 import { useMutation } from "@tanstack/react-query";
 import { useSetAtom } from "jotai";
 import { toast } from "sonner";
 import { GET_EXPORT_ALLSHAPES_ATOM } from "../states/mode";
 import { GET_JSON_PROJECTS_ATOM } from "../states/projects";
 import { useDelayedExecutor } from "./useDelayExecutor";
-
-function base64ToFile(base64: string, fileName: string): File {
-  const [header, data] = base64.split(",");
-  const mimeMatch = header.match(/:(.*?);/);
-  const mimeType = mimeMatch ? mimeMatch[1] : "image/png";
-
-  const binary = atob(data);
-  const array = Uint8Array.from(binary, (c) => c.charCodeAt(0));
-
-  return new File([array], fileName, { type: mimeType });
-}
 
 export const useAutoSave = () => {
   const GET_JSON = useSetAtom(GET_JSON_PROJECTS_ATOM);
