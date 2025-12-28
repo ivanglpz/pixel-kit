@@ -210,7 +210,7 @@ const buildProjectAtom = async (item: TabsProps): Promise<IPROJECT | null> => {
 };
 
 export const SET_PROJECTS_FROM_TABS = atom(null, async (get, set) => {
-  const projectsStore = get(GET_TABS_BY_USER) ?? [];
+  const projectsStore = get(GET_TABS_BY_USER);
   const listProjects = get(PROJECTS_ATOM);
   const searchProjectsLoaded = projectsStore.filter((p) =>
     listProjects.some((lp) => lp.ID === p._id)
@@ -234,9 +234,6 @@ export const PROJECT_ATOM = atom((get) => {
   const PROJECT_ID = get(PROJECT_ID_ATOM);
   const PROJECTS = get(PROJECTS_ATOM);
   const FIND_PROJECT = PROJECTS?.find((p) => p?.ID === PROJECT_ID);
-  // if (!FIND_PROJECT) {
-  //   throw new Error("PROJECT NOT FOUND");
-  // }
 
   return FIND_PROJECT ?? MOCKUP_PROJECT;
 });

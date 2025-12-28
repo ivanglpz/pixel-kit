@@ -12,7 +12,6 @@ export const TABS_PERSIST_ATOM = atomWithStorage<TabsProps[]>(TABS_ID, []);
 
 export const GET_TABS_BY_USER = atom((get) => {
   const tabs = get(TABS_PERSIST_ATOM);
-
   const user = get(userAtom);
   return tabs.filter((e) => e.userId === user?.data?.user?.userId);
 });
