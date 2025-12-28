@@ -6,8 +6,9 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { PROJECTS_ATOM } from "@/editor/states/projects";
 import { userAtom } from "@/jotai/user";
-import { useAtom } from "jotai";
+import { useAtom, useSetAtom } from "jotai";
 import Cookies from "js-cookie";
 import { LogOut, Settings, Twitter, User2 } from "lucide-react";
 import Link from "next/link";
@@ -16,9 +17,9 @@ import { useRouter } from "next/router";
 export const Profile = () => {
   const router = useRouter();
   const [user] = useAtom(userAtom);
-
+  const CLEAR_PROJECTS = useSetAtom(PROJECTS_ATOM);
   const handleLogout = async () => {
-    localStorage.clear();
+    CLEAR_PROJECTS([]);
     router.replace("/login");
     Cookies.remove("accessToken");
   };

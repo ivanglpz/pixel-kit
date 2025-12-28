@@ -4,6 +4,7 @@ import {
   REMOVE_PROJECT_TAB_ATOM,
   SET_PROJECTS_FROM_TABS,
 } from "@/editor/states/projects";
+import { GET_TABS_BY_USER } from "@/editor/states/tabs";
 import { userAtom } from "@/jotai/user";
 import { css } from "@stylespixelkit/css";
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
@@ -21,6 +22,7 @@ export const TabsProjects = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const SET = useSetAtom(SET_PROJECTS_FROM_TABS);
   const user = useAtomValue(userAtom);
+  useAtomValue(GET_TABS_BY_USER);
 
   useEffect(() => {
     SET();
