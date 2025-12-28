@@ -6,19 +6,24 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Dialog } from "@/editor/components/dialog";
 
 import { PROJECTS_ATOM } from "@/editor/states/projects";
 import { userAtom } from "@/jotai/user";
+import { css } from "@stylespixelkit/css";
 import { useAtom, useSetAtom } from "jotai";
 import Cookies from "js-cookie";
 import { LogOut, Settings, Twitter } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/router";
+import { useState } from "react";
+import { SettingsSection } from "./Settings";
 
 export const Profile = () => {
   const router = useRouter();
   const [user] = useAtom(userAtom);
   const CLEAR_PROJECTS = useSetAtom(PROJECTS_ATOM);
+  const [dialogSettings, setDialogSettings] = useState(false);
 
   const handleLogout = () => {
     CLEAR_PROJECTS([]);
@@ -28,6 +33,32 @@ export const Profile = () => {
 
   return (
     <>
+      <Dialog.Provider
+        visible={dialogSettings}
+        onClose={() => {
+          setDialogSettings(false);
+        }}
+      >
+        <Dialog.ContainerArea>
+          <section className="w-[60vw] h-[70vh] bg-neutral-100 dark:bg-neutral-800 p-4 rounded-lg border">
+            <Dialog.Header>
+              <p
+                className={css({
+                  fontWeight: "bold",
+                })}
+              >
+                Settings
+              </p>
+              <Dialog.Close
+                onClose={() => {
+                  setDialogSettings(false);
+                }}
+              />
+            </Dialog.Header>
+            <SettingsSection />
+          </section>
+        </Dialog.ContainerArea>
+      </Dialog.Provider>
       <DropdownMenu>
         <DropdownMenuTrigger>
           <div className="flex items-center justify-center">
@@ -58,7 +89,8 @@ export const Profile = () => {
 
           <DropdownMenuItem
             onSelect={(event) => {
-              router.push("/app/settings");
+              // router.push("/app/settings");
+              setDialogSettings(true);
             }}
             className="flex items-center gap-2"
           >
