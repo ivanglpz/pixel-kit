@@ -239,7 +239,7 @@ export const NodesDefault = ({
                   : "transparent",
               },
               backgroundColor: shapeId.some((w) => w.id === shape.id)
-                ? "gray.200"
+                ? "gray.150"
                 : "transparent",
               _hover: {
                 backgroundColor: "gray.100",

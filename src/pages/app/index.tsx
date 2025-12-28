@@ -132,41 +132,43 @@ const App: NextPageWithLayout = () => {
         visible={deleteDialog !== null}
         onClose={() => setDeleteDialog(null)}
       >
-        <Dialog.Container>
-          <Dialog.Header>
-            <p
-              className={css({
-                fontWeight: "bold",
-                paddingBottom: "lg",
-              })}
-            >
-              Delete Project
-            </p>
-            <Dialog.Close onClose={() => setDeleteDialog(null)} />
-          </Dialog.Header>
-          <section className="h-full w-full flex-1">
-            <p className="font-normal ">
-              Are you sure you want to delete this project?
-            </p>
-            <p>
-              This action <strong>cannot</strong> be undone.
-            </p>
+        <Dialog.ContainerArea>
+          <section className="flex flex-col p-4 w-[22dvw] h-[22dvh] rounded-lg bg-neutral-100 dark:bg-neutral-800">
+            <Dialog.Header>
+              <p
+                className={css({
+                  fontWeight: "bold",
+                  paddingBottom: "lg",
+                })}
+              >
+                Delete Project
+              </p>
+              <Dialog.Close onClose={() => setDeleteDialog(null)} />
+            </Dialog.Header>
+            <section className="h-full w-full flex-1">
+              <p className="font-normal  text-sm">
+                Are you sure you want to delete this project?
+              </p>
+              <p className="text-sm">
+                This action <strong>cannot</strong> be undone.
+              </p>
+            </section>
+            <footer className="flex flex-row gap-4 justify-end  ">
+              <Button.Secondary onClick={() => setDeleteDialog(null)}>
+                Cancel
+              </Button.Secondary>
+              <Button.Danger onClick={() => mutateDelete.mutate(deleteDialog!)}>
+                {mutateDelete.isPending ? (
+                  <Loading color={constants.theme.colors.white} />
+                ) : (
+                  <>
+                    <Trash size={constants.icon.size} /> Delete
+                  </>
+                )}
+              </Button.Danger>
+            </footer>
           </section>
-          <footer className="flex flex-row gap-4 justify-end  ">
-            <Button.Secondary onClick={() => setDeleteDialog(null)}>
-              Cancel
-            </Button.Secondary>
-            <Button.Danger onClick={() => mutateDelete.mutate(deleteDialog!)}>
-              {mutateDelete.isPending ? (
-                <Loading color={constants.theme.colors.white} />
-              ) : (
-                <>
-                  <Trash size={constants.icon.size} /> Delete
-                </>
-              )}
-            </Button.Danger>
-          </footer>
-        </Dialog.Container>
+        </Dialog.ContainerArea>
       </Dialog.Provider>
       <header
         className={css({

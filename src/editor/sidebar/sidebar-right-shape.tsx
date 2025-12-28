@@ -1271,11 +1271,9 @@ export const LayoutShapeConfig = () => {
                       atomo={shape.isAllBorderRadius}
                       ctx={(e) => e}
                     >
-                      <Input.withPause>
-                        <Input.withChange shape={shape} type="borderRadius">
-                          <Input.Number min={0} max={9999} step={1} />
-                        </Input.withChange>
-                      </Input.withPause>
+                      <Input.withChange shape={shape} type="borderRadius">
+                        <Input.Number min={0} max={9999} step={1} />
+                      </Input.withChange>
                     </ShapeShowAtomProvider>
                     <ShapeShowAtomProvider
                       atomo={shape.isAllBorderRadius}
