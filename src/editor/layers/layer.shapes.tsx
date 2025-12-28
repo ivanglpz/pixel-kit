@@ -63,11 +63,11 @@ export const LayerShapes = () => {
           anchorCornerRadius={2}
           keepRatio={false}
           onTransformEnd={() => {
-            // setUpdateUndoRedo();
+            setUpdateUndoRedo();
             debounce.execute();
           }}
           onDragEnd={() => {
-            // setUpdateUndoRedo();
+            setUpdateUndoRedo();
             debounce.execute();
           }}
           anchorStroke={constants.theme.colors.primary}

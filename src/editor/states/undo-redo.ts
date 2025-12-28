@@ -1,15 +1,30 @@
-import { atom, Getter, Setter } from "jotai";
+import { atom, Getter, PrimitiveAtom, Setter } from "jotai";
 import { v4 as uuidv4 } from "uuid";
-import { cloneDeep } from "../helpers/shape-schema";
 import { flexLayoutAtom } from "../shapes/layout-flex";
-import { IShape } from "../shapes/type.shape";
+import { ShapeState } from "../shapes/types/shape.state";
 import { CURRENT_PAGE } from "./pages";
 import { SELECTED_SHAPES_BY_IDS_ATOM } from "./shape";
 import ALL_SHAPES_ATOM, { ALL_SHAPES, PLANE_SHAPES_ATOM } from "./shapes";
 
-// ===== TYPES =====
-export type UndoShape = Omit<ALL_SHAPES, "state" | "children"> & {
-  state: Omit<IShape, "children"> & { children: UndoShape[] };
+/* ============================================================
+   TYPES (SNAPSHOT / PLAIN DATA)
+============================================================ */
+
+type JsonPrimitive = string | number | boolean | null;
+type JsonValue = JsonPrimitive | JsonObject | JsonValue[];
+type JsonObject = { [k: string]: JsonValue };
+
+export type ShapeStateSnapshot = {
+  id: string;
+  tool: ShapeState["tool"];
+  parentId: string | null;
+  children: ShapeSnapshot[];
+} & JsonObject;
+
+export type ShapeSnapshot = {
+  id: string;
+  tool: ShapeState["tool"];
+  state: ShapeStateSnapshot;
 };
 
 export type ActionType =
@@ -24,8 +39,8 @@ export type ActionType =
 export type UndoRedoAction = {
   id: string;
   type: ActionType;
-  shapes: UndoShape[];
-  prevShapes?: UndoShape[];
+  shapes: ShapeSnapshot[];
+  prevShapes?: ShapeSnapshot[];
 };
 
 export type UndoShapeValues = {
@@ -34,262 +49,310 @@ export type UndoShapeValues = {
   prevShapes?: ALL_SHAPES[];
 };
 
-export type MoveOperation = {
-  movedShapes: string[];
-  newParentId?: string;
-};
-
-// ===== PURE HELPERS =====
-const findShapeById = (
-  shapes: ALL_SHAPES[],
-  id: string
-): ALL_SHAPES | undefined => shapes.find((shape) => shape.id === id);
-
-const filterShapesExcluding = (
-  shapes: ALL_SHAPES[],
-  excludeIds: string[]
-): ALL_SHAPES[] => shapes.filter((shape) => !excludeIds.includes(shape.id));
+/* ============================================================
+   PURE HELPERS
+============================================================ */
 
 const truncateListAtIndex = <T>(list: T[], index: number): T[] =>
   list.slice(0, index);
 
-// ===== SHAPE CONVERSIONS =====
-export const cloneShapeRecursive =
+const findShapeById = (
+  shapes: ALL_SHAPES[],
+  id: string
+): ALL_SHAPES | undefined => shapes.find((s) => s.id === id);
+
+/* ============================================================
+   ATOM / JSON HELPERS
+============================================================ */
+
+type AtomLike = { read: unknown };
+
+const isAtomLike = (value: unknown): value is AtomLike =>
+  typeof value === "object" && value !== null && "read" in value;
+
+const toJsonValue = (value: unknown): JsonValue => {
+  if (
+    value === null ||
+    typeof value === "string" ||
+    typeof value === "number" ||
+    typeof value === "boolean"
+  ) {
+    return value;
+  }
+
+  if (Array.isArray(value)) {
+    return value.map(toJsonValue);
+  }
+
+  if (typeof value === "object") {
+    const entries = Object.entries(value as Record<string, unknown>);
+    const obj: JsonObject = {};
+    entries.forEach(([k, v]) => {
+      obj[k] = toJsonValue(v);
+    });
+    return obj;
+  }
+
+  // functions / symbols / undefined -> se eliminan representándolos como null
+  return null;
+};
+
+const atomOrValueToJson = (get: Getter, value: unknown): JsonValue => {
+  if (typeof value === "function") return null;
+  if (isAtomLike(value))
+    return toJsonValue(get(value as unknown as PrimitiveAtom<unknown>));
+  return toJsonValue(value);
+};
+
+/* ============================================================
+   SERIALIZATION (RUNTIME -> SNAPSHOT)
+============================================================ */
+
+const serializeShape =
   (get: Getter) =>
-  (shape: ALL_SHAPES): UndoShape => {
-    const children = get(get(shape.state).children);
+  (shape: ALL_SHAPES): ShapeSnapshot => {
+    const st = get(shape.state);
+
+    const childrenRuntime = get(st.children);
+    const children = childrenRuntime.map(serializeShape(get));
+
+    const parentId = get(st.parentId);
+
+    // Serializa todas las keys del ShapeState a JSON, excepto children (lo manejamos aparte)
+    const baseEntries = Object.entries(st).filter(([k]) => k !== "children");
+
+    const plainState = baseEntries.reduce<JsonObject>((acc, [k, v]) => {
+      acc[k] = atomOrValueToJson(get, v);
+      return acc;
+    }, {});
+
+    const state: ShapeStateSnapshot = {
+      ...plainState,
+      id: st.id,
+      tool: st.tool,
+      parentId,
+      children,
+    };
+
     return {
-      ...shape,
-      state: {
-        ...cloneDeep(get(shape.state)),
-        children: children?.map(cloneShapeRecursive(get)) ?? [],
-      },
+      id: shape.id,
+      tool: shape.tool,
+      state,
     };
   };
 
-const convertUndoShapeToAllShapes = (undoShape: UndoShape): ALL_SHAPES => {
-  const convertChildren = (children: UndoShape[]): ALL_SHAPES[] =>
-    children.map(convertUndoShapeToAllShapes);
+const captureSnapshots =
+  (get: Getter) =>
+  (shapes: ALL_SHAPES[]): ShapeSnapshot[] =>
+    shapes.map(serializeShape(get));
+
+/* ============================================================
+   DESERIALIZATION (SNAPSHOT -> RUNTIME)
+============================================================ */
+
+const jsonToAtom = <T>(value: T): PrimitiveAtom<T> => atom(value);
+
+const deserializeShape = (snapshot: ShapeSnapshot): ALL_SHAPES => {
+  const children = snapshot.state.children.map(deserializeShape);
+
+  // Reconstruye un ShapeState donde la gran mayoría de campos son atoms.
+  // id/tool quedan como valores directos (coincide con tu ShapeState actual).
+  // parentId y children deben ser atoms.
+  const restoredEntries = Object.entries(snapshot.state).filter(
+    ([k]) => k !== "children" && k !== "parentId" && k !== "id" && k !== "tool"
+  );
+
+  const restoredAtoms = restoredEntries.reduce<
+    Record<string, PrimitiveAtom<JsonValue>>
+  >((acc, [k, v]) => {
+    acc[k] = jsonToAtom(v);
+    return acc;
+  }, {});
+
+  const restoredState = {
+    ...restoredAtoms,
+    id: snapshot.state.id,
+    tool: snapshot.state.tool,
+    parentId: jsonToAtom(snapshot.state.parentId),
+    children: jsonToAtom(children),
+  } as unknown as ShapeState;
 
   return {
-    id: undoShape.id,
-    tool: undoShape.tool,
-    state: atom<IShape>({
-      ...cloneDeep(undoShape.state),
-      children: atom(convertChildren(undoShape.state.children)),
-    }),
-  } as ALL_SHAPES;
+    id: snapshot.id,
+    tool: snapshot.tool,
+    state: atom(restoredState),
+  };
 };
 
-const captureShapesState =
-  (get: Getter) =>
-  (shapeIds: string[]): UndoShape[] => {
-    const currentShapes = get(PLANE_SHAPES_ATOM);
-    const cloner = cloneShapeRecursive(get);
+/* ============================================================
+   SHAPE MANIPULATION
+============================================================ */
 
-    return shapeIds
-      .map((id) => findShapeById(currentShapes, id))
-      .filter((shape): shape is ALL_SHAPES => shape !== undefined)
-      .map(cloner);
-  };
-
-const createUndoRedoAction =
-  (get: Getter) =>
-  (args: UndoShapeValues): UndoRedoAction => ({
-    id: uuidv4(),
-    type: args.type,
-    shapes: args.shapes.map(cloneShapeRecursive(get)),
-    prevShapes: args.prevShapes?.map(cloneShapeRecursive(get)),
-  });
-
-// ===== SHAPE MANIPULATION =====
 const removeShapeCompletely =
   (get: Getter, set: Setter) =>
-  (shapeId: string): boolean => {
-    const currentShapes = get(PLANE_SHAPES_ATOM);
-    const shapeToRemove = findShapeById(currentShapes, shapeId);
-    if (!shapeToRemove) return false;
+  (shapeId: string): void => {
+    const plane = get(PLANE_SHAPES_ATOM);
+    const shape = findShapeById(plane, shapeId);
+    if (!shape) return;
 
-    const currentParentId = get(shapeToRemove.state).parentId;
+    const st = get(shape.state);
+    const parentId = get(st.parentId);
 
-    if (currentParentId) {
-      const parent = findShapeById(currentShapes, currentParentId);
-      if (!parent) return false;
+    if (parentId) {
+      const parent = findShapeById(plane, parentId);
+      if (!parent) return;
 
-      const currentChildren = get(get(parent.state).children);
-      const filteredChildren = filterShapesExcluding(currentChildren, [
-        shapeId,
-      ]);
+      const parentState = get(parent.state);
+      const childrenAtom = parentState.children;
 
-      set(parent.state, {
-        ...get(parent.state),
-        children: atom(filteredChildren),
-      });
-      set(flexLayoutAtom, { id: currentParentId }); // aplicar layout si es flex
-    } else {
-      const currentRootShapes = get(ALL_SHAPES_ATOM);
-      const filteredRootShapes = filterShapesExcluding(currentRootShapes, [
-        shapeId,
-      ]);
-      set(ALL_SHAPES_ATOM, filteredRootShapes);
+      set(
+        childrenAtom,
+        get(childrenAtom).filter((c) => c.id !== shapeId)
+      );
+      set(flexLayoutAtom, { id: parentId });
+      return;
     }
-    return true;
+
+    set(
+      ALL_SHAPES_ATOM,
+      get(ALL_SHAPES_ATOM).filter((s) => s.id !== shapeId)
+    );
   };
 
 const addShapeToContainer =
   (get: Getter, set: Setter) =>
-  (shape: UndoShape, targetParentId: string | null): void => {
-    const convertedShape = convertUndoShapeToAllShapes(shape);
-    set(convertedShape.state, {
-      ...get(convertedShape.state),
-      parentId: targetParentId,
-    });
+  (snapshot: ShapeSnapshot, targetParentId: string | null): void => {
+    const shape = deserializeShape(snapshot);
+
+    // Ajustar parentId del shape recién creado (es atom)
+    const newState = get(shape.state);
+    set(shape.state, {
+      ...newState,
+      parentId: atom(targetParentId),
+    } as unknown as ShapeState);
 
     if (targetParentId) {
-      const currentShapes = get(PLANE_SHAPES_ATOM);
-      const parent = findShapeById(currentShapes, targetParentId);
+      const parent = findShapeById(get(PLANE_SHAPES_ATOM), targetParentId);
       if (!parent) return;
 
-      const currentChildren = get(get(parent.state).children);
-      set(parent.state, {
-        ...get(parent.state),
-        children: atom([...currentChildren, convertedShape]),
-      });
-      set(flexLayoutAtom, { id: targetParentId }); // aplicar layout si es flex
-    } else {
-      const currentRootShapes = get(ALL_SHAPES_ATOM);
-      set(ALL_SHAPES_ATOM, [...currentRootShapes, convertedShape]);
+      const parentState = get(parent.state);
+      const childrenAtom = parentState.children;
+
+      set(childrenAtom, [...get(childrenAtom), shape]);
+      set(flexLayoutAtom, { id: targetParentId });
+      return;
     }
+
+    set(ALL_SHAPES_ATOM, [...get(ALL_SHAPES_ATOM), shape]);
   };
 
 const updateExistingShape =
   (get: Getter, set: Setter) =>
-  (existingShape: ALL_SHAPES, newState: UndoShape): void => {
-    const convertedChildren = newState.state.children.map(
-      convertUndoShapeToAllShapes
-    );
-    set(existingShape.state, {
-      ...cloneDeep(newState.state),
-      children: atom(convertedChildren),
-    });
+  (snapshot: ShapeSnapshot): void => {
+    const plane = get(PLANE_SHAPES_ATOM);
+    const existing = findShapeById(plane, snapshot.id);
+    if (!existing) return;
+
+    const restored = deserializeShape(snapshot);
+    set(existing.state, get(restored.state));
   };
 
-// ===== ACTION HANDLERS =====
+/* ============================================================
+   ACTION HANDLERS
+============================================================ */
+
 const handleRedoCreate =
   (get: Getter, set: Setter) =>
-  (shapes: UndoShape[]): void => {
-    const newShapes = shapes.map(convertUndoShapeToAllShapes);
-    const currentShapes = get(ALL_SHAPES_ATOM);
-    set(ALL_SHAPES_ATOM, [...currentShapes, ...newShapes]);
+  (shapes: ShapeSnapshot[]): void => {
+    const created = shapes.map(deserializeShape);
+    set(ALL_SHAPES_ATOM, [...get(ALL_SHAPES_ATOM), ...created]);
   };
 
 const handleRedoDelete =
   (get: Getter, set: Setter) =>
-  (shapes: UndoShape[]): void => {
+  (shapes: ShapeSnapshot[]): void => {
     const remover = removeShapeCompletely(get, set);
-    shapes.forEach((shape) => remover(shape.id));
+    shapes.forEach((s) => remover(s.id));
   };
 
 const handleRedoUpdate =
   (get: Getter, set: Setter) =>
-  (shapes: UndoShape[]): void => {
-    const currentShapes = get(PLANE_SHAPES_ATOM);
-    const updater = updateExistingShape(get, set);
-    shapes.forEach((element) => {
-      const existingShape = findShapeById(currentShapes, element.id);
-      if (existingShape) updater(existingShape, element);
-    });
+  (shapes: ShapeSnapshot[]): void => {
+    shapes.forEach(updateExistingShape(get, set));
   };
 
 const handleRedoMove =
   (get: Getter, set: Setter) =>
-  (shapes: UndoShape[], prevShapes?: UndoShape[]): void => {
-    if (!prevShapes) return;
+  (shapes: ShapeSnapshot[], _prevShapes?: ShapeSnapshot[]): void => {
     const remover = removeShapeCompletely(get, set);
     const adder = addShapeToContainer(get, set);
 
-    shapes.forEach((currentShape, index) => {
-      const prevShape = prevShapes[index];
-      if (!currentShape || !prevShape) return;
-      remover(currentShape.id);
-      adder(currentShape, currentShape.state.parentId ?? null);
+    shapes.forEach((s) => {
+      remover(s.id);
+      adder(s, s.state.parentId);
     });
   };
 
 const handleRedoGrouping =
   (get: Getter, set: Setter) =>
-  (shapes: UndoShape[], prevShapes?: UndoShape[]): void => {
+  (shapes: ShapeSnapshot[], prevShapes?: ShapeSnapshot[]): void => {
     if (!prevShapes) return;
 
     const remover = removeShapeCompletely(get, set);
     const adder = addShapeToContainer(get, set);
 
-    // Remover los elementos originales (prevShapes)
-    prevShapes.forEach((shape) => {
-      remover(shape.id);
-    });
-
-    // Agregar el nuevo layout con los hijos agrupados (shapes)
-    shapes.forEach((shape) => {
-      adder(shape, shape.state.parentId ?? null);
-    });
+    prevShapes.forEach((s) => remover(s.id));
+    shapes.forEach((s) => adder(s, s.state.parentId));
   };
 
 const handleUndoCreate =
   (get: Getter, set: Setter) =>
-  (shapes: UndoShape[]): void => {
+  (shapes: ShapeSnapshot[]): void => {
     const remover = removeShapeCompletely(get, set);
-    shapes.forEach((shape) => remover(shape.id));
+    shapes.forEach((s) => remover(s.id));
   };
 
 const handleUndoDelete =
   (get: Getter, set: Setter) =>
-  (shapes: UndoShape[]): void => {
+  (shapes: ShapeSnapshot[]): void => {
     const adder = addShapeToContainer(get, set);
-    shapes.forEach((element) => {
-      adder(element, element.state.parentId ?? null);
-    });
+    shapes.forEach((s) => adder(s, s.state.parentId));
   };
 
 const handleUndoMove =
   (get: Getter, set: Setter) =>
-  (shapes: UndoShape[], prevShapes?: UndoShape[]): void => {
+  (_shapes: ShapeSnapshot[], prevShapes?: ShapeSnapshot[]): void => {
     if (!prevShapes) return;
+
     const remover = removeShapeCompletely(get, set);
     const adder = addShapeToContainer(get, set);
 
-    shapes.forEach((currentShape, index) => {
-      const prevShape = prevShapes[index];
-      if (!currentShape || !prevShape) return;
-      remover(currentShape.id);
-      adder(prevShape, prevShape.state.parentId ?? null);
+    prevShapes.forEach((s) => {
+      remover(s.id);
+      adder(s, s.state.parentId);
     });
   };
 
 const handleUndoGrouping =
   (get: Getter, set: Setter) =>
-  (shapes: UndoShape[], prevShapes?: UndoShape[]): void => {
+  (shapes: ShapeSnapshot[], prevShapes?: ShapeSnapshot[]): void => {
     if (!prevShapes) return;
 
     const remover = removeShapeCompletely(get, set);
     const adder = addShapeToContainer(get, set);
 
-    // Remover el layout agrupado (shapes)
-    shapes.forEach((shape) => {
-      remover(shape.id);
-    });
-
-    // Restaurar los elementos originales sin agrupar (prevShapes)
-    prevShapes.forEach((shape) => {
-      adder(shape, shape.state.parentId ?? null);
-    });
+    shapes.forEach((s) => remover(s.id));
+    prevShapes.forEach((s) => adder(s, s.state.parentId));
   };
 
-// ===== ATOMS =====
+/* ============================================================
+   ATOMS
+============================================================ */
+
 export const COUNT_UNDO_REDO = atom(
   (get) => get(get(CURRENT_PAGE).UNDOREDO.COUNT_UNDO_REDO),
-  (get, set, count: number) =>
-    set(get(CURRENT_PAGE).UNDOREDO.COUNT_UNDO_REDO, count)
+  (get, set, value: number) =>
+    set(get(CURRENT_PAGE).UNDOREDO.COUNT_UNDO_REDO, value)
 );
 
 export const LIST_UNDO_REDO = atom(
@@ -299,29 +362,31 @@ export const LIST_UNDO_REDO = atom(
 );
 
 export const NEW_UNDO_REDO = atom(null, (get, set, args: UndoShapeValues) => {
-  const currentList = get(LIST_UNDO_REDO);
-  const currentCount = get(COUNT_UNDO_REDO);
+  const list = get(LIST_UNDO_REDO);
+  const count = get(COUNT_UNDO_REDO);
 
-  const truncatedList = truncateListAtIndex(currentList, currentCount);
-  const newAction = createUndoRedoAction(get)(args);
-  const updatedList = [...truncatedList, newAction];
+  const truncated = truncateListAtIndex(list, count);
 
-  set(LIST_UNDO_REDO, updatedList);
-  set(COUNT_UNDO_REDO, updatedList.length);
+  const action: UndoRedoAction = {
+    id: uuidv4(),
+    type: args.type,
+    shapes: captureSnapshots(get)(args.shapes),
+    prevShapes: args.prevShapes
+      ? captureSnapshots(get)(args.prevShapes)
+      : undefined,
+  };
+
+  set(LIST_UNDO_REDO, [...truncated, action]);
+  set(COUNT_UNDO_REDO, truncated.length + 1);
 });
 
 export const UPDATE_UNDO_REDO = atom(null, (get, set) => {
-  const shapeIds = get(SELECTED_SHAPES_BY_IDS_ATOM);
-  const allShapes = get(PLANE_SHAPES_ATOM);
-  const selectedShapes = allShapes.filter((shape) =>
-    shapeIds.some((selectedId) => selectedId.id === shape.id)
-  );
-  set(NEW_UNDO_REDO, { type: "UPDATE", shapes: selectedShapes });
-});
+  const selected = get(SELECTED_SHAPES_BY_IDS_ATOM);
+  const plane = get(PLANE_SHAPES_ATOM);
 
-export const CAPTURE_MOVE_STATE = atom(null, (get, set, shapeIds: string[]) =>
-  captureShapesState(get)(shapeIds)
-);
+  const shapes = plane.filter((s) => selected.some((sel) => sel.id === s.id));
+  set(NEW_UNDO_REDO, { type: "UPDATE", shapes });
+});
 
 export const REDO_ATOM = atom(null, (get, set) => {
   const count = get(COUNT_UNDO_REDO);
@@ -331,24 +396,20 @@ export const REDO_ATOM = atom(null, (get, set) => {
   const action = list[count];
   if (!action) return;
 
-  const actionHandlers = {
-    CREATE: handleRedoCreate(get, set),
-    DELETE: handleRedoDelete(get, set),
-    UPDATE: handleRedoUpdate(get, set),
-    MOVE: (shapes: UndoShape[], prevShapes?: UndoShape[]) =>
-      handleRedoMove(get, set)(shapes, prevShapes),
-    GROUPING: (shapes: UndoShape[], prevShapes?: UndoShape[]) =>
-      handleRedoGrouping(get, set)(shapes, prevShapes),
+  const handlers: Record<
+    ActionType,
+    (shapes: ShapeSnapshot[], prevShapes?: ShapeSnapshot[]) => void
+  > = {
+    CREATE: (s) => handleRedoCreate(get, set)(s),
+    DELETE: (s) => handleRedoDelete(get, set)(s),
+    UPDATE: (s) => handleRedoUpdate(get, set)(s),
+    MOVE: (s, p) => handleRedoMove(get, set)(s, p),
+    GROUPING: (s, p) => handleRedoGrouping(get, set)(s, p),
     INITIAL: () => {},
     CLEAR_ALL: () => {},
   };
 
-  const handler = actionHandlers[action.type];
-  if (action.type === "MOVE" || action.type === "GROUPING") {
-    handler(action.shapes, action.prevShapes);
-  } else {
-    handler(action.shapes);
-  }
+  handlers[action.type](action.shapes, action.prevShapes);
   set(COUNT_UNDO_REDO, count + 1);
 });
 
@@ -359,23 +420,19 @@ export const UNDO_ATOM = atom(null, (get, set) => {
   const action = get(LIST_UNDO_REDO)[count - 1];
   if (!action) return;
 
-  const actionHandlers = {
-    CREATE: handleUndoCreate(get, set),
-    DELETE: handleUndoDelete(get, set),
-    UPDATE: handleRedoUpdate(get, set),
-    MOVE: (shapes: UndoShape[], prevShapes?: UndoShape[]) =>
-      handleUndoMove(get, set)(shapes, prevShapes),
-    GROUPING: (shapes: UndoShape[], prevShapes?: UndoShape[]) =>
-      handleUndoGrouping(get, set)(shapes, prevShapes),
+  const handlers: Record<
+    ActionType,
+    (shapes: ShapeSnapshot[], prevShapes?: ShapeSnapshot[]) => void
+  > = {
+    CREATE: (s) => handleUndoCreate(get, set)(s),
+    DELETE: (s) => handleUndoDelete(get, set)(s),
+    UPDATE: (s) => handleRedoUpdate(get, set)(s),
+    MOVE: (s, p) => handleUndoMove(get, set)(s, p),
+    GROUPING: (s, p) => handleUndoGrouping(get, set)(s, p),
     INITIAL: () => {},
     CLEAR_ALL: () => {},
   };
 
-  const handler = actionHandlers[action.type];
-  if (action.type === "MOVE" || action.type === "GROUPING") {
-    handler(action.shapes, action.prevShapes);
-  } else {
-    handler(action.shapes);
-  }
+  handlers[action.type](action.shapes, action.prevShapes);
   set(COUNT_UNDO_REDO, count - 1);
 });
