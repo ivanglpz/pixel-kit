@@ -1,7 +1,7 @@
 import {
-  DELETE_PROJECT_ATOM,
   PROJECT_ID_ATOM,
   PROJECTS_ATOM,
+  REMOVE_PROJECT_TAB_ATOM,
   SET_PROJECTS_FROM_TABS,
 } from "@/editor/states/projects";
 import { userAtom } from "@/jotai/user";
@@ -17,7 +17,7 @@ export const TabsProjects = () => {
   const router = useRouter();
   const listProjects = useAtomValue(PROJECTS_ATOM);
   const [selected, setSelected] = useAtom(PROJECT_ID_ATOM);
-  const setDelete = useSetAtom(DELETE_PROJECT_ATOM);
+  const setDelete = useSetAtom(REMOVE_PROJECT_TAB_ATOM);
   const containerRef = useRef<HTMLDivElement>(null);
   const SET = useSetAtom(SET_PROJECTS_FROM_TABS);
   const user = useAtomValue(userAtom);
@@ -26,21 +26,7 @@ export const TabsProjects = () => {
     SET();
   }, [user.data?.user?.userId]);
   return (
-    <header
-      // className={css({
-      //   display: "grid",
-      //   alignItems: "center",
-      //   justifyContent: "center",
-      //   borderBottomWidth: "1px",
-      //   borderBottomStyle: "solid",
-      //   borderBottomColor: "border", // ← usa el semantic token
-      //   gridTemplateColumns: "36px 1fr 40px",
-      //   gap: "lg",
-      //   paddingLeft: "lg",
-      //   paddingRight: "lg",
-      // })}
-      className="grid grid-cols-[33px_1fr_40px] gap-4 border-b border-border  p-2 h-12"
-    >
+    <header className="grid grid-cols-[33px_1fr_40px] gap-4 border-b border-border  p-2 h-12">
       <section className="flex flex-row items-center justify-center gap-4">
         <button
           onClick={() => {
