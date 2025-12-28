@@ -1,3 +1,4 @@
+import { constants } from "@/editor/constants/color";
 import {
   BUILD_PROJECS_FROM_TABS,
   PROJECT_ID_ATOM,
@@ -35,9 +36,24 @@ export const TabsProjects = () => {
           onClick={() => {
             router.push("/app");
           }}
-          className=" w-full h-full flex items-center justify-center  bg-neutral-150 p-2 rounded-sm cursor-pointer dark:bg-neutral-700"
+          // className=" w-full h-full flex items-center justify-center  bg-blue-400 p-2 rounded-sm cursor-pointer "
+          className={css({
+            width: "100%",
+            height: "100%",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            backgroundColor: "primary",
+            padding: "5px",
+            cursor: "pointer",
+            borderRadius: "md",
+          })}
         >
-          <Home size={16} />
+          <Home
+            size={constants.icon.size + 6}
+            strokeWidth={2}
+            color={constants.theme.colors.white}
+          />
         </button>
       </section>
       <div
