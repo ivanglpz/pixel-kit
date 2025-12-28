@@ -34,6 +34,7 @@ import {
   UPDATE_SHAPES_IDS_ATOM,
 } from "./shape";
 import TOOL_ATOM, { IKeyTool, IShapeTool } from "./tool";
+import { NEW_UNDO_REDO } from "./undo-redo";
 
 // =====================================
 // Public types
@@ -364,7 +365,15 @@ export const DELETE_SHAPES_ATOM = atom(null, (get, set) => {
   });
 
   const SHAPE_IDS_ = get(CURRENT_PAGE).SHAPES.ID;
+  const selectedShapes = plane.filter((e) =>
+    selected.some((w) => w.id === e.id)
+  );
+
   set(SHAPE_IDS_, []);
+  set(NEW_UNDO_REDO, {
+    type: "DELETE",
+    shapes: selectedShapes,
+  });
 });
 
 /**
