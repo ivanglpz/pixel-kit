@@ -63,7 +63,7 @@ export const Profile = () => {
         <DropdownMenuTrigger>
           <div className="flex items-center justify-center cursor-pointer">
             <img
-              src={user?.data?.user?.photoUrl || ""}
+              src={user?.data?.user?.photoUrl || "./default_bg.png"}
               alt="Avatar"
               className="w-8 h-8 rounded-full object-cover"
             />
@@ -73,7 +73,7 @@ export const Profile = () => {
         <DropdownMenuContent className="w-56" align="end">
           <DropdownMenuLabel className="flex items-center gap-2">
             <img
-              src={user?.data?.user?.photoUrl || ""}
+              src={user?.data?.user?.photoUrl || "./default_bg.png"}
               alt="Avatar"
               className="w-8 h-8 rounded-full object-cover"
             />
