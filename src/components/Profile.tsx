@@ -34,18 +34,23 @@ export const Profile = () => {
             <img
               src={user?.data?.user?.photoUrl || ""}
               alt="Avatar"
-              className="w-8 h-8 rounded-full"
+              className="w-8 h-8 rounded-full object-cover"
             />
           </div>
         </DropdownMenuTrigger>
 
         <DropdownMenuContent className="w-56" align="end">
-          <DropdownMenuLabel className="flex gap-2">
+          <DropdownMenuLabel className="flex items-center gap-2">
+            <img
+              src={user?.data?.user?.photoUrl || ""}
+              alt="Avatar"
+              className="w-8 h-8 rounded-full object-cover"
+            />
             <div className="flex flex-col">
               <p className=" font-bold">
                 {user.data?.user?.fullName || "User"}
               </p>
-              <p>{user.data?.user?.email}</p>
+              <p className="opacity-75">{user.data?.user?.email}</p>
             </div>
           </DropdownMenuLabel>
 
