@@ -2,7 +2,7 @@ import { IProject } from "@/db/schemas/types";
 import { userAtom } from "@/jotai/user";
 import { atom } from "jotai";
 import { atomWithStorage } from "jotai/utils";
-import { SET_PROJECTS_FROM_TABS } from "./projects";
+import { BUILD_PROJECS_FROM_TABS } from "./projects";
 
 export const TABS_ID = "tabs_app";
 
@@ -26,5 +26,5 @@ export const ADD_TAB_ATOM = atom(null, (get, set, args: IProject) => {
     ...FIND_TAB,
     { ...args, userId: user?.data?.user?.userId || "" },
   ]);
-  set(SET_PROJECTS_FROM_TABS);
+  set(BUILD_PROJECS_FROM_TABS);
 });

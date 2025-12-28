@@ -209,7 +209,7 @@ const buildProjectAtom = async (item: TabsProps): Promise<IPROJECT | null> => {
   }
 };
 
-export const SET_PROJECTS_FROM_TABS = atom(null, async (get, set) => {
+export const BUILD_PROJECS_FROM_TABS = atom(null, async (get, set) => {
   const projectsStore = get(GET_TABS_BY_USER);
   const listProjects = get(PROJECTS_ATOM);
   const searchProjectsLoaded = projectsStore.filter((p) =>
