@@ -86,7 +86,7 @@ const Close = ({ onClose }: CloseProps) => {
         },
       })}
     >
-      <X size={constants.icon.size} />
+      <X size={constants.icon.size + 5} />
     </button>
   );
 };
@@ -119,6 +119,13 @@ type ContainerProps = {
   children: ReactNode;
   fullWidth?: boolean;
   fullHeight?: boolean;
+};
+const ContainerArea = ({ children }: { children: ReactNode }) => {
+  return (
+    <div className="h-auto w-auto" onClick={(e) => e?.stopPropagation()}>
+      {children}
+    </div>
+  );
 };
 const Container = ({ children, fullWidth, fullHeight }: ContainerProps) => {
   return (
@@ -157,4 +164,5 @@ export const Dialog = {
   Header,
   Container,
   Close,
+  ContainerArea,
 };

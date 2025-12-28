@@ -11,11 +11,9 @@ import { base64ToFile } from "@/utils/base64toFile";
 import { useMutation } from "@tanstack/react-query";
 import { useFormik } from "formik";
 import { useAtomValue } from "jotai";
-import { useRouter } from "next/router";
 import { useRef } from "react";
 import { toast } from "sonner";
-const AccountSettings: NextPageWithLayout = () => {
-  const router = useRouter();
+export const AccountSettings: NextPageWithLayout = () => {
   const user = useAtomValue(userAtom);
   const inputRef = useRef<HTMLInputElement>(null);
   const handleFiles = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -124,6 +122,8 @@ const AccountSettings: NextPageWithLayout = () => {
             value={formik.values.fullName}
             onChange={formik.handleChange}
             name="fullName"
+            autoComplete="off"
+            autoCorrect="off"
           />
         </div>
       </div>
@@ -144,5 +144,3 @@ const AccountSettings: NextPageWithLayout = () => {
     </section>
   );
 };
-AccountSettings.layout = "Settings";
-export default AccountSettings;
