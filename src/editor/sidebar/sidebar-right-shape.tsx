@@ -61,6 +61,8 @@ import { ShapeBase } from "../shapes/types/shape.base";
 import { ShapeState } from "../shapes/types/shape.state";
 import { PROJECT_ID_ATOM } from "../states/projects";
 
+import { useDelayedExecutor } from "../hooks/useDelayExecutor";
+import { UPDATE_UNDO_REDO } from "../states/undo-redo";
 import { getObjectUrl } from "../utils/getObjectUrl";
 import { SVG } from "../utils/svg";
 import { ExportShape } from "./export-shape";
@@ -293,13 +295,22 @@ export const SectionHeader = ({
 export const useShapeUpdate = () => {
   const update = useSetAtom(SHAPE_UPDATE_ATOM);
   const { debounce } = useAutoSave();
+  const setUpdateUndoRedo = useSetAtom(UPDATE_UNDO_REDO);
+
+  const debounceControl = useDelayedExecutor({
+    callback: () => {
+      setUpdateUndoRedo();
+      debounce.execute();
+    },
+    timer: 500, // opcional
+  });
 
   return <K extends keyof ShapeState>(
     type: UpdatableKeys,
     value: Omit<ShapeBase[K], "id" | "tool" | "children" | "parentId">
   ) => {
     update({ type, value });
-    debounce.execute();
+    debounceControl.execute();
   };
 };
 
