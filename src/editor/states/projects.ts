@@ -9,7 +9,7 @@ import { IStageEvents } from "./event";
 import { MODE } from "./mode";
 import { IPageBase, IPageState, IShapeId } from "./pages";
 import { ALL_SHAPES, SHAPE_BASE_CHILDREN, WithInitialValue } from "./shapes";
-import { GET_PROJECTS_BY_USER, TABS_PERSIST_ATOM, TabsProps } from "./tabs";
+import { GET_TABS_BY_USER, TABS_PERSIST_ATOM, TabsProps } from "./tabs";
 import { IKeyTool } from "./tool";
 import { UndoRedoAction } from "./undo-redo";
 
@@ -210,7 +210,13 @@ const buildProjectAtom = async (item: TabsProps): Promise<IPROJECT | null> => {
 };
 
 export const SET_PROJECTS_FROM_TABS = atom(null, async (get, set) => {
-  const projectsStore = get(GET_PROJECTS_BY_USER) ?? [];
+  const projectsStore = get(GET_TABS_BY_USER) ?? [];
+  const listProjects = get(PROJECTS_ATOM);
+  const searchProjectsLoaded = projectsStore.filter((p) =>
+    listProjects.some((lp) => lp.ID === p._id)
+  );
+
+  if (searchProjectsLoaded.length === projectsStore.length) return;
 
   const results = await Promise.allSettled(projectsStore.map(buildProjectAtom));
 
@@ -296,7 +302,7 @@ export const GET_JSON_PROJECTS_ATOM = atom(null, (get, set) => {
     }),
   };
 });
-export const DELETE_PROJECT_ATOM = atom(null, (get, set, id: string) => {
+export const REMOVE_PROJECT_TAB_ATOM = atom(null, (get, set, id: string) => {
   const persistProjects = get(TABS_PERSIST_ATOM);
   const projects = get(PROJECTS_ATOM);
 
