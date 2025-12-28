@@ -166,7 +166,7 @@ const Container = ({ children, id }: { children: ReactNode; id?: string }) => {
           backgroundColor: "gray.800", // Fondo más claro para el selector
         },
         backgroundColor: "gray.100",
-        borderColor: "gray.200", // ← usa el semantic token
+        borderColor: "gray.150", // ← usa el semantic token
 
         borderRadius: "md",
         padding: "sm",

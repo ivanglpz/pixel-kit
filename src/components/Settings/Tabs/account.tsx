@@ -69,7 +69,7 @@ export const AccountSettings: NextPageWithLayout = () => {
   });
 
   return (
-    <section className="p-4 h-full overflow-y-scroll overflow-hidden">
+    <section className="p-4 h-full  overflow-hidden">
       <div className=" max-w-md flex flex-col gap-4">
         <div className="grid gap-2 wd">
           <Label>Avatar</Label>
