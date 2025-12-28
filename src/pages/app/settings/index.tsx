@@ -1,3 +1,3 @@
-import UserSettings from "./user";
+import AccountSettings from "./account";
 
-export default UserSettings;
+export default AccountSettings;
