@@ -449,8 +449,14 @@ export const MOVE_SHAPES_BY_ID = atom(null, (get, set, targetId: string) => {
     ...ref,
     parentId: targetShape.id,
   }));
-
+  const prevShapes = [...selectedShapes];
   set(UPDATE_SHAPES_IDS_ATOM, updatedRefs);
+  // Register MOVE for undo/redo
+  set(NEW_UNDO_REDO, {
+    type: "MOVE",
+    shapes: relocated,
+    prevShapes,
+  });
 });
 
 /**
