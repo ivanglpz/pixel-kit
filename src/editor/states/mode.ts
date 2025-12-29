@@ -17,7 +17,7 @@ import ALL_SHAPES_ATOM, {
   computeStageBounds,
   PLANE_SHAPES_ATOM,
 } from "./shapes";
-import { cloneShapeRecursive } from "./undo-redo";
+import { serializeShape } from "./undo-redo";
 
 export type MODE = "DESIGN_MODE";
 
@@ -143,7 +143,7 @@ export const CONFIG_ATOM = atom(
 export const GET_EXPORT_JSON = atom(null, (get) => {
   const selectedIds = get(SELECTED_SHAPES_BY_IDS_ATOM);
   const planeShapes = get(PLANE_SHAPES_ATOM);
-  const cloner = cloneShapeRecursive(get);
+  const cloner = serializeShape(get);
   const shapes = planeShapes
     .filter((shape) =>
       selectedIds.some(

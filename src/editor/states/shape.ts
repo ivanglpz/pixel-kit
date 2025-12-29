@@ -4,7 +4,7 @@ import { ShapeState } from "../shapes/types/shape.state";
 import { EVENT_ATOM } from "./event";
 import { CURRENT_PAGE, IShapeId } from "./pages";
 import { PLANE_SHAPES_ATOM } from "./shapes";
-import { UndoShape } from "./undo-redo";
+import { ShapeSnapshot } from "./undo-redo";
 
 const filterListId = (id: string, parentId: string | null) => {
   return (e: IShapeId) => e?.id === id && e?.parentId === parentId;
@@ -94,7 +94,7 @@ export const SHAPE_UPDATE_ATOM = atom(
   }
 );
 
-export const SHAPE_XD_DATA = atom(null, (get, set, args: UndoShape[]) => {
+export const SHAPE_XD_DATA = atom(null, (get, set, args: ShapeSnapshot[]) => {
   const planeShapes = get(PLANE_SHAPES_ATOM);
   for (const element of args) {
     const find_shape = planeShapes.find((e) => e.id === element.id);

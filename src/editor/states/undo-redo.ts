@@ -108,7 +108,7 @@ const atomOrValueToJson = (get: Getter, value: unknown): JsonValue => {
    SERIALIZATION (RUNTIME -> SNAPSHOT)
 ============================================================ */
 
-const serializeShape =
+export const serializeShape =
   (get: Getter) =>
   (shape: ALL_SHAPES): ShapeSnapshot => {
     const st = get(shape.state);
