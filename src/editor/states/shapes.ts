@@ -632,6 +632,11 @@ export const GROUP_SHAPES_IN_LAYOUT = atom(null, (get, set) => {
   // Reset selection and select only the new layout.
   set(RESET_SHAPES_IDS_ATOM);
   set(UPDATE_SHAPES_IDS_ATOM, [{ id: newLayoutId, parentId: firstParentId }]);
+  set(NEW_UNDO_REDO, {
+    type: "GROUPING",
+    shapes: [newLayoutShape], // Estado DESPUÉS (el layout con los hijos)
+    prevShapes: [...selectedShapes], // Estado ANTES (los elementos individuales)
+  });
 });
 
 // =====================================
