@@ -521,6 +521,11 @@ export const MOVE_SHAPES_TO_ROOT = atom(null, (get, set) => {
 
   // Append to root list.
   set(ALL_SHAPES_ATOM, get(ALL_SHAPES_ATOM).concat(relocated));
+  set(NEW_UNDO_REDO, {
+    type: "MOVE",
+    shapes: relocated,
+    prevShapes: [...selectedShapes],
+  });
 });
 
 /**
@@ -1030,6 +1035,16 @@ export const CREATE_SHAPE_ATOM = atom(null, (get, set, args: ShapeState) => {
 
     // Trigger flex re-layout for the parent container.
     set(flexLayoutAtom, { id: FIND_SHAPE.id });
+    set(NEW_UNDO_REDO, {
+      shapes: [
+        {
+          ...FIND_SHAPE,
+          state: atom(args),
+        },
+      ],
+      type: "CREATE",
+    });
+
     return;
   }
 
@@ -1041,6 +1056,10 @@ export const CREATE_SHAPE_ATOM = atom(null, (get, set, args: ShapeState) => {
   };
 
   set(ALL_SHAPES_ATOM, [...get(ALL_SHAPES_ATOM), newAllShape]);
+  set(NEW_UNDO_REDO, {
+    shapes: [newAllShape],
+    type: "CREATE",
+  });
 });
 
 export default ALL_SHAPES_ATOM;
