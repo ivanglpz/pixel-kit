@@ -46,53 +46,49 @@ export const ExportShape = () => {
         visible={showExportDialog}
         onClose={() => setShowExportDialog(false)}
       >
-        <Dialog.Container>
-          <Dialog.Header>
-            <p className={css({ fontWeight: "bold" })}>Export</p>
-            <Dialog.Close onClose={() => setShowExportDialog(false)} />
-          </Dialog.Header>
-          <section
-            className={css({
-              display: "flex",
-              flexDirection: "column",
-              gap: "md",
-            })}
-          >
-            <Input.Label text="Format" />
-            <Input.Container>
-              <Input.Select
-                options={Object.keys(formats).map((key, i) => ({
-                  id: String(i),
-                  label: key.replace("_", " "),
-                  value: key,
-                }))}
-                onChange={setFormat}
-                value={format}
-              />
-            </Input.Container>
+        <Dialog.ContainerArea>
+          <section className="flex flex-col w-[20dvw] h-[25dvh] rounded-lg p-4 gap-3  bg-neutral-100">
+            <Dialog.Header>
+              <p className={css({ fontWeight: "bold" })}>Export</p>
+              <Dialog.Close onClose={() => setShowExportDialog(false)} />
+            </Dialog.Header>
+            <section className="flex flex-col h-full">
+              <Input.Label text="Format" />
+              <Input.Container>
+                <Input.Select
+                  options={Object.keys(formats).map((key, i) => ({
+                    id: String(i),
+                    label: key.replace("_", " "),
+                    value: key,
+                  }))}
+                  onChange={setFormat}
+                  value={format}
+                />
+              </Input.Container>
+            </section>
+            <footer
+              className={css({
+                display: "flex",
+                flexDirection: "row",
+                gap: "lg",
+                justifyContent: "end",
+              })}
+            >
+              <Button.Secondary onClick={() => setShowExportDialog(false)}>
+                Cancel
+              </Button.Secondary>
+              <Button.Primary onClick={handleExport}>
+                {loading ? (
+                  <Loading color={constants.theme.colors.black} />
+                ) : (
+                  <>
+                    <File size={constants.icon.size} /> Export
+                  </>
+                )}
+              </Button.Primary>
+            </footer>
           </section>
-          <footer
-            className={css({
-              display: "flex",
-              flexDirection: "row",
-              gap: "lg",
-              justifyContent: "end",
-            })}
-          >
-            <Button.Secondary onClick={() => setShowExportDialog(false)}>
-              Cancel
-            </Button.Secondary>
-            <Button.Primary onClick={handleExport}>
-              {loading ? (
-                <Loading color={constants.theme.colors.black} />
-              ) : (
-                <>
-                  <File size={constants.icon.size} /> Export
-                </>
-              )}
-            </Button.Primary>
-          </footer>
-        </Dialog.Container>
+        </Dialog.ContainerArea>
       </Dialog.Provider>
 
       <p

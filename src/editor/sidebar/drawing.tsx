@@ -1,134 +1,24 @@
-import { Valid } from "@/components/valid";
 import { css } from "@stylespixelkit/css";
-import { useAtom, useAtomValue } from "jotai";
-import {
-  Blend,
-  Brush,
-  Eye,
-  EyeOff,
-  Minus,
-  PenTool,
-  Plus,
-  Ruler,
-  Square,
-  SquareDashed,
-} from "lucide-react";
-import { v4 as uuidv4 } from "uuid";
+import { useAtomValue } from "jotai";
+import { Blend, Square, SquareDashed } from "lucide-react";
 import { Input } from "../components/input";
 import { constants } from "../constants/color";
-import { IShape } from "../shapes/type.shape";
 import { DRAW_START_CONFIG_ATOM } from "../states/drawing";
 import TOOL_ATOM from "../states/tool";
-import { commonStyles, SectionHeader } from "./sidebar-right-shape";
+import {
+  commonStyles,
+  SectionHeader,
+  ShapeAtomButtonStroke,
+  ShapeInputColor,
+} from "./sidebar-right-shape";
 
 export const Drawing = () => {
   const tool = useAtomValue(TOOL_ATOM);
 
-  const [shape, setShape] = useAtom(DRAW_START_CONFIG_ATOM);
+  const shape = useAtomValue(DRAW_START_CONFIG_ATOM);
 
   if (!["DRAW", "LINE"].includes(tool)) return null;
 
-  // Manejadores para strokes
-  const handleAddStroke = () => {
-    setShape({
-      ...shape,
-
-      strokes: [
-        ...(shape.strokes || []),
-        { color: "#000000", visible: true, id: uuidv4() },
-      ],
-    });
-  };
-
-  const handleStrokeColorChange = (index: number, color: string) => {
-    const newStrokes = [...shape.strokes];
-    newStrokes[index].color = color;
-    setShape({
-      ...shape,
-
-      strokes: newStrokes,
-    });
-  };
-
-  const handleStrokeVisibilityToggle = (index: number) => {
-    const newStrokes = [...shape.strokes];
-    newStrokes[index].visible = !newStrokes[index].visible;
-    setShape({
-      ...shape,
-
-      strokes: newStrokes,
-    });
-  };
-
-  const handleStrokeRemove = (index: number) => {
-    const newStrokes = [...shape.strokes];
-    newStrokes.splice(index, 1);
-    setShape({
-      ...shape,
-
-      strokes: newStrokes,
-    });
-  };
-
-  // Manejadores para effects
-  const handleAddEffect = () => {
-    setShape({
-      ...shape,
-
-      effects: [
-        ...(shape.effects || []),
-        {
-          type: "shadow",
-          visible: true,
-          color: "#000",
-          id: uuidv4(),
-        },
-      ],
-    });
-  };
-
-  const handleEffectColorChange = (index: number, color: string) => {
-    const newEffects = [...(shape.effects ?? [])];
-    newEffects[index].color = color;
-    setShape({
-      ...shape,
-
-      effects: newEffects,
-    });
-  };
-
-  const handleEffectVisibilityToggle = (index: number) => {
-    const newEffects = [...(shape.effects ?? [])];
-    newEffects[index].visible = !newEffects[index].visible;
-    setShape({
-      ...shape,
-
-      effects: newEffects,
-    });
-  };
-
-  const handleEffectRemove = (index: number) => {
-    const newEffects = [...(shape.effects ?? [])];
-    newEffects.splice(index, 1);
-    setShape({
-      ...shape,
-
-      effects: newEffects,
-    });
-  };
-
-  // Manejadores para line styles
-  const handleLineStyleChange = (
-    lineJoin: IShape["lineJoin"],
-    lineCap: IShape["lineCap"]
-  ) => {
-    setShape({
-      ...shape,
-
-      lineJoin,
-      lineCap,
-    });
-  };
   return (
     <div
       className={`${css({
@@ -137,271 +27,90 @@ export const Drawing = () => {
         gap: "lg",
       })} `}
     >
-      {" "}
-      {/* SECCIÓN: STROKE - Bordes */}
-      <SectionHeader title="Stroke">
-        <button className={commonStyles.addButton} onClick={handleAddStroke}>
-          <Plus size={14} />
-        </button>
-      </SectionHeader>
-      {shape.strokes?.length ? (
-        <>
-          {/* Lista de strokes */}
-          {shape.strokes.map((stroke, index) => (
-            <div
-              key={`pixel-kit-shape-stroke-${shape.id}-${shape.tool}-${index}`}
-              className={commonStyles.threeColumnGrid}
-            >
-              <Input.Container
-                id={`pixel-kit-shape-stroke-${shape.id}-${shape.tool}-${index}`}
-              >
-                <Input.Grid>
-                  <Input.IconContainer>
-                    <Input.Color
-                      id={`pixel-kit-shape-stroke-${shape.id}-${shape.tool}-${index}`}
-                      value={stroke.color}
-                      onChange={(e) => handleStrokeColorChange(index, e)}
-                    />
-                  </Input.IconContainer>
-                  <Input.Label
-                    text={`#${stroke.color?.replace(/#/, "") ?? "ffffff"}`}
-                  />
-                </Input.Grid>
-              </Input.Container>
+      <SectionHeader title="Stroke"></SectionHeader>
 
-              <button
-                onClick={() => handleStrokeVisibilityToggle(index)}
-                className={commonStyles.iconButton}
-              >
-                {stroke.visible ? <Eye size={18} /> : <EyeOff size={18} />}
-              </button>
-              <button
-                onClick={() => handleStrokeRemove(index)}
-                className={commonStyles.iconButton}
-              >
-                <Minus size={18} />
-              </button>
-            </div>
-          ))}
-
-          <div className={commonStyles.twoColumnGrid}>
-            <Input.Container>
-              <Input.Grid>
-                <Input.IconContainer>
-                  <p
-                    className={css({
-                      fontWeight: 600,
-                      fontSize: "x-small",
-                    })}
-                  >
-                    W
-                  </p>
-                </Input.IconContainer>
-                <Input.withPause>
+      <section className={commonStyles.container}>
+        <ShapeInputColor
+          shape={shape}
+          type="strokeColor"
+          isGlobalUpdate={false}
+        />
+        <div className={commonStyles.twoColumnGrid}>
+          <Input.Container>
+            <Input.Grid>
+              <Input.IconContainer>
+                <p
+                  className={css({
+                    fontWeight: 600,
+                    fontSize: "x-small",
+                  })}
+                >
+                  W
+                </p>
+              </Input.IconContainer>
+              <Input.withPause>
+                <Input.withChange
+                  shape={shape}
+                  type="strokeWidth"
+                  isGlobalUpdate={false}
+                >
                   <Input.Number
                     min={0}
                     max={9999}
-                    step={1}
-                    value={shape.strokeWidth || 0}
-                    onChange={(v) =>
-                      setShape({
-                        ...shape,
-
-                        strokeWidth: v,
-                      })
-                    }
+                    step={["DRAW", "ICON"].includes(shape.tool) ? 0.1 : 1}
                   />
-                </Input.withPause>
-              </Input.Grid>
-            </Input.Container>
-            {/* Line Style Buttons */}
-            <div
-              className={css({
-                alignItems: "flex-end",
-                display: "grid",
-                gridTemplateColumns: "3",
-              })}
-            >
-              <button
-                onClick={() => handleLineStyleChange("round", "round")}
-                className={css({
-                  cursor: "pointer",
-                  width: 30,
-                  height: 30,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  borderWidth: "1px",
-                  borderStyle: "solid",
-                  borderRadius: "md",
-                })}
-                style={{
-                  backgroundColor:
-                    shape.lineJoin === "round" && shape.lineCap === "round"
-                      ? constants.theme.colors.background
-                      : "transparent",
-                  borderColor:
-                    shape.lineJoin === "round" && shape.lineCap === "round"
-                      ? constants.theme.colors.primary
-                      : "transparent", // ← usa el semantic token
-                }}
-              >
-                <Brush
-                  size={constants.icon.size}
-                  strokeWidth={constants.icon.strokeWidth}
-                  color={
-                    shape.lineJoin === "round" && shape.lineCap === "round"
-                      ? constants.theme.colors.primary
-                      : constants.theme.colors.white
-                  }
-                />
-              </button>
-              <button
-                onClick={() => handleLineStyleChange("miter", "round")}
-                className={css({
-                  cursor: "pointer",
-                  width: 30,
-                  height: 30,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  borderWidth: "1px",
-                  borderStyle: "solid",
-                  borderRadius: "md",
-                })}
-                style={{
-                  backgroundColor:
-                    shape.lineJoin === "miter" && shape.lineCap === "round"
-                      ? constants.theme.colors.background
-                      : "transparent",
-                  borderColor:
-                    shape.lineJoin === "miter" && shape.lineCap === "round"
-                      ? constants.theme.colors.primary
-                      : "transparent", // ← usa el semantic token
-                }}
-              >
-                <PenTool
-                  size={constants.icon.size}
-                  strokeWidth={constants.icon.strokeWidth}
-                  color={
-                    shape.lineJoin === "miter" && shape.lineCap === "round"
-                      ? constants.theme.colors.primary
-                      : constants.theme.colors.white
-                  }
-                />
-              </button>
-              <button
-                onClick={() => handleLineStyleChange("miter", "butt")}
-                className={css({
-                  cursor: "pointer",
-                  width: 30,
-                  height: 30,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  borderWidth: "1px",
-                  borderStyle: "solid",
-                  borderRadius: "md",
-                })}
-                style={{
-                  backgroundColor:
-                    shape.lineJoin === "miter" && shape.lineCap === "butt"
-                      ? constants.theme.colors.background
-                      : "transparent",
-                  borderColor:
-                    shape.lineJoin === "miter" && shape.lineCap === "butt"
-                      ? constants.theme.colors.primary
-                      : "transparent", // ← usa el semantic token
-                }}
-              >
-                <Ruler
-                  size={constants.icon.size}
-                  strokeWidth={constants.icon.strokeWidth}
-                  color={
-                    shape.lineJoin === "miter" && shape.lineCap === "butt"
-                      ? constants.theme.colors.primary
-                      : constants.theme.colors.white
-                  }
-                />
-              </button>
-            </div>
+                </Input.withChange>
+              </Input.withPause>
+            </Input.Grid>
+          </Input.Container>
+          <div
+            className={css({
+              alignItems: "flex-end",
+              display: "grid",
+              gridTemplateColumns: "3",
+            })}
+          >
+            <ShapeAtomButtonStroke
+              values={["round", "round"]}
+              shape={shape}
+              type="brush"
+            />
+            <ShapeAtomButtonStroke
+              values={["miter", "round"]}
+              shape={shape}
+              type="penTool"
+            />
+            <ShapeAtomButtonStroke
+              values={["miter", "butt"]}
+              shape={shape}
+              type="ruler"
+            />
           </div>
+        </div>
+        {["FRAME", "IMAGE", "DRAW"].includes(shape.tool) ? (
           <Input.Container>
             <Input.Grid>
               <Input.IconContainer>
                 <SquareDashed size={constants.icon.size} />
               </Input.IconContainer>
               <Input.withPause>
-                <Input.Number
-                  min={0}
-                  step={1}
-                  onChange={(e) =>
-                    setShape({
-                      ...shape,
-
-                      dash: e,
-                    })
-                  }
-                  value={shape.dash || 0}
-                />
+                <Input.withChange
+                  shape={shape}
+                  type="dash"
+                  isGlobalUpdate={false}
+                >
+                  <Input.Number min={0} step={1} />
+                </Input.withChange>
               </Input.withPause>
             </Input.Grid>
           </Input.Container>
-        </>
-      ) : null}
-      {/* SECCIÓN: EFFECTS - Efectos */}
-      <SectionHeader title="Effects">
-        <button className={commonStyles.addButton} onClick={handleAddEffect}>
-          <Plus size={14} />
-        </button>
-      </SectionHeader>
-      {/* Lista de efectos */}
-      {shape.effects?.map?.((effect, index) => (
-        <section
-          key={`pixel-kit-shape-effect-${shape.id}-${shape.tool}-${index}`}
-          className={css({
-            display: "flex",
-            flexDirection: "column",
-            gap: "lg",
-          })}
-        >
-          {/* Controles principales del efecto */}
-          <div className={commonStyles.threeColumnGrid}>
-            <Input.Container
-              id={`pixel-kit-shape-effect-${shape.id}-${shape.tool}-${index}`}
-            >
-              <Input.Grid>
-                <Input.IconContainer>
-                  <Input.Color
-                    id={`pixel-kit-shape-effect-${shape.id}-${shape.tool}-${index}`}
-                    value={effect.color}
-                    onChange={(e) => handleEffectColorChange(index, e)}
-                  />
-                  {/* <Scaling size={constants.icon.size} /> */}
-                </Input.IconContainer>
-                <Input.Label
-                  text={`#${effect.color?.replace(/#/, "") ?? "ffffff"}`}
-                />
-              </Input.Grid>
-            </Input.Container>
+        ) : null}
+      </section>
 
-            <button
-              onClick={() => handleEffectVisibilityToggle(index)}
-              className={commonStyles.iconButton}
-            >
-              {effect.visible ? <Eye size={18} /> : <EyeOff size={18} />}
-            </button>
+      <SectionHeader title="Shadow"></SectionHeader>
 
-            <button
-              onClick={() => handleEffectRemove(index)}
-              className={commonStyles.iconButton}
-            >
-              <Minus size={18} />
-            </button>
-          </div>
-        </section>
-      ))}
-      <Valid isValid={shape.effects.length > 0}>
+      <section className={commonStyles.container}>
+        <ShapeInputColor shape={shape} type="shadowColor" />
         <div
           className={css({
             display: "grid",
@@ -423,13 +132,13 @@ export const Drawing = () => {
                 </p>
               </Input.IconContainer>
               <Input.withPause>
-                <Input.Number
-                  step={1}
-                  value={shape.shadowOffsetX || 0}
-                  onChange={(v) => {
-                    setShape({ ...shape, shadowOffsetX: v });
-                  }}
-                />
+                <Input.withChange
+                  shape={shape}
+                  type="shadowOffsetX"
+                  isGlobalUpdate={false}
+                >
+                  <Input.Number step={1} />
+                </Input.withChange>
               </Input.withPause>
             </Input.Grid>
           </Input.Container>
@@ -445,14 +154,14 @@ export const Drawing = () => {
                   Y
                 </p>
               </Input.IconContainer>
-              <Input.withPause>
-                <Input.Number
-                  step={1}
-                  value={shape.shadowOffsetY}
-                  onChange={(e) => {
-                    setShape({ ...shape, shadowOffsetY: e });
-                  }}
-                />
+              <Input.withPause key={"test"}>
+                <Input.withChange
+                  shape={shape}
+                  type="shadowOffsetY"
+                  isGlobalUpdate={false}
+                >
+                  <Input.Number step={1} />
+                </Input.withChange>
               </Input.withPause>
             </Input.Grid>
           </Input.Container>
@@ -465,13 +174,13 @@ export const Drawing = () => {
                 />
               </Input.IconContainer>
               <Input.withPause>
-                <Input.Number
-                  step={1}
-                  onChange={(e) => {
-                    setShape({ ...shape, shadowBlur: e });
-                  }}
-                  value={shape.shadowBlur}
-                />
+                <Input.withChange
+                  shape={shape}
+                  type="shadowBlur"
+                  isGlobalUpdate={false}
+                >
+                  <Input.Number min={0} step={1} />
+                </Input.withChange>
               </Input.withPause>
             </Input.Grid>
           </Input.Container>
@@ -484,18 +193,18 @@ export const Drawing = () => {
                 />
               </Input.IconContainer>
               <Input.withPause>
-                <Input.Number
-                  step={1}
-                  onChange={(e) => {
-                    setShape({ ...shape, shadowOpacity: e });
-                  }}
-                  value={shape.shadowOpacity}
-                />
+                <Input.withChange
+                  shape={shape}
+                  type="shadowOpacity"
+                  isGlobalUpdate={false}
+                >
+                  <Input.Number min={0} max={1} step={0.1} />
+                </Input.withChange>
               </Input.withPause>
             </Input.Grid>
           </Input.Container>
         </div>
-      </Valid>
+      </section>
     </div>
   );
 };

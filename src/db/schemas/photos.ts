@@ -1,5 +1,7 @@
 import mongoose, { Document, model, Schema, Types } from "mongoose";
 
+export type PhotoType = "PUBLIC" | "PREVIEW";
+
 interface Photo extends Document {
   projectId: Types.ObjectId;
   url: string;
@@ -10,8 +12,10 @@ interface Photo extends Document {
 
   createdBy: Types.ObjectId;
   width: number;
-  name: string;
   height: number;
+  name: string;
+
+  type: PhotoType;
 }
 
 const PSchema = new Schema<Photo>(
@@ -50,7 +54,17 @@ const PSchema = new Schema<Photo>(
       type: Number,
       required: true,
     },
-    createdBy: { type: Schema.Types.ObjectId, ref: "users", required: true },
+    createdBy: {
+      type: Schema.Types.ObjectId,
+      ref: "users",
+      required: true,
+    },
+    type: {
+      type: String,
+      enum: ["PUBLIC", "PREVIEW"],
+      default: "PUBLIC",
+      index: true,
+    },
     createdAt: {
       type: Date,
       default: () => new Date(),

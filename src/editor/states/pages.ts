@@ -1,22 +1,29 @@
 import { atom, PrimitiveAtom } from "jotai";
 import { v4 as uuidv4 } from "uuid";
-import { IShape } from "../shapes/type.shape";
 import { canvasTheme } from "./canvas";
 import { MODE_ATOM } from "./mode";
 import { PROJECT_ATOM } from "./projects";
-import { ALL_SHAPES, ALL_SHAPES_CHILDREN, WithInitialValue } from "./shapes";
+import { ALL_SHAPES, SHAPE_BASE_CHILDREN, WithInitialValue } from "./shapes";
 import { UndoRedoAction } from "./undo-redo";
 
-export type IPageShapeIds = Pick<IShape, "id" | "parentId">;
+export type IShapeId = { id: string; parentId: string | null };
 
-export type IPage = {
+type Position = {
+  x: number;
+  y: number;
+};
+export type IPageState = {
   id: string;
   name: PrimitiveAtom<string> & WithInitialValue<string>;
   color: PrimitiveAtom<string> & WithInitialValue<string>;
   isVisible: PrimitiveAtom<boolean> & WithInitialValue<boolean>;
+  VIEWPORT: {
+    SCALE: PrimitiveAtom<Position> & WithInitialValue<Position>;
+    POSITION: PrimitiveAtom<Position> & WithInitialValue<Position>;
+  };
   SHAPES: {
     LIST: PrimitiveAtom<ALL_SHAPES[]> & WithInitialValue<ALL_SHAPES[]>;
-    ID: PrimitiveAtom<IPageShapeIds[]> & WithInitialValue<IPageShapeIds[]>;
+    ID: PrimitiveAtom<IShapeId[]> & WithInitialValue<IShapeId[]>;
   };
   UNDOREDO: {
     COUNT_UNDO_REDO: PrimitiveAtom<number> & WithInitialValue<number>;
@@ -25,13 +32,17 @@ export type IPage = {
   };
 };
 
-export type IPageJSON = {
+export type IPageBase = {
   id: string;
   name: string;
   color: string;
   isVisible: boolean;
   SHAPES: {
-    LIST: ALL_SHAPES_CHILDREN[];
+    LIST: SHAPE_BASE_CHILDREN[];
+  };
+  VIEWPORT: {
+    SCALE: Position;
+    POSITION: Position;
   };
 };
 export const GET_MODE = atom((get) => {
@@ -52,9 +63,34 @@ export const PAGES_ATOM = atom(
   (get) => {
     return get(get(GET_MODE).LIST);
   },
-  (_get, _set, newTool: IPage[]) => {
+  (_get, _set, newTool: IPageState[]) => {
     const toolAtom = _get(GET_MODE).LIST;
     _set(toolAtom, newTool);
+  }
+);
+
+export const POSITION_SCALE_ATOM = atom(
+  (get) => {
+    const CURRENT = get(CURRENT_PAGE);
+    return get(CURRENT.VIEWPORT.SCALE);
+  },
+  (get, set, newPosition: Position) => {
+    const CURRENT = get(CURRENT_PAGE);
+    set(CURRENT.VIEWPORT.SCALE, newPosition);
+  }
+);
+export const POSITION_PAGE_ATOM = atom(
+  (get) => {
+    const CURRENT = get(CURRENT_PAGE);
+    return get(CURRENT.VIEWPORT.POSITION);
+  },
+  (get, set, newPosition: Position | ((prev: Position) => Position)) => {
+    const CURRENT = get(CURRENT_PAGE);
+    if (typeof newPosition === "function") {
+      const prev = get(CURRENT.VIEWPORT.POSITION);
+      newPosition = newPosition(prev);
+    }
+    set(CURRENT.VIEWPORT.POSITION, newPosition);
   }
 );
 
@@ -84,13 +120,17 @@ export const PAGES_BY_TYPE_ATOM = atom((get) => {
 export const NEW_PAGE = atom(null, (get, set) => {
   const pages = get(PAGES_ATOM);
   // const pagesByType = pages.filter((p) => p.type === mode);
-  const newPage: IPage = {
+  const newPage: IPageState = {
     id: uuidv4(),
     name: atom(`Page ${pages.length + 1}`),
     color: atom(canvasTheme.dark),
+    VIEWPORT: {
+      SCALE: atom({ x: 1, y: 1 }),
+      POSITION: atom({ x: 0, y: 0 }),
+    },
     isVisible: atom(true),
     SHAPES: {
-      ID: atom<IPageShapeIds[]>([]),
+      ID: atom<IShapeId[]>([]),
       LIST: atom<ALL_SHAPES[]>([]),
     },
     UNDOREDO: {
