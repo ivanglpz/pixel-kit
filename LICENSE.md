@@ -1,47 +1,41 @@
 # License
 
-## Custom Non-Commercial License
+## Apache License 2.0 with Attribution Notice
 
 Copyright (c) 2025 Ivan Garcia
 
-All rights reserved.
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
 
 ---
 
-### Permissions
+## Attribution Requirement (Additional Notice)
 
-You are allowed to:
-- View the source code
-- Study the code for educational purposes
-- Fork the repository for non-commercial learning or experimentation
+This project was originally created and authored by **Ivan Garcia**.
 
----
+Any use, modification, or redistribution of this software **must**:
+- Retain this copyright notice.
+- Clearly acknowledge **Ivan Garcia** as the original creator in:
+  - Source code headers, or
+  - Project documentation (README, NOTICE file, or equivalent).
 
-### Restrictions
-
-You are NOT allowed to:
-- Use this code, in whole or in part, for commercial purposes
-- Sell, sublicense, or monetize this code
-- Use this code in a paid product or service
-- Claim authorship or ownership of this code
-- Remove or alter copyright notices
-- Redistribute this code as your own work
+This attribution requirement is consistent with Apache License 2.0
+Section 4 (Redistribution) and does not restrict commercial or open
+source usage, but preserves authorship recognition.
 
 ---
 
-### Attribution
+## NOTICE
 
-This code is the intellectual property of **Ivan Garcia**.  
-Any permitted use must retain this attribution.
-
----
-
-### No Warranty
-
-This software is provided "as is", without warranty of any kind, express or implied.
-
----
-
-### Enforcement
-
-Unauthorized commercial use or misrepresentation of ownership is strictly prohibited.
+PixelKit Design Editor  
+Original Author: Ivan Garcia  
+Year: 2025
