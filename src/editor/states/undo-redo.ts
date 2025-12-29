@@ -375,6 +375,7 @@ export const NEW_UNDO_REDO = atom(null, (get, set, args: UndoShapeValues) => {
       ? captureSnapshots(get)(args.prevShapes)
       : undefined,
   };
+  console.log(action);
 
   set(LIST_UNDO_REDO, [...truncated, action]);
   set(COUNT_UNDO_REDO, truncated.length + 1);
