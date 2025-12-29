@@ -1,66 +1,68 @@
-import { PrimitiveAtom, useAtomValue, useSetAtom } from "jotai";
-import { useEffect, useMemo } from "react";
+import { useAtomValue, useSetAtom } from "jotai";
+import { useEffect } from "react";
 import { Group } from "react-konva";
 import ShapeBox from "./box.shape";
 import { flexLayoutAtom } from "./layout-flex";
 import { Shapes } from "./shapes";
-import {
-  FCShapeWEvents,
-  IShape,
-  IShapeEvents,
-  WithInitialValue,
-} from "./type.shape";
+import { FCShapeWEvents, IShapeEvents } from "./type.shape";
 
 export const SHAPE_FRAME = (props: IShapeEvents) => {
   const { shape: item } = props;
-  const box = useAtomValue(
-    item.state as PrimitiveAtom<IShape> & WithInitialValue<IShape>
-  );
 
+  const box = useAtomValue(item.state);
+
+  const x = useAtomValue(box.x);
+  const y = useAtomValue(box.y);
+  const width = useAtomValue(box.width);
+  const height = useAtomValue(box.height);
+  const isLocked = useAtomValue(box.isLocked);
+  const rotation = useAtomValue(box.rotation);
+  const visible = useAtomValue(box.visible);
   const childrens = useAtomValue(box.children);
+  const parentId = useAtomValue(box.parentId);
+
+  const isLayout = useAtomValue(box.isLayout);
+  const justifyContent = useAtomValue(box.justifyContent);
+  const alignItems = useAtomValue(box.alignItems);
+  const flexDirection = useAtomValue(box.flexDirection);
+  const flexWrap = useAtomValue(box.flexWrap);
+  const gap = useAtomValue(box.gap);
+  const isAllPadding = useAtomValue(box.isAllPadding);
+  const padding = useAtomValue(box.padding);
+  const paddingTop = useAtomValue(box.paddingTop);
+  const paddingRight = useAtomValue(box.paddingRight);
+  const paddingBottom = useAtomValue(box.paddingBottom);
+  const paddingLeft = useAtomValue(box.paddingLeft);
+  const fillContainerWidth = useAtomValue(box.fillContainerWidth);
+  const fillContainerHeight = useAtomValue(box.fillContainerHeight);
 
   const applyLayout = useSetAtom(flexLayoutAtom);
 
   useEffect(() => {
-    if (box.isLayout) {
+    if (isLayout) {
       applyLayout({ id: box.id });
     }
   }, [
-    box.isLayout,
-    box.justifyContent,
-    box.alignItems,
-    box.flexDirection,
-    box.flexWrap,
-    box.width,
-    box.height,
-    box.gap,
+    isLayout,
+    justifyContent,
+    alignItems,
+    flexDirection,
+    flexWrap,
+    width,
+    height,
+    gap,
+    isAllPadding,
+    padding,
+    paddingTop,
+    paddingRight,
+    paddingBottom,
+    paddingLeft,
+    fillContainerWidth,
+    fillContainerHeight,
     box.id,
-    box.isAllPadding,
-    box.padding,
-    box.paddingTop,
-    box.paddingRight,
-    box.paddingBottom,
-    box.paddingLeft,
-    box.fillContainerWidth,
-    box.fillContainerHeight,
-    childrens,
   ]);
 
-  if (!box.visible) return null;
-
-  const children = useMemo(
-    () =>
-      childrens?.map((item) => {
-        const Component = Shapes?.[item?.tool] as FCShapeWEvents;
-        return (
-          <Component
-            shape={item}
-            key={`pixel-group-shapes-${item?.id}-${item.tool}`}
-          />
-        );
-      }),
-    [childrens]
-  );
+  if (!visible) return null;
 
   return (
     <>
@@ -68,21 +70,29 @@ export const SHAPE_FRAME = (props: IShapeEvents) => {
 
       <Group
         id={box?.id}
-        parentId={box?.parentId}
-        x={box.x}
-        y={box.y}
-        width={box.width}
-        height={box.height}
-        listening={!box.isLocked}
-        rotation={box.rotation}
+        parentId={parentId}
+        x={x}
+        y={y}
+        width={width}
+        height={height}
+        listening={!isLocked}
+        rotation={rotation}
         clip={{
           x: 0,
           y: 0,
-          width: box.width,
-          height: box.height,
+          width,
+          height,
         }}
       >
-        {children}
+        {childrens?.map((child) => {
+          const Component = Shapes?.[child?.tool] as FCShapeWEvents;
+          return (
+            <Component
+              shape={child}
+              key={`pixel-group-shapes--${box.id}${child?.id}-${child.tool}`}
+            />
+          );
+        })}
       </Group>
     </>
   );

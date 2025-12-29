@@ -86,7 +86,7 @@ const Close = ({ onClose }: CloseProps) => {
         },
       })}
     >
-      <X size={constants.icon.size} />
+      <X size={constants.icon.size + 5} />
     </button>
   );
 };
@@ -120,6 +120,13 @@ type ContainerProps = {
   fullWidth?: boolean;
   fullHeight?: boolean;
 };
+const ContainerArea = ({ children }: { children: ReactNode }) => {
+  return (
+    <div className="h-auto w-auto" onClick={(e) => e?.stopPropagation()}>
+      {children}
+    </div>
+  );
+};
 const Container = ({ children, fullWidth, fullHeight }: ContainerProps) => {
   return (
     <div
@@ -133,9 +140,10 @@ const Container = ({ children, fullWidth, fullHeight }: ContainerProps) => {
         borderWidth: 1,
         borderColor: "gray.250",
         maxWidth: 600,
-        minWidth: 300,
-        width: fullWidth ? "100%" : "auto",
         maxHeight: 520,
+        minWidth: 450,
+        minHeight: 240,
+        width: fullWidth ? "100%" : "auto",
         height: fullHeight ? "100%" : "auto",
         gridAutoRows: "60px",
         transition: "opacity 0.3s ease, transform 0.3s ease",
@@ -144,6 +152,7 @@ const Container = ({ children, fullWidth, fullHeight }: ContainerProps) => {
           borderColor: "gray.700",
         },
       })}
+      style={{}}
       onClick={(e) => e?.stopPropagation()}
     >
       {children}
@@ -155,4 +164,5 @@ export const Dialog = {
   Header,
   Container,
   Close,
+  ContainerArea,
 };

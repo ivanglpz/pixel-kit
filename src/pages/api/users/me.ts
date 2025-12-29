@@ -11,6 +11,7 @@ type ResponseData =
         email: string;
         fullName: string;
         userId: string;
+        photoUrl: string | null;
       };
     }
   | {
@@ -58,6 +59,7 @@ export default async function handler(
         email: user.email,
         fullName: user.fullName,
         userId: user._id.toString(),
+        photoUrl: user.photoUrl || null,
       },
     });
   } catch (error) {

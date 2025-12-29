@@ -1,31 +1,11 @@
-import { UndoShape } from "@/editor/states/undo-redo";
+import { ShapeSnapshot } from "@/editor/states/undo-redo";
+import { decode, encode } from "@toon-format/toon";
 import { NextApiRequest, NextApiResponse } from "next";
 import OpenAI from "openai";
-import { Tool } from "openai/resources/responses/responses";
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
-
-const tools: Tool[] = [
-  {
-    strict: true,
-    type: "function",
-    name: "get_horoscope",
-    description: "Get today's horoscope for an astrological sign.",
-
-    parameters: {
-      type: "object",
-      properties: {
-        sign: {
-          type: "string",
-          description: "An astrological sign like Taurus or Aquarius",
-        },
-      },
-      required: ["sign"],
-    },
-  },
-];
 
 export default async function handler(
   req: NextApiRequest,
@@ -38,7 +18,7 @@ export default async function handler(
   try {
     const { prompt, shapes: defaultShapes } = req.body as {
       prompt: string;
-      shapes: UndoShape[];
+      shapes: ShapeSnapshot[];
     };
 
     if (!Array.isArray(defaultShapes)) {
@@ -51,174 +31,149 @@ export default async function handler(
 
     const shapes = JSON.parse(JSON.stringify(defaultShapes));
 
-    // const basePrompt = `
-    // # UI Generator Component Schema Guide
+    const toon = encode(shapes);
 
-    // Create UI components using the visual editor schema. Focus on understanding properties and their relationships for flexible component generation.
+    const baseprompt = `
+You are an assistant specialized in editing TOON (Token-Oriented Object Notation) data structures. Your task is to read the current TOON schema and transform it strictly according to user instructions while keeping the structure fully valid.
 
-    // ## Schema Structure Overview
+You must understand and respect the full definition of shape_props below. These definitions explain precisely what each property means and how it should be used
+Follow these rules:
+shape_props:
+  id: Unique UUID identifier for the shape.
+  label: Descriptive name used to identify the purpose or content of the shape.
+  tool: Shape type ("IMAGE", "TEXT", "FRAME", "DRAW", "ICON") describing its nature.
+  parentId: UUID of the parent shape to build hierarchy; can be null.
+  x: Numeric horizontal position of the shape.
+  y: Numeric vertical position of the shape.
+  copyX: Fixed numeric value used internally; must not be modified.
+  copyY: Fixed numeric value used internally; must not be modified.
+  offsetX: Immutable numeric offset used for relative calculations.
+  offsetY: Immutable numeric offset used for relative calculations.
+  offsetCopyX: Immutable numeric value used by the system.
+  offsetCopyY: Immutable numeric value used by the system.
+  rotation: Numeric angle defining the rotation of the shape.
+  width: Numeric width representing the horizontal size of the shape.
+  height: Numeric height representing the vertical size of the shape.
+  points: Immutable numeric array used to represent paths or drawn shapes.
+  visible: Boolean value that shows or hides the shape.
+  isLocked: Boolean value that prevents interactions or events on the shape.
+  opacity: Numeric value from 0 to 1 defining the transparency of the shape.
 
-    // ### Core Element Properties
-    // - id: Unique UUID string for element identification
-    // - tool: Component type ("FRAME"|"TEXT"|"IMAGE") - always UPPERCASE
-    // - state: Object containing all element properties and configuration
-    // - pageId: Page identifier for element association
-    // - parentId: UUID of parent element (null for root elements)
+  fills:
+    description: Array of fill objects defining how the shape is filled. Items can be added or removed.
+    item:
+      id: Unique UUID for each fill entry.
+      color: Hexadecimal string representing the fill color.
+      opacity: Numeric value from 0 to 1 defining fill opacity.
+      visible: Boolean value to show or hide this specific fill.
+      type: Fill type ("fill" or "image").
+      image:
+        src: Base64 string or https URL pointing to the image resource.
+        width: Numeric dimension of the image.
+        height: Numeric dimension of the image.
+        name: Descriptive name of the image resource.
 
-    // ### Universal State Properties
-    // - x, y: Position coordinates relative to parent container
-    // - width, height: Element dimensions (must be non-zero)
-    // - rotation: Rotation angle in degrees (default: 0)
-    // - opacity: Transparency level 0-1 (default: 1)
-    // - visible: Boolean visibility toggle (default: true)
-    // - isLocked: Boolean lock state for editing (default: false)
+  strokes:
+    description: Array of stroke properties defining borders or outlines.
+    item:
+      id: Unique UUID for the stroke.
+      color: Stroke color in hexadecimal format.
+      visible: Boolean that shows or hides the stroke.
+      strokesWidth: Numeric value representing the stroke thickness.
+      lineCap: Stroke cap style ("butt", "round", "square").
+      lineJoin: Stroke join style ("round", "bevel", "miter").
+      dash: Numeric value indicating dashed pattern.
 
-    // ### Layout System (Required for all FRAMEs)
-    // - isLayout: Always true for FRAME elements
-    // - flexDirection: "row" (horizontal) | "column" (vertical)
-    // - flexWrap: "wrap" (allow wrapping) | "nowrap" (single line)
-    // - alignItems: Cross-axis alignment
-    //   * "flex-start": Align to start
-    //   * "center": Center alignment
-    //   * "flex-end": Align to end
-    //   * "stretch": Fill available space
-    // - justifyContent: Main-axis alignment
-    //   * "flex-start": Pack to start
-    //   * "center": Center items
-    //   * "flex-end": Pack to end
-    //   * "space-between": Equal space between items
-    //   * "space-around": Equal space around items
-    // - gap: Space between child elements (numeric pixels)
-    // - padding: Internal spacing (numeric pixels)
+  effects:
+    description: Array that defines visual effects applied to the shape.
+    item:
+      id: Unique UUID for the effect.
+      type: Effect type ("shadow", "blur", "glow").
+      visible: Boolean enabling or disabling the effect.
+      color: Hexadecimal color applied to the effect.
+      shadowBlur: Numeric blur intensity for shadow effects.
+      shadowOffsetX: Numeric horizontal offset for shadows.
+      shadowOffsetY: Numeric vertical offset for shadows.
+      shadowOpacity: Numeric value from 0 to 1 defining shadow transparency.
 
-    // ### Padding System
-    // - padding: Uniform padding for all sides
-    // - paddingTop, paddingBottom, paddingLeft, paddingRight: Individual side padding
-    // - isAllPadding: Boolean indicating if padding is uniform
+  text: String containing the text content for TEXT shapes.
+  fontFamily: Font used by the text, default is "Roboto".
+  fontSize: Numeric font size.
+  fontStyle: Font style definition.
+  fontWeight: Weight of the font ("bold", "normal", "lighter", "bolder", "100", "900").
+  textDecoration: Fixed value "none", cannot be modified or removed.
+  align: Horizontal text alignment ("left", "center", "right", "justify").
+  verticalAlign: Vertical text alignment ("top", "middle", "bottom").
 
-    // ### Border Radius System
-    // - borderRadius: Uniform corner radius
-    // - borderTopLeftRadius, borderTopRightRadius, borderBottomLeftRadius, borderBottomRightRadius: Individual corners
-    // - isAllBorderRadius: Boolean indicating if radius is uniform
+  isLayout: Boolean that enables flex-like layout behavior for FRAME shapes.
+  flexDirection: Direction of flex distribution ("row", "column").
+  justifyContent: Horizontal alignment ("flex-start", "center", "flex-end", "space-between", "space-around").
+  alignItems: Vertical alignment ("flex-start", "center", "flex-end").
+  flexWrap: How children wrap ("nowrap", "wrap").
+  gap: Numeric spacing between child elements.
+  fillContainerWidth: Boolean that forces the shape to fill the available width.
+  fillContainerHeight: Boolean that forces the shape to fill the available height.
 
-    // ### Visual Properties
-    // - fills: Array of fill objects for backgrounds or images
-    //   * Structure: { visible: boolean, color: "#HEXCODE", opacity: number, type: "fill", id: "unique-string" }
-    //   * Structure: { visible: boolean, color: "#HEXCODE", opacity: number, type: "image", id: "unique-string", image:{ src:"https://...", width:100,height:100,name:"name.png"} }
-    // - strokes: Array of stroke objects for borders
-    //   * Structure: { visible: boolean, color: "#HEXCODE", id: "unique-string" }
-    // - effects: Array for shadows and other effects
-    //   * Shadow: { type: "shadow", id: "unique-string", visible:boolean, color:string }
+  borderRadius: General border radius applied to all corners.
+  isAllBorderRadius: Boolean that determines whether borderRadius applies to all corners.
+  borderTopLeftRadius: Individual radius for the top-left corner.
+  borderTopRightRadius: Individual radius for the top-right corner.
+  borderBottomRightRadius: Individual radius for the bottom-right corner.
+  borderBottomLeftRadius: Individual radius for the bottom-left corner.
 
-    // ### Container Properties
-    // - children: Array of nested elements
-    // - fillContainerWidth: Boolean for width filling behavior
-    // - fillContainerHeight: Boolean for height filling behavior
-    // - maxWidth, maxHeight: Maximum dimension constraints
-    // - minWidth, minHeight: Minimum dimension constraints
+  minWidth: Minimum width, immutable.
+  minHeight: Minimum height, immutable.
+  maxWidth: Maximum width, immutable.
+  maxHeight: Maximum height, immutable.
 
-    // ### Text Content
-    // - text: String content to display
-    // - fontSize: Font size in pixels
-    // - fontWeight: Weight specification
-    //   * "normal": Standard weight
-    //   * "bold": Bold text
-    //   * "lighter"|"bolder": Relative weights
-    //   * "100"|"200"|"300"|"400"|"500"|"600"|"700"|"800"|"900": Numeric weights
-    // - fontFamily: Font family name (default: system font)
-    // - fontStyle: Font style specification
+  isAllPadding: Boolean controlling whether padding is global or individual.
+  paddingTop: Numeric top padding.
+  paddingRight: Numeric right padding.
+  paddingBottom: Numeric bottom padding.
+  paddingLeft: Numeric left padding.
+  padding: Global padding applied to all sides.
 
-    // ### Text Alignment
-    // - align: Horizontal text alignment
-    //   * "left": Left-aligned text
-    //   * "center": Center-aligned text
-    //   * "right": Right-aligned text
-    //   * "justify": Justified text
-    // - verticalAlign: Vertical alignment within container
-    //   * "top": Align to top
-    //   * "middle": Center vertically
-    //   * "bottom": Align to bottom
+  children:
+    description: Recursive array where each element contains the same structure as shape_props.
 
-    // ### Text Styling
-    // - textDecoration: Text decoration ("underline"|"line-through"|"none")
-    // - color: Text color in hex format "#HEXCODE"
 
-    // ### Layout Properties (Inherited)
-    // - TEXT elements inherit standard positioning and sizing properties
-    // - No fills array needed (text color handled by color property)
-    // - Can have strokes for text outlines (optional)
+Rules:
+- Do not modify any id, parentId, fill.id, stroke.id, or effect.id.
+- Do not delete immutable fields or introduce new properties.
+- Do not restructure the hierarchy.
+- Only modify exactly what the user requests.
+- Output must be valid TOON data with the same structure.
+- Your response must contain only the transformed TOON and nothing else.
 
-    // ### Image Source
-    // - fills: Required array containing image fill object
-    //   * Must include: visible, color, opacity, type, id
-    //   * image object: { height: number, width: number, name: "filename.ext", src: "URL" }
-    //   * Use Lorem Picsum: "https://picsum.photos/WIDTH/HEIGHT"
-
-    // ### Image Sizing
-    // - width, height: Display dimensions (can differ from source dimensions)
-    // - Image maintains aspect ratio unless explicitly styled otherwise
-
-    // ### Preservation Rules
-    // - Never remove or replace existing fills
-    // - Only append new fills to existing array
-    // - Preserve all nested object properties completely
-
-    // ### Parent-Child Structure
-    // - parentId must match parent element's id
-    // - Child positioning (x, y) is relative to parent container
-    // - Children array contains nested elements
-    // - Layout properties of parent affect child positioning
-
-    // ### Sizing Relationships
-    // - Child elements constrained by parent dimensions
-    // - Padding reduces available space for children
-    // - Gap creates spacing between siblings
-    // - FlexDirection determines layout flow
-
-    // ### Color and Visual Hierarchy
-    // - fills array can contain multiple fill objects
-    // - Later fills in array appear on top
-    // - opacity affects entire element and children
-    // - Strokes appear on top of fills
-
-    // ### Planning Phase
-    // 1. Determine component type and purpose
-    // 2. Calculate required dimensions and positioning
-    // 3. Plan parent-child relationships and nesting
-    // 4. Define layout flow (flexDirection) and alignment
-    // 5. Specify colors, typography, and visual properties
-
-    // ### Implementation Rules
-    // - Generate unique UUIDs for new elements only
-    // - Preserve existing UUIDs and pageIds completely
-    // - Include all required properties with appropriate defaults
-    // - Ensure proper parent-child linking via parentId
-    // - Validate layout property combinations make sense
-
-    // ### Property Defaults
-    // - Numeric properties: Use 0 if unused
-    // - Boolean properties: Use false if inactive
-    // - String properties: Use empty string if unused
-    // - Arrays: Use empty array [] if no items
-    // - Required properties: Always include with valid values
-
-    // ### Always return a top-level array.
-    // ### Return only valid JSON. Do not include backticks, comments, explanations, or any extra text. The output must be ready to be parsed with JSON.parse().
-
-    // This schema enables creation of any UI component by understanding how properties interact and combining them effectively.
-    // `;
-
-    const userPrompt = `
-    Existing array: ${JSON.stringify(shapes)}
-    Instructions: ${prompt}
-    Return the updated array following all rules.
+Task:
+1. Read the current TOON data provided as (data).
+2. Apply the user instructions provided as (Instructions).
+3. Return only the transformed TOON content, with no explanations.
     `;
+
     const response = await openai.responses.create({
       model: "gpt-5",
-      tools,
+      input: [
+        {
+          role: "system",
+          content: baseprompt,
+        },
+        {
+          role: "user",
+          content: prompt,
+        },
+        {
+          role: "user",
+          content: toon,
+        },
+      ],
     });
 
-    return res.status(200).json({ message: "kek" });
+    const data = decode(response.output_text, {
+      expandPaths: "safe",
+    });
+
+    return res.status(200).json({ data });
   } catch (error) {
     console.error("OpenAI API error:", error);
     return res.status(500).json({
