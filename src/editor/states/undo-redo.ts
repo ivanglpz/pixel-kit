@@ -141,7 +141,7 @@ const serializeShape =
     };
   };
 
-const captureSnapshots =
+export const captureSnapshots =
   (get: Getter) =>
   (shapes: ALL_SHAPES[]): ShapeSnapshot[] =>
     shapes.map(serializeShape(get));
