@@ -381,8 +381,13 @@ export const DELETE_SHAPES_ATOM = atom(null, (get, set) => {
  */
 export const DELETE_ALL_SHAPES_ATOM = atom(null, (get, set) => {
   const SHAPE_IDS_ = get(CURRENT_PAGE).SHAPES.ID;
+  const currentShapes = get(PLANE_SHAPES_ATOM);
   set(SHAPE_IDS_, []);
   set(ALL_SHAPES_ATOM, []);
+  set(NEW_UNDO_REDO, {
+    type: "DELETE",
+    shapes: currentShapes,
+  });
 });
 
 // =====================================
