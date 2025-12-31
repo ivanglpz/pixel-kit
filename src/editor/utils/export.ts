@@ -167,6 +167,7 @@ const createNodeFromShape = async (
         crop,
         ...commonProps,
         ...getCommonShapeProps(shape, ctx),
+        fill: "transparent",
       });
     }
 
