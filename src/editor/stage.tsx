@@ -5,7 +5,6 @@ import Konva from "konva";
 import { KonvaEventObject } from "konva/lib/Node";
 import { ReactNode, useEffect, useRef, useState } from "react";
 import { Stage } from "react-konva";
-import { ChatTool } from "./components/chat";
 import { cursor_event, STAGE_IDS } from "./constants/stage";
 import { useEventStage } from "./hooks/useEventStage";
 import { Tools } from "./sidebar/Tools";
@@ -154,7 +153,6 @@ const PxStage = ({ children }: { children: ReactNode }) => {
         >
           {children}
         </Stage>
-        <ChatTool />
       </div>
     </section>
   );
