@@ -2,6 +2,7 @@
 import { IPhoto } from "@/db/schemas/types";
 import TOOL_ATOM, { IKeyTool, PAUSE_MODE_ATOM } from "@/editor/states/tool";
 import { uploadPhoto } from "@/services/photo";
+import { optimizeImageFile } from "@/utils/opt-img";
 import { useMutation } from "@tanstack/react-query";
 import { atom, useAtom, useAtomValue, useSetAtom } from "jotai";
 import Konva from "konva";
@@ -195,19 +196,24 @@ export const useEventStage = () => {
     },
   });
 
-  const createImageFromFile = (file: File) => {
+  const createImageFromFile = async (file: File): Promise<void> => {
     if (
       !["IMAGE/JPEG", "IMAGE/PNG", "IMAGE/GIF", "IMAGE/SVG+XML"].includes(
         file.type.toUpperCase()
       )
     ) {
-      toast.error("Invalid image format.");
+      toast.error("Invalid image format");
       return;
     }
-    toast.info("Uploading image...", {
-      duration: 6000,
+
+    toast.info("Optimizing image...", { duration: 4000 });
+
+    const optimizedFile = await optimizeImageFile({
+      file,
+      quality: 25,
     });
-    mutation.mutate(file);
+
+    mutation.mutate(optimizedFile);
   };
 
   const createTextFromClipboard = (text: string) => {
