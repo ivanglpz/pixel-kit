@@ -2,6 +2,7 @@ import { IProject } from "@/db/schemas/types";
 import { uploadPhotoPreview } from "@/services/photo";
 import { updateProject } from "@/services/projects";
 import { base64ToFile } from "@/utils/base64toFile";
+import { optimizeImageFile } from "@/utils/opt-img";
 import { useMutation } from "@tanstack/react-query";
 import { useSetAtom } from "jotai";
 import { toast } from "sonner";
@@ -18,7 +19,13 @@ export const useAutoSave = () => {
       const JSON_ = GET_JSON();
       const PREVIEW = await GET_PREVIEW();
       const formData = new FormData();
-      formData.append("image", base64ToFile(PREVIEW, "preview.png")); // usar el mismo nombre 'images'
+      formData.append(
+        "image",
+        await optimizeImageFile({
+          file: base64ToFile(PREVIEW, "preview.png"),
+          quality: 25,
+        })
+      ); // usar el mismo nombre 'images'
       formData.append("projectId", `${JSON_.projectId}`); // usar el mismo nombre 'images'
 
       const response = await uploadPhotoPreview(formData);

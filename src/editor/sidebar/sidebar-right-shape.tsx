@@ -61,6 +61,7 @@ import { ShapeBase } from "../shapes/types/shape.base";
 import { ShapeState } from "../shapes/types/shape.state";
 import { PROJECT_ID_ATOM } from "../states/projects";
 
+import { optimizeImageFile } from "@/utils/opt-img";
 import { useDelayedExecutor } from "../hooks/useDelayExecutor";
 import { UPDATE_UNDO_REDO } from "../states/undo-redo";
 import { getObjectUrl } from "../utils/getObjectUrl";
@@ -716,7 +717,12 @@ export const LayoutShapeConfig = () => {
         }
 
         const formData = new FormData();
-        formData.append("image", myImage); // usar el mismo nombre 'images'
+        const optimizedFile = await optimizeImageFile({
+          file: myImage,
+          quality: 25,
+        });
+
+        formData.append("image", optimizedFile); // usar el mismo nombre 'images'
         formData.append("projectId", `${PROJECT_ID}`); // usar el mismo nombre 'images'
 
         const response = await uploadPhoto(formData);
