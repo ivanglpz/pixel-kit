@@ -723,8 +723,8 @@ export const LayoutShapeConfig = () => {
       QueryListPhotos.refetch();
       setSelectedPhotos([]);
     },
-    onError: (error) => {
-      toast.error(error.message);
+    onError: (error: { response: { data: { error: string } } }) => {
+      toast.error(error.response?.data?.error);
     },
   });
 
@@ -926,7 +926,7 @@ export const LayoutShapeConfig = () => {
                 onChange={handleFileInput}
               />
 
-              <section className="content-start flex flex-row flex-wrap overflow-x-hidden overflow-y-scroll gap-2">
+              <section className="content-start flex flex-row flex-wrap overflow-x-hidden overflow-y-scroll gap-2 flex-1">
                 {QueryListPhotos.data?.map((photo) => {
                   const selected = isSelected(photo._id);
 
