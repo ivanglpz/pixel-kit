@@ -10,6 +10,53 @@ import { IShapeEvents } from "./type.shape";
 import { calculateCoverCrop } from "../utils/crop";
 import { flexLayoutAtom } from "./layout-flex";
 
+import { useState } from "react";
+
+type ImageSource = {
+  src?: string;
+  width?: number;
+  height?: number;
+};
+
+const PLACEHOLDER_SRC = "/placeholder.svg";
+const PLACEHOLDER_SIZE = 1200;
+
+function buildImage(
+  src: string,
+  width: number,
+  height: number,
+  onError?: () => void
+): HTMLImageElement {
+  const img = new Image();
+  img.crossOrigin = "Anonymous";
+  img.src = src;
+  img.width = width;
+  img.height = height;
+
+  if (onError) {
+    img.onerror = onError;
+  }
+
+  return img;
+}
+
+export function useKonvaImage(img: ImageSource): HTMLImageElement {
+  const [hasError, setHasError] = useState(false);
+
+  return useMemo(() => {
+    if (!img.src || hasError) {
+      return buildImage(PLACEHOLDER_SRC, PLACEHOLDER_SIZE, PLACEHOLDER_SIZE);
+    }
+
+    return buildImage(
+      img.src,
+      img.width ?? PLACEHOLDER_SIZE,
+      img.height ?? PLACEHOLDER_SIZE,
+      () => setHasError(true)
+    );
+  }, [img.src, img.width, img.height, hasError]);
+}
+
 export const ShapeImage = (props: IShapeEvents) => {
   const { shape: item } = props;
   const box = useAtomValue(item.state);
@@ -47,16 +94,7 @@ export const ShapeImage = (props: IShapeEvents) => {
   );
   const IMG = useAtomValue(box.image);
 
-  const RENDER_IMAGE = useMemo(() => {
-    const img = new Image();
-    if (!IMG?.src) return img;
-
-    img.src = IMG.src;
-    img.crossOrigin = "Anonymous";
-    img.width = IMG.width;
-    img.height = IMG.height;
-    return img;
-  }, [IMG?.src, IMG?.width, IMG?.height]);
+  const RENDER_IMAGE = useKonvaImage(IMG);
 
   // Configuración de crop para object-fit cover
   const cropConfig = useMemo(

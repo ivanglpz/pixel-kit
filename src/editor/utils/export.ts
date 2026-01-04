@@ -22,6 +22,9 @@ export type CTX_EXP = {
    Helpers
 ======================= */
 
+const PLACEHOLDER_SRC = "/placeholder.svg";
+const PLACEHOLDER_SIZE = 1200;
+
 const getChildren = (shape: ShapeState, ctx: CTX_EXP): ALL_SHAPES[] =>
   Array.isArray(ctx.get(shape.children)) ? ctx.get(shape.children) : [];
 
@@ -201,11 +204,27 @@ const createNodeFromShape = async (
           ...getCommonShapeProps(shape, ctx),
         });
       } catch {
+        const width = ctx.get(shape.width);
+        const height = ctx.get(shape.height);
+        const placeholderBase64 = await fetchAsBase64(PLACEHOLDER_SRC);
+        const placeholderImg = await loadImageFromBase64(
+          placeholderBase64,
+          PLACEHOLDER_SIZE,
+          PLACEHOLDER_SIZE
+        );
+
+        const crop = calculateCoverCrop(
+          PLACEHOLDER_SIZE,
+          PLACEHOLDER_SIZE,
+          width,
+          height
+        );
+
         return new Konva.Image({
-          width: ctx.get(shape.width),
-          height: ctx.get(shape.height),
-          image: new Image(),
+          image: placeholderImg,
+          crop,
           ...commonProps,
+          ...getCommonShapeProps(shape, ctx),
         });
       }
     }
