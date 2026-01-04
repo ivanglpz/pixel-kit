@@ -16,36 +16,24 @@ type ResponseData =
   | { message: string; data: unknown | null }
   | { error: string };
 
-const deleteCloudinaryFolderIfExists = async (
-  folder: string
-): Promise<void> => {
-  try {
-    const result = await cloudinary.api.resources({
-      type: "upload",
-      prefix: folder,
-      max_results: 1,
-    });
-
-    if (result.resources.length === 0) {
-      return;
-    }
-
-    await cloudinary.api.delete_resources_by_prefix(folder);
-
-    try {
-      await cloudinary.api.delete_folder(folder);
-    } catch {
-      // ignore: folder may not exist or already deleted
-    }
-  } catch {
-    // ignore Cloudinary failures (best-effort cleanup)
-  }
-};
-
 const deleteProjectPhotos = async (projectId: string): Promise<void> => {
-  const folder = `app/pixelkit/projects/${projectId}/photos`;
+  const photos = await PhotoSchema.find(
+    { projectId },
+    { cloudinaryPublicId: 1 }
+  );
 
-  await deleteCloudinaryFolderIfExists(folder);
+  const publicIds = photos.map((p) => p.cloudinaryPublicId).filter(Boolean);
+
+  if (publicIds.length > 0) {
+    try {
+      await cloudinary.api.delete_resources(publicIds, {
+        resource_type: "image",
+      });
+    } catch (error) {
+      // best-effort cleanup
+      console.error("Cloudinary bulk delete failed:", error);
+    }
+  }
 
   await PhotoSchema.deleteMany({ projectId });
 };
@@ -85,8 +73,10 @@ async function handler(
         .json({ error: "Not authorized to delete this project" });
     }
 
+    // 1. Delete all photos (Cloudinary + Mongo)
     await deleteProjectPhotos(id);
 
+    // 2. Delete project
     const deletedProject = await Project.findByIdAndDelete(id);
 
     return res.status(200).json({

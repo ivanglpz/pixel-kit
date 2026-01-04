@@ -39,7 +39,7 @@ export const Profile = () => {
           setDialogSettings(false);
         }}
       >
-        <Dialog.ContainerArea>
+        <Dialog.Area>
           <section className=" flex flex-col w-[52dvw] h-[70dvh] bg-neutral-100 dark:bg-neutral-800 p-4 rounded-lg border-1 overflow-hidden">
             <Dialog.Header>
               <p
@@ -57,7 +57,7 @@ export const Profile = () => {
             </Dialog.Header>
             <SettingsSection />
           </section>
-        </Dialog.ContainerArea>
+        </Dialog.Area>
       </Dialog.Provider>
       <DropdownMenu>
         <DropdownMenuTrigger>
