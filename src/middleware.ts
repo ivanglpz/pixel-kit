@@ -1,60 +1,48 @@
+import { jwtVerify } from "jose";
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 
+const SESSION_COOKIE = "accessToken";
+const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET!);
+
+const redirectToLogin = (request: NextRequest): NextResponse => {
+  const response = NextResponse.redirect(new URL("/login", request.url));
+  response.cookies.delete(SESSION_COOKIE);
+  return response;
+};
+
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
-  const accessToken = request.cookies.get("accessToken")?.value;
+  const token = request.cookies.get(SESSION_COOKIE)?.value;
   const isPrivateRoute = pathname.startsWith("/app");
 
-  // ✅ 1. Si es ruta privada (/app)
-  if (isPrivateRoute) {
-    if (!accessToken) {
-      // No hay token → mandar a login
-      return NextResponse.redirect(new URL("/login", request.url));
-    }
-
-    const isValid = await validateWithApi(accessToken, request);
-    if (!isValid) {
-      // Token inválido → mandar a login
-      return NextResponse.redirect(new URL("/login", request.url));
-    }
-
-    // Token válido → dejar pasar
-    return NextResponse.next();
+  // Sin token: permite acceso a rutas públicas
+  if (!token) {
+    return isPrivateRoute ? redirectToLogin(request) : NextResponse.next();
   }
 
-  // ✅ 2. Si es ruta pública (cualquier cosa que no sea /app)
-  if (accessToken) {
-    const isValid = await validateWithApi(accessToken, request);
-    if (isValid) {
-      // Usuario logueado → redirigir al dashboard
+  try {
+    // Verifica el JWT con jose
+    const { payload } = await jwtVerify(token, JWT_SECRET);
+
+    // Si está logueado y va a /login, redirecciona a /app
+    if (pathname === "/login") {
       return NextResponse.redirect(new URL("/app", request.url));
     }
-  }
 
-  // Público sin token o token inválido → dejar pasar
-  return NextResponse.next();
-}
-
-// ✅ Función que valida el token con tu endpoint
-async function validateWithApi(token: string, request: NextRequest) {
-  try {
-    const res = await fetch(`${request.nextUrl.origin}/api/users/me`, {
-      method: "GET",
-      headers: {
-        authorization: token,
-      },
-      cache: "no-store",
-    });
-
-    if (!res.ok) {
-      return false;
+    // Pasa datos del usuario en los headers
+    const headers = new Headers(request.headers);
+    headers.set("x-user-id", payload.sub as string);
+    if (payload.email) {
+      headers.set("x-user-email", payload.email as string);
     }
 
-    return true;
-  } catch (err) {
-    console.error("❌ Error validando con la API:", err);
-    return false;
+    return NextResponse.next({
+      request: { headers },
+    });
+  } catch (error) {
+    // Token inválido o expirado
+    return redirectToLogin(request);
   }
 }
 

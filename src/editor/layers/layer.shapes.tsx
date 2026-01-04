@@ -6,7 +6,7 @@ import { constants } from "../constants/color";
 import { useAutoSave } from "../hooks/useAutoSave";
 import { Shapes } from "../shapes/shapes";
 import { FCShapeWEvents } from "../shapes/type.shape";
-import { SHAPE_IDS_ATOM } from "../states/shape";
+import { SELECTED_SHAPES_BY_IDS_ATOM } from "../states/shape";
 import ALL_SHAPES_ATOM from "../states/shapes";
 import { UPDATE_UNDO_REDO } from "../states/undo-redo";
 
@@ -24,7 +24,7 @@ export const LayerShapes = () => {
   const ALL_SHAPES = useAtomValue(ALL_SHAPES_ATOM);
   const trRef = useRef<Konva.Transformer>(null);
   const lyRef = useRef<Konva.Layer>(null);
-  const selectedIds = useAtomValue(SHAPE_IDS_ATOM);
+  const selectedIds = useAtomValue(SELECTED_SHAPES_BY_IDS_ATOM);
   const setUpdateUndoRedo = useSetAtom(UPDATE_UNDO_REDO);
   const { debounce } = useAutoSave();
 

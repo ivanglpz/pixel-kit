@@ -1,16 +1,32 @@
 /* eslint-disable @next/next/no-img-element */
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuSeparator,
+  ContextMenuTrigger,
+} from "@/components/ui/context-menu";
 import { Button } from "@/editor/components/button";
+import { Dialog } from "@/editor/components/dialog";
 import { Input } from "@/editor/components/input";
+import { Loading } from "@/editor/components/loading";
 import { constants } from "@/editor/constants/color";
-import { PROJECT_ID_ATOM } from "@/editor/states/projects";
+import {
+  PROJECT_ID_ATOM,
+  REMOVE_PROJECT_TAB_ATOM,
+} from "@/editor/states/projects";
 import { ADD_TAB_ATOM } from "@/editor/states/tabs";
 import { fetchListOrgs } from "@/services/organizations";
-import { createProject, fetchListProjects } from "@/services/projects";
+import {
+  createProject,
+  deleteProject,
+  fetchListProjects,
+} from "@/services/projects";
 import { getTimeAgoString } from "@/utils/edited";
 import { css } from "@stylespixelkit/css";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useSetAtom } from "jotai";
-import { LayoutDashboard, Plus } from "lucide-react";
+import { BookOpenIcon, LayoutDashboard, Plus, Trash } from "lucide-react";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -21,7 +37,8 @@ const App: NextPageWithLayout = () => {
   const router = useRouter();
   const setSelected = useSetAtom(PROJECT_ID_ATOM);
   const setTabs = useSetAtom(ADD_TAB_ATOM);
-
+  const handleDeleteProject = useSetAtom(REMOVE_PROJECT_TAB_ATOM);
+  const [deleteDialog, setDeleteDialog] = useState<string | null>(null);
   const mutateOrgs = useMutation({
     mutationKey: ["orgs_user"],
     mutationFn: async () => fetchListOrgs(),
@@ -73,7 +90,25 @@ const App: NextPageWithLayout = () => {
       });
     },
   });
-
+  const mutateDelete = useMutation({
+    mutationFn: async (id: string) => {
+      await deleteProject(id);
+      return id;
+    },
+    onSuccess: (data) => {
+      handleDeleteProject(data);
+      QueryProjects.refetch();
+      toast.success("Project deleted successfully");
+      setDeleteDialog(null);
+    },
+    onError: (error) => {
+      toast.error("Failed to delete project", {
+        description:
+          error?.message ||
+          "There was an error deleting your project. Please try again.",
+      });
+    },
+  });
   useEffect(() => {
     mutateOrgs.mutate();
   }, []);
@@ -93,6 +128,48 @@ const App: NextPageWithLayout = () => {
         overflow: "hidden",
       })}
     >
+      <Dialog.Provider
+        visible={deleteDialog !== null}
+        onClose={() => setDeleteDialog(null)}
+      >
+        <Dialog.Area>
+          <section className="flex flex-col p-4 w-full h-full max-w-[340px] max-h-[220px] rounded-lg bg-neutral-100 dark:bg-neutral-800">
+            <Dialog.Header>
+              <p
+                className={css({
+                  fontWeight: "bold",
+                  paddingBottom: "lg",
+                })}
+              >
+                Delete Project
+              </p>
+              <Dialog.Close onClose={() => setDeleteDialog(null)} />
+            </Dialog.Header>
+            <section className="h-full w-full flex-1">
+              <p className="font-normal  text-sm">
+                Are you sure you want to delete this project?
+              </p>
+              <p className="text-sm">
+                This action <strong>cannot</strong> be undone.
+              </p>
+            </section>
+            <footer className="flex flex-row gap-4 justify-end  ">
+              <Button.Secondary onClick={() => setDeleteDialog(null)}>
+                Cancel
+              </Button.Secondary>
+              <Button.Danger onClick={() => mutateDelete.mutate(deleteDialog!)}>
+                {mutateDelete.isPending ? (
+                  <Loading color={constants.theme.colors.white} />
+                ) : (
+                  <>
+                    <Trash size={constants.icon.size} /> Delete
+                  </>
+                )}
+              </Button.Danger>
+            </footer>
+          </section>
+        </Dialog.Area>
+      </Dialog.Provider>
       <header
         className={css({
           display: "flex",
@@ -137,97 +214,87 @@ const App: NextPageWithLayout = () => {
           </Button.Primary>
         </div>
       </header>
-      <div
-        className={css({
-          height: "100%",
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
-          gridAutoRows: "244px",
-          gap: "xlg",
-          overflowY: "scroll",
-        })}
-      >
+      <div className="grid grid-cols-[repeat(auto-fill,minmax(320px,1fr))] gap-4 overflow-auto w-full">
         {QueryProjects?.data?.map((project) => {
           return (
-            <div
-              key={project?._id}
-              onClick={() => {
-                setTabs(project);
-                setSelected(project._id);
-                router.push(`/app/project/${project._id}`);
-              }}
-              className={css({
-                display: "grid",
-                gridTemplateRows: "160px 1fr",
-                borderRadius: "lg",
-                backgroundColor: "gray.50",
-                // _dark: {
-                //   backgroundColor: "gray.600",
-                // },
-                borderWidth: 1,
-                borderColor: "gray.150",
-                _dark: {
-                  borderColor: "gray.450",
-                  backgroundColor: "gray.700",
-                },
-              })}
-            >
-              <img
-                src={project?.previewUrl}
-                alt={project?.name}
-                className={css({
-                  height: "100%",
-                  width: "100%",
-                  objectFit: "contain",
-                  borderTopRadius: "lg",
-                  backgroundColor: "gray.100",
-                  _dark: {
-                    backgroundColor: "gray.600",
-                  },
-                })}
-              />
-              <div
-                className={css({
-                  padding: "lg",
-                  display: "grid",
-                  gridTemplateColumns: "30px 1fr",
-                  alignContent: "center",
-                  gap: "md",
-                })}
-              >
-                <div
-                  className={css({
-                    display: "flex",
-                    flexDirection: "column",
-                    justifyContent: "center",
-                  })}
-                >
-                  <LayoutDashboard size={25} />
-                </div>
-                <div
-                  className={css({
-                    display: "flex",
-                    flexDirection: "column",
-                  })}
-                >
-                  <p
+            <ContextMenu key={project?._id}>
+              <ContextMenuTrigger className="flex flex-col  border rounded-lg  hover:border-blue-400 hover:border ">
+                <img
+                  src={project?.previewUrl}
+                  alt={project?.name}
+                  width="100"
+                  height="20"
+                  className="object-contain h-[150px] w-full bg-gray-100 dark:bg-neutral-700 rounded-t-lg"
+                />
+                <div className={"p-4 flex flex-row gap-2 items-center"}>
+                  <div
                     className={css({
-                      fontSize: "sm",
-                      fontWeight: "bold",
+                      display: "flex",
+                      flexDirection: "column",
+                      justifyContent: "center",
                     })}
                   >
-                    {project?.name}
-                  </p>
-                  <p
+                    <LayoutDashboard size={25} />
+                  </div>
+                  <div
                     className={css({
-                      fontSize: "11px",
+                      display: "flex",
+                      flexDirection: "column",
                     })}
                   >
-                    {getTimeAgoString(project.updatedAt)}
-                  </p>
+                    <button
+                      onClick={() => {
+                        setTabs(project);
+                        setSelected(project._id);
+                        router.push(`/app/project/${project._id}`);
+                      }}
+                      className="p-0 flex flex-row items-start hover:underline cursor-pointer"
+                    >
+                      <p
+                        className={css({
+                          fontSize: "sm",
+                          fontWeight: "bold",
+                        })}
+                      >
+                        {project?.name}
+                      </p>
+                    </button>
+                    <p
+                      className={css({
+                        fontSize: "11px",
+                      })}
+                    >
+                      {getTimeAgoString(project.updatedAt)}
+                    </p>
+                  </div>
                 </div>
-              </div>
-            </div>
+              </ContextMenuTrigger>
+              <ContextMenuContent className="w-38">
+                <ContextMenuItem
+                  onClick={() => {
+                    setTabs(project);
+                    setSelected(project._id);
+                    router.push(`/app/project/${project._id}`);
+                  }}
+                >
+                  <BookOpenIcon
+                    size={constants.icon.size}
+                    color={constants.theme.colors.white}
+                  />
+                  <p>Open</p>
+                </ContextMenuItem>
+
+                <ContextMenuSeparator />
+                <ContextMenuItem onClick={() => setDeleteDialog(project._id)}>
+                  <Trash
+                    size={constants.icon.size}
+                    className="mr-2"
+                    color={constants.theme.colors["red.400"]}
+                  />
+                  <p className="text-red-500 hover:text-red-500">Delete</p>
+                </ContextMenuItem>
+              </ContextMenuContent>
+            </ContextMenu>
           );
         })}
       </div>

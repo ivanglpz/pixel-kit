@@ -20,7 +20,7 @@ export type IKeyMethods = Exclude<
   "MOVE" | "FRAME" | "WRITING" | "CLIP"
 >;
 
-export type IShapesKeys = Exclude<IKeyTool, "MOVE" | "CLIP">;
+export type IShapeTool = Exclude<IKeyTool, "MOVE" | "CLIP">;
 const TOOL_ATOM = atom(
   (get) => get(get(PROJECT_ATOM).TOOL),
   (_get, _set, newTool: IKeyTool) => {

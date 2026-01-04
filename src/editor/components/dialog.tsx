@@ -1,7 +1,7 @@
 import { css } from "@stylespixelkit/css";
 import { X } from "lucide-react";
 import dynamic from "next/dynamic";
-import {
+import React, {
   cloneElement,
   isValidElement,
   MouseEvent,
@@ -86,7 +86,7 @@ const Close = ({ onClose }: CloseProps) => {
         },
       })}
     >
-      <X size={constants.icon.size} />
+      <X size={constants.icon.size + 10} />
     </button>
   );
 };
@@ -120,6 +120,17 @@ type ContainerProps = {
   fullWidth?: boolean;
   fullHeight?: boolean;
 };
+const Area = ({ children }: { children: ReactNode }) => {
+  const enhanceChild = (child: ReactNode): ReactNode => {
+    if (!React.isValidElement(child)) return child;
+    return React.cloneElement(child as ReactElement, {
+      ...child.props,
+      onClick: (e: React.MouseEvent<HTMLDivElement, globalThis.MouseEvent>) =>
+        e?.stopPropagation(),
+    });
+  };
+  return <>{React.Children.map(children, enhanceChild)}</>;
+};
 const Container = ({ children, fullWidth, fullHeight }: ContainerProps) => {
   return (
     <div
@@ -133,9 +144,10 @@ const Container = ({ children, fullWidth, fullHeight }: ContainerProps) => {
         borderWidth: 1,
         borderColor: "gray.250",
         maxWidth: 600,
-        minWidth: 300,
-        width: fullWidth ? "100%" : "auto",
         maxHeight: 520,
+        minWidth: 450,
+        minHeight: 240,
+        width: fullWidth ? "100%" : "auto",
         height: fullHeight ? "100%" : "auto",
         gridAutoRows: "60px",
         transition: "opacity 0.3s ease, transform 0.3s ease",
@@ -144,6 +156,7 @@ const Container = ({ children, fullWidth, fullHeight }: ContainerProps) => {
           borderColor: "gray.700",
         },
       })}
+      style={{}}
       onClick={(e) => e?.stopPropagation()}
     >
       {children}
@@ -155,4 +168,5 @@ export const Dialog = {
   Header,
   Container,
   Close,
+  Area,
 };

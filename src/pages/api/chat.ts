@@ -1,4 +1,4 @@
-import { UndoShape } from "@/editor/states/undo-redo";
+import { ShapeSnapshot } from "@/editor/states/undo-redo";
 import { decode, encode } from "@toon-format/toon";
 import { NextApiRequest, NextApiResponse } from "next";
 import OpenAI from "openai";
@@ -18,7 +18,7 @@ export default async function handler(
   try {
     const { prompt, shapes: defaultShapes } = req.body as {
       prompt: string;
-      shapes: UndoShape[];
+      shapes: ShapeSnapshot[];
     };
 
     if (!Array.isArray(defaultShapes)) {

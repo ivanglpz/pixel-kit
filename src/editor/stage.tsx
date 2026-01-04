@@ -5,19 +5,26 @@ import Konva from "konva";
 import { KonvaEventObject } from "konva/lib/Node";
 import { ReactNode, useEffect, useRef, useState } from "react";
 import { Stage } from "react-konva";
-import { ChatTool } from "./components/chat";
 import { cursor_event, STAGE_IDS } from "./constants/stage";
 import { useEventStage } from "./hooks/useEventStage";
 import { Tools } from "./sidebar/Tools";
 import STAGE_CANVAS_BACKGROUND from "./states/canvas";
 import { EVENT_ATOM } from "./states/event";
 import { MOVING_MOUSE_BUTTON_ATOM } from "./states/moving";
+import { POSITION_PAGE_ATOM, POSITION_SCALE_ATOM } from "./states/pages";
 import { RESET_SHAPES_IDS_ATOM } from "./states/shape";
 import TOOL_ATOM, { PAUSE_MODE_ATOM } from "./states/tool";
 
 const PxStage = ({ children }: { children: ReactNode }) => {
   const containerRef = useRef<HTMLDivElement>(null);
-  const [containerSize, setContainerSize] = useState({ width: 1, height: 1 });
+
+  const [containerSize, setContainerSize] = useState({
+    width: 1,
+    height: 1,
+  });
+
+  const [scale, setScale] = useAtom(POSITION_SCALE_ATOM);
+  const [position, setPosition] = useAtom(POSITION_PAGE_ATOM);
 
   const [tool, setTool] = useAtom(TOOL_ATOM);
   const setPause = useSetAtom(PAUSE_MODE_ATOM);
@@ -25,6 +32,7 @@ const PxStage = ({ children }: { children: ReactNode }) => {
   const resetShapesIds = useSetAtom(RESET_SHAPES_IDS_ATOM);
   const background = useAtomValue(STAGE_CANVAS_BACKGROUND);
   const MOVING = useAtomValue(MOVING_MOUSE_BUTTON_ATOM);
+
   const { handleMouseDown, handleMouseUp, handleMouseMove, stageRef } =
     useEventStage();
 
@@ -65,40 +73,39 @@ const PxStage = ({ children }: { children: ReactNode }) => {
     const stage = stageRef.current;
     if (!stage) return;
 
-    const oldScale = stage.scaleX();
+    e.evt.preventDefault();
+
     const pointer = stage.getPointerPosition();
     if (!pointer) return;
 
     if (e.evt.ctrlKey || e.evt.metaKey) {
-      e.evt.preventDefault();
       const scaleBy = 1.05;
-      let newScale = e.evt.deltaY > 0 ? oldScale / scaleBy : oldScale * scaleBy;
-      newScale = Math.max(MIN_SCALE, Math.min(MAX_SCALE, newScale));
+      const oldScale = scale.x;
+
+      let nextScale =
+        e.evt.deltaY > 0 ? oldScale / scaleBy : oldScale * scaleBy;
+
+      nextScale = Math.max(MIN_SCALE, Math.min(MAX_SCALE, nextScale));
 
       const mousePointTo = {
-        x: (pointer.x - stage.x()) / oldScale,
-        y: (pointer.y - stage.y()) / oldScale,
+        x: (pointer.x - position.x) / oldScale,
+        y: (pointer.y - position.y) / oldScale,
       };
 
-      stage.scale({ x: newScale, y: newScale });
-
-      const newPos = {
-        x: pointer.x - mousePointTo.x * newScale,
-        y: pointer.y - mousePointTo.y * newScale,
+      const nextPosition = {
+        x: pointer.x - mousePointTo.x * nextScale,
+        y: pointer.y - mousePointTo.y * nextScale,
       };
 
-      stage.position(newPos);
-      stage.batchDraw();
-    } else {
-      e.evt.preventDefault();
-      const pos = stage.position();
-      const newPos = {
-        x: pos.x - e.evt.deltaX,
-        y: pos.y - e.evt.deltaY,
-      };
-      stage.position(newPos);
-      stage.batchDraw();
+      setScale({ x: nextScale, y: nextScale });
+      setPosition(nextPosition);
+      return;
     }
+
+    setPosition((prev) => ({
+      x: prev.x - e.evt.deltaX,
+      y: prev.y - e.evt.deltaY,
+    }));
   };
 
   return (
@@ -130,10 +137,13 @@ const PxStage = ({ children }: { children: ReactNode }) => {
           draggable={MOVING}
           width={containerSize.width}
           height={containerSize.height}
+          scale={scale}
+          x={position.x}
+          y={position.y}
           onMouseDown={handleMouseDown}
           onMousemove={handleMouseMove}
-          onWheel={handleWheel}
           onMouseup={handleMouseUp}
+          onWheel={handleWheel}
           onClick={handleClear}
           style={{
             width: "100%",
@@ -143,7 +153,6 @@ const PxStage = ({ children }: { children: ReactNode }) => {
         >
           {children}
         </Stage>
-        <ChatTool />
       </div>
     </section>
   );

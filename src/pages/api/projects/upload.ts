@@ -61,7 +61,6 @@ async function handler(
         });
       }
       try {
-        // Subida a Cloudinary
         const payload: UploadApiOptions = {
           use_filename: true,
           unique_filename: false,
@@ -69,19 +68,42 @@ async function handler(
           folder: `app/pixelkit/projects/${projectId}/photos`,
           resource_type: "image",
         };
+
         const result = await cloudinary.uploader.upload(file.filepath, payload);
 
-        // Crear documento en MongoDB
+        const cacheBust = Date.now();
+        const urlWithCache = `${result.secure_url}?v=${cacheBust}`;
+
         const newPhoto = await PhotoSchema.create({
           projectId: project._id,
-          url: result.secure_url,
-          mimeType: file.mimetype || "image/jpeg",
-          size: file.size || 0,
-          folder: payload.folder,
-          createdBy: req.userId,
+
+          // Core
+          name: file.originalFilename ?? result.original_filename,
+          url: urlWithCache,
+          secureUrl: result.secure_url,
+          mimeType: file.mimetype ?? `image/${result.format}`,
+          format: result.format,
+          size: result.bytes,
           width: result.width,
           height: result.height,
-          name: file.originalFilename,
+          folder: payload.folder,
+
+          createdBy: req.userId,
+          type: "PUBLIC",
+
+          // Cloudinary
+          cloudinaryPublicId: result.public_id,
+          cloudinaryAssetId: result.asset_id,
+          cloudinaryResourceType: result.resource_type,
+          cloudinaryVersion: result.version,
+          cloudinarySignature: result.signature,
+          cloudinaryOriginalFilename: result.original_filename,
+          cloudinaryAccessMode: result.access_mode,
+          cloudinaryEtag: result.etag,
+          tags: result.tags ?? [],
+          colors: result.colors,
+          metadata: result.metadata,
+          context: result.context,
         });
 
         return res.status(201).json({

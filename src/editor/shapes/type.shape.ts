@@ -1,8 +1,8 @@
 import { PrimitiveAtom } from "jotai";
 import { LineCap, LineJoin } from "konva/lib/Shape";
 import { FC } from "react";
-import { ALL_SHAPES, ALL_SHAPES_CHILDREN } from "../states/shapes";
-import { IShapesKeys } from "../states/tool";
+import { ALL_SHAPES } from "../states/shapes";
+import { IShapeTool } from "../states/tool";
 import {
   AlignItems,
   FlexDirection,
@@ -22,111 +22,117 @@ type FillImage = {
 };
 export type Fill = {
   id: string;
-  color: string;
-  opacity: number;
-  visible: boolean;
+  color: PrimitiveAtom<string>;
+  opacity: PrimitiveAtom<number>;
+  visible: PrimitiveAtom<boolean>;
   type: "fill" | "image";
   image: FillImage;
 };
 
 export type Stroke = {
   id: string;
-  color: string;
-  visible: boolean;
+  color: PrimitiveAtom<string>;
+  visible: PrimitiveAtom<boolean>;
 };
 
 export type Effect = {
   id: string;
   type: "shadow" | "blur" | "glow";
-  visible: boolean;
-  color: string;
+  visible: PrimitiveAtom<boolean>;
+  color: PrimitiveAtom<string>;
 };
+export type FontWeight =
+  | "bold"
+  | "normal"
+  | "lighter"
+  | "bolder"
+  | "100"
+  | "900";
+
+export type Align = "left" | "center" | "right" | "justify";
+export type VerticalAlign = "top" | "middle" | "bottom";
 
 export type IShape = {
   // Identity
   id: string;
-  label: string;
-  tool: IShapesKeys;
-  parentId: string | null;
+  label: PrimitiveAtom<string>;
+  tool: IShapeTool;
+  parentId: PrimitiveAtom<string | null>;
 
   // Position & Transform
-  x: number;
-  y: number;
-  copyX: number;
-  copyY: number;
-  offsetX: number;
-  offsetY: number;
-  offsetCopyX: number;
-  offsetCopyY: number;
-  rotation: number;
-  width: number;
-  height: number;
-  points: number[];
+  x: PrimitiveAtom<number>;
+  y: PrimitiveAtom<number>;
+  copyX: PrimitiveAtom<number>;
+  copyY: PrimitiveAtom<number>;
+  offsetX: PrimitiveAtom<number>;
+  offsetY: PrimitiveAtom<number>;
+  offsetCopyX: PrimitiveAtom<number>;
+  offsetCopyY: PrimitiveAtom<number>;
+  rotation: PrimitiveAtom<number>;
+  width: PrimitiveAtom<number>;
+  height: PrimitiveAtom<number>;
+  points: PrimitiveAtom<number[]>;
 
   // Visibility & Lock
-  visible: boolean;
-  isLocked: boolean;
-  opacity: number;
+  visible: PrimitiveAtom<boolean>;
+  isLocked: PrimitiveAtom<boolean>;
+  opacity: PrimitiveAtom<number>;
 
   // Fill & Stroke
-  fills: Fill[];
-  strokes: Stroke[];
-  strokeWidth: number;
-  lineCap: LineCap;
-  lineJoin: LineJoin;
-  dash: number;
+  fills: PrimitiveAtom<Fill[]>;
+  strokes: PrimitiveAtom<Stroke[]>;
+  strokeWidth: PrimitiveAtom<number>;
+  lineCap: PrimitiveAtom<LineCap>;
+  lineJoin: PrimitiveAtom<LineJoin>;
+  dash: PrimitiveAtom<number>;
 
   // Effects
-  effects: Effect[];
-  shadowBlur: number;
-  shadowOffsetX: number;
-  shadowOffsetY: number;
-  shadowOpacity: number;
+  effects: PrimitiveAtom<Effect[]>;
+  shadowBlur: PrimitiveAtom<number>;
+  shadowOffsetX: PrimitiveAtom<number>;
+  shadowOffsetY: PrimitiveAtom<number>;
+  shadowOpacity: PrimitiveAtom<number>;
 
   // Typography
-  text: string;
-  fontFamily: string;
-  fontSize: number;
-  fontStyle: string;
-  fontWeight: "bold" | "normal" | "lighter" | "bolder" | "100" | "900";
-  textDecoration?: string;
-  align: "left" | "center" | "right" | "justify";
-  verticalAlign: "top" | "middle" | "bottom";
+  text: PrimitiveAtom<string>;
+  fontFamily: PrimitiveAtom<string>;
+  fontSize: PrimitiveAtom<number>;
+  fontStyle: PrimitiveAtom<string>;
+  fontWeight: PrimitiveAtom<FontWeight>;
+  textDecoration: PrimitiveAtom<string>;
+  align: PrimitiveAtom<Align>;
+  verticalAlign: PrimitiveAtom<VerticalAlign>;
 
   // Layout
-  isLayout: boolean;
-  flexDirection: FlexDirection;
-  justifyContent: JustifyContent;
-  alignItems: AlignItems;
-  flexWrap: FlexWrap;
+  isLayout: PrimitiveAtom<boolean>;
+  flexDirection: PrimitiveAtom<FlexDirection>;
+  justifyContent: PrimitiveAtom<JustifyContent>;
+  alignItems: PrimitiveAtom<AlignItems>;
+  flexWrap: PrimitiveAtom<FlexWrap>;
   // visible: boolean;
-  gap: number;
-  fillContainerWidth: boolean;
-  fillContainerHeight: boolean;
+  gap: PrimitiveAtom<number>;
+  fillContainerWidth: PrimitiveAtom<boolean>;
+  fillContainerHeight: PrimitiveAtom<boolean>;
 
   // Border Radius
-  borderRadius: number;
-  isAllBorderRadius: boolean;
-  borderTopLeftRadius: number;
-  borderTopRightRadius: number;
-  borderBottomRightRadius: number;
-  borderBottomLeftRadius: number;
-  minWidth: number;
-  minHeight: number;
-  maxWidth: number;
-  maxHeight: number;
-  isAllPadding: boolean;
-  paddingTop: number;
-  paddingRight: number;
-  paddingBottom: number;
-  paddingLeft: number;
-  padding: number;
+  borderRadius: PrimitiveAtom<number>;
+  isAllBorderRadius: PrimitiveAtom<boolean>;
+  borderTopLeftRadius: PrimitiveAtom<number>;
+  borderTopRightRadius: PrimitiveAtom<number>;
+  borderBottomRightRadius: PrimitiveAtom<number>;
+  borderBottomLeftRadius: PrimitiveAtom<number>;
+  minWidth: PrimitiveAtom<number>;
+  minHeight: PrimitiveAtom<number>;
+  maxWidth: PrimitiveAtom<number>;
+  maxHeight: PrimitiveAtom<number>;
+  isAllPadding: PrimitiveAtom<boolean>;
+  paddingTop: PrimitiveAtom<number>;
+  paddingRight: PrimitiveAtom<number>;
+  paddingBottom: PrimitiveAtom<number>;
+  paddingLeft: PrimitiveAtom<number>;
+  padding: PrimitiveAtom<number>;
   // Children
-  children: PrimitiveAtom<ALL_SHAPES[]> & WithInitialValue<ALL_SHAPES[]>;
-};
-
-export type IShapeChildren = Omit<IShape, "children"> & {
-  children: ALL_SHAPES_CHILDREN[];
+  children: PrimitiveAtom<ALL_SHAPES[]>;
 };
 
 export type IShapeEvents = {
