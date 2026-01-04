@@ -47,7 +47,7 @@ export const ExportShape = () => {
         onClose={() => setShowExportDialog(false)}
       >
         <Dialog.Area>
-          <section className="flex flex-col w-[20dvw] h-[25dvh] rounded-lg p-4 gap-3  bg-neutral-100 dark:bg-neutral-800">
+          <section className="flex flex-col w-full h-full max-w-[320px] max-h-[250px] rounded-lg p-4 gap-3  bg-neutral-100 dark:bg-neutral-800">
             <Dialog.Header>
               <p className={css({ fontWeight: "bold" })}>Export</p>
               <Dialog.Close onClose={() => setShowExportDialog(false)} />

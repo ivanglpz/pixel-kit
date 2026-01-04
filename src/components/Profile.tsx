@@ -40,7 +40,7 @@ export const Profile = () => {
         }}
       >
         <Dialog.Area>
-          <section className=" flex flex-col w-[52dvw] h-[70dvh] bg-neutral-100 dark:bg-neutral-800 p-4 rounded-lg border-1 overflow-hidden">
+          <section className=" flex flex-col w-full h-full max-w-[800px] max-h-[620px] bg-neutral-100 dark:bg-neutral-800 p-4 rounded-lg border-1 overflow-hidden">
             <Dialog.Header>
               <p
                 className={css({

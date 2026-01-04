@@ -133,7 +133,7 @@ const App: NextPageWithLayout = () => {
         onClose={() => setDeleteDialog(null)}
       >
         <Dialog.Area>
-          <section className="flex flex-col p-4 w-[22dvw] h-[22dvh] rounded-lg bg-neutral-100 dark:bg-neutral-800">
+          <section className="flex flex-col p-4 w-full h-full max-w-[340px] max-h-[220px] rounded-lg bg-neutral-100 dark:bg-neutral-800">
             <Dialog.Header>
               <p
                 className={css({

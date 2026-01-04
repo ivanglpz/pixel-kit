@@ -1,7 +1,7 @@
 import { css } from "@stylespixelkit/css";
 import { X } from "lucide-react";
 import dynamic from "next/dynamic";
-import {
+import React, {
   cloneElement,
   isValidElement,
   MouseEvent,
@@ -121,11 +121,15 @@ type ContainerProps = {
   fullHeight?: boolean;
 };
 const Area = ({ children }: { children: ReactNode }) => {
-  return (
-    <div className="h-auto w-auto" onClick={(e) => e?.stopPropagation()}>
-      {children}
-    </div>
-  );
+  const enhanceChild = (child: ReactNode): ReactNode => {
+    if (!React.isValidElement(child)) return child;
+    return React.cloneElement(child as ReactElement, {
+      ...child.props,
+      onClick: (e: React.MouseEvent<HTMLDivElement, globalThis.MouseEvent>) =>
+        e?.stopPropagation(),
+    });
+  };
+  return <>{React.Children.map(children, enhanceChild)}</>;
 };
 const Container = ({ children, fullWidth, fullHeight }: ContainerProps) => {
   return (

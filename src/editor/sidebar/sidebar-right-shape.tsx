@@ -848,7 +848,7 @@ export const LayoutShapeConfig = () => {
         }}
       >
         <Dialog.Area>
-          <section className="flex flex-col p-4 w-[32dvw] h-[50dvh] rounded-lg bg-neutral-100 dark:bg-neutral-800">
+          <section className="flex flex-col p-4 w-full max-w-[540px] h-[520px] rounded-lg bg-neutral-100 dark:bg-neutral-800">
             <Dialog.Header>
               <p
                 className={css({
@@ -926,18 +926,7 @@ export const LayoutShapeConfig = () => {
                 onChange={handleFileInput}
               />
 
-              <section
-                className={css({
-                  display: "grid",
-                  gridTemplateColumns: "repeat(4, 1fr)", // válido en PandaCSS
-                  gap: "4", // usa tokens definidos en tu config
-                  flex: 1,
-                  minHeight: 0,
-                  overflowY: "auto",
-                  overflowX: "hidden",
-                  gridAutoRows: "120px",
-                })}
-              >
+              <section className="content-start flex flex-row flex-wrap overflow-x-hidden overflow-y-scroll gap-2">
                 {QueryListPhotos.data?.map((photo) => {
                   const selected = isSelected(photo._id);
 
@@ -953,6 +942,8 @@ export const LayoutShapeConfig = () => {
                         cursor: "pointer",
                         display: "flex",
                         flexDirection: "column",
+                        width: "120px",
+                        height: "120px",
                       })}
                     >
                       <img
