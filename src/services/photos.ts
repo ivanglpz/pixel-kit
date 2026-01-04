@@ -1,5 +1,5 @@
 import { IPhoto } from "@/db/schemas/types";
-import { DeletePhotosBody } from "@/pages/api/projects/DeleteManyPhotos";
+import { DeletePhotosBody } from "@/pages/api/projects/deleteManyPhotos";
 import { api } from "./axios";
 
 export const fetchListPhotosProject = async (
