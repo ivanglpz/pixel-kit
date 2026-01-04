@@ -58,7 +58,7 @@ async function handler(
           ],
         },
       }),
-      previewUrl: "./placeholder.svg",
+      previewUrl: "./default_bg.png",
       version: 1,
       mode: "DESIGN_MODE",
     });

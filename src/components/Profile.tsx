@@ -6,62 +6,115 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Dialog } from "@/editor/components/dialog";
+
+import { PROJECTS_ATOM } from "@/editor/states/projects";
 import { userAtom } from "@/jotai/user";
-import { useAtom } from "jotai";
+import { css } from "@stylespixelkit/css";
+import { useAtom, useSetAtom } from "jotai";
 import Cookies from "js-cookie";
-import { LogOut, Settings, Twitter, User2 } from "lucide-react";
+import { LogOut, Settings, Twitter } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/router";
+import { useState } from "react";
+import { SettingsSection } from "./Settings";
 
 export const Profile = () => {
   const router = useRouter();
   const [user] = useAtom(userAtom);
+  const CLEAR_PROJECTS = useSetAtom(PROJECTS_ATOM);
+  const [dialogSettings, setDialogSettings] = useState(false);
 
-  const handleLogout = async () => {
-    localStorage.clear();
-    router.replace("/login");
+  const handleLogout = () => {
+    CLEAR_PROJECTS([]);
     Cookies.remove("accessToken");
+    router.replace("/login");
   };
 
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger>
-        <div className="flex items-center justify-center">
-          <img
-            src="https://res.cloudinary.com/whil/image/upload/v1759465443/app/pixelkit/profile/i5aos6iqnm6eifuryrls.jpg"
-            alt="Avatar"
-            className="w-8 h-8 rounded-full"
-          />
-          {/* <span className="text-sm font-bold line-clamp-1">
-            {QueryProfile.data?.user?.fullName}
-          </span> */}
-        </div>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-56" align="end">
-        <DropdownMenuLabel className="opacity-50 flex flex-row gap-2">
-          <User2 size={18} />
-          {user.data?.user?.email}
-        </DropdownMenuLabel>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem disabled>
-          <Settings />
-          Settings
-        </DropdownMenuItem>
-        <DropdownMenuItem asChild>
-          <Link
-            href="https://twitter.com/ivanglpz"
-            target="_blank"
-            className="flex items-center w-full gap-2"
+    <>
+      <Dialog.Provider
+        visible={dialogSettings}
+        onClose={() => {
+          setDialogSettings(false);
+        }}
+      >
+        <Dialog.Area>
+          <section className=" flex flex-col w-full h-full max-w-[800px] max-h-[620px] bg-neutral-100 dark:bg-neutral-800 p-4 rounded-lg border-1 overflow-hidden">
+            <Dialog.Header>
+              <p
+                className={css({
+                  fontWeight: "bold",
+                })}
+              >
+                Settings
+              </p>
+              <Dialog.Close
+                onClose={() => {
+                  setDialogSettings(false);
+                }}
+              />
+            </Dialog.Header>
+            <SettingsSection />
+          </section>
+        </Dialog.Area>
+      </Dialog.Provider>
+      <DropdownMenu>
+        <DropdownMenuTrigger>
+          <div className="flex items-center justify-center cursor-pointer">
+            <img
+              src={user?.data?.user?.photoUrl || "./default_bg.png"}
+              alt="Avatar"
+              className="w-8 h-8 rounded-full object-cover"
+            />
+          </div>
+        </DropdownMenuTrigger>
+
+        <DropdownMenuContent className="w-56" align="end">
+          <DropdownMenuLabel className="flex items-center gap-2">
+            <img
+              src={user?.data?.user?.photoUrl || "./default_bg.png"}
+              alt="Avatar"
+              className="w-8 h-8 rounded-full object-cover"
+            />
+            <div className="flex flex-col">
+              <p className=" font-bold">
+                {user.data?.user?.fullName || "User"}
+              </p>
+              <p className="opacity-75">{user.data?.user?.email}</p>
+            </div>
+          </DropdownMenuLabel>
+
+          <DropdownMenuSeparator />
+
+          <DropdownMenuItem
+            onSelect={(event) => {
+              // router.push("/app/settings");
+              setDialogSettings(true);
+            }}
+            className="flex items-center gap-2"
           >
-            <Twitter />
-            Follow Ivanglpz
-          </Link>
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={handleLogout}>
-          <LogOut />
-          Log out
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
+            <Settings />
+            Settings
+          </DropdownMenuItem>
+
+          <DropdownMenuItem asChild>
+            <Link
+              href="https://twitter.com/ivanglpz"
+              target="_blank"
+              className="flex items-center w-full gap-2"
+            >
+              <Twitter />
+              Follow Ivanglpz
+            </Link>
+          </DropdownMenuItem>
+
+          <DropdownMenuItem onClick={handleLogout} className="flex gap-2">
+            <LogOut />
+            Log out
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </>
   );
 };

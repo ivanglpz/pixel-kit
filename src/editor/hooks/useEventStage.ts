@@ -2,8 +2,9 @@
 import { IPhoto } from "@/db/schemas/types";
 import TOOL_ATOM, { IKeyTool, PAUSE_MODE_ATOM } from "@/editor/states/tool";
 import { uploadPhoto } from "@/services/photo";
+import { optimizeImageFile } from "@/utils/opt-img";
 import { useMutation } from "@tanstack/react-query";
-import { useAtom, useAtomValue, useSetAtom } from "jotai";
+import { atom, useAtom, useAtomValue, useSetAtom } from "jotai";
 import Konva from "konva";
 import { KonvaEventObject } from "konva/lib/Node";
 import { useEffect, useRef } from "react";
@@ -13,29 +14,32 @@ import { MOUSE } from "../constants/mouse";
 import { STAGE_IDS } from "../constants/stage";
 import stageAbsolutePosition from "../helpers/position";
 import { CreateShapeSchema } from "../helpers/shape-schema";
+import { ShapeImage } from "../shapes/types/shape.base";
 import { CLEAR_CURRENT_ITEM_ATOM } from "../states/currentItem";
 import { EVENT_ATOM } from "../states/event";
 import { MOVING_MOUSE_BUTTON_ATOM } from "../states/moving";
+import { POSITION_PAGE_ATOM, POSITION_SCALE_ATOM } from "../states/pages";
 import { PROJECT_ID_ATOM } from "../states/projects";
 import {
   RECTANGLE_SELECTION_ATOM,
   SELECT_AREA_SHAPES_ATOM,
 } from "../states/rectangle-selection";
-import { SHAPE_IDS_ATOM } from "../states/shape";
+import { SELECTED_SHAPES_BY_IDS_ATOM } from "../states/shape";
 import {
   CREATE_SHAPE_ATOM,
   DELETE_KEYS,
   DELETE_SHAPES_ATOM,
-  EVENT_COPYING_SHAPES,
-  EVENT_DOWN_COPY,
-  EVENT_DOWN_SHAPES,
-  EVENT_MOVING_SHAPE,
-  EVENT_UP_COPY,
-  EVENT_UP_SHAPES,
+  EVENT_COPY_CREATING_SHAPES,
+  EVENT_COPY_FINISH_SHAPES,
+  EVENT_COPY_START_SHAPES,
+  EVENT_DOWN_CREATING_SHAPES,
+  EVENT_DOWN_FINISH_SHAPES,
+  EVENT_DOWN_START_SHAPES,
   GET_STAGE_BOUNDS_ATOM,
   GROUP_SHAPES_IN_LAYOUT,
 } from "../states/shapes";
 import { REDO_ATOM, UNDO_ATOM } from "../states/undo-redo";
+import { SVG } from "../utils/svg";
 import { useAutoSave } from "./useAutoSave";
 import { useConfiguration } from "./useConfiguration";
 
@@ -44,12 +48,13 @@ import { useConfiguration } from "./useConfiguration";
 export const useEventStage = () => {
   // ===== STATE HOOKS =====
   const [tool, setTool] = useAtom(TOOL_ATOM);
-  const shapeId = useAtomValue(SHAPE_IDS_ATOM);
+  const shapeId = useAtomValue(SELECTED_SHAPES_BY_IDS_ATOM);
   const [EVENT_STAGE, SET_EVENT_STAGE] = useAtom(EVENT_ATOM);
   const SET_MOVING = useSetAtom(MOVING_MOUSE_BUTTON_ATOM);
   // ===== READ-ONLY STATE =====
   const PAUSE = useAtomValue(PAUSE_MODE_ATOM);
-
+  const setScale = useSetAtom(POSITION_SCALE_ATOM);
+  const setPosition = useSetAtom(POSITION_PAGE_ATOM);
   const { config } = useConfiguration();
   const { debounce } = useAutoSave();
   const PROJECT_ID = useAtomValue(PROJECT_ID_ATOM);
@@ -63,13 +68,13 @@ export const useEventStage = () => {
   const setRedo = useSetAtom(REDO_ATOM);
   const setUndo = useSetAtom(UNDO_ATOM);
   const SET_EVENT_GROUP = useSetAtom(GROUP_SHAPES_IN_LAYOUT);
-  const SET_EVENT_UP = useSetAtom(EVENT_UP_SHAPES);
 
-  const SET_EVENT_MOVING_SHAPE = useSetAtom(EVENT_MOVING_SHAPE);
-  const SET_EVENT_COPYING = useSetAtom(EVENT_COPYING_SHAPES);
-  const SET_EVENT_DOWN = useSetAtom(EVENT_DOWN_SHAPES);
-  const SET_EVENT_DOWN_COPY = useSetAtom(EVENT_DOWN_COPY);
-  const SET_EVENT_UP_COPY = useSetAtom(EVENT_UP_COPY);
+  const SET_EVENT_COPY_START_SHAPES = useSetAtom(EVENT_COPY_START_SHAPES);
+  const SET_EVENT_COPY_CREATING_SHAPES = useSetAtom(EVENT_COPY_CREATING_SHAPES);
+  const SET_EVENT_COPY_FINISH_SHAPES = useSetAtom(EVENT_COPY_FINISH_SHAPES);
+  const SET_EVENT_DOWN_START_SHAPES = useSetAtom(EVENT_DOWN_START_SHAPES);
+  const SET_EVENT_DOWN_CREATING_SHAPE = useSetAtom(EVENT_DOWN_CREATING_SHAPES);
+  const SET_EVENT_DOWN_FINISH_SHAPES = useSetAtom(EVENT_DOWN_FINISH_SHAPES);
 
   const SET_SELECTION = useSetAtom(SELECT_AREA_SHAPES_ATOM);
 
@@ -95,10 +100,10 @@ export const useEventStage = () => {
         SET_EVENT_STAGE("SELECT_AREA");
       }
       if (EVENT_STAGE === "CREATE") {
-        SET_EVENT_DOWN({ x, y });
+        SET_EVENT_DOWN_START_SHAPES({ x, y });
       }
       if (EVENT_STAGE === "COPY") {
-        SET_EVENT_DOWN_COPY({ x, y });
+        SET_EVENT_COPY_START_SHAPES({ x, y });
       }
       SET_MOVING(false);
     }
@@ -119,10 +124,10 @@ export const useEventStage = () => {
       }
 
       if (EVENT_STAGE === "CREATING") {
-        SET_EVENT_MOVING_SHAPE({ x, y });
+        SET_EVENT_DOWN_CREATING_SHAPE({ x, y });
       }
       if (EVENT_STAGE === "COPYING") {
-        SET_EVENT_COPYING({ x, y });
+        SET_EVENT_COPY_CREATING_SHAPES({ x, y });
       }
     }
   };
@@ -132,11 +137,11 @@ export const useEventStage = () => {
       SET_SELECTION();
     }
     if (EVENT_STAGE === "COPYING") {
-      SET_EVENT_UP_COPY();
+      SET_EVENT_COPY_FINISH_SHAPES();
       debounce.execute();
     }
     if (EVENT_STAGE === "CREATING") {
-      SET_EVENT_UP();
+      SET_EVENT_DOWN_FINISH_SHAPES();
       debounce.execute();
     }
     SET_MOVING(true);
@@ -170,25 +175,16 @@ export const useEventStage = () => {
       const createStartElement = CreateShapeSchema({
         id: uuidv4(),
         tool: "IMAGE",
-        x: 0,
-        y: 0,
-        width: values.width / 3,
-        height: values.height / 3,
-        fills: [
-          {
-            color: "#fff",
-            id: uuidv4(),
-            image: {
-              src: values.url,
-              width: values.width,
-              height: values.height,
-              name: values.name,
-            },
-            opacity: 1,
-            type: "image",
-            visible: true,
-          },
-        ],
+        x: atom(0),
+        y: atom(0),
+        width: atom(values.width / 3),
+        height: atom(values.height / 3),
+        image: atom<ShapeImage>({
+          src: values.url,
+          width: values.width,
+          height: values.height,
+          name: values.name,
+        }),
       });
       SET_CREATE(createStartElement);
 
@@ -200,28 +196,33 @@ export const useEventStage = () => {
     },
   });
 
-  const createImageFromFile = (file: File) => {
+  const createImageFromFile = async (file: File): Promise<void> => {
     if (
       !["IMAGE/JPEG", "IMAGE/PNG", "IMAGE/GIF", "IMAGE/SVG+XML"].includes(
         file.type.toUpperCase()
       )
     ) {
-      toast.error("Invalid image format.");
+      toast.error("Invalid image format");
       return;
     }
-    toast.info("Uploading image...", {
-      duration: 6000,
+
+    toast.info("Optimizing image...", { duration: 4000 });
+
+    const optimizedFile = await optimizeImageFile({
+      file,
+      quality: 25,
     });
-    mutation.mutate(file);
+
+    mutation.mutate(optimizedFile);
   };
 
   const createTextFromClipboard = (text: string) => {
     const createStartElement = CreateShapeSchema({
       id: uuidv4(),
       tool: "TEXT",
-      x: 0,
-      y: 0,
-      text,
+      x: atom(0),
+      y: atom(0),
+      text: atom(text),
     });
     SET_CREATE(createStartElement);
   };
@@ -239,31 +240,20 @@ export const useEventStage = () => {
       const createStartElement = CreateShapeSchema({
         id: uuidv4(),
         tool: "ICON",
-        x: 0,
-        y: 0,
-        fills: [
-          {
-            color: "#fff",
-            id: uuidv4(),
-            image: {
-              src:
-                "data:image/svg+xml;charset=utf-8," +
-                encodeURIComponent(svgString),
-              width: img.width,
-              height: img.height,
-              name: `svg ${uuidv4().slice(0, 2)}`,
-            },
-            opacity: 1,
-            type: "image",
-            visible: true,
-          },
-        ],
+        x: atom(0),
+        y: atom(0),
+        image: atom({
+          src: SVG.Encode(svgString),
+          width: img.width,
+          height: img.height,
+          name: `svg ${uuidv4().slice(0, 2)}`,
+        }),
+        label: atom(`svg ${uuidv4().slice(0, 2)}`),
       });
       SET_CREATE(createStartElement);
     };
 
-    const dataImage =
-      "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svgString);
+    const dataImage = SVG.Encode(svgString);
     img.src = dataImage;
   };
 
@@ -277,11 +267,12 @@ export const useEventStage = () => {
     const scale =
       Math.min(stageWidth / bounds.width, stageHeight / bounds.height) * 0.9;
 
-    stageRef.current.scale({ x: scale, y: scale });
-    stageRef.current.position({
+    setScale({ x: scale, y: scale });
+    setPosition({
       x: -bounds.startX * scale + (stageWidth - bounds.width * scale) / 2,
       y: -bounds.startY * scale + (stageHeight - bounds.height * scale) / 2,
     });
+
     stageRef.current.batchDraw();
   };
 
@@ -361,6 +352,29 @@ export const useEventStage = () => {
         SET_EVENT_STAGE(keysActions[KEY].eventStage);
       }
     };
+    const normalizeSvg = (raw: string): string => {
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(raw, "image/svg+xml");
+      const svg = doc.querySelector("svg");
+
+      if (!svg) {
+        throw new Error("Invalid SVG");
+      }
+
+      if (!svg.getAttribute("xmlns")) {
+        svg.setAttribute("xmlns", "http://www.w3.org/2000/svg");
+      }
+
+      if (!svg.getAttribute("width")) {
+        svg.setAttribute("width", "32");
+      }
+
+      if (!svg.getAttribute("height")) {
+        svg.setAttribute("height", "32");
+      }
+
+      return new XMLSerializer().serializeToString(svg);
+    };
 
     const handleSVG = (svgText: string): void => {
       const parser = new DOMParser();
@@ -369,8 +383,8 @@ export const useEventStage = () => {
         .querySelector("svg");
       if (!svgDOM) return;
 
-      const serializer = new XMLSerializer();
-      createImageFromSVG(serializer.serializeToString(svgDOM));
+      const normalizedSvg = normalizeSvg(svgText);
+      createImageFromSVG(normalizedSvg);
     };
 
     const handlePaste = (event: ClipboardEvent): void => {
@@ -386,7 +400,7 @@ export const useEventStage = () => {
       if (!clipboardText) return;
 
       const trimmed = clipboardText.trim();
-      if (trimmed.startsWith("<svg")) {
+      if (trimmed.startsWith("<svg") && trimmed.endsWith("</svg>")) {
         handleSVG(trimmed);
         return;
       }

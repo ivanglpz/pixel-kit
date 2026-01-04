@@ -12,14 +12,14 @@ type NextHandler<T = any> = (
 export function withAuth<T>(handler: NextHandler<T>) {
   return async (req: NextApiRequest, res: NextApiResponse<T>) => {
     try {
-      await DB_CONNECT();
-
       const token = req.headers.authorization;
       if (!token) {
         return res.status(401).json({ error: "Unauthorized" } as any);
       }
 
       const decoded = AUTH_TOKEN(token);
+
+      await DB_CONNECT();
 
       // ✅ Inyectamos el userId al req original
       (req as NextApiRequest & { userId: string }).userId = decoded.userId;

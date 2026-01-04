@@ -1,14 +1,14 @@
 import { Input } from "@/editor/components/input";
 import { useAutoSave } from "@/editor/hooks/useAutoSave";
 import { ICON_MODES_TABS } from "@/editor/icons/mode";
-import { IEDITORPROJECT } from "@/editor/states/projects";
+import { IPROJECT } from "@/editor/states/projects";
 import { css } from "@stylespixelkit/css";
 import { useAtom, useAtomValue } from "jotai";
 import { X } from "lucide-react";
 import { useState } from "react";
 
 type TabProps = {
-  project: IEDITORPROJECT;
+  project: IPROJECT;
   onClick: VoidFunction;
   onDelete: VoidFunction;
   isSelected: boolean;
@@ -33,10 +33,11 @@ export const Tab = ({ project, onClick, onDelete, isSelected }: TabProps) => {
         },
         backgroundColor: isSelected ? "gray.150" : "transparent",
         height: "100%",
-        width: "190px",
-        minWidth: "190px",
-        paddingLeft: "md",
-        paddingRight: "md",
+        width: "200px",
+        padding: "sm",
+        borderRadius: "md",
+        flexShrink: 0,
+        cursor: "pointer",
       })}
       onClick={onClick}
       onMouseLeave={() => {

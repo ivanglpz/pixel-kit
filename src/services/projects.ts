@@ -20,3 +20,6 @@ export const updateProject = async (
 ) => {
   return api.put(`/projects/update`, payload).then((e) => e.data?.data);
 };
+export const deleteProject = async (id: string) => {
+  return api.delete(`/projects/delete?id=${id}`).then((e) => e.data?.data);
+};

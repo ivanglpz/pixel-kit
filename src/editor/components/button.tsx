@@ -5,7 +5,7 @@ import { constants } from "../constants/color";
 type ButtonProps = {
   onClick: VoidFunction;
   children: ReactNode;
-  variant?: "primary" | "secondary";
+  variant?: "primary" | "secondary" | "danger";
   style?: CSSProperties;
   disabled?: boolean;
 };
@@ -36,7 +36,12 @@ const variantStyles = {
   secondary: css({
     borderColor: "gray.150",
     color: "black",
-    _dark: { color: "white", borderColor: "gray.700" },
+    _dark: { color: "white", borderColor: "gray.500" },
+  }),
+  danger: css({
+    borderColor: "red.500",
+    color: "white",
+    _dark: { color: "black" },
   }),
 };
 
@@ -67,4 +72,11 @@ export const Button = {
   Secondary: (props: Omit<ButtonProps, "variant">) => (
     <ButtonBase {...props} variant="secondary" />
   ),
+  Danger: (props: Omit<ButtonProps, "variant">) => {
+    const dangerStyle: CSSProperties = {
+      backgroundColor: constants.theme.colors["red.400"],
+      color: "white",
+    };
+    return <ButtonBase {...props} variant="danger" style={dangerStyle} />;
+  },
 };

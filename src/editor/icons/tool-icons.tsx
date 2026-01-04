@@ -1,5 +1,5 @@
 /* eslint-disable jsx-a11y/alt-text */
-import { IShapesKeys } from "@/editor/states/tool";
+import { IShapeTool } from "@/editor/states/tool";
 import { css } from "@stylespixelkit/css";
 import {
   Circle,
@@ -250,7 +250,7 @@ export const icons = {
   ),
 };
 
-export const iconsWithTools: { [key in IShapesKeys]: JSX.Element } = {
+export const iconsWithTools: { [key in IShapeTool]: JSX.Element } = {
   FRAME: icons.box,
   // CIRCLE: icons.circle,
   DRAW: icons.peentool,
