@@ -7,8 +7,7 @@ import {
   SHAPE_UPDATE_ATOM,
   UpdatableKeys,
 } from "@/editor/states/shape";
-import { uploadPhoto } from "@/services/photo";
-import { fetchListPhotosProject } from "@/services/photos";
+import { deleteManyPhotos, fetchListPhotosProject } from "@/services/photos";
 import { css } from "@stylespixelkit/css";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { PrimitiveAtom, useAtomValue, useSetAtom } from "jotai";
@@ -28,7 +27,6 @@ import {
   CornerUpRight,
   DropletOff,
   Expand,
-  File,
   ImageIcon,
   Layout,
   MoveHorizontal,
@@ -40,14 +38,15 @@ import {
   Smile,
   Square,
   SquareDashed,
+  SquareMenu,
+  Trash,
+  Upload,
 } from "lucide-react";
-import React, { ChangeEvent, ReactNode, useRef, useState } from "react";
+import React, { ReactNode, useRef, useState } from "react";
 import { toast } from "sonner";
-import { Button, ButtonBase } from "../components/button";
 import { Dialog } from "../components/dialog";
 import { Input } from "../components/input";
 import { ListIcons } from "../components/list-icons";
-import { Loading } from "../components/loading";
 import { constants } from "../constants/color";
 import { fontFamilyOptions, fontWeightOptions } from "../constants/fonts";
 import { useAutoSave } from "../hooks/useAutoSave";
@@ -61,10 +60,13 @@ import { ShapeBase } from "../shapes/types/shape.base";
 import { ShapeState } from "../shapes/types/shape.state";
 import { PROJECT_ID_ATOM } from "../states/projects";
 
+import { uploadPhoto } from "@/services/photo";
 import { optimizeImageFile } from "@/utils/opt-img";
+import { Button } from "../components/button";
+import { Loading } from "../components/loading";
+import { ThemeComponent } from "../components/ThemeComponent";
 import { useDelayedExecutor } from "../hooks/useDelayExecutor";
 import { UPDATE_UNDO_REDO } from "../states/undo-redo";
-import { getObjectUrl } from "../utils/getObjectUrl";
 import { SVG } from "../utils/svg";
 import { ExportShape } from "./export-shape";
 
@@ -679,20 +681,17 @@ const ShapeShowAtomProvider = ({
   if (ctx(value)) return null;
   return <>{children}</>;
 };
+type SelectablePhoto = Omit<IPhoto, "createdBy" | "folder" | "projectId">;
 
 export const LayoutShapeConfig = () => {
   const [showIcons, setshowIcons] = useState(false);
-  const [showImage, setShowImage] = useState(false);
+  const [dialogImages, setDialogImages] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const spHook = useShapeUpdate();
   const { shape, count } = useAtomValue(SHAPE_SELECTED_ATOM);
-  const [type, setType] = useState<"UPLOAD" | "CHOOSE">("UPLOAD");
   const PROJECT_ID = useAtomValue(PROJECT_ID_ATOM);
-  const [photoUpload, setPhotoUpload] = useState<File | null>(null);
-  const [photoChoose, setPhotocChoose] = useState<Omit<
-    IPhoto,
-    "createdBy" | "folder" | "projectId"
-  > | null>(null);
+  const [selectedPhotos, setSelectedPhotos] = useState<SelectablePhoto[]>([]);
+  const [dialogDelete, setDialogDelete] = useState(false);
 
   const QueryListPhotos = useQuery({
     queryKey: ["list_photos_project", PROJECT_ID],
@@ -705,52 +704,29 @@ export const LayoutShapeConfig = () => {
   });
 
   const mutation = useMutation({
-    mutationKey: ["upload_image", type, photoUpload, photoChoose],
-    mutationFn: async (): Promise<
-      Pick<IPhoto, "name" | "width" | "height" | "url">
-    > => {
-      if (type === "UPLOAD") {
-        const myImage = photoUpload;
-
-        if (!myImage) {
-          throw new Error("Please upload a photo from your device");
-        }
-
-        const formData = new FormData();
-        const optimizedFile = await optimizeImageFile({
-          file: myImage,
-          quality: 25,
-        });
-
-        formData.append("image", optimizedFile); // usar el mismo nombre 'images'
-        formData.append("projectId", `${PROJECT_ID}`); // usar el mismo nombre 'images'
-
-        const response = await uploadPhoto(formData);
-        return response;
-      }
-      if (!photoChoose) {
-        throw new Error("Please choose an existing photo");
-      }
-      return photoChoose;
-    },
-    onSuccess: (values) => {
-      spHook("image", {
-        height: values.height,
-        name: values.name,
-        width: values.width,
-        src: values.url,
+    mutationFn: async (
+      newPhoto: File
+    ): Promise<Pick<IPhoto, "name" | "width" | "height" | "url">> => {
+      const formData = new FormData();
+      const optimizedFile = await optimizeImageFile({
+        file: newPhoto,
+        quality: 25,
       });
-      if (type === "UPLOAD") {
-        QueryListPhotos.refetch();
-      }
-      handleResetDialogImage();
+
+      formData.append("image", optimizedFile); // usar el mismo nombre 'images'
+      formData.append("projectId", `${PROJECT_ID}`); // usar el mismo nombre 'images'
+
+      const response = await uploadPhoto(formData);
+      return response;
+    },
+    onSuccess: () => {
+      QueryListPhotos.refetch();
+      setSelectedPhotos([]);
     },
     onError: (error) => {
       toast.error(error.message);
     },
   });
-
-  if (shape === null) return null;
 
   const createImageFromSVG = (svgString: string, svgName: string) => {
     const img = new Image();
@@ -770,29 +746,70 @@ export const LayoutShapeConfig = () => {
     img.src = SVG.Encode(svgString);
   };
 
-  // Manejadores de eventos
-  const handleFiles = (event: ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
+  const handleCloseDialogImages = () => {
+    setSelectedPhotos([]);
+    setDialogImages(false);
+  };
 
+  const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []).filter((file) =>
+      file.type.startsWith("image/")
+    );
+    const file = files.at(0);
+    if (!file) return;
     const maxSizeInBytes = 1 * 1024 * 1024;
     if (file.size > maxSizeInBytes) {
       toast.error(`The image ${file.name} cannot be larger than 1MB.`);
-      event.target.value = "";
+      e.target.value = "";
+
       return;
     }
-
-    setPhotoUpload(file);
-
-    event.target.value = "";
+    e.target.value = "";
+    mutation.mutate(file);
   };
 
-  const handleResetDialogImage = () => {
-    setType("UPLOAD");
-    setPhotoUpload(null);
-    setPhotocChoose(null);
-    setShowImage(false);
+  const isSelected = (id: string) => selectedPhotos.some((p) => p._id === id);
+
+  const togglePhotoSelection = (photo: SelectablePhoto) => {
+    setSelectedPhotos((prev) =>
+      prev.some((p) => p._id === photo._id)
+        ? prev.filter((p) => p._id !== photo._id)
+        : [...prev, photo]
+    );
   };
+
+  const clearSelection = () => {
+    setSelectedPhotos([]);
+  };
+  const hasSelection = selectedPhotos.length > 0;
+  const hasSingleSelection = selectedPhotos.length === 1;
+  const hasMultipleSelection = selectedPhotos.length > 1;
+
+  const mutateDelete = useMutation({
+    mutationFn: async () => {
+      if (!PROJECT_ID) {
+        throw new Error("Project ID is require to get List photos");
+      }
+      await deleteManyPhotos({
+        photoIds: selectedPhotos?.map((e) => e._id),
+        projectId: PROJECT_ID,
+      });
+    },
+    onSuccess: () => {
+      QueryListPhotos.refetch();
+      setDialogDelete(false);
+      setSelectedPhotos([]);
+      toast.success("Images deleted successfully");
+    },
+    onError: (error) => {
+      toast.error("Failed to delete images", {
+        description:
+          error?.message ||
+          "There was an error deleting your images. Please try again.",
+      });
+    },
+  });
+  if (shape === null) return null;
 
   return (
     <div
@@ -822,114 +839,93 @@ export const LayoutShapeConfig = () => {
           />
         </Dialog.Container>
       </Dialog.Provider>
+
       <Dialog.Provider
-        visible={showImage}
+        visible={dialogImages}
         onClose={() => {
           if (mutation.isPending) return;
-          setShowImage(false);
+          handleCloseDialogImages();
         }}
       >
-        <Dialog.Container fullWidth fullHeight>
-          <Dialog.Header>
-            <p
-              className={css({
-                fontWeight: "bold",
-              })}
-            >
-              Image
-            </p>
-            <Dialog.Close
-              onClose={() => {
-                if (mutation.isPending) return;
-                setShowImage(false);
-              }}
-            />
-          </Dialog.Header>
-
-          <section
-            className={css({
-              display: "flex",
-              flexDirection: "column",
-              gap: "lg",
-              flex: 1, // este section ocupa todo el alto
-              minHeight: 0, // clave: evita que el flex se rompa
-            })}
-          >
-            <header
-              className={css({
-                display: "grid",
-                gridTemplateColumns: "repeat(2, 1fr)", // corregido
-                gap: "lg",
-              })}
-            >
-              <ButtonBase
-                variant={type === "UPLOAD" ? "primary" : "secondary"}
-                onClick={() => {
-                  setType("UPLOAD");
-                }}
-              >
-                Upload
-              </ButtonBase>
-              <ButtonBase
-                variant={type === "CHOOSE" ? "primary" : "secondary"}
-                onClick={() => {
-                  setType("CHOOSE");
-                }}
-              >
-                Choose
-              </ButtonBase>
-            </header>
-            {type === "UPLOAD" ? (
-              <section
+        <Dialog.Area>
+          <section className="flex flex-col p-4 w-[32dvw] h-[50dvh] rounded-lg bg-neutral-100 dark:bg-neutral-800">
+            <Dialog.Header>
+              <p
                 className={css({
-                  display: "grid",
-                  gridTemplateRows: "1fr",
-                  gridTemplateColumns: "1fr",
-                  flex: 1,
-                  minHeight: 0, // evita colapso
+                  fontWeight: "bold",
                 })}
               >
-                <div
-                  className={css({
-                    backgroundColor: "gray.150",
-                    _dark: {
-                      backgroundColor: "gray.750",
-                    },
-                    display: "flex",
-                    flex: 1,
-                    minHeight: 0,
-                    position: "relative",
-                    justifyContent: "center",
-                    alignItems: "center",
-                  })}
-                >
-                  {photoUpload ? (
-                    <img
-                      src={getObjectUrl(photoUpload)}
-                      alt="preview-app"
+                Images
+              </p>
+              <Dialog.Close
+                onClose={() => {
+                  if (mutation.isPending) return;
+                  handleCloseDialogImages();
+                }}
+              />
+            </Dialog.Header>
+
+            <Dialog.Provider
+              visible={dialogDelete}
+              onClose={() => setDialogDelete(false)}
+            >
+              <Dialog.Area>
+                <section className="flex flex-col p-4 w-[22dvw] h-[22dvh] rounded-lg bg-neutral-100 dark:bg-neutral-800">
+                  <Dialog.Header>
+                    <p
                       className={css({
-                        width: "100%",
-                        height: "100%",
-                        objectFit: "contain",
+                        fontWeight: "bold",
+                        paddingBottom: "lg",
                       })}
-                    />
-                  ) : null}
-                  <Button.Secondary
-                    style={{
-                      position: "absolute",
-                      backgroundColor: "black",
-                      color: "white",
-                    }}
-                    onClick={() => {
-                      inputRef.current?.click();
-                    }}
-                  >
-                    {photoUpload ? "Change image" : "Choose from device"}
-                  </Button.Secondary>
-                </div>
-              </section>
-            ) : null}
-            {type === "CHOOSE" ? (
+                    >
+                      Delete images
+                    </p>
+                    <Dialog.Close onClose={() => setDialogDelete(false)} />
+                  </Dialog.Header>
+                  <section className="h-full w-full flex-1">
+                    <p className="font-normal  text-sm">
+                      Are you sure you want to delete these images?
+                    </p>
+                    <p className="text-sm">
+                      This action <strong>cannot</strong> be undone.
+                    </p>
+                  </section>
+                  <footer className="flex flex-row gap-4 justify-end  ">
+                    <Button.Secondary onClick={() => setDialogDelete(false)}>
+                      Cancel
+                    </Button.Secondary>
+                    <Button.Danger onClick={() => mutateDelete.mutate()}>
+                      {mutateDelete.isPending ? (
+                        <Loading color={constants.theme.colors.white} />
+                      ) : (
+                        <>
+                          <Trash size={constants.icon.size} /> Delete
+                        </>
+                      )}
+                    </Button.Danger>
+                  </footer>
+                </section>
+              </Dialog.Area>
+            </Dialog.Provider>
+            <section
+              className={css({
+                display: "flex",
+                flexDirection: "column",
+                gap: "lg",
+                flex: 1, // este section ocupa todo el alto
+                minHeight: 0, // clave: evita que el flex se rompa
+              })}
+            >
+              <input
+                id="file-upload"
+                ref={inputRef}
+                type="file"
+                multiple
+                accept="image/*"
+                className="sr-only "
+                onChange={handleFileInput}
+              />
+
               <section
                 className={css({
                   display: "grid",
@@ -942,84 +938,110 @@ export const LayoutShapeConfig = () => {
                   gridAutoRows: "120px",
                 })}
               >
-                {QueryListPhotos?.data?.map((e) => {
+                {QueryListPhotos.data?.map((photo) => {
+                  const selected = isSelected(photo._id);
+
                   return (
                     <button
+                      key={photo._id}
+                      onClick={() => togglePhotoSelection(photo)}
                       className={css({
-                        backgroundColor: "gray.50",
-                        // _dark: {
-                        //   backgroundColor: "gray.600",
-                        // },
+                        borderWidth: 2,
+                        borderRadius: "lg",
+                        borderColor: selected ? "primary" : "gray.150",
+                        backgroundColor: selected ? "gray.100" : "gray.50",
+                        cursor: "pointer",
                         display: "flex",
                         flexDirection: "column",
-                        borderWidth: 2,
-                        // borderColor: "gray.150",
-                        _dark: {
-                          borderColor:
-                            photoChoose?._id === e?._id
-                              ? "primary"
-                              : "gray.450",
-                          // borderColor: "gray.450",
-                          backgroundColor: "gray.700",
-                        },
-                        borderRadius: "lg",
-                        cursor: "pointer",
-                        borderColor:
-                          photoChoose?._id === e?._id ? "primary" : "gray.150",
                       })}
-                      onClick={() => {
-                        setPhotocChoose(e);
-                      }}
                     >
                       <img
-                        src={e?.url}
-                        alt={e?.name.slice(0, 4)}
+                        src={photo.url}
+                        alt="preview"
                         className={css({
-                          height: "100%",
                           width: "100%",
+                          height: "100%",
                           objectFit: "cover",
                           borderRadius: "lg",
+                          userSelect: "none",
                         })}
                       />
                     </button>
                   );
                 })}
               </section>
-            ) : null}
+              {hasSelection && (
+                <footer className="flex flex-row justify-between">
+                  <button
+                    onClick={() => {
+                      setDialogDelete(true);
+                    }}
+                    disabled={mutation.isPending}
+                    className="bg-red-600 p-2 w-8 h-8 rounded text-white cursor-pointer"
+                  >
+                    <Trash size={16} />
+                  </button>
+                  <section className="flex flex-row gap-2">
+                    <Button.Secondary
+                      onClick={clearSelection}
+                      disabled={mutation.isPending}
+                    >
+                      <SquareMenu size={16} />
+                      <p className="text-sm font-normal">
+                        Unselect all ({selectedPhotos.length})
+                      </p>
+                    </Button.Secondary>
+                    {!hasMultipleSelection ? (
+                      <Button.Primary
+                        disabled={!hasSingleSelection || mutation.isPending}
+                        onClick={() => {
+                          const photo = selectedPhotos[0];
+                          spHook("image", {
+                            height: photo.height,
+                            width: photo.width,
+                            name: photo.name,
+                            src: photo.url,
+                          });
+                          handleCloseDialogImages();
+                        }}
+                      >
+                        <ImageIcon size={14} />
+                        Select
+                      </Button.Primary>
+                    ) : null}
+                  </section>
+                </footer>
+              )}
 
-            <footer
-              className={css({
-                display: "flex",
-                flexDirection: "row",
-                gap: "lg",
-                justifyContent: "end",
-              })}
-            >
-              <Button.Secondary
-                onClick={() => {
-                  if (mutation.isPending) return;
-                  handleResetDialogImage();
-                }}
-              >
-                Cancel
-              </Button.Secondary>
-              <Button.Primary
-                onClick={() => {
-                  if (mutation.isPending) return;
-                  mutation.mutate();
-                }}
-              >
-                {mutation.isPending ? (
-                  <Loading color={constants.theme.colors.black} />
-                ) : (
-                  <>
-                    <File size={constants.icon.size} /> Upload
-                  </>
-                )}
-              </Button.Primary>
-            </footer>
+              {!hasSelection ? (
+                <footer className="flex flex-row justify-end items-center">
+                  {mutation.isPending ? (
+                    <ThemeComponent>
+                      {({ theme }) => (
+                        <Loading
+                          color={
+                            theme?.systemTheme === "dark"
+                              ? constants.theme.colors.white
+                              : constants.theme.colors.black
+                          }
+                        />
+                      )}
+                    </ThemeComponent>
+                  ) : (
+                    <Button.Secondary
+                      onClick={() => {
+                        inputRef.current?.click();
+                      }}
+                    >
+                      <Upload className="mx-auto h-4 w-4 text-muted-foreground" />
+                      Upload
+                    </Button.Secondary>
+                  )}
+                </footer>
+              ) : null}
+            </section>
           </section>
-        </Dialog.Container>
+        </Dialog.Area>
       </Dialog.Provider>
       {/* SHAPE PROPS FIELDS */}
       {/* SHAPE PROPS FIELDS */}
@@ -1443,7 +1465,7 @@ export const LayoutShapeConfig = () => {
             <button
               className={commonStyles.addButton}
               onClick={() => {
-                setShowImage(true);
+                setDialogImages(true);
               }}
             >
               <ImageIcon size={14} />
@@ -1616,14 +1638,6 @@ export const LayoutShapeConfig = () => {
 
       <Separator />
       <ExportShape />
-
-      <input
-        ref={inputRef}
-        type="file"
-        accept="image/*"
-        style={{ display: "none" }}
-        onChange={handleFiles}
-      />
     </div>
   );
 };

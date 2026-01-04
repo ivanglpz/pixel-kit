@@ -132,7 +132,7 @@ const App: NextPageWithLayout = () => {
         visible={deleteDialog !== null}
         onClose={() => setDeleteDialog(null)}
       >
-        <Dialog.ContainerArea>
+        <Dialog.Area>
           <section className="flex flex-col p-4 w-[22dvw] h-[22dvh] rounded-lg bg-neutral-100 dark:bg-neutral-800">
             <Dialog.Header>
               <p
@@ -168,7 +168,7 @@ const App: NextPageWithLayout = () => {
               </Button.Danger>
             </footer>
           </section>
-        </Dialog.ContainerArea>
+        </Dialog.Area>
       </Dialog.Provider>
       <header
         className={css({

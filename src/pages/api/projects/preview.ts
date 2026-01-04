@@ -83,8 +83,8 @@ async function handler(
 
       const result = await cloudinary.uploader.upload(file.filepath, payload);
 
-      const newDate = Date.now();
-      const urlWithDate = `${result.secure_url}?v=${newDate}`;
+      const cacheBust = Date.now();
+      const secureUrlWithCache = `${result.secure_url}?v=${cacheBust}`;
 
       const photo = await PhotoSchema.findOneAndUpdate(
         {
@@ -95,15 +95,34 @@ async function handler(
         },
         {
           projectId: project._id,
-          url: urlWithDate,
-          mimeType: file.mimetype ?? "image/jpeg",
-          size: file.size ?? 0,
-          folder,
-          createdBy: req.userId,
+
+          // Core
+          name: publicId,
+          url: secureUrlWithCache,
+          secureUrl: result.secure_url,
+          mimeType: file.mimetype ?? `image/${result.format}`,
+          format: result.format,
+          size: result.bytes,
           width: result.width,
           height: result.height,
-          name: publicId,
+          folder,
+
+          createdBy: req.userId,
           type: "PREVIEW",
+
+          // Cloudinary
+          cloudinaryPublicId: result.public_id,
+          cloudinaryAssetId: result.asset_id,
+          cloudinaryResourceType: result.resource_type,
+          cloudinaryVersion: result.version,
+          cloudinarySignature: result.signature,
+          cloudinaryOriginalFilename: result.original_filename,
+          cloudinaryAccessMode: result.access_mode,
+          cloudinaryEtag: result.etag,
+          tags: result.tags ?? [],
+          colors: result.colors,
+          metadata: result.metadata,
+          context: result.context,
         },
         {
           new: true,
@@ -120,8 +139,10 @@ async function handler(
           name: photo.name,
         },
       });
-    } catch (uploadError) {
-      return res.status(500).json({ error: "Error uploading preview image" });
+    } catch (error) {
+      return res.status(500).json({
+        error: "Error uploading preview image",
+      });
     }
   });
 }
