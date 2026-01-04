@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { SELECTED_SHAPES_BY_IDS_ATOM } from "../states/shape";
@@ -9,8 +9,6 @@ import { IShapeEvents } from "./type.shape";
 
 import { calculateCoverCrop } from "../utils/crop";
 import { flexLayoutAtom } from "./layout-flex";
-
-import { useState } from "react";
 
 type ImageSource = {
   src?: string;
@@ -39,24 +37,34 @@ function buildImage(
 
   return img;
 }
-
-export function useKonvaImage(img: ImageSource): HTMLImageElement {
+export function useKonvaImage(img: ImageSource) {
   const [hasError, setHasError] = useState(false);
+
+  useEffect(() => {
+    setHasError(false);
+  }, [img.src]);
 
   return useMemo(() => {
     if (!img.src || hasError) {
-      return buildImage(PLACEHOLDER_SRC, PLACEHOLDER_SIZE, PLACEHOLDER_SIZE);
+      return {
+        image: buildImage(PLACEHOLDER_SRC, PLACEHOLDER_SIZE, PLACEHOLDER_SIZE),
+        width: PLACEHOLDER_SIZE,
+        height: PLACEHOLDER_SIZE,
+      };
     }
 
-    return buildImage(
-      img.src,
-      img.width ?? PLACEHOLDER_SIZE,
-      img.height ?? PLACEHOLDER_SIZE,
-      () => setHasError(true)
-    );
+    return {
+      image: buildImage(
+        img.src,
+        img.width ?? PLACEHOLDER_SIZE,
+        img.height ?? PLACEHOLDER_SIZE,
+        () => setHasError(true)
+      ),
+      width: img.width ?? PLACEHOLDER_SIZE,
+      height: img.height ?? PLACEHOLDER_SIZE,
+    };
   }, [img.src, img.width, img.height, hasError]);
 }
-
 export const ShapeImage = (props: IShapeEvents) => {
   const { shape: item } = props;
   const box = useAtomValue(item.state);
@@ -100,12 +108,12 @@ export const ShapeImage = (props: IShapeEvents) => {
   const cropConfig = useMemo(
     () =>
       calculateCoverCrop(
-        IMG?.width || 0,
-        IMG?.height || 0,
+        RENDER_IMAGE?.width || 0,
+        RENDER_IMAGE?.height || 0,
         Number(width),
         Number(height)
       ),
-    [IMG?.width, IMG?.height, width, height]
+    [RENDER_IMAGE?.width, RENDER_IMAGE?.height, width, height]
   );
   if (!visible) return null;
 
@@ -114,7 +122,7 @@ export const ShapeImage = (props: IShapeEvents) => {
       <KonvaImage
         // 1. Identificación y referencia
         id={box?.id}
-        image={RENDER_IMAGE}
+        image={RENDER_IMAGE.image}
         crop={cropConfig}
         parentId={parentId}
         globalCompositeOperation="source-over"
