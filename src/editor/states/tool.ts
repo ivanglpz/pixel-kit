@@ -10,7 +10,9 @@ export type IKeyTool =
   | "TEXT"
   | "FRAME"
   | "DRAW"
-  | "ICON";
+  | "ICON"
+  | "INSTANCE"
+  | "COMPONENT";
 // | "CODE"
 // | "GROUP"
 // | "CLIP";
