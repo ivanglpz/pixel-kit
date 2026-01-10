@@ -389,7 +389,7 @@ export const NodesDefault = ({
             </div>
           </div>
         </ContextMenuTrigger>
-        <ContextMenuContent>
+        <ContextMenuContent className="p-2 flex flex-col gap-1">
           {shape.tool === "FRAME" ? (
             <ContextMenuItem
               className="text-[12px]"
@@ -402,6 +402,26 @@ export const NodesDefault = ({
               Move to
             </ContextMenuItem>
           ) : null}
+          <ContextMenuItem
+            className="text-[12px]"
+            onClick={() => {
+              setTool("MOVE");
+              DELETE_SHAPE();
+              debounce.execute();
+            }}
+          >
+            Create component
+          </ContextMenuItem>
+          <ContextMenuItem
+            className="text-[12px]"
+            onClick={() => {
+              setTool("MOVE");
+              DELETE_SHAPE();
+              debounce.execute();
+            }}
+          >
+            Detach instance
+          </ContextMenuItem>
           {/* <ContextMenuItem
             className="text-[12px]"
             onClick={() => setShow(true)}
@@ -417,7 +437,6 @@ export const NodesDefault = ({
               debounce.execute();
             }}
           >
-            <Trash size={14} />
             Delete
           </ContextMenuItem>
         </ContextMenuContent>
