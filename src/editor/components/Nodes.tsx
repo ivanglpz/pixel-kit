@@ -155,6 +155,7 @@ export const NodesDefault = ({
   const [isLocked, setIsLocked] = useAtom(shape.isLocked);
   const [visible, setVisible] = useAtom(shape.visible);
   const parentId = useAtomValue(shape.parentId);
+  const tool = useAtomValue(shape.tool);
   // ✅ Usar controles externos si están disponibles, sino crear propios
   const dragControls = externalDragControls;
 
@@ -218,7 +219,7 @@ export const NodesDefault = ({
       <ContextMenu>
         <ContextMenuTrigger>
           <div
-            id={shape.id + ` ${shape.tool}`}
+            id={shape.id + ` ${tool}`}
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
             className={css({
@@ -277,7 +278,7 @@ export const NodesDefault = ({
               <GripVertical size={14} opacity={isHovered ? 1 : 0.3} />
             </div>
 
-            {shape.tool === "FRAME" && children.length > 0 ? (
+            {tool === "FRAME" && children.length > 0 ? (
               <button
                 onClick={(e) => {
                   e.stopPropagation();
@@ -301,7 +302,7 @@ export const NodesDefault = ({
               <div></div>
             )}
 
-            {iconsWithTools[shape.tool]}
+            {iconsWithTools[tool]}
             <NodeInput atomo={shape.label} />
 
             <div
@@ -389,8 +390,8 @@ export const NodesDefault = ({
             </div>
           </div>
         </ContextMenuTrigger>
-        <ContextMenuContent className="p-2 flex flex-col gap-1">
-          {shape.tool === "FRAME" ? (
+        <ContextMenuContent className="p-2 flex flex-col w-[210px] h-[260px]">
+          {tool === "FRAME" ? (
             <ContextMenuItem
               className="text-[12px]"
               onClick={() => {
@@ -398,7 +399,6 @@ export const NodesDefault = ({
                 debounce.execute();
               }}
             >
-              <Luicde.Move size={14} />
               Move to
             </ContextMenuItem>
           ) : null}
@@ -422,13 +422,7 @@ export const NodesDefault = ({
           >
             Detach instance
           </ContextMenuItem>
-          {/* <ContextMenuItem
-            className="text-[12px]"
-            onClick={() => setShow(true)}
-          >
-            <FolderCog size={14} />
-            Rename
-          </ContextMenuItem> */}
+
           <ContextMenuItem
             className="text-[12px]"
             onClick={() => {

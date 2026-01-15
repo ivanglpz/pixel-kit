@@ -14,7 +14,7 @@ import { UPDATE_UNDO_REDO } from "@/editor/states/undo-redo";
 import { css } from "@stylespixelkit/css";
 import { Reorder, useDragControls } from "framer-motion";
 import { useAtom, useSetAtom } from "jotai";
-import { Move, Trash } from "lucide-react";
+import { Trash } from "lucide-react";
 import { useAutoSave } from "../hooks/useAutoSave";
 import { withStableMemo } from "../utils/withStableMemo";
 // ✅ Componente wrapper para elementos de nivel superior
@@ -85,7 +85,6 @@ export const SidebarLeftShapes = () => {
               debounce.execute();
             }}
           >
-            <Move size={14} />
             Move to
           </ContextMenuItem>
           <ContextMenuItem

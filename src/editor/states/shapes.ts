@@ -46,7 +46,7 @@ export type WithInitialValue<Value> = {
 
 export type ALL_SHAPES = {
   id: string;
-  tool: IShapeTool;
+  // tool: IShapeTool;
   // pageId: string | null;
   state: PrimitiveAtom<ShapeState>;
 };
@@ -416,7 +416,7 @@ const cloneRuntimeShape =
 
     return {
       id: shape.id,
-      tool: shape.tool,
+      // tool: shape.tool,
       state: atom(clonedState),
     };
   };
@@ -611,7 +611,7 @@ export const GROUP_SHAPES_IN_LAYOUT = atom(null, (get, set) => {
 
   // Create the layout container with bbox dimensions.
   const newLayout = CreateShapeSchema({
-    tool: "FRAME",
+    tool: atom<IShapeTool>("FRAME"),
     x: atom(bbox.minX),
     y: atom(bbox.minY),
     width: atom(bbox.maxX - bbox.minX),
@@ -643,7 +643,7 @@ export const GROUP_SHAPES_IN_LAYOUT = atom(null, (get, set) => {
 
   const newLayoutShape: ALL_SHAPES = {
     id: newLayoutId,
-    tool: "FRAME",
+    // tool: "FRAME",
     state: atom<ShapeState>({ ...newLayout, children: atom(layoutChildren) }),
   };
 
@@ -716,7 +716,7 @@ export const EVENT_COPY_START_SHAPES = atom(
         return {
           ...child,
           id: childState.id,
-          tool: childState.tool as IShapeTool,
+          // tool: childState.tool as IShapeTool,
           pageId: get(PAGE_ID_ATOM),
           state: atom(childState),
         } as ALL_SHAPES;
@@ -852,7 +852,8 @@ export const EVENT_DOWN_START_SHAPES = atom(
     if (TOOLS_BOX_BASED.includes(tool as FirstArrayKeys)) {
       set(CREATE_CURRENT_ITEM_ATOM, [
         CreateShapeSchema({
-          tool: tool as ShapeBase["tool"],
+          // tool: tool as ShapeBase["tool"],
+          tool: atom(tool as IShapeTool),
           x: atom(x),
           y: atom(y),
           label: atom<string>(tool),
@@ -863,7 +864,7 @@ export const EVENT_DOWN_START_SHAPES = atom(
     if (TOOLS_ICON_BASED.includes(tool as SecondArrayKeys)) {
       set(CREATE_CURRENT_ITEM_ATOM, [
         CreateShapeSchema({
-          tool: tool as IShapeTool,
+          tool: atom(tool as IShapeTool),
           x: atom(x),
           y: atom(y),
           label: atom<string>(tool),
@@ -884,7 +885,7 @@ export const EVENT_DOWN_START_SHAPES = atom(
 
       set(CREATE_CURRENT_ITEM_ATOM, [
         CreateShapeSchema({
-          tool: tool as IShapeTool,
+          tool: atom(tool as IShapeTool),
           points: atom<number[]>([x, y, x, y]),
           label: atom(capitalize(tool)),
           align: atom(get(drawConfig.align)),
@@ -993,18 +994,19 @@ export const EVENT_DOWN_CREATING_SHAPES = atom(
     CURRENT_ITEMS.forEach((item) => {
       const newHeight = isNotNegative(y - Number(get(item.y)));
       const newWidth = isNotNegative(x - Number(get(item.x)));
+      const tool = get(item.tool);
 
-      if (TOOLS_BOX_BASED.includes(item.tool as FirstArrayKeys)) {
+      if (TOOLS_BOX_BASED.includes(tool as FirstArrayKeys)) {
         set(item.width, newWidth);
         set(item.height, newHeight);
       }
 
-      if (TOOLS_ICON_BASED.includes(item.tool as SecondArrayKeys)) {
+      if (TOOLS_ICON_BASED.includes(tool as SecondArrayKeys)) {
         set(item.width, newWidth);
         set(item.height, newHeight);
       }
 
-      if (TOOLS_DRAW_BASED.includes(item.tool as DrawBasedTools)) {
+      if (TOOLS_DRAW_BASED.includes(tool as DrawBasedTools)) {
         set(item.points, get(item.points).concat(x, y));
       }
     });
@@ -1059,7 +1061,7 @@ export const CREATE_SHAPE_ATOM = atom(null, (get, set, args: ShapeState) => {
       ...get(childrenAtom),
       {
         id: args.id,
-        tool: args.tool,
+        // tool: args.tool,
         state: atom<ShapeState>(args),
         pageId: get(PAGE_ID_ATOM),
       },
@@ -1083,7 +1085,7 @@ export const CREATE_SHAPE_ATOM = atom(null, (get, set, args: ShapeState) => {
   // Otherwise, append as a root shape.
   const newAllShape: ALL_SHAPES = {
     id: args.id,
-    tool: args.tool,
+    // tool: args.tool,
     state: atom<ShapeState>(args),
   };
 

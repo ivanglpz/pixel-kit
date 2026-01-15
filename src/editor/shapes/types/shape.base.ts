@@ -60,7 +60,7 @@ export type ShapeBase = {
   label: string;
   tool: IShapeTool;
   parentId: string | null;
-  ssourceShapeId: string | null;
+  sourceShapeId: string | null;
   x: number;
   y: number;
   copyX: number;
