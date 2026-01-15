@@ -17,6 +17,11 @@ const ShapeIterator = ({ item, index, id }: ShapeIteratorProps) => {
   const Component = Shapes?.[tool];
   return (
     <Component
+      options={{
+        mirror: {
+          isLocked: false,
+        },
+      }}
       shape={{
         id: "1",
         state: atom({

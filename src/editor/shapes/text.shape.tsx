@@ -1,108 +1,87 @@
-import { useAtom, useAtomValue, useSetAtom } from "jotai";
+import { useAtom, useSetAtom } from "jotai";
 import { Text } from "react-konva";
 import { SELECTED_SHAPES_BY_IDS_ATOM } from "../states/shape";
 import { IShapeEvents } from "./type.shape";
 
 import { useMemo } from "react";
+import { useResolvedShape } from "./frame.shape";
 import { flexLayoutAtom } from "./layout-flex";
 export const ShapeText = (props: IShapeEvents) => {
-  const { shape: item } = props;
-  const box = useAtomValue(item.state);
-  const [rotation, setRotation] = useAtom(box.rotation);
-  const [x, setX] = useAtom(box.x);
-  const [y, setY] = useAtom(box.y);
-  const [width, setWidth] = useAtom(box.width);
-  const [height, setHeight] = useAtom(box.height);
-  const visible = useAtomValue(box.visible);
+  const shape = useResolvedShape(props.shape);
+  const { setX, setY, setWidth, setHeight, setRotation } = shape;
   const applyLayout = useSetAtom(flexLayoutAtom);
-  const isLocked = useAtomValue(box.isLocked);
-  const parentId = useAtomValue(box.parentId);
-  const shadowColor = useAtomValue(box.shadowColor);
-  const strokeColor = useAtomValue(box.strokeColor);
-  const fillColor = useAtomValue(box.fillColor);
-  const strokeWidth = useAtomValue(box.strokeWidth);
-  const dash = useAtomValue(box.dash);
-  const isAllBorderRadius = useAtomValue(box.isAllBorderRadius);
-  const borderTopLeftRadius = useAtomValue(box.borderTopLeftRadius);
-  const borderTopRightRadius = useAtomValue(box.borderTopRightRadius);
-  const borderBottomRightRadius = useAtomValue(box.borderBottomRightRadius);
-  const borderBottomLeftRadius = useAtomValue(box.borderBottomLeftRadius);
-  const borderRadius = useAtomValue(box.borderRadius);
-  const shadowOpacity = useAtomValue(box.shadowOpacity);
-  const shadowOffsetX = useAtomValue(box.shadowOffsetX);
-  const shadowOffsetY = useAtomValue(box.shadowOffsetY);
-  const shadowBlur = useAtomValue(box.shadowBlur);
-  const opacity = useAtomValue(box.opacity);
-  const fontFamily = useAtomValue(box.fontFamily);
-  const fontVariant = useAtomValue(box.fontWeight);
-  const text = useAtomValue(box.text);
-  const fontSize = useAtomValue(box.fontSize);
   const [shapeId, setShapeId] = useAtom(SELECTED_SHAPES_BY_IDS_ATOM);
   const isSelected = useMemo(
-    () => shapeId.some((w) => w.id === box.id),
-    [shapeId, box.id]
+    () => shapeId.some((w) => w.id === shape.id),
+    [shapeId, shape.id]
   );
 
-  if (!visible) return null;
+  const listening = useMemo(() => {
+    if (props?.options?.mirror?.isLocked) {
+      return false;
+    }
+    return !shape.isLocked;
+  }, [props?.options?.mirror?.isLocked, shape.isLocked]);
+  if (!shape.visible) return null;
 
   return (
     <>
       <Text
         // 1. Identificación y referencia
-        id={box?.id}
-        parentId={parentId}
+        id={props?.options?.mirror?.isLocked ? "" : shape?.id}
+        parentId={shape.parentId}
         // 2. Posición y tamaño - calculada manualmente para rotación
-        x={x}
-        y={y}
-        width={width}
-        height={height}
-        rotation={rotation}
-        fontFamily={fontFamily}
-        fontVariant={fontVariant}
-        text={text}
-        fontSize={fontSize}
+        x={shape.x}
+        y={shape.y}
+        width={shape.width}
+        height={shape.height}
+        rotation={shape.rotation}
+        fontFamily={shape.fontFamily}
+        fontVariant={shape.fontVariant}
+        text={shape.text}
+        fontSize={shape.fontSize}
         lineHeight={1.45}
         // Sin offset - calculamos todo manualmente
         // offsetX={width / 2}
         // offsetY={height / 2}
         // Sin offset - calculamos todo manualmente
-        listening={!isLocked}
+        listening={listening}
         // 3. Relleno y color
         fillEnabled
-        fill={fillColor}
+        fill={shape.fillColor}
         // 4. Bordes y trazos
-        stroke={strokeColor}
-        strokeWidth={strokeWidth}
+        stroke={shape.strokeColor}
+        strokeWidth={shape.strokeWidth}
         strokeEnabled={false}
         // dash={[dash, dash, dash, dash]}
-        dash={[dash]}
-        dashEnabled={dash > 0}
+        dash={[shape.dash]}
+        dashEnabled={shape.dash > 0}
         cornerRadius={
-          !isAllBorderRadius
+          !shape.isAllBorderRadius
             ? [
-                borderTopLeftRadius,
-                borderTopRightRadius,
-                borderBottomRightRadius,
-                borderBottomLeftRadius,
+                shape.borderTopLeftRadius,
+                shape.borderTopRightRadius,
+                shape.borderBottomRightRadius,
+                shape.borderBottomLeftRadius,
               ]
-            : borderRadius
+            : shape.borderRadius
         }
         // 5. Sombras
-        shadowColor={shadowColor}
-        shadowOpacity={shadowOpacity}
-        shadowOffsetX={shadowOffsetX}
-        shadowOffsetY={shadowOffsetY}
-        shadowBlur={shadowBlur}
+        shadowColor={shape.shadowColor}
+        shadowOpacity={shape.shadowOpacity}
+        shadowOffsetX={shape.shadowOffsetX}
+        shadowOffsetY={shape.shadowOffsetY}
+        shadowBlur={shape.shadowBlur}
         shadowEnabled
         // 6. Apariencia y opacidad
-        opacity={opacity}
+        opacity={shape.opacity}
         // 7. Interactividad y arrastre
         draggable={isSelected}
         // 8. Eventos
         onClick={() => {
           setShapeId({
-            id: box?.id,
-            parentId: parentId,
+            id: props?.shape?.id,
+            parentId: shape.parentId,
           });
         }}
         onDragMove={(evt) => {
@@ -110,8 +89,8 @@ export const ShapeText = (props: IShapeEvents) => {
           setY(evt.target.y());
         }}
         onDragEnd={() => {
-          if (!parentId) return;
-          applyLayout({ id: parentId });
+          if (!shape.parentId) return;
+          applyLayout({ id: shape.parentId });
         }}
         onTransform={(e) => {
           const scaleX = e.target.scaleX();
@@ -123,8 +102,8 @@ export const ShapeText = (props: IShapeEvents) => {
           setHeight(Math.max(e.target.height() * scaleY));
         }}
         onTransformEnd={() => {
-          if (!parentId) return;
-          applyLayout({ id: parentId });
+          if (!shape.parentId) return;
+          applyLayout({ id: shape.parentId });
         }}
       />
     </>

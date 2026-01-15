@@ -770,6 +770,10 @@ export const EVENT_COPY_START_SHAPES = atom(
         offsetY: asAtom(IS_ROOT ? offsetY : 0),
         offsetCopyX: asAtom(IS_ROOT ? rootX : 0),
         offsetCopyY: asAtom(IS_ROOT ? rootY : 0),
+        sourceShapeId: atom(
+          get(get(shape.state).isComponent) ? get(shape.state).id : null
+        ),
+        isComponent: atom(false),
       };
     };
 

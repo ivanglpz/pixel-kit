@@ -137,6 +137,11 @@ export type IShape = {
 
 export type IShapeEvents = {
   shape: ALL_SHAPES;
+  options: {
+    mirror: {
+      isLocked: boolean;
+    };
+  };
 };
 
 export type FCShapeWEvents = FC<IShapeEvents>;

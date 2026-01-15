@@ -5,6 +5,7 @@ import { Layer, Transformer } from "react-konva";
 import { constants } from "../constants/color";
 import { useAutoSave } from "../hooks/useAutoSave";
 import { Shapes } from "../shapes/shapes";
+import { IShapeEvents } from "../shapes/type.shape";
 import { SELECTED_SHAPES_BY_IDS_ATOM } from "../states/shape";
 import ALL_SHAPES_ATOM, { ALL_SHAPES } from "../states/shapes";
 import { UPDATE_UNDO_REDO } from "../states/undo-redo";
@@ -23,14 +24,26 @@ type ShapeIteratorProps = {
   item: ALL_SHAPES;
   index: number;
   id: string;
+  options: IShapeEvents["options"];
 };
 
-export const ShapeIterator = ({ item, index, id }: ShapeIteratorProps) => {
+export const ShapeIterator = ({
+  item,
+  index,
+  id,
+  options,
+}: ShapeIteratorProps) => {
   const shape = useAtomValue(item.state);
   const tool = useAtomValue(shape.tool);
 
   const Component = Shapes?.[tool];
-  return <Component shape={item} key={`${id}-${item?.id}-${index}`} />;
+  return (
+    <Component
+      shape={item}
+      key={`${id}-${item?.id}-${index}`}
+      options={options}
+    />
+  );
 };
 export const LayerShapes = () => {
   const ALL_SHAPES = useAtomValue(ALL_SHAPES_ATOM);
@@ -58,7 +71,16 @@ export const LayerShapes = () => {
       <Layer id="layer-shapes" ref={lyRef}>
         {ALL_SHAPES?.map((item, index) => {
           return (
-            <ShapeIterator id="pixel-kit-shapes" item={item} index={index} />
+            <ShapeIterator
+              id="pixel-kit-shapes"
+              item={item}
+              index={index}
+              options={{
+                mirror: {
+                  isLocked: false,
+                },
+              }}
+            />
           );
         })}
         {/* Transformer */}
