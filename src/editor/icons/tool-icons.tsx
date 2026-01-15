@@ -258,6 +258,9 @@ export const iconsWithTools: { [key in IShapeTool]: JSX.Element } = {
   IMAGE: icons.image,
   TEXT: icons.text,
   ICON: icons.icon,
+  COMPONENT: icons.icon,
+  INSTANCE: icons.icon,
+
   // LINE: icons.line,
   // CLIP: icons.clip,
 };

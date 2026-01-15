@@ -13,7 +13,7 @@ type WrappedExtraProps = {
 type BaseWithoutChildren = Omit<ShapeBase, "children">;
 
 export type ShapeState = {
-  [K in keyof BaseWithoutChildren]: K extends "id" | "tool"
+  [K in keyof BaseWithoutChildren]: K extends "id"
     ? BaseWithoutChildren[K]
     : PrimitiveAtom<BaseWithoutChildren[K]>;
 } & WrappedExtraProps;

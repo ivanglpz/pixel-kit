@@ -5,9 +5,8 @@ import { Layer, Transformer } from "react-konva";
 import { constants } from "../constants/color";
 import { useAutoSave } from "../hooks/useAutoSave";
 import { Shapes } from "../shapes/shapes";
-import { FCShapeWEvents } from "../shapes/type.shape";
 import { SELECTED_SHAPES_BY_IDS_ATOM } from "../states/shape";
-import ALL_SHAPES_ATOM from "../states/shapes";
+import ALL_SHAPES_ATOM, { ALL_SHAPES } from "../states/shapes";
 import { UPDATE_UNDO_REDO } from "../states/undo-redo";
 
 const getAllShapes = (node: Konva.Layer | Konva.Group): Konva.Shape[] => {
@@ -20,6 +19,19 @@ const getAllShapes = (node: Konva.Layer | Konva.Group): Konva.Shape[] => {
   });
 };
 
+type ShapeIteratorProps = {
+  item: ALL_SHAPES;
+  index: number;
+  id: string;
+};
+
+export const ShapeIterator = ({ item, index, id }: ShapeIteratorProps) => {
+  const shape = useAtomValue(item.state);
+  const tool = useAtomValue(shape.tool);
+
+  const Component = Shapes?.[tool];
+  return <Component shape={item} key={`${id}-${item?.id}-${index}`} />;
+};
 export const LayerShapes = () => {
   const ALL_SHAPES = useAtomValue(ALL_SHAPES_ATOM);
   const trRef = useRef<Konva.Transformer>(null);
@@ -45,12 +57,8 @@ export const LayerShapes = () => {
     <>
       <Layer id="layer-shapes" ref={lyRef}>
         {ALL_SHAPES?.map((item, index) => {
-          const Component = Shapes?.[item?.tool] as FCShapeWEvents;
           return (
-            <Component
-              shape={item}
-              key={`pixel-kit-shapes-${item?.id}-${index}`}
-            />
+            <ShapeIterator id="pixel-kit-shapes" item={item} index={index} />
           );
         })}
         {/* Transformer */}
@@ -63,12 +71,12 @@ export const LayerShapes = () => {
           anchorCornerRadius={2}
           keepRatio={false}
           onTransformEnd={() => {
-            setUpdateUndoRedo();
-            debounce.execute();
+            // setUpdateUndoRedo();
+            // debounce.execute();
           }}
           onDragEnd={() => {
-            setUpdateUndoRedo();
-            debounce.execute();
+            // setUpdateUndoRedo();
+            // debounce.execute();
           }}
           anchorStroke={constants.theme.colors.primary}
           boundBoxFunc={(oldBox, newBox) => {

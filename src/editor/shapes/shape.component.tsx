@@ -1,10 +1,10 @@
 import { useAtomValue, useSetAtom } from "jotai";
 import { useEffect } from "react";
 import { Group } from "react-konva";
+import { ShapeIterator } from "../layers/layer.shapes";
 import ShapeBox from "./box.shape";
 import { flexLayoutAtom } from "./layout-flex";
-import { Shapes } from "./shapes";
-import { FCShapeWEvents, IShapeEvents } from "./type.shape";
+import { IShapeEvents } from "./type.shape";
 
 export const SHAPE_COMPONENT = (props: IShapeEvents) => {
   const { shape: item } = props;
@@ -84,13 +84,9 @@ export const SHAPE_COMPONENT = (props: IShapeEvents) => {
           height,
         }}
       >
-        {childrens?.map((child) => {
-          const Component = Shapes?.[child?.tool] as FCShapeWEvents;
+        {childrens?.map((child, index) => {
           return (
-            <Component
-              shape={child}
-              key={`pixel-group-shapes--${box.id}${child?.id}-${child.tool}`}
-            />
+            <ShapeIterator id="pixel-group-shapes" item={child} index={index} />
           );
         })}
       </Group>

@@ -111,7 +111,8 @@ const createNodeFromShape = async (
   ctx: CTX_EXP,
   IS_ROOT = false
 ): Promise<Konva.Node> => {
-  if (shape.tool === "FRAME" && parent) {
+  const tool = ctx.get(shape.tool);
+  if (tool === "FRAME" && parent) {
     return createFrameNodes(shape, parent, ctx, IS_ROOT);
   }
 
@@ -127,7 +128,7 @@ const createNodeFromShape = async (
     id: shape.id,
   };
 
-  switch (shape.tool) {
+  switch (tool) {
     case "ICON": {
       const width = ctx.get(shape.width);
       const height = ctx.get(shape.height);
@@ -259,17 +260,20 @@ const createNodeFromShape = async (
 ======================= */
 
 export const attachShapeRecursively = async (
-  shape: ALL_SHAPES,
+  item: ALL_SHAPES,
   parent: Konva.Container,
   ctx: CTX_EXP,
   isRoot = false
 ): Promise<Konva.Node> => {
-  if (shape.tool === "FRAME") {
-    return createFrameNodes(ctx.get(shape.state), parent, ctx, isRoot);
+  const shape = ctx.get(item.state);
+  const tool = ctx.get(shape.tool);
+
+  if (tool === "FRAME") {
+    return createFrameNodes(ctx.get(item.state), parent, ctx, isRoot);
   }
 
   const node = await createNodeFromShape(
-    ctx.get(shape.state),
+    ctx.get(item.state),
     parent,
     ctx,
     isRoot
@@ -279,7 +283,7 @@ export const attachShapeRecursively = async (
   const container = node instanceof Konva.Group ? node : parent;
 
   await Promise.all(
-    getChildren(ctx.get(shape.state), ctx).map((child) =>
+    getChildren(ctx.get(item.state), ctx).map((child) =>
       attachShapeRecursively(child, container, ctx)
     )
   );

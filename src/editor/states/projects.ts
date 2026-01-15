@@ -10,7 +10,7 @@ import { MODE } from "./mode";
 import { IPageBase, IPageState, IShapeId } from "./pages";
 import { ALL_SHAPES, SHAPE_BASE_CHILDREN, WithInitialValue } from "./shapes";
 import { GET_TABS_BY_USER, TABS_PERSIST_ATOM, TabsProps } from "./tabs";
-import { IKeyTool } from "./tool";
+import { IKeyTool, IShapeTool } from "./tool";
 import { UndoRedoAction } from "./undo-redo";
 
 export type IPROJECT = {
@@ -50,9 +50,9 @@ const cloneShapeRecursive = (shape: SHAPE_BASE_CHILDREN): ALL_SHAPES => {
 
   const theTool = SHAPE_IMAGE?.src
     ? SVG.IsEncode(SHAPE_IMAGE.src)
-      ? "ICON"
-      : shape.tool
-    : shape.tool;
+      ? atom<IShapeTool>("ICON")
+      : atom<IShapeTool>(shape.state.tool)
+    : atom<IShapeTool>(shape.state.tool);
 
   const data: ShapeState = Object.fromEntries(
     Object.entries(shape.state).map(([key, value]) => {
@@ -74,7 +74,7 @@ const cloneShapeRecursive = (shape: SHAPE_BASE_CHILDREN): ALL_SHAPES => {
 
   return {
     id: shape.id,
-    tool: theTool,
+    // tool: theTool,
     state: atom({
       ...data,
       shadowColor: atom(
@@ -264,7 +264,7 @@ export const GET_JSON_PROJECTS_ATOM = atom(null, (get, set) => {
 
     return {
       id: shape.id,
-      tool: shape.tool,
+      // tool: shape.tool,
       state: data,
     };
   };

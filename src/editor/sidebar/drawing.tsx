@@ -13,11 +13,12 @@ import {
 } from "./sidebar-right-shape";
 
 export const Drawing = () => {
-  const tool = useAtomValue(TOOL_ATOM);
+  const user_tool = useAtomValue(TOOL_ATOM);
 
   const shape = useAtomValue(DRAW_START_CONFIG_ATOM);
+  const tool = useAtomValue(shape.tool);
 
-  if (!["DRAW", "LINE"].includes(tool)) return null;
+  if (!["DRAW", "LINE"].includes(user_tool)) return null;
 
   return (
     <div
@@ -57,7 +58,7 @@ export const Drawing = () => {
                   <Input.Number
                     min={0}
                     max={9999}
-                    step={["DRAW", "ICON"].includes(shape.tool) ? 0.1 : 1}
+                    step={["DRAW", "ICON"].includes(tool) ? 0.1 : 1}
                   />
                 </Input.withChange>
               </Input.withPause>
@@ -87,7 +88,7 @@ export const Drawing = () => {
             />
           </div>
         </div>
-        {["FRAME", "IMAGE", "DRAW"].includes(shape.tool) ? (
+        {["FRAME", "IMAGE", "DRAW"].includes(tool) ? (
           <Input.Container>
             <Input.Grid>
               <Input.IconContainer>
