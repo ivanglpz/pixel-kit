@@ -156,6 +156,7 @@ export const NodesDefault = ({
   const [visible, setVisible] = useAtom(shape.visible);
   const parentId = useAtomValue(shape.parentId);
   const tool = useAtomValue(shape.tool);
+  const [isComponent, setComponent] = useAtom(shape.isComponent);
   // ✅ Usar controles externos si están disponibles, sino crear propios
   const dragControls = externalDragControls;
 
@@ -405,12 +406,10 @@ export const NodesDefault = ({
           <ContextMenuItem
             className="text-[12px]"
             onClick={() => {
-              setTool("MOVE");
-              DELETE_SHAPE();
-              debounce.execute();
+              setComponent(!isComponent);
             }}
           >
-            Create component
+            {isComponent ? "Detach" : "Create"} component
           </ContextMenuItem>
           <ContextMenuItem
             className="text-[12px]"

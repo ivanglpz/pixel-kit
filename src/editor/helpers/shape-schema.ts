@@ -32,6 +32,7 @@ export const CreateShapeSchema = (props?: Partial<ShapeState>): ShapeState => {
     y: atom(0),
     tool: atom<IShapeTool>("FRAME"),
     sourceShapeId: atom<string | null>(null),
+    isComponent: atom<boolean>(false),
     align: atom<Align>("left"),
     fillColor: atom("#ffffff"),
     strokeColor: atom("#ffffff"),

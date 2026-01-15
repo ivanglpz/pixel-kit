@@ -74,7 +74,6 @@ const cloneShapeRecursive = (shape: SHAPE_BASE_CHILDREN): ALL_SHAPES => {
 
   return {
     id: shape.id,
-    // tool: theTool,
     state: atom({
       ...data,
       shadowColor: atom(
@@ -255,7 +254,7 @@ export const GET_JSON_PROJECTS_ATOM = atom(null, (get, set) => {
             key,
             get(get(shape.state).children).map((c) => cloneShapeJson(c)),
           ];
-        if (key === "id" || key === "tool") {
+        if (key === "id") {
           return [key, value];
         }
         return [key, get(value as PrimitiveAtom<ShapeBase[keyof ShapeBase]>)];
@@ -264,7 +263,6 @@ export const GET_JSON_PROJECTS_ATOM = atom(null, (get, set) => {
 
     return {
       id: shape.id,
-      // tool: shape.tool,
       state: data,
     };
   };

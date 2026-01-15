@@ -59,6 +59,7 @@ export type ShapeBase = {
   id: string;
   label: string;
   tool: IShapeTool;
+  isComponent: boolean;
   parentId: string | null;
   sourceShapeId: string | null;
   x: number;

@@ -1,9 +1,10 @@
-import { useAtom, useAtomValue, useSetAtom } from "jotai";
+import { useAtom, useSetAtom } from "jotai";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Image as KonvaImage } from "react-konva";
 
 import { SELECTED_SHAPES_BY_IDS_ATOM } from "../states/shape";
 import { calculateCoverCrop } from "../utils/crop";
+import { useResolvedShape } from "./frame.shape";
 import { flexLayoutAtom } from "./layout-flex";
 import { IShapeEvents } from "./type.shape";
 
@@ -115,55 +116,22 @@ export function useKonvaImage(img: ImageSource): ValidatedImageResult {
 // Component
 // ============================================================================
 
-export const ShapeImage = ({ shape: item }: IShapeEvents) => {
+export const ShapeImage = ({ shape: item, options }: IShapeEvents) => {
   // Box state
-  const box = useAtomValue(item.state);
-  const [rotation, setRotation] = useAtom(box.rotation);
-  const [x, setX] = useAtom(box.x);
-  const [y, setY] = useAtom(box.y);
-  const [width, setWidth] = useAtom(box.width);
-  const [height, setHeight] = useAtom(box.height);
 
-  // Visibility and interaction
-  const visible = useAtomValue(box.visible);
-  const isLocked = useAtomValue(box.isLocked);
-  const parentId = useAtomValue(box.parentId);
-
-  // Appearance
-  const opacity = useAtomValue(box.opacity);
-  const fillColor = useAtomValue(box.fillColor);
-
-  // Stroke
-  const strokeColor = useAtomValue(box.strokeColor);
-  const strokeWidth = useAtomValue(box.strokeWidth);
-  const dash = useAtomValue(box.dash);
-
-  // Border radius
-  const isAllBorderRadius = useAtomValue(box.isAllBorderRadius);
-  const borderRadius = useAtomValue(box.borderRadius);
-  const borderTopLeftRadius = useAtomValue(box.borderTopLeftRadius);
-  const borderTopRightRadius = useAtomValue(box.borderTopRightRadius);
-  const borderBottomRightRadius = useAtomValue(box.borderBottomRightRadius);
-  const borderBottomLeftRadius = useAtomValue(box.borderBottomLeftRadius);
-
-  // Shadow
-  const shadowColor = useAtomValue(box.shadowColor);
-  const shadowOpacity = useAtomValue(box.shadowOpacity);
-  const shadowOffsetX = useAtomValue(box.shadowOffsetX);
-  const shadowOffsetY = useAtomValue(box.shadowOffsetY);
-  const shadowBlur = useAtomValue(box.shadowBlur);
-
+  const shape = useResolvedShape(item);
+  const { setX, setY, setWidth, setHeight, setRotation } = shape;
   // Selection and layout
   const [shapeId, setShapeId] = useAtom(SELECTED_SHAPES_BY_IDS_ATOM);
   const applyLayout = useSetAtom(flexLayoutAtom);
 
   // Computed values
   const isSelected = useMemo(
-    () => shapeId.some((shape) => shape.id === box.id),
-    [shapeId, box.id]
+    () => shapeId.some((shape) => shape.id === shape.id),
+    [shapeId, shape.id]
   );
 
-  const IMG = useAtomValue(box.image);
+  const IMG = shape.IMG;
   const RENDER_IMAGE = useKonvaImage(IMG);
 
   const cropConfig = useMemo(
@@ -171,36 +139,36 @@ export const ShapeImage = ({ shape: item }: IShapeEvents) => {
       calculateCoverCrop(
         RENDER_IMAGE.width,
         RENDER_IMAGE.height,
-        Number(width),
-        Number(height)
+        Number(shape.width),
+        Number(shape.height)
       ),
-    [RENDER_IMAGE.width, RENDER_IMAGE.height, width, height]
+    [RENDER_IMAGE.width, RENDER_IMAGE.height, shape.width, shape.height]
   );
 
   const cornerRadiusConfig = useMemo(
     () =>
-      isAllBorderRadius
+      shape.isAllBorderRadius
         ? [
-            borderTopLeftRadius,
-            borderTopRightRadius,
-            borderBottomRightRadius,
-            borderBottomLeftRadius,
+            shape.borderTopLeftRadius,
+            shape.borderTopRightRadius,
+            shape.borderBottomRightRadius,
+            shape.borderBottomLeftRadius,
           ]
-        : borderRadius,
+        : shape.borderRadius,
     [
-      isAllBorderRadius,
-      borderRadius,
-      borderTopLeftRadius,
-      borderTopRightRadius,
-      borderBottomRightRadius,
-      borderBottomLeftRadius,
+      shape.isAllBorderRadius,
+      shape.borderRadius,
+      shape.borderTopLeftRadius,
+      shape.borderTopRightRadius,
+      shape.borderBottomRightRadius,
+      shape.borderBottomLeftRadius,
     ]
   );
 
   // Event handlers
   const handleClick = useCallback(() => {
-    setShapeId({ id: box.id, parentId });
-  }, [box.id, parentId, setShapeId]);
+    setShapeId({ id: item?.id, parentId: shape.parentId });
+  }, [shape.id, shape.parentId, setShapeId]);
 
   const handleDragMove = useCallback(
     (evt: any) => {
@@ -211,10 +179,10 @@ export const ShapeImage = ({ shape: item }: IShapeEvents) => {
   );
 
   const handleDragEnd = useCallback(() => {
-    if (parentId) {
-      applyLayout({ id: parentId });
+    if (shape.parentId) {
+      applyLayout({ id: shape.parentId });
     }
-  }, [parentId, applyLayout]);
+  }, [shape.parentId, applyLayout]);
 
   const handleTransform = useCallback(
     (e: any) => {
@@ -235,50 +203,67 @@ export const ShapeImage = ({ shape: item }: IShapeEvents) => {
   );
 
   const handleTransformEnd = useCallback(() => {
-    if (parentId) {
-      applyLayout({ id: parentId });
+    if (shape.parentId) {
+      applyLayout({ id: shape.parentId });
     }
-  }, [parentId, applyLayout]);
+  }, [shape.parentId, applyLayout]);
 
   // Early return if not visible
-  if (!visible) return null;
+
+  const listening = useMemo(() => {
+    if (options?.mirror?.isLocked) {
+      return false;
+    }
+    return !shape.isLocked;
+  }, [options?.mirror?.isLocked, shape.isLocked]);
+
+  if (!shape.visible) return null;
 
   return (
     <KonvaImage
       // Identity
-      id={box.id}
+      id={options?.mirror?.isLocked ? "" : shape?.id}
       image={RENDER_IMAGE.image}
       crop={cropConfig}
-      parentId={parentId}
+      parentId={shape.parentId}
       globalCompositeOperation="source-over"
       // Position and size
-      x={x}
-      y={y}
-      width={width}
-      height={height}
-      rotation={rotation}
+      x={shape.x}
+      y={shape.y}
+      width={shape.width}
+      height={shape.height}
+      rotation={shape.rotation}
       // Interaction
-      listening={!isLocked}
+      listening={listening}
       draggable={isSelected}
       // Fill
       fillEnabled
-      fill={fillColor}
+      fill={shape.fillColor}
       // Stroke
-      stroke={strokeColor}
-      strokeWidth={strokeWidth}
-      strokeEnabled={strokeWidth > 0}
-      dash={[dash]}
-      dashEnabled={dash > 0}
-      cornerRadius={cornerRadiusConfig}
-      // Shadow
-      shadowColor={shadowColor}
-      shadowOpacity={shadowOpacity}
-      shadowOffsetX={shadowOffsetX}
-      shadowOffsetY={shadowOffsetY}
-      shadowBlur={shadowBlur}
+      stroke={shape.strokeColor}
+      strokeWidth={shape.strokeWidth}
+      strokeEnabled={shape.strokeWidth > 0}
+      dash={[shape.dash]}
+      dashEnabled={shape.dash > 0}
+      cornerRadius={
+        !shape.isAllBorderRadius
+          ? [
+              shape.borderTopLeftRadius,
+              shape.borderTopRightRadius,
+              shape.borderBottomRightRadius,
+              shape.borderBottomLeftRadius,
+            ]
+          : shape.borderRadius
+      }
+      // 5. Sombras
+      shadowColor={shape.shadowColor}
+      shadowOpacity={shape.shadowOpacity}
+      shadowOffsetX={shape.shadowOffsetX}
+      shadowOffsetY={shape.shadowOffsetY}
+      shadowBlur={shape.shadowBlur}
       shadowEnabled
-      // Appearance
-      opacity={opacity}
+      // 6. Apariencia y opacidad
+      opacity={shape.opacity}
       // Events
       onClick={handleClick}
       onDragMove={handleDragMove}

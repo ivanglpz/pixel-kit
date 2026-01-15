@@ -3,8 +3,6 @@ import { ShapeDraw } from "./drawn.shape";
 import { SHAPE_FRAME } from "./frame.shape";
 import { SHAPE_ICON } from "./icon.shape";
 import { ShapeImage } from "./image.shape";
-import { SHAPE_COMPONENT } from "./shape.component";
-import { SHAPE_INSTANCE } from "./shape.instance";
 import { ShapeText } from "./text.shape";
 import { IShapeEvents } from "./type.shape";
 
@@ -18,6 +16,4 @@ export const Shapes: IMapperElements = {
   IMAGE: ShapeImage,
   DRAW: ShapeDraw,
   ICON: SHAPE_ICON,
-  INSTANCE: SHAPE_INSTANCE,
-  COMPONENT: SHAPE_COMPONENT,
 };

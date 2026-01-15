@@ -1159,7 +1159,7 @@ export const LayoutShapeConfig = () => {
       </section>
 
       <Separator />
-      <ShapeShowAtomProvider atomo={shape.tool} ctx={(e) => e === "FRAME"}>
+      <ShapeShowAtomProvider atomo={shape.tool} ctx={(e) => e !== "FRAME"}>
         <section className={commonStyles.container}>
           <SectionHeader title="Layouts">
             <ShapeAtomButton
@@ -1276,7 +1276,7 @@ export const LayoutShapeConfig = () => {
         </div>
         <ShapeShowAtomProvider
           atomo={shape.tool}
-          ctx={(e) => !["TEXT", "ICON", "DRAW"].includes(e as IShapeTool)}
+          ctx={(e) => ["TEXT", "ICON", "DRAW"].includes(e as IShapeTool)}
         >
           <div
             className={css({
@@ -1394,7 +1394,7 @@ export const LayoutShapeConfig = () => {
 
       <Separator />
 
-      <ShapeShowAtomProvider atomo={shape.tool} ctx={(e) => e === "TEXT"}>
+      <ShapeShowAtomProvider atomo={shape.tool} ctx={(e) => e !== "TEXT"}>
         <section className={commonStyles.container}>
           <SectionHeader title="Typography" />
 
