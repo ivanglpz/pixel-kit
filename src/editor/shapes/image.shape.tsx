@@ -212,11 +212,11 @@ export const ShapeImage = ({ shape: item, options }: IShapeEvents) => {
   // Early return if not visible
 
   const listening = useMemo(() => {
-    if (options?.mirror?.isLocked) {
+    if (options?.isLocked) {
       return false;
     }
     return !shape.isLocked;
-  }, [options?.mirror?.isLocked, shape.isLocked]);
+  }, [options?.isLocked, shape.isLocked]);
 
   if (!shape.visible) return null;
 
@@ -230,7 +230,7 @@ export const ShapeImage = ({ shape: item, options }: IShapeEvents) => {
       />
       <KonvaImage
         // Identity
-        id={options?.mirror?.isLocked ? "" : shape?.id}
+        id={options?.isLocked ? "" : shape?.id}
         image={RENDER_IMAGE.image}
         crop={cropConfig}
         parentId={shape.parentId}

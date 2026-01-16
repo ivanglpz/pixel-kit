@@ -78,9 +78,7 @@ export const LayerShapes = () => {
               item={item}
               index={index}
               options={{
-                mirror: {
-                  isLocked: false,
-                },
+                isLocked: false,
                 background,
               }}
             />

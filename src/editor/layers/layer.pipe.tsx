@@ -50,9 +50,7 @@ export const LayerPipe = () => {
               item={item}
               index={index}
               options={{
-                mirror: {
-                  isLocked: false,
-                },
+                isLocked: false,
                 background,
               }}
             />
