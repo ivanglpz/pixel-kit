@@ -214,9 +214,7 @@ export const SHAPE_FRAME = (props: IShapeEvents) => {
       <ShapeBox
         shape={item}
         options={{
-          mirror: {
-            isLocked: props?.options?.mirror?.isLocked,
-          },
+          isLocked: props?.options?.isLocked,
           background: props?.options?.background,
         }}
       />
@@ -244,13 +242,10 @@ export const SHAPE_FRAME = (props: IShapeEvents) => {
               item={child}
               index={index}
               options={{
-                mirror: {
-                  isLocked:
-                    props?.options?.mirror?.isLocked ||
-                    shape_resolved?.sourceShapeId
-                      ? true
-                      : false,
-                },
+                isLocked:
+                  props?.options?.isLocked || shape_resolved?.sourceShapeId
+                    ? true
+                    : false,
                 background: shape_resolved?.fillColor,
               }}
             />

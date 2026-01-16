@@ -18,11 +18,11 @@ export const ShapeText = (props: IShapeEvents) => {
   );
 
   const listening = useMemo(() => {
-    if (props?.options?.mirror?.isLocked) {
+    if (props?.options?.isLocked) {
       return false;
     }
     return !shape.isLocked;
-  }, [props?.options?.mirror?.isLocked, shape.isLocked]);
+  }, [props?.options?.isLocked, shape.isLocked]);
   if (!shape.visible) return null;
 
   return (
@@ -35,7 +35,7 @@ export const ShapeText = (props: IShapeEvents) => {
       />
       <Text
         // 1. Identificación y referencia
-        id={props?.options?.mirror?.isLocked ? "" : shape?.id}
+        id={props?.options?.isLocked ? "" : shape?.id}
         parentId={shape.parentId}
         // 2. Posición y tamaño - calculada manualmente para rotación
         x={shape.x}

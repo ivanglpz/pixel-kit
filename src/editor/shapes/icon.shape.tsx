@@ -57,11 +57,11 @@ export const SHAPE_ICON = (props: IShapeEvents) => {
   );
 
   const listening = useMemo(() => {
-    if (props?.options?.mirror?.isLocked) {
+    if (props?.options?.isLocked) {
       return false;
     }
     return !shape.isLocked;
-  }, [props?.options?.mirror?.isLocked, shape.isLocked]);
+  }, [props?.options?.isLocked, shape.isLocked]);
 
   if (!shape.visible) return null;
 
@@ -78,7 +78,7 @@ export const SHAPE_ICON = (props: IShapeEvents) => {
       />
       <KonvaImage
         // 1. Identificación y referencia
-        id={props?.options?.mirror?.isLocked ? "" : shape?.id}
+        id={props?.options?.isLocked ? "" : shape?.id}
         image={IMAGE_ICON}
         crop={cropConfig}
         parentId={shape.parentId}
