@@ -70,12 +70,14 @@ export const SHAPE_ICON = (props: IShapeEvents) => {
   // =========================
   return (
     <>
-      <ShapeLabel
-        x={shape.x}
-        y={shape.y}
-        label={shape.label}
-        color={props?.options?.background}
-      />
+      {props?.options?.showLabel ? (
+        <ShapeLabel
+          x={shape.x}
+          y={shape.y}
+          label={shape.label}
+          color={props?.options?.background}
+        />
+      ) : null}
       <KonvaImage
         // 1. Identificación y referencia
         id={props?.options?.isLocked ? "" : shape?.id}

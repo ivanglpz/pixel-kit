@@ -211,13 +211,7 @@ export const SHAPE_FRAME = (props: IShapeEvents) => {
 
   return (
     <>
-      <ShapeBox
-        shape={item}
-        options={{
-          isLocked: props?.options?.isLocked,
-          background: props?.options?.background,
-        }}
-      />
+      <ShapeBox shape={item} options={props?.options} />
 
       <Group
         id={shape_resolved?.id}
@@ -247,6 +241,7 @@ export const SHAPE_FRAME = (props: IShapeEvents) => {
                     ? true
                     : false,
                 background: shape_resolved?.fillColor,
+                showLabel: true,
               }}
             />
           );
