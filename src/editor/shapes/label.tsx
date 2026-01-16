@@ -16,6 +16,8 @@ type ShapeLabelProps = {
 console.log(SVG.Encode(Boxes), "Boxes");
 
 export const ShapeLabel = ({ x, y, label, color }: ShapeLabelProps) => {
+  const lab = useMemo(() => label.slice(0, 25), [label]);
+  const colorBackground = useMemo(() => chooseColor(color), [color]);
   const state = useMemo(
     () =>
       atom(
@@ -28,9 +30,9 @@ export const ShapeLabel = ({ x, y, label, color }: ShapeLabelProps) => {
             height: 24,
             name: "icon",
           }),
-          width: atom(15),
-          height: atom(15),
-          strokeColor: atom<string>(chooseColor(color)),
+          width: atom(14),
+          height: atom(14),
+          strokeColor: atom<string>(colorBackground),
           strokeWidth: atom(1),
         })
       ),
@@ -51,9 +53,9 @@ export const ShapeLabel = ({ x, y, label, color }: ShapeLabelProps) => {
       />
       <Text
         x={x + 18}
-        y={y - 30}
-        text={`${label.slice(0, 25)}`}
-        fill={chooseColor(color)}
+        y={y - 31}
+        text={lab}
+        fill={colorBackground}
         fontStyle="semibold"
       ></Text>
     </>
