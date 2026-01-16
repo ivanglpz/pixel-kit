@@ -3,6 +3,7 @@ import { useMemo } from "react";
 import { Rect } from "react-konva";
 import { SELECTED_SHAPES_BY_IDS_ATOM } from "../states/shape";
 import { useResolvedShape } from "./frame.shape";
+import { ShapeLabel } from "./label";
 import { flexLayoutAtom } from "./layout-flex";
 import { IShapeEvents } from "./type.shape";
 
@@ -28,6 +29,13 @@ const ShapeBox = (props: IShapeEvents) => {
 
   return (
     <>
+      <ShapeLabel
+        x={shape.x}
+        y={shape.y}
+        label={shape.label}
+        color={props?.options?.background}
+      />
+
       <Rect
         // 1. Identificación y referencia
         id={props?.options?.mirror?.isLocked ? "" : shape?.id}

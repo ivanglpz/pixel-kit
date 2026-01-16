@@ -5,6 +5,7 @@ import { Image as KonvaImage } from "react-konva";
 import { SELECTED_SHAPES_BY_IDS_ATOM } from "../states/shape";
 import { calculateCoverCrop } from "../utils/crop";
 import { useResolvedShape } from "./frame.shape";
+import { ShapeLabel } from "./label";
 import { flexLayoutAtom } from "./layout-flex";
 import { IShapeEvents } from "./type.shape";
 
@@ -220,56 +221,64 @@ export const ShapeImage = ({ shape: item, options }: IShapeEvents) => {
   if (!shape.visible) return null;
 
   return (
-    <KonvaImage
-      // Identity
-      id={options?.mirror?.isLocked ? "" : shape?.id}
-      image={RENDER_IMAGE.image}
-      crop={cropConfig}
-      parentId={shape.parentId}
-      globalCompositeOperation="source-over"
-      // Position and size
-      x={shape.x}
-      y={shape.y}
-      width={shape.width}
-      height={shape.height}
-      rotation={shape.rotation}
-      // Interaction
-      listening={listening}
-      draggable={isSelected}
-      // Fill
-      fillEnabled
-      fill={shape.fillColor}
-      // Stroke
-      stroke={shape.strokeColor}
-      strokeWidth={shape.strokeWidth}
-      strokeEnabled={shape.strokeWidth > 0}
-      dash={[shape.dash]}
-      dashEnabled={shape.dash > 0}
-      cornerRadius={
-        !shape.isAllBorderRadius
-          ? [
-              shape.borderTopLeftRadius,
-              shape.borderTopRightRadius,
-              shape.borderBottomRightRadius,
-              shape.borderBottomLeftRadius,
-            ]
-          : shape.borderRadius
-      }
-      // 5. Sombras
-      shadowColor={shape.shadowColor}
-      shadowOpacity={shape.shadowOpacity}
-      shadowOffsetX={shape.shadowOffsetX}
-      shadowOffsetY={shape.shadowOffsetY}
-      shadowBlur={shape.shadowBlur}
-      shadowEnabled
-      // 6. Apariencia y opacidad
-      opacity={shape.opacity}
-      // Events
-      onClick={handleClick}
-      onDragMove={handleDragMove}
-      onDragEnd={handleDragEnd}
-      onTransform={handleTransform}
-      onTransformEnd={handleTransformEnd}
-    />
+    <>
+      <ShapeLabel
+        x={shape.x}
+        y={shape.y}
+        label={shape.label}
+        color={options?.background}
+      />
+      <KonvaImage
+        // Identity
+        id={options?.mirror?.isLocked ? "" : shape?.id}
+        image={RENDER_IMAGE.image}
+        crop={cropConfig}
+        parentId={shape.parentId}
+        globalCompositeOperation="source-over"
+        // Position and size
+        x={shape.x}
+        y={shape.y}
+        width={shape.width}
+        height={shape.height}
+        rotation={shape.rotation}
+        // Interaction
+        listening={listening}
+        draggable={isSelected}
+        // Fill
+        fillEnabled
+        fill={shape.fillColor}
+        // Stroke
+        stroke={shape.strokeColor}
+        strokeWidth={shape.strokeWidth}
+        strokeEnabled={shape.strokeWidth > 0}
+        dash={[shape.dash]}
+        dashEnabled={shape.dash > 0}
+        cornerRadius={
+          !shape.isAllBorderRadius
+            ? [
+                shape.borderTopLeftRadius,
+                shape.borderTopRightRadius,
+                shape.borderBottomRightRadius,
+                shape.borderBottomLeftRadius,
+              ]
+            : shape.borderRadius
+        }
+        // 5. Sombras
+        shadowColor={shape.shadowColor}
+        shadowOpacity={shape.shadowOpacity}
+        shadowOffsetX={shape.shadowOffsetX}
+        shadowOffsetY={shape.shadowOffsetY}
+        shadowBlur={shape.shadowBlur}
+        shadowEnabled
+        // 6. Apariencia y opacidad
+        opacity={shape.opacity}
+        // Events
+        onClick={handleClick}
+        onDragMove={handleDragMove}
+        onDragEnd={handleDragEnd}
+        onTransform={handleTransform}
+        onTransformEnd={handleTransformEnd}
+      />
+    </>
   );
 };

@@ -6,6 +6,7 @@ import { constants } from "../constants/color";
 import { useAutoSave } from "../hooks/useAutoSave";
 import { Shapes } from "../shapes/shapes";
 import { IShapeEvents } from "../shapes/type.shape";
+import STAGE_CANVAS_BACKGROUND from "../states/canvas";
 import { SELECTED_SHAPES_BY_IDS_ATOM } from "../states/shape";
 import ALL_SHAPES_ATOM, { ALL_SHAPES } from "../states/shapes";
 import { UPDATE_UNDO_REDO } from "../states/undo-redo";
@@ -52,6 +53,7 @@ export const LayerShapes = () => {
   const selectedIds = useAtomValue(SELECTED_SHAPES_BY_IDS_ATOM);
   const setUpdateUndoRedo = useSetAtom(UPDATE_UNDO_REDO);
   const { debounce } = useAutoSave();
+  const background = useAtomValue(STAGE_CANVAS_BACKGROUND);
 
   useEffect(() => {
     const allShapes = lyRef.current ? getAllShapes(lyRef.current) : [];
@@ -79,6 +81,7 @@ export const LayerShapes = () => {
                 mirror: {
                   isLocked: false,
                 },
+                background,
               }}
             />
           );

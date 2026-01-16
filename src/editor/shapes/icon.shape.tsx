@@ -7,6 +7,7 @@ import { Image as KonvaImage } from "react-konva";
 import { calculateCoverCrop } from "../utils/crop";
 import { SVG } from "../utils/svg";
 import { useResolvedShape } from "./frame.shape";
+import { ShapeLabel } from "./label";
 import { flexLayoutAtom } from "./layout-flex";
 import { IShapeEvents } from "./type.shape";
 
@@ -69,6 +70,12 @@ export const SHAPE_ICON = (props: IShapeEvents) => {
   // =========================
   return (
     <>
+      <ShapeLabel
+        x={shape.x}
+        y={shape.y}
+        label={shape.label}
+        color={props?.options?.background}
+      />
       <KonvaImage
         // 1. Identificación y referencia
         id={props?.options?.mirror?.isLocked ? "" : shape?.id}

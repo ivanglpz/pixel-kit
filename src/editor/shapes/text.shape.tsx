@@ -5,6 +5,7 @@ import { IShapeEvents } from "./type.shape";
 
 import { useMemo } from "react";
 import { useResolvedShape } from "./frame.shape";
+import { ShapeLabel } from "./label";
 import { flexLayoutAtom } from "./layout-flex";
 export const ShapeText = (props: IShapeEvents) => {
   const shape = useResolvedShape(props.shape);
@@ -26,6 +27,12 @@ export const ShapeText = (props: IShapeEvents) => {
 
   return (
     <>
+      <ShapeLabel
+        x={shape.x}
+        y={shape.y}
+        label={shape.label}
+        color={props?.options?.background}
+      />
       <Text
         // 1. Identificación y referencia
         id={props?.options?.mirror?.isLocked ? "" : shape?.id}

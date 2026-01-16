@@ -141,6 +141,7 @@ export type IShapeEvents = {
     mirror: {
       isLocked: boolean;
     };
+    background: string;
   };
 };
 
