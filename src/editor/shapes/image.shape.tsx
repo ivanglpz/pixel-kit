@@ -222,12 +222,14 @@ export const ShapeImage = ({ shape: item, options }: IShapeEvents) => {
 
   return (
     <>
-      <ShapeLabel
-        x={shape.x}
-        y={shape.y}
-        label={shape.label}
-        color={options?.background}
-      />
+      {options?.showLabel ? (
+        <ShapeLabel
+          x={shape.x}
+          y={shape.y}
+          label={shape.label}
+          color={options?.background}
+        />
+      ) : null}
       <KonvaImage
         // Identity
         id={options?.isLocked ? "" : shape?.id}

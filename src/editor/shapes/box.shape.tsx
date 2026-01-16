@@ -29,12 +29,14 @@ const ShapeBox = (props: IShapeEvents) => {
 
   return (
     <>
-      <ShapeLabel
-        x={shape.x}
-        y={shape.y}
-        label={shape.label}
-        color={props?.options?.background}
-      />
+      {props?.options?.showLabel ? (
+        <ShapeLabel
+          x={shape.x}
+          y={shape.y}
+          label={shape.label}
+          color={props?.options?.background}
+        />
+      ) : null}
 
       <Rect
         // 1. Identificación y referencia
