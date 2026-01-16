@@ -33,6 +33,7 @@ export const ShapeText = (props: IShapeEvents) => {
           y={shape.y}
           label={shape.label}
           color={props?.options?.background}
+          isComponent={shape.isComponent}
         />
       ) : null}
       <Text

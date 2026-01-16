@@ -120,6 +120,8 @@ export const useResolvedShape = (instance: ALL_SHAPES) => {
   const principalWidth = useAtomValue(SHAPE.width);
   const principalHeight = useAtomValue(SHAPE.height);
   const principalIsLocked = useAtomValue(SHAPE.isLocked);
+  const isComponent = useAtomValue(SHAPE.isComponent);
+  const label = useAtomValue(SHAPE.label);
 
   const setRotation = useSetAtom(SHAPE.rotation);
   const setX = useSetAtom(SHAPE.x);
@@ -153,6 +155,8 @@ export const useResolvedShape = (instance: ALL_SHAPES) => {
       setWidth,
       setHeight,
       sourceShapeId,
+      isComponent,
+      label,
     };
   }
 
@@ -179,57 +183,57 @@ export const useResolvedShape = (instance: ALL_SHAPES) => {
 
 export const SHAPE_FRAME = (props: IShapeEvents) => {
   const { shape: item } = props;
-  const shape_resolved = useResolvedShape(props.shape);
+  const shape = useResolvedShape(props.shape);
 
   const applyLayout = useSetAtom(flexLayoutAtom);
 
   useEffect(() => {
-    if (shape_resolved.isLayout) {
-      applyLayout({ id: shape_resolved.id });
+    if (shape.isLayout) {
+      applyLayout({ id: shape.id });
     }
   }, [
-    shape_resolved.isLayout,
-    shape_resolved.justifyContent,
-    shape_resolved.alignItems,
-    shape_resolved.flexDirection,
-    shape_resolved.flexWrap,
-    shape_resolved.width,
-    shape_resolved.height,
-    shape_resolved.gap,
-    shape_resolved.isAllPadding,
-    shape_resolved.padding,
-    shape_resolved.paddingTop,
-    shape_resolved.paddingRight,
-    shape_resolved.paddingBottom,
-    shape_resolved.paddingLeft,
-    shape_resolved.fillContainerWidth,
-    shape_resolved.fillContainerHeight,
-    shape_resolved.id,
+    shape.isLayout,
+    shape.justifyContent,
+    shape.alignItems,
+    shape.flexDirection,
+    shape.flexWrap,
+    shape.width,
+    shape.height,
+    shape.gap,
+    shape.isAllPadding,
+    shape.padding,
+    shape.paddingTop,
+    shape.paddingRight,
+    shape.paddingBottom,
+    shape.paddingLeft,
+    shape.fillContainerWidth,
+    shape.fillContainerHeight,
+    shape.id,
   ]);
 
-  if (!shape_resolved.visible) return null;
+  if (!shape.visible) return null;
 
   return (
     <>
       <ShapeBox shape={item} options={props?.options} />
 
       <Group
-        id={shape_resolved?.id}
-        parentId={shape_resolved.parentId}
-        x={shape_resolved.x}
-        y={shape_resolved.y}
-        width={shape_resolved.width}
-        height={shape_resolved.height}
-        listening={!shape_resolved.isLocked}
-        rotation={shape_resolved.rotation}
+        id={shape?.id}
+        parentId={shape.parentId}
+        x={shape.x}
+        y={shape.y}
+        width={shape.width}
+        height={shape.height}
+        listening={!shape.isLocked}
+        rotation={shape.rotation}
         clip={{
           x: 0,
           y: 0,
-          width: shape_resolved.width,
-          height: shape_resolved.height,
+          width: shape.width,
+          height: shape.height,
         }}
       >
-        {shape_resolved.childrens?.map((child, index) => {
+        {shape.childrens?.map((child, index) => {
           return (
             <ShapeIterator
               id="pixel-group-shapes"
@@ -237,10 +241,10 @@ export const SHAPE_FRAME = (props: IShapeEvents) => {
               index={index}
               options={{
                 isLocked:
-                  props?.options?.isLocked || shape_resolved?.sourceShapeId
+                  props?.options?.isLocked || shape?.sourceShapeId
                     ? true
                     : false,
-                background: shape_resolved?.fillColor,
+                background: shape?.fillColor,
                 showLabel: true,
               }}
             />

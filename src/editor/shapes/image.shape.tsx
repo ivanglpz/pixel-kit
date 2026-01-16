@@ -228,6 +228,7 @@ export const ShapeImage = ({ shape: item, options }: IShapeEvents) => {
           y={shape.y}
           label={shape.label}
           color={options?.background}
+          isComponent={shape.isComponent}
         />
       ) : null}
       <KonvaImage
