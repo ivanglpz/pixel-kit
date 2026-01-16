@@ -1,7 +1,9 @@
 import { atom, useAtomValue } from "jotai";
 import { Layer } from "react-konva";
 import { Shapes } from "../shapes/shapes";
+import { IShapeEvents } from "../shapes/type.shape";
 import { ShapeState } from "../shapes/types/shape.state";
+import STAGE_CANVAS_BACKGROUND from "../states/canvas";
 import CURRENT_ITEM_ATOM from "../states/currentItem";
 import { ALL_SHAPES } from "../states/shapes";
 
@@ -9,19 +11,16 @@ type ShapeIteratorProps = {
   item: ShapeState;
   index: number;
   id: string;
+  options: IShapeEvents["options"];
 };
 
-const ShapeIterator = ({ item, index, id }: ShapeIteratorProps) => {
+const ShapeIterator = ({ item, index, id, options }: ShapeIteratorProps) => {
   const tool = useAtomValue(item.tool);
 
   const Component = Shapes?.[tool];
   return (
     <Component
-      options={{
-        mirror: {
-          isLocked: false,
-        },
-      }}
+      options={options}
       shape={{
         id: "1",
         state: atom({
@@ -37,6 +36,7 @@ const ShapeIterator = ({ item, index, id }: ShapeIteratorProps) => {
 };
 export const LayerPipe = () => {
   const CURRENT_ITEMS = useAtomValue(CURRENT_ITEM_ATOM);
+  const background = useAtomValue(STAGE_CANVAS_BACKGROUND);
 
   if (CURRENT_ITEMS?.length === 0) return null;
 
@@ -49,6 +49,12 @@ export const LayerPipe = () => {
               id="pixel-kit-temporal-shape"
               item={item}
               index={index}
+              options={{
+                mirror: {
+                  isLocked: false,
+                },
+                background,
+              }}
             />
           );
 

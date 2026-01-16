@@ -8,6 +8,7 @@ import { SELECTED_SHAPES_BY_IDS_ATOM } from "../states/shape";
 
 import { useMemo } from "react";
 import { useResolvedShape } from "./frame.shape";
+import { ShapeLabel } from "./label";
 import { flexLayoutAtom } from "./layout-flex";
 
 export const ShapeDraw = (props: IShapeEvents) => {
@@ -31,6 +32,12 @@ export const ShapeDraw = (props: IShapeEvents) => {
 
   return (
     <>
+      <ShapeLabel
+        x={shape.x}
+        y={shape.y}
+        label={shape.label}
+        color={props?.options?.background}
+      />
       <Line
         // 1. Identificación y referencia
         id={props?.options?.mirror?.isLocked ? "" : shape?.id}

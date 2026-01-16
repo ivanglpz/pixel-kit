@@ -54,6 +54,8 @@ const usePropertiesShape = (props: ALL_SHAPES) => {
   const fontVariant = useAtomValue(SHAPE.fontWeight);
   const text = useAtomValue(SHAPE.text);
   const fontSize = useAtomValue(SHAPE.fontSize);
+  const label = useAtomValue(SHAPE.label);
+  const isComponent = useAtomValue(SHAPE.isComponent);
   return {
     id: SHAPE.id,
     rotation,
@@ -101,6 +103,8 @@ const usePropertiesShape = (props: ALL_SHAPES) => {
     fontVariant,
     text,
     fontSize,
+    label,
+    isComponent,
   };
 };
 
@@ -213,6 +217,7 @@ export const SHAPE_FRAME = (props: IShapeEvents) => {
           mirror: {
             isLocked: props?.options?.mirror?.isLocked,
           },
+          background: props?.options?.background,
         }}
       />
 
@@ -246,6 +251,7 @@ export const SHAPE_FRAME = (props: IShapeEvents) => {
                       ? true
                       : false,
                 },
+                background: shape_resolved?.fillColor,
               }}
             />
           );
