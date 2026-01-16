@@ -16,14 +16,14 @@ type JsonObject = { [k: string]: JsonValue };
 
 export type ShapeStateSnapshot = {
   id: string;
-  tool: ShapeState["tool"];
+  // tool: ShapeState["tool"];
   parentId: string | null;
   children: ShapeSnapshot[];
 } & JsonObject;
 
 export type ShapeSnapshot = {
   id: string;
-  tool: ShapeState["tool"];
+  // tool: ShapeState["tool"];
   state: ShapeStateSnapshot;
 };
 
@@ -129,14 +129,14 @@ export const serializeShape =
     const state: ShapeStateSnapshot = {
       ...plainState,
       id: st.id,
-      tool: st.tool,
+      // tool: st.tool,
       parentId,
       children,
     };
 
     return {
       id: shape.id,
-      tool: shape.tool,
+      // tool: shape.tool,
       state,
     };
   };
@@ -179,7 +179,7 @@ const deserializeShape = (snapshot: ShapeSnapshot): ALL_SHAPES => {
 
   return {
     id: snapshot.id,
-    tool: snapshot.tool,
+    // tool: snapshot.tool,
     state: atom(restoredState),
   };
 };
