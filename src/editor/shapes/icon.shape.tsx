@@ -76,6 +76,7 @@ export const SHAPE_ICON = (props: IShapeEvents) => {
           y={shape.y}
           label={shape.label}
           color={props?.options?.background}
+          isComponent={shape.isComponent}
         />
       ) : null}
       <KonvaImage

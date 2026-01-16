@@ -38,6 +38,7 @@ export const ShapeDraw = (props: IShapeEvents) => {
           y={shape.y}
           label={shape.label}
           color={props?.options?.background}
+          isComponent={shape.isComponent}
         />
       ) : null}
       <Line

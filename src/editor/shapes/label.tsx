@@ -12,10 +12,16 @@ type ShapeLabelProps = {
   y: number;
   label: string;
   color: string;
+  isComponent: boolean;
 };
-console.log(SVG.Encode(Boxes), "Boxes");
 
-export const ShapeLabel = ({ x, y, label, color }: ShapeLabelProps) => {
+export const ShapeLabel = ({
+  x,
+  y,
+  label,
+  color,
+  isComponent,
+}: ShapeLabelProps) => {
   const lab = useMemo(() => label.slice(0, 25), [label]);
   const colorBackground = useMemo(() => chooseColor(color), [color]);
   const state = useMemo(
@@ -40,19 +46,21 @@ export const ShapeLabel = ({ x, y, label, color }: ShapeLabelProps) => {
   );
   return (
     <>
-      <SHAPE_ICON
-        shape={{
-          id: "label-icon",
-          state: state,
-        }}
-        options={{
-          background: color,
-          isLocked: true,
-          showLabel: false,
-        }}
-      />
+      {isComponent ? (
+        <SHAPE_ICON
+          shape={{
+            id: "label-icon",
+            state: state,
+          }}
+          options={{
+            background: color,
+            isLocked: true,
+            showLabel: false,
+          }}
+        />
+      ) : null}
       <Text
-        x={x + 18}
+        x={isComponent ? x + 18 : x}
         y={y - 31}
         text={lab}
         fill={colorBackground}
