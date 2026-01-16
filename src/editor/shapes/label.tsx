@@ -61,7 +61,7 @@ export const ShapeLabel = ({
       ) : null}
       <Text
         x={isComponent ? x + 18 : x}
-        y={y - 31}
+        y={y - 22}
         text={lab}
         fill={colorBackground}
         fontStyle="semibold"
