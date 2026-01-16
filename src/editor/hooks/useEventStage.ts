@@ -1,6 +1,10 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { IPhoto } from "@/db/schemas/types";
-import TOOL_ATOM, { IKeyTool, PAUSE_MODE_ATOM } from "@/editor/states/tool";
+import TOOL_ATOM, {
+  IKeyTool,
+  IShapeTool,
+  PAUSE_MODE_ATOM,
+} from "@/editor/states/tool";
 import { uploadPhoto } from "@/services/photo";
 import { optimizeImageFile } from "@/utils/opt-img";
 import { useMutation } from "@tanstack/react-query";
@@ -174,7 +178,7 @@ export const useEventStage = () => {
     onSuccess: (values) => {
       const createStartElement = CreateShapeSchema({
         id: uuidv4(),
-        tool: "IMAGE",
+        tool: atom<IShapeTool>("IMAGE"),
         x: atom(0),
         y: atom(0),
         width: atom(values.width / 3),
@@ -219,7 +223,7 @@ export const useEventStage = () => {
   const createTextFromClipboard = (text: string) => {
     const createStartElement = CreateShapeSchema({
       id: uuidv4(),
-      tool: "TEXT",
+      tool: atom<IShapeTool>("TEXT"),
       x: atom(0),
       y: atom(0),
       text: atom(text),
@@ -239,7 +243,7 @@ export const useEventStage = () => {
 
       const createStartElement = CreateShapeSchema({
         id: uuidv4(),
-        tool: "ICON",
+        tool: atom<IShapeTool>("ICON"),
         x: atom(0),
         y: atom(0),
         image: atom({
