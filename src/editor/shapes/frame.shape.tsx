@@ -241,9 +241,7 @@ export const SHAPE_FRAME = (props: IShapeEvents) => {
               index={index}
               options={{
                 isLocked:
-                  props?.options?.isLocked || shape?.sourceShapeId
-                    ? true
-                    : false,
+                  props?.options?.isLocked || Boolean(shape?.sourceShapeId),
                 background: shape?.fillColor,
                 showLabel: true,
               }}
