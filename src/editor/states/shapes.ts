@@ -145,7 +145,7 @@ export const computeStageBounds =
 
       const visualPad = Math.max(
         stroke / 2,
-        shadowBlur + Math.max(Math.abs(shadowOffsetX), Math.abs(shadowOffsetY))
+        shadowBlur + Math.max(Math.abs(shadowOffsetX), Math.abs(shadowOffsetY)),
       );
 
       return {
@@ -230,14 +230,14 @@ const detachShapeFromTree =
       const parentChildrenAtom = get(parent.state).children;
       set(
         parentChildrenAtom,
-        get(parentChildrenAtom).filter((c) => c.id !== shape.id)
+        get(parentChildrenAtom).filter((c) => c.id !== shape.id),
       );
       return;
     }
 
     set(
       rootAtom,
-      get(rootAtom).filter((s) => s.id !== shape.id)
+      get(rootAtom).filter((s) => s.id !== shape.id),
     );
   };
 
@@ -256,7 +256,7 @@ const attachShapesToTarget =
     const existingIds = new Set(existing.map((c) => c.id));
 
     const toAppend = incoming.filter(
-      (s) => !existingIds.has(s.id) && s.id !== targetShape.id
+      (s) => !existingIds.has(s.id) && s.id !== targetShape.id,
     );
 
     set(targetChildrenAtom, existing.concat(toAppend));
@@ -276,7 +276,7 @@ const relocateShapeTree =
     shape: ALL_SHAPES,
     newParentId: string | null,
     offset: XY,
-    adjustSelf: boolean
+    adjustSelf: boolean,
   ): ALL_SHAPES => {
     const st = get(shape.state);
 
@@ -292,7 +292,7 @@ const relocateShapeTree =
 
     const children = get(st.children);
     children.forEach((child) =>
-      relocateShapeTree(get)(set)(child, shape.id, offset, false)
+      relocateShapeTree(get)(set)(child, shape.id, offset, false),
     );
 
     return shape;
@@ -311,7 +311,7 @@ export const ALL_SHAPES_ATOM = atom(
   (get) => get(get(CURRENT_PAGE).SHAPES.LIST),
   (get, set, newTool: ALL_SHAPES[]) => {
     set(get(CURRENT_PAGE).SHAPES.LIST, newTool);
-  }
+  },
 );
 
 /**
@@ -360,13 +360,13 @@ export const DELETE_SHAPES_ATOM = atom(null, (get, set) => {
 
     set(
       ALL_SHAPES_ATOM,
-      get(ALL_SHAPES_ATOM).filter((s) => s.id !== sel.id)
+      get(ALL_SHAPES_ATOM).filter((s) => s.id !== sel.id),
     );
   });
 
   const SHAPE_IDS_ = get(CURRENT_PAGE).SHAPES.ID;
   const selectedShapes = plane.filter((e) =>
-    selected.some((w) => w.id === e.id)
+    selected.some((w) => w.id === e.id),
   );
 
   set(SHAPE_IDS_, []);
@@ -408,7 +408,7 @@ const cloneRuntimeShape =
           if (typeof v === "object" && v && "read" in v)
             return [k, atom(get(v as PrimitiveAtom<unknown>))];
           return [k, v];
-        })
+        }),
       ),
       id: st.id,
       tool: st.tool,
@@ -428,63 +428,104 @@ const cloneRuntimeShape =
  * - Moving an ancestor into its descendant
  * - Duplicating children already under the target
  */
+type Point = {
+  x: number;
+  y: number;
+};
+
+type BoundsInside = {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+};
+
+const isPointInsideBounds = (p: Point, b: BoundsInside): boolean =>
+  p.x >= b.x && p.x <= b.x + b.width && p.y >= b.y && p.y <= b.y + b.height;
+
+export const RESOLVE_DROP_TARGET = atom(null, (get, set, COORDS: Point) => {
+  const plane = get(ALL_SHAPES_ATOM);
+  const selected = get(SELECTED_SHAPES_BY_IDS_ATOM);
+
+  if (selected.length === 0 || plane.length === 0) return;
+  // if (!selected.every((e) => e.parentId)) return;
+  // Construye un lookup rápido para computeAncestorOffset
+  const lookup = buildLookup(plane);
+  const offsetOf = computeAncestorOffset(get)(lookup);
+
+  const candidates = plane
+    .filter((shape) => !selected.some((e) => e?.id === shape.id))
+    .map((shape) => {
+      const st = get(shape.state);
+      const localX = get(st.x);
+      const localY = get(st.y);
+      const width = get(st.width);
+      const height = get(st.height);
+
+      // Calcula bounds absolutos sumando offsets de ancestros
+      const ancestorOffset = offsetOf(get(st.parentId));
+
+      return {
+        shape,
+        bounds: {
+          x: localX + ancestorOffset.x,
+          y: localY + ancestorOffset.y,
+          width,
+          height,
+        },
+        depth: localX + ancestorOffset.x + localY + ancestorOffset.y,
+      };
+    })
+    // Solo los que contienen el cursor
+    .filter((c) => isPointInsideBounds(COORDS, c.bounds))
+    // Ordena por profundidad (los más "profundos" primero)
+    .sort((a, b) => b.depth - a.depth);
+
+  const target = candidates.length > 0 ? candidates[0].shape : null;
+
+  if (!target) {
+    set(MOVE_SHAPES_TO_ROOT);
+    return;
+  }
+
+  set(MOVE_SHAPES_BY_ID, target.id);
+});
+
 export const MOVE_SHAPES_BY_ID = atom(null, (get, set, targetId: string) => {
   const plane = get(PLANE_SHAPES_ATOM);
-  const selectedRefs = get(SELECTED_SHAPES_BY_IDS_ATOM);
+  const selectedIds = get(SELECTED_SHAPES_BY_IDS_ATOM);
 
-  if (plane.length === 0 || selectedRefs.length === 0) return;
+  if (plane.length === 0 || selectedIds.length === 0) return;
 
-  const selectedIdSet = new Set(selectedRefs.map((r) => r.id));
-  const selectedShapes = plane.filter((s) => selectedIdSet.has(s.id));
-  const clone = cloneRuntimeShape(get);
-  const prevSelectedShapes = selectedShapes.map(clone);
   const targetShape = plane.find((s) => s.id === targetId);
   if (!targetShape) return;
 
-  // Do not move something into itself.
-  if (selectedIdSet.has(targetShape.id)) return;
-
   const targetChildren = get(get(targetShape.state).children);
-  const targetChildrenSet = new Set(targetChildren.map((c) => c.id));
-
-  // Prevent moving a node into its own descendant (cycle).
-  const invalidMove = selectedShapes.some((shape) =>
-    isDescendantOf(get)(shape, targetShape.id)
+  const selectedShapes = plane.filter((s) =>
+    selectedIds.some((e) => e.id === s.id),
   );
-  if (invalidMove) return;
 
-  // Detach each selected from its current container unless it is already under target.
-  const shouldDetach = (shape: ALL_SHAPES) =>
-    !targetChildrenSet.has(shape.id) && shape.id !== targetShape.id;
+  const shapesToMove = selectedShapes.filter(
+    (s) => !targetChildren.some((e) => e.id === s.id),
+  );
 
   const detacher = detachShapeFromTree(get)(set)(ALL_SHAPES_ATOM)(plane);
-  selectedShapes.filter(shouldDetach).forEach(detacher);
+  shapesToMove.forEach(detacher);
 
-  // Compute coordinate offset for the target's ancestor chain.
   const lookup = buildLookup(plane);
   const targetOffset = computeAncestorOffset(get)(lookup)(targetId);
 
-  // Update parentId + adjust root coordinates (descendants keep local coordinates).
-  const relocated = selectedShapes.map((shape) =>
-    relocateShapeTree(get)(set)(shape, targetShape.id, targetOffset, true)
+  const relocated = shapesToMove.map((shape) =>
+    relocateShapeTree(get)(set)(shape, targetShape.id, targetOffset, true),
   );
 
-  // Attach relocated subtrees under target.
   attachShapesToTarget(get)(set)(targetShape)(relocated);
 
-  // Update selection references to reflect new parent.
-  const updatedRefs = selectedRefs.map((ref) => ({
-    ...ref,
-    parentId: targetShape.id,
-  }));
-
-  set(UPDATE_SHAPES_IDS_ATOM, updatedRefs);
-  // Register MOVE for undo/redo
-  set(NEW_UNDO_REDO, {
-    type: "MOVE",
-    shapes: relocated,
-    prevShapes: prevSelectedShapes,
+  const nextSelection = selectedIds.map((r) => {
+    return { ...r, parentId: targetShape.id };
   });
+
+  set(UPDATE_SHAPES_IDS_ATOM, nextSelection);
 });
 
 /**
@@ -496,14 +537,21 @@ export const MOVE_SHAPES_BY_ID = atom(null, (get, set, targetId: string) => {
 
 export const MOVE_SHAPES_TO_ROOT = atom(null, (get, set) => {
   const plane = get(PLANE_SHAPES_ATOM);
-  const selectedRefs = get(SELECTED_SHAPES_BY_IDS_ATOM);
+  const selectedIds = get(SELECTED_SHAPES_BY_IDS_ATOM);
 
-  if (plane.length === 0 || selectedRefs.length === 0) return;
+  if (plane.length === 0 || selectedIds.length === 0) return;
+  if (selectedIds?.every((e) => e?.parentId == null)) {
+    console.log("todos llevan null");
+    return;
+  }
 
-  const selectedIdSet = new Set(selectedRefs.map((r) => r.id));
-  const selectedShapes = plane.filter((s) => selectedIdSet.has(s.id));
+  const movableShapes = plane.filter((shape) =>
+    selectedIds.some((e) => e?.id === shape.id),
+  );
+  if (movableShapes.length === 0) return;
+
   const clone = cloneRuntimeShape(get);
-  const prevSelectedShapes = selectedShapes.map(clone);
+  const prevSelectedShapes = movableShapes.map(clone);
 
   const lookup = buildLookup(plane);
   const offsetOf = computeAncestorOffset(get)(lookup);
@@ -511,52 +559,52 @@ export const MOVE_SHAPES_TO_ROOT = atom(null, (get, set) => {
   const relocateToRoot = (shape: ALL_SHAPES): ALL_SHAPES => {
     const st = get(shape.state);
 
+    // Calcula offset absoluto de la jerarquía completa
     const parentId = get(st.parentId);
     const offset = parentId ? offsetOf(parentId) : { x: 0, y: 0 };
 
-    // Convert from parent-local coordinates to root coordinates.
+    // Ajusta posición del shape raíz
     set(st.x, get(st.x) + offset.x);
     set(st.y, get(st.y) + offset.y);
     set(st.parentId, null);
 
-    // Keep descendants consistent; do not adjust their local coordinates.
+    // Ajusta posiciones de todos los descendientes recursivamente
     const children = get(st.children);
-    children.forEach((child) => {
-      relocateShapeTree(get)(set)(child, shape.id, { x: 0, y: 0 }, false);
-    });
+    children.forEach((child) =>
+      relocateShapeTree(get)(set)(child, shape.id, { x: 0, y: 0 }, false),
+    );
 
     return shape;
   };
 
-  // Remove from previous parents.
-  selectedRefs.forEach((ref) => {
-    if (!ref.parentId) return;
+  movableShapes.forEach((shape) => {
+    const parentId = get(get(shape.state).parentId);
+    if (!parentId) return;
 
-    const parent = plane.find((s) => s.id === ref.parentId);
+    const parent = plane.find((s) => s.id === parentId);
     if (!parent) return;
 
     const parentChildrenAtom = get(parent.state).children;
     set(
       parentChildrenAtom,
-      get(parentChildrenAtom).filter((c) => c.id !== ref.id)
+      get(parentChildrenAtom).filter((c) => c.id !== shape.id),
     );
   });
 
-  const relocated = selectedShapes.map(relocateToRoot);
+  const relocated = movableShapes.map(relocateToRoot);
 
-  // Update selection references to root parent.
   set(
     UPDATE_SHAPES_IDS_ATOM,
-    selectedRefs.map((r) => ({ ...r, parentId: null }))
+    selectedIds.map((r) => ({ ...r, parentId: null })),
   );
 
-  // Append to root list.
   set(ALL_SHAPES_ATOM, get(ALL_SHAPES_ATOM).concat(relocated));
-  set(NEW_UNDO_REDO, {
-    type: "MOVE",
-    shapes: relocated,
-    prevShapes: prevSelectedShapes,
-  });
+
+  // set(NEW_UNDO_REDO, {
+  //   type: "MOVE",
+  //   shapes: relocated,
+  //   prevShapes: prevSelectedShapes,
+  // });
 });
 
 /**
@@ -583,7 +631,7 @@ export const GROUP_SHAPES_IN_LAYOUT = atom(null, (get, set) => {
   const prevSelectedShapes = selectedShapes.map(clone);
   const firstParentId = get(get(selectedShapes[0].state).parentId);
   const allSameParent = selectedShapes.every(
-    (s) => get(get(s.state).parentId) === firstParentId
+    (s) => get(get(s.state).parentId) === firstParentId,
   );
   if (!allSameParent) return;
 
@@ -604,7 +652,7 @@ export const GROUP_SHAPES_IN_LAYOUT = atom(null, (get, set) => {
         maxY: Math.max(acc.maxY, y2),
       };
     },
-    { minX: Infinity, minY: Infinity, maxX: -Infinity, maxY: -Infinity }
+    { minX: Infinity, minY: Infinity, maxX: -Infinity, maxY: -Infinity },
   );
 
   const newLayoutId = uuidv4();
@@ -625,7 +673,7 @@ export const GROUP_SHAPES_IN_LAYOUT = atom(null, (get, set) => {
   // Re-parent each selected shape into the new layout; translate into layout-local coordinates.
   const reparentIntoLayout = (
     shape: ALL_SHAPES,
-    parentId: string
+    parentId: string,
   ): ALL_SHAPES => {
     const st = get(shape.state);
 
@@ -638,7 +686,7 @@ export const GROUP_SHAPES_IN_LAYOUT = atom(null, (get, set) => {
   };
 
   const layoutChildren = selectedShapes.map((s) =>
-    reparentIntoLayout(s, newLayoutId)
+    reparentIntoLayout(s, newLayoutId),
   );
 
   const newLayoutShape: ALL_SHAPES = {
@@ -654,7 +702,7 @@ export const GROUP_SHAPES_IN_LAYOUT = atom(null, (get, set) => {
 
     const parentChildrenAtom = get(parent.state).children;
     const filtered = get(parentChildrenAtom).filter(
-      (c) => !selectedIdSet.has(c.id)
+      (c) => !selectedIdSet.has(c.id),
     );
     set(parentChildrenAtom, filtered.concat([newLayoutShape]));
   } else {
@@ -662,7 +710,7 @@ export const GROUP_SHAPES_IN_LAYOUT = atom(null, (get, set) => {
       ALL_SHAPES_ATOM,
       get(ALL_SHAPES_ATOM)
         .filter((s) => !selectedIdSet.has(s.id))
-        .concat([newLayoutShape])
+        .concat([newLayoutShape]),
     );
   }
 
@@ -704,7 +752,7 @@ export const EVENT_COPY_START_SHAPES = atom(
     const cloneStateRecursive = (
       shape: ALL_SHAPES,
       parentId: string | null,
-      IS_ROOT: boolean
+      IS_ROOT: boolean,
     ): ShapeState => {
       const state = get(shape.state);
       const newId = uuidv4();
@@ -758,7 +806,7 @@ export const EVENT_COPY_START_SHAPES = atom(
             key,
             asAtom(get(value as PrimitiveAtom<ShapeBase[keyof ShapeBase]>)),
           ];
-        })
+        }),
       );
 
       return {
@@ -771,14 +819,14 @@ export const EVENT_COPY_START_SHAPES = atom(
         offsetCopyX: asAtom(IS_ROOT ? rootX : 0),
         offsetCopyY: asAtom(IS_ROOT ? rootY : 0),
         sourceShapeId: atom(
-          get(get(shape.state).isComponent) ? get(shape.state).id : null
+          get(get(shape.state).isComponent) ? get(shape.state).id : null,
         ),
         isComponent: atom(false),
       };
     };
 
     const newShapes = shapesSelected.map((shape) =>
-      cloneStateRecursive(shape, get(get(shape.state).parentId), true)
+      cloneStateRecursive(shape, get(get(shape.state).parentId), true),
     );
 
     set(RESET_SHAPES_IDS_ATOM);
@@ -787,7 +835,7 @@ export const EVENT_COPY_START_SHAPES = atom(
     set(EVENT_ATOM, "COPYING");
 
     return newShapes;
-  }
+  },
 );
 
 /**
@@ -804,7 +852,7 @@ export const EVENT_COPY_CREATING_SHAPES = atom(
       set(element.copyX, args.x - get(element.offsetX));
       set(element.copyY, args.y - get(element.offsetY));
     });
-  }
+  },
 );
 
 /**
@@ -827,7 +875,7 @@ export const EVENT_COPY_FINISH_SHAPES = atom(null, (get, set) => {
   Promise.resolve().then(() => {
     set(
       UPDATE_SHAPES_IDS_ATOM,
-      CURRENT_ITEMS.map((e) => ({ id: e.id, parentId: get(e.parentId) }))
+      CURRENT_ITEMS.map((e) => ({ id: e.id, parentId: get(e.parentId) })),
     );
   });
 
@@ -981,7 +1029,7 @@ export const EVENT_DOWN_START_SHAPES = atom(
 
     set(TOOL_ATOM, "MOVE");
     set(EVENT_ATOM, "CREATING");
-  }
+  },
 );
 
 /**
@@ -1014,7 +1062,7 @@ export const EVENT_DOWN_CREATING_SHAPES = atom(
         set(item.points, get(item.points).concat(x, y));
       }
     });
-  }
+  },
 );
 
 /**
@@ -1033,7 +1081,7 @@ export const EVENT_DOWN_FINISH_SHAPES = atom(null, (get, set) => {
   Promise.resolve().then(() => {
     set(
       UPDATE_SHAPES_IDS_ATOM,
-      CURRENT_ITEMS.map((e) => ({ id: e.id, parentId: get(e.parentId) }))
+      CURRENT_ITEMS.map((e) => ({ id: e.id, parentId: get(e.parentId) })),
     );
   });
 

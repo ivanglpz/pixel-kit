@@ -160,7 +160,7 @@ export const useEventStage = () => {
   const mutation = useMutation({
     mutationKey: ["upload_event_image", PROJECT_ID],
     mutationFn: async (
-      photoUpload: File
+      photoUpload: File,
     ): Promise<Pick<IPhoto, "name" | "width" | "height" | "url">> => {
       const myImage = photoUpload;
 
@@ -203,7 +203,7 @@ export const useEventStage = () => {
   const createImageFromFile = async (file: File): Promise<void> => {
     if (
       !["IMAGE/JPEG", "IMAGE/PNG", "IMAGE/GIF", "IMAGE/SVG+XML"].includes(
-        file.type.toUpperCase()
+        file.type.toUpperCase(),
       )
     ) {
       toast.error("Invalid image format");
@@ -348,7 +348,7 @@ export const useEventStage = () => {
             eventStage: item.eventStage,
             showClip: Boolean(item?.showClip),
           },
-        ])
+        ]),
       );
 
       if (keysActions[KEY]) {

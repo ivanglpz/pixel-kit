@@ -7,6 +7,8 @@ import { IShapeEvents } from "./type.shape";
 import { SELECTED_SHAPES_BY_IDS_ATOM } from "../states/shape";
 
 import { useMemo } from "react";
+import stageAbsolutePosition from "../helpers/position";
+import { RESOLVE_DROP_TARGET } from "../states/shapes";
 import { useResolvedShape } from "./frame.shape";
 import { ShapeLabel } from "./label";
 import { flexLayoutAtom } from "./layout-flex";
@@ -17,10 +19,12 @@ export const ShapeDraw = (props: IShapeEvents) => {
   const applyLayout = useSetAtom(flexLayoutAtom);
 
   // const shadow = useAtomValue(effects.at(0)?.color)
+  const SET_COORDS = useSetAtom(RESOLVE_DROP_TARGET);
+
   const [shapeId, setShapeId] = useAtom(SELECTED_SHAPES_BY_IDS_ATOM);
   const isSelected = useMemo(
     () => shapeId.some((w) => w.id === shape.id),
-    [shapeId, shape.id]
+    [shapeId, shape.id],
   );
   const listening = useMemo(() => {
     if (props?.options?.isLocked) {
@@ -100,7 +104,9 @@ export const ShapeDraw = (props: IShapeEvents) => {
           setX(evt.target.x());
           setY(evt.target.y());
         }}
-        onDragEnd={() => {
+        onDragEnd={(e) => {
+          const { x, y } = stageAbsolutePosition(e);
+          SET_COORDS({ x, y }); // o el setter de tu estado de mouse
           if (!shape.parentId) return;
           applyLayout({ id: shape.parentId });
         }}

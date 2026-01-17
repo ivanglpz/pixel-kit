@@ -2,7 +2,9 @@ import { useAtom, useSetAtom } from "jotai";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Image as KonvaImage } from "react-konva";
 
+import stageAbsolutePosition from "../helpers/position";
 import { SELECTED_SHAPES_BY_IDS_ATOM } from "../states/shape";
+import { RESOLVE_DROP_TARGET } from "../states/shapes";
 import { calculateCoverCrop } from "../utils/crop";
 import { useResolvedShape } from "./frame.shape";
 import { ShapeLabel } from "./label";
@@ -45,7 +47,7 @@ const MIN_SHAPE_SIZE = 5;
 function createImage(
   src: string,
   width: number,
-  height: number
+  height: number,
 ): HTMLImageElement {
   const img = new Image();
   img.crossOrigin = "Anonymous";
@@ -74,7 +76,7 @@ export function useKonvaImage(img: ImageSource): ValidatedImageResult {
 
         testImg.src = url;
       }),
-    []
+    [],
   );
 
   useEffect(() => {
@@ -125,11 +127,12 @@ export const ShapeImage = ({ shape: item, options }: IShapeEvents) => {
   // Selection and layout
   const [shapeId, setShapeId] = useAtom(SELECTED_SHAPES_BY_IDS_ATOM);
   const applyLayout = useSetAtom(flexLayoutAtom);
+  const SET_COORDS = useSetAtom(RESOLVE_DROP_TARGET);
 
   // Computed values
   const isSelected = useMemo(
     () => shapeId.some((shape) => shape.id === shape.id),
-    [shapeId, shape.id]
+    [shapeId, shape.id],
   );
 
   const IMG = shape.IMG;
@@ -141,9 +144,9 @@ export const ShapeImage = ({ shape: item, options }: IShapeEvents) => {
         RENDER_IMAGE.width,
         RENDER_IMAGE.height,
         Number(shape.width),
-        Number(shape.height)
+        Number(shape.height),
       ),
-    [RENDER_IMAGE.width, RENDER_IMAGE.height, shape.width, shape.height]
+    [RENDER_IMAGE.width, RENDER_IMAGE.height, shape.width, shape.height],
   );
 
   const cornerRadiusConfig = useMemo(
@@ -163,7 +166,7 @@ export const ShapeImage = ({ shape: item, options }: IShapeEvents) => {
       shape.borderTopRightRadius,
       shape.borderBottomRightRadius,
       shape.borderBottomLeftRadius,
-    ]
+    ],
   );
 
   // Event handlers
@@ -176,14 +179,8 @@ export const ShapeImage = ({ shape: item, options }: IShapeEvents) => {
       setX(evt.target.x());
       setY(evt.target.y());
     },
-    [setX, setY]
+    [setX, setY],
   );
-
-  const handleDragEnd = useCallback(() => {
-    if (shape.parentId) {
-      applyLayout({ id: shape.parentId });
-    }
-  }, [shape.parentId, applyLayout]);
 
   const handleTransform = useCallback(
     (e: any) => {
@@ -200,7 +197,7 @@ export const ShapeImage = ({ shape: item, options }: IShapeEvents) => {
       setWidth(Math.max(MIN_SHAPE_SIZE, node.width() * scaleX));
       setHeight(Math.max(MIN_SHAPE_SIZE, node.height() * scaleY));
     },
-    [setRotation, setWidth, setHeight]
+    [setRotation, setWidth, setHeight],
   );
 
   const handleTransformEnd = useCallback(() => {
@@ -278,7 +275,12 @@ export const ShapeImage = ({ shape: item, options }: IShapeEvents) => {
         // Events
         onClick={handleClick}
         onDragMove={handleDragMove}
-        onDragEnd={handleDragEnd}
+        onDragEnd={(e) => {
+          const { x, y } = stageAbsolutePosition(e);
+          SET_COORDS({ x, y }); // o el setter de tu estado de mouse
+          if (!shape.parentId) return;
+          applyLayout({ id: shape.parentId });
+        }}
         onTransform={handleTransform}
         onTransformEnd={handleTransformEnd}
       />

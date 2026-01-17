@@ -4,6 +4,8 @@ import { useAtom, useSetAtom } from "jotai";
 import { SELECTED_SHAPES_BY_IDS_ATOM } from "../states/shape";
 
 import { Image as KonvaImage } from "react-konva";
+import stageAbsolutePosition from "../helpers/position";
+import { RESOLVE_DROP_TARGET } from "../states/shapes";
 import { calculateCoverCrop } from "../utils/crop";
 import { SVG } from "../utils/svg";
 import { useResolvedShape } from "./frame.shape";
@@ -16,12 +18,13 @@ export const SHAPE_ICON = (props: IShapeEvents) => {
   const { setX, setY, setWidth, setHeight, setRotation } = shape;
   const applyLayout = useSetAtom(flexLayoutAtom);
   const IMG = shape.IMG;
+  const SET_COORDS = useSetAtom(RESOLVE_DROP_TARGET);
 
   // const shadow = useAtomValue(effects.at(0)?.color)
   const [shapeId, setShapeId] = useAtom(SELECTED_SHAPES_BY_IDS_ATOM);
   const isSelected = useMemo(
     () => shapeId.some((w) => w.id === shape.id),
-    [shapeId, shape.id]
+    [shapeId, shape.id],
   );
 
   const IMAGE_ICON = useMemo(() => {
@@ -34,7 +37,7 @@ export const SHAPE_ICON = (props: IShapeEvents) => {
       .replace(/stroke-width="[^"]*"/g, `stroke-width="${shape.strokeWidth}"`)
       .replace(
         /stroke="currentColor"/g,
-        `stroke="${shape.strokeColor || "#000000"}"`
+        `stroke="${shape.strokeColor || "#000000"}"`,
       );
 
     img.src = SVG.Encode(newSvg);
@@ -51,9 +54,9 @@ export const SHAPE_ICON = (props: IShapeEvents) => {
         IMG?.width || 0,
         IMG?.height || 0,
         Number(shape.width),
-        Number(shape.height)
+        Number(shape.height),
       ),
-    [IMG?.width, IMG?.height, shape.width, shape.height]
+    [IMG?.width, IMG?.height, shape.width, shape.height],
   );
 
   const listening = useMemo(() => {
@@ -135,7 +138,9 @@ export const SHAPE_ICON = (props: IShapeEvents) => {
           setX(evt.target.x());
           setY(evt.target.y());
         }}
-        onDragEnd={() => {
+        onDragEnd={(e) => {
+          const { x, y } = stageAbsolutePosition(e);
+          SET_COORDS({ x, y }); // o el setter de tu estado de mouse
           if (!shape.parentId) return;
           applyLayout({ id: shape.parentId });
         }}

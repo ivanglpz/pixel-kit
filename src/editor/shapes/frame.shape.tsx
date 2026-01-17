@@ -243,7 +243,7 @@ export const SHAPE_FRAME = (props: IShapeEvents) => {
                 isLocked:
                   props?.options?.isLocked || Boolean(shape?.sourceShapeId),
                 background: shape?.fillColor,
-                showLabel: true,
+                showLabel: false,
               }}
             />
           );
