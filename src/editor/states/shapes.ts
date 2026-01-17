@@ -524,6 +524,7 @@ export const MOVE_SHAPES_BY_ID = atom(null, (get, set, targetId: string) => {
   const nextSelection = selectedIds.map((r) => {
     return { ...r, parentId: targetShape.id };
   });
+  set(flexLayoutAtom, { id: targetShape.id });
 
   set(UPDATE_SHAPES_IDS_ATOM, nextSelection);
 });
@@ -541,7 +542,6 @@ export const MOVE_SHAPES_TO_ROOT = atom(null, (get, set) => {
 
   if (plane.length === 0 || selectedIds.length === 0) return;
   if (selectedIds?.every((e) => e?.parentId == null)) {
-    console.log("todos llevan null");
     return;
   }
 
