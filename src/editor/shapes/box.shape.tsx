@@ -1,7 +1,9 @@
 import { useAtom, useSetAtom } from "jotai";
 import { useMemo } from "react";
 import { Rect } from "react-konva";
+import stageAbsolutePosition from "../helpers/position";
 import { SELECTED_SHAPES_BY_IDS_ATOM } from "../states/shape";
+import { RESOLVE_DROP_TARGET } from "../states/shapes";
 import { useResolvedShape } from "./frame.shape";
 import { ShapeLabel } from "./label";
 import { flexLayoutAtom } from "./layout-flex";
@@ -12,11 +14,11 @@ const ShapeBox = (props: IShapeEvents) => {
   const { setX, setY, setWidth, setHeight, setRotation } = shape;
 
   const applyLayout = useSetAtom(flexLayoutAtom);
-
+  const SET_COORDS = useSetAtom(RESOLVE_DROP_TARGET);
   const [shapeId, setShapeId] = useAtom(SELECTED_SHAPES_BY_IDS_ATOM);
   const isSelected = useMemo(
     () => shapeId.some((w) => w.id === shape.id),
-    [shapeId, shape.id]
+    [shapeId, shape.id],
   );
 
   const listening = useMemo(() => {
@@ -96,7 +98,9 @@ const ShapeBox = (props: IShapeEvents) => {
           setX(evt.target.x());
           setY(evt.target.y());
         }}
-        onDragEnd={() => {
+        onDragEnd={(e) => {
+          const { x, y } = stageAbsolutePosition(e);
+          SET_COORDS({ x, y }); // o el setter de tu estado de mouse
           if (!shape.parentId) return;
           applyLayout({ id: shape.parentId });
         }}
