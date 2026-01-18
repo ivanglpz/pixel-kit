@@ -448,8 +448,6 @@ export const RESOLVE_DROP_TARGET = atom(null, (get, set, COORDS: Point) => {
   const selected = get(SELECTED_SHAPES_BY_IDS_ATOM);
 
   if (selected.length === 0 || plane.length === 0) return;
-  // if (!selected.every((e) => e.parentId)) return;
-  // Construye un lookup rápido para computeAncestorOffset
   const lookup = buildLookup(plane);
   const offsetOf = computeAncestorOffset(get)(lookup);
 
@@ -477,9 +475,7 @@ export const RESOLVE_DROP_TARGET = atom(null, (get, set, COORDS: Point) => {
         depth: x + y,
       };
     })
-    // Solo los que contienen el cursor
     .filter((c) => isPointInsideBounds(COORDS, c.bounds))
-    // Ordena por profundidad (los más "profundos" primero)
     .sort((a, b) => b.depth - a.depth);
 
   const target = candidates.length > 0 ? candidates[0].shape : null;

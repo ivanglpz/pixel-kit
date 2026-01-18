@@ -23,28 +23,15 @@ const getAllShapes = (node: Konva.Layer | Konva.Group): Konva.Shape[] => {
 
 type ShapeIteratorProps = {
   item: ALL_SHAPES;
-  index: number;
-  id: string;
   options: IShapeEvents["options"];
 };
 
-export const ShapeIterator = ({
-  item,
-  index,
-  id,
-  options,
-}: ShapeIteratorProps) => {
+export const ShapeIterator = ({ item, options }: ShapeIteratorProps) => {
   const shape = useAtomValue(item.state);
   const tool = useAtomValue(shape.tool);
 
   const Component = Shapes?.[tool];
-  return (
-    <Component
-      shape={item}
-      key={`${id}-${item?.id}-${index}`}
-      options={options}
-    />
-  );
+  return <Component shape={item} options={options} />;
 };
 export const LayerShapes = () => {
   const ALL_SHAPES = useAtomValue(ALL_SHAPES_ATOM);
@@ -58,11 +45,11 @@ export const LayerShapes = () => {
   useEffect(() => {
     const allShapes = lyRef.current ? getAllShapes(lyRef.current) : [];
     const nodes = allShapes?.filter?.(
-      (child) => child?.attrs?.id !== "transformer-editable"
+      (child) => child?.attrs?.id !== "transformer-editable",
     );
 
     const selected = nodes?.filter((e) =>
-      selectedIds?.some((w) => w.id === e.attrs?.id)
+      selectedIds?.some((w) => w.id === e.attrs?.id),
     );
     trRef.current?.nodes(selected);
     trRef.current?.getLayer()?.batchDraw();
@@ -74,9 +61,8 @@ export const LayerShapes = () => {
         {ALL_SHAPES?.map((item, index) => {
           return (
             <ShapeIterator
-              id="pixel-kit-shapes"
+              key={`pixel-kit-shapes-${item?.id}-${index}`}
               item={item}
-              index={index}
               options={{
                 isLocked: false,
                 background,
