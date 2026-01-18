@@ -444,7 +444,7 @@ const isPointInsideBounds = (p: Point, b: BoundsInside): boolean =>
   p.x >= b.x && p.x <= b.x + b.width && p.y >= b.y && p.y <= b.y + b.height;
 
 export const RESOLVE_DROP_TARGET = atom(null, (get, set, COORDS: Point) => {
-  const plane = get(ALL_SHAPES_ATOM);
+  const plane = get(PLANE_SHAPES_ATOM);
   const selected = get(SELECTED_SHAPES_BY_IDS_ATOM);
 
   if (selected.length === 0 || plane.length === 0) return;
@@ -462,18 +462,19 @@ export const RESOLVE_DROP_TARGET = atom(null, (get, set, COORDS: Point) => {
       const width = get(st.width);
       const height = get(st.height);
 
-      // Calcula bounds absolutos sumando offsets de ancestros
       const ancestorOffset = offsetOf(get(st.parentId));
+      const x = localX + ancestorOffset.x;
+      const y = localY + ancestorOffset.y;
 
       return {
         shape,
         bounds: {
-          x: localX + ancestorOffset.x,
-          y: localY + ancestorOffset.y,
+          x,
+          y,
           width,
           height,
         },
-        depth: localX + ancestorOffset.x + localY + ancestorOffset.y,
+        depth: x + y,
       };
     })
     // Solo los que contienen el cursor
@@ -484,6 +485,10 @@ export const RESOLVE_DROP_TARGET = atom(null, (get, set, COORDS: Point) => {
   const target = candidates.length > 0 ? candidates[0].shape : null;
 
   if (!target) {
+    set(MOVE_SHAPES_TO_ROOT);
+    return;
+  }
+  if (get(get(target?.state).tool) !== "FRAME") {
     set(MOVE_SHAPES_TO_ROOT);
     return;
   }
