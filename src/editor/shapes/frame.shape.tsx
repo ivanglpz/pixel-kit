@@ -236,9 +236,8 @@ export const SHAPE_FRAME = (props: IShapeEvents) => {
         {shape.childrens?.map((child, index) => {
           return (
             <ShapeIterator
-              id="pixel-group-shapes"
+              key={`pixel-kit-group-shapes-${item?.id}-${index}`}
               item={child}
-              index={index}
               options={{
                 isLocked:
                   props?.options?.isLocked || Boolean(shape?.sourceShapeId),

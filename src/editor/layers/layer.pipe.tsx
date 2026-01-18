@@ -9,12 +9,10 @@ import { ALL_SHAPES } from "../states/shapes";
 
 type ShapeIteratorProps = {
   item: ShapeState;
-  index: number;
-  id: string;
   options: IShapeEvents["options"];
 };
 
-const ShapeIterator = ({ item, index, id, options }: ShapeIteratorProps) => {
+const ShapeIterator = ({ item, options }: ShapeIteratorProps) => {
   const tool = useAtomValue(item.tool);
 
   const Component = Shapes?.[tool];
@@ -27,10 +25,7 @@ const ShapeIterator = ({ item, index, id, options }: ShapeIteratorProps) => {
           ...item,
           children: item.children ? item.children : atom([] as ALL_SHAPES[]),
         }),
-        // pageId: "main-image-render-stage",
-        // tool: item.tool,
       }}
-      key={`${id}-${item?.id}-${index}`}
     />
   );
 };
@@ -46,9 +41,8 @@ export const LayerPipe = () => {
         {CURRENT_ITEMS?.map((item, index) => {
           return (
             <ShapeIterator
-              id="pixel-kit-temporal-shape"
+              key={`pixel-kit-temporal-shape-${item?.id}-${index}`}
               item={item}
-              index={index}
               options={{
                 isLocked: false,
                 background,
@@ -56,22 +50,6 @@ export const LayerPipe = () => {
               }}
             />
           );
-
-          // const Component = Shapes?.[item?.tool] as FCShapeWEvents;
-          // <Component
-          //   shape={{
-          //     id: "1",
-          //     state: atom({
-          //       ...item,
-          //       children: item.children
-          //         ? item.children
-          //         : atom([] as ALL_SHAPES[]),
-          //     }),
-          //     // pageId: "main-image-render-stage",
-          //     tool: item.tool,
-          //   }}
-          //   key={`pixel-kit-temporal-shape-${item.id}`}
-          // />
         })}
       </Layer>
     </>
