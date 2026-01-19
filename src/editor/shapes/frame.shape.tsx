@@ -116,7 +116,8 @@ const usePropertiesShape = (props: ALL_SHAPES) => {
 };
 const MIN_SHAPE_SIZE = 5;
 
-export const useResolvedShape = (instance: ALL_SHAPES) => {
+export const useResolvedShape = (props: IShapeEvents) => {
+  const { shape: instance } = props;
   const SHAPE = useAtomValue(instance.state);
   const sourceShapeId = useAtomValue(SHAPE.sourceShapeId);
   const PLANE = useAtomValue(PLANE_SHAPES_ATOM);
@@ -183,6 +184,13 @@ export const useResolvedShape = (instance: ALL_SHAPES) => {
     }
   };
 
+  const listening = useMemo(() => {
+    if (props?.options?.isLocked) {
+      return false;
+    }
+    return !principalIsLocked;
+  }, [props?.options?.isLocked, principalIsLocked]);
+
   // Buscar el shape espejo si existe sourceShapeId
   const SHAPE_MIRROR = useMemo(() => {
     if (!sourceShapeId) return null;
@@ -213,6 +221,7 @@ export const useResolvedShape = (instance: ALL_SHAPES) => {
       isComponent,
       label,
       isSelected,
+      listening,
       events: {
         onDragMove,
         onDragEnd,
@@ -242,6 +251,7 @@ export const useResolvedShape = (instance: ALL_SHAPES) => {
     setHeight,
     sourceShapeId,
     isSelected,
+    listening,
     events: {
       onDragMove,
       onDragEnd,
@@ -254,7 +264,7 @@ export const useResolvedShape = (instance: ALL_SHAPES) => {
 
 export const SHAPE_FRAME = (props: IShapeEvents) => {
   const { shape: item } = props;
-  const shape = useResolvedShape(props.shape);
+  const shape = useResolvedShape(props);
 
   const applyLayout = useSetAtom(flexLayoutAtom);
 

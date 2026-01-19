@@ -114,8 +114,9 @@ export function useKonvaImage(img: ImageSource): ValidatedImageResult {
 // Component
 // ============================================================================
 
-export const ShapeImage = ({ shape: item, options }: IShapeEvents) => {
-  const shape = useResolvedShape(item);
+export const ShapeImage = (props: IShapeEvents) => {
+  const { options } = props;
+  const shape = useResolvedShape(props);
   const IMG = shape.IMG;
   const RENDER_IMAGE = useKonvaImage(IMG);
 
@@ -129,13 +130,6 @@ export const ShapeImage = ({ shape: item, options }: IShapeEvents) => {
       ),
     [RENDER_IMAGE.width, RENDER_IMAGE.height, shape.width, shape.height],
   );
-
-  const listening = useMemo(() => {
-    if (options?.isLocked) {
-      return false;
-    }
-    return !shape.isLocked;
-  }, [options?.isLocked, shape.isLocked]);
 
   if (!shape.visible) return null;
 
@@ -164,7 +158,7 @@ export const ShapeImage = ({ shape: item, options }: IShapeEvents) => {
         height={shape.height}
         rotation={shape.rotation}
         // Interaction
-        listening={listening}
+        listening={shape.listening}
         draggable={shape.isSelected}
         // Fill
         fillEnabled

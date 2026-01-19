@@ -8,7 +8,7 @@ import { ShapeLabel } from "./label";
 import { IShapeEvents } from "./type.shape";
 
 export const SHAPE_ICON = (props: IShapeEvents) => {
-  const shape = useResolvedShape(props.shape);
+  const shape = useResolvedShape(props);
   const IMG = shape.IMG;
 
   const IMAGE_ICON = useMemo(() => {
@@ -43,13 +43,6 @@ export const SHAPE_ICON = (props: IShapeEvents) => {
     [IMG?.width, IMG?.height, shape.width, shape.height],
   );
 
-  const listening = useMemo(() => {
-    if (props?.options?.isLocked) {
-      return false;
-    }
-    return !shape.isLocked;
-  }, [props?.options?.isLocked, shape.isLocked]);
-
   if (!shape.visible) return null;
 
   return (
@@ -73,7 +66,7 @@ export const SHAPE_ICON = (props: IShapeEvents) => {
         width={shape.width}
         height={shape.height}
         rotation={shape.rotation}
-        listening={listening}
+        listening={shape.listening}
         fillEnabled
         fill={"transparent"}
         dash={[shape.dash]}

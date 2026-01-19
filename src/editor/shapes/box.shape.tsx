@@ -1,18 +1,11 @@
-import { useMemo } from "react";
 import { Rect } from "react-konva";
 import { useResolvedShape } from "./frame.shape";
 import { ShapeLabel } from "./label";
 import { IShapeEvents } from "./type.shape";
 
 const ShapeBox = (props: IShapeEvents) => {
-  const shape = useResolvedShape(props.shape);
+  const shape = useResolvedShape(props);
 
-  const listening = useMemo(() => {
-    if (props?.options?.isLocked) {
-      return false;
-    }
-    return !shape.isLocked;
-  }, [props?.options?.isLocked, shape.isLocked]);
   if (!shape.visible) return null;
 
   return (
@@ -35,7 +28,7 @@ const ShapeBox = (props: IShapeEvents) => {
         width={shape.width}
         height={shape.height}
         rotation={shape.rotation}
-        listening={listening}
+        listening={shape.listening}
         fillEnabled
         fill={shape.fillColor}
         stroke={shape.strokeColor}
@@ -60,9 +53,7 @@ const ShapeBox = (props: IShapeEvents) => {
         shadowOffsetY={shape.shadowOffsetY}
         shadowBlur={shape.shadowBlur}
         shadowEnabled
-        // 6. Apariencia y opacidad
         opacity={shape.opacity}
-        // 7. Interactividad y arrastre
         draggable={shape.isSelected}
         {...shape.events}
       />
