@@ -42,48 +42,6 @@ type DraggableNodeItemProps = {
   };
 };
 
-export const DraggableNodeItem = ({
-  childItem,
-  childOptions,
-}: DraggableNodeItemProps) => {
-  const childDragControls = useDragControls();
-
-  return (
-    <Reorder.Item
-      key={childItem.id}
-      value={childItem}
-      dragListener={false} // Deshabilitamos el listener automático
-      dragControls={childDragControls} // Usamos controles manuales
-      style={{
-        borderRadius: "6px",
-        userSelect: "none",
-      }}
-      whileDrag={{
-        scale: 1.02,
-        boxShadow: "0px 3px 10px rgba(0,0,0,0.15)",
-        zIndex: 1000,
-        cursor: "grabbing",
-      }}
-    >
-      <Nodes
-        shape={childItem}
-        options={childOptions}
-        dragControls={childDragControls} // ✅ Pasamos los controles específicos
-      />
-    </Reorder.Item>
-  );
-};
-const ChevronDown = withStableMemo(Luicde.ChevronDown);
-const ChevronRight = withStableMemo(Luicde.ChevronRight);
-const DotIcon = withStableMemo(Luicde.Circle);
-const Eye = withStableMemo(Luicde.Eye);
-const EyeClosed = withStableMemo(Luicde.EyeOff);
-const FolderCog = withStableMemo(Luicde.FolderCog);
-const GripVertical = withStableMemo(Luicde.GripVertical);
-const Lock = withStableMemo(Luicde.Lock);
-const Trash = withStableMemo(Luicde.Trash);
-const Unlock = withStableMemo(Luicde.Unlock);
-
 const NodeInput = ({
   atomo,
 }: {
@@ -463,4 +421,44 @@ export const NodesDefault = ({
     </>
   );
 };
+export const DraggableNodeItem = ({
+  childItem,
+  childOptions,
+}: DraggableNodeItemProps) => {
+  const childDragControls = useDragControls();
+
+  return (
+    <Reorder.Item
+      key={childItem.id}
+      value={childItem}
+      dragListener={false} // Deshabilitamos el listener automático
+      dragControls={childDragControls} // Usamos controles manuales
+      style={{
+        borderRadius: "6px",
+        userSelect: "none",
+      }}
+      whileDrag={{
+        scale: 1.02,
+        boxShadow: "0px 3px 10px rgba(0,0,0,0.15)",
+        zIndex: 1000,
+        cursor: "grabbing",
+      }}
+    >
+      <Nodes
+        shape={childItem}
+        options={childOptions}
+        dragControls={childDragControls} // ✅ Pasamos los controles específicos
+      />
+    </Reorder.Item>
+  );
+};
+const ChevronDown = withStableMemo(Luicde.ChevronDown);
+const ChevronRight = withStableMemo(Luicde.ChevronRight);
+const DotIcon = withStableMemo(Luicde.Circle);
+const Eye = withStableMemo(Luicde.Eye);
+const EyeClosed = withStableMemo(Luicde.EyeOff);
+const GripVertical = withStableMemo(Luicde.GripVertical);
+const Lock = withStableMemo(Luicde.Lock);
+const Unlock = withStableMemo(Luicde.Unlock);
+
 export const Nodes = withStableMemo(NodesDefault);
