@@ -1,5 +1,4 @@
 import { MODE } from "@/editor/states/mode";
-import { IUser } from "./users";
 
 export type Role = "admin" | "member";
 
@@ -11,6 +10,14 @@ export type IMembers<role> = {
     "password" | "passwordUpdatedAt" | "createdAt" | "updatedAt"
   >;
   role: role;
+};
+
+export type IUser = {
+  userId: string;
+  email: string;
+  password: string;
+  fullName: string;
+  photoUrl: string | null;
 };
 
 export type IOrganization = {

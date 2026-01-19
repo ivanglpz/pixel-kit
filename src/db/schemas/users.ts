@@ -1,15 +1,15 @@
 import mongoose, { Schema } from "mongoose";
 
 // Define la interfaz para el usuario
-export type IUser = {
-  userId: string;
+type UserSchema = {
+  _id: string;
   email: string;
   password: string;
   fullName: string;
   photoUrl?: string;
-  passwordUpdatedAt: Date;
-  createdAt: Date;
-  updatedAt: Date;
+  passwordUpdatedAt: string;
+  createdAt: string;
+  updatedAt: string;
 };
 
 // Crea el esquema de Mongoose
@@ -43,4 +43,4 @@ const NewUserSchema: Schema = new Schema(
 
 // Crea el modelo de Mongoose
 export const UserSchema =
-  mongoose.models.users || mongoose.model<IUser>("users", NewUserSchema);
+  mongoose.models.users || mongoose.model<UserSchema>("users", NewUserSchema);
