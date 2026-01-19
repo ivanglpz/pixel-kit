@@ -1,31 +1,15 @@
 import { useMemo } from "react";
 
-import { useAtom, useSetAtom } from "jotai";
-import { SELECTED_SHAPES_BY_IDS_ATOM } from "../states/shape";
-
 import { Image as KonvaImage } from "react-konva";
-import stageAbsolutePosition from "../helpers/position";
-import { RESOLVE_DROP_TARGET } from "../states/shapes";
 import { calculateCoverCrop } from "../utils/crop";
 import { SVG } from "../utils/svg";
 import { useResolvedShape } from "./frame.shape";
 import { ShapeLabel } from "./label";
-import { flexLayoutAtom } from "./layout-flex";
 import { IShapeEvents } from "./type.shape";
 
 export const SHAPE_ICON = (props: IShapeEvents) => {
   const shape = useResolvedShape(props.shape);
-  const { setX, setY, setWidth, setHeight, setRotation } = shape;
-  const applyLayout = useSetAtom(flexLayoutAtom);
   const IMG = shape.IMG;
-  const SET_COORDS = useSetAtom(RESOLVE_DROP_TARGET);
-
-  // const shadow = useAtomValue(effects.at(0)?.color)
-  const [shapeId, setShapeId] = useAtom(SELECTED_SHAPES_BY_IDS_ATOM);
-  const isSelected = useMemo(
-    () => shapeId.some((w) => w.id === shape.id),
-    [shapeId, shape.id],
-  );
 
   const IMAGE_ICON = useMemo(() => {
     const img = new Image();
@@ -68,9 +52,6 @@ export const SHAPE_ICON = (props: IShapeEvents) => {
 
   if (!shape.visible) return null;
 
-  // =========================
-  // Renderizado
-  // =========================
   return (
     <>
       {props?.options?.showLabel ? (
@@ -83,27 +64,18 @@ export const SHAPE_ICON = (props: IShapeEvents) => {
         />
       ) : null}
       <KonvaImage
-        // 1. Identificación y referencia
         id={props?.options?.isLocked ? "" : shape?.id}
         image={IMAGE_ICON}
         crop={cropConfig}
         parentId={shape.parentId}
-        // 2. Posición y tamaño - calculada manualmente para rotación
         x={shape.x}
         y={shape.y}
         width={shape.width}
         height={shape.height}
         rotation={shape.rotation}
-        // Sin offset - calculamos todo manualmente
-        // offsetX={width / 2}
-        // offsetY={height / 2}
-        // Sin offset - calculamos todo manualmente
         listening={listening}
-        // 3. Relleno y color
         fillEnabled
         fill={"transparent"}
-        // 4. Bordes y trazos
-        // dash={[dash, dash, dash, dash]}
         dash={[shape.dash]}
         dashEnabled={shape.dash > 0}
         cornerRadius={
@@ -116,47 +88,15 @@ export const SHAPE_ICON = (props: IShapeEvents) => {
               ]
             : shape.borderRadius
         }
-        // 5. Sombras
         shadowColor={shape.shadowColor}
         shadowOpacity={shape.shadowOpacity}
         shadowOffsetX={shape.shadowOffsetX}
         shadowOffsetY={shape.shadowOffsetY}
         shadowBlur={shape.shadowBlur}
         shadowEnabled
-        // 6. Apariencia y opacidad
         opacity={shape.opacity}
-        // 7. Interactividad y arrastre
-        draggable={isSelected}
-        // 8. Eventos
-        onClick={() => {
-          setShapeId({
-            id: props?.shape?.id,
-            parentId: shape.parentId,
-          });
-        }}
-        onDragMove={(evt) => {
-          setX(evt.target.x());
-          setY(evt.target.y());
-        }}
-        onDragEnd={(e) => {
-          const { x, y } = stageAbsolutePosition(e);
-          SET_COORDS({ x, y }); // o el setter de tu estado de mouse
-          if (!shape.parentId) return;
-          applyLayout({ id: shape.parentId });
-        }}
-        onTransform={(e) => {
-          const scaleX = e.target.scaleX();
-          const scaleY = e.target.scaleY();
-          e.target.scaleX(1);
-          e.target.scaleY(1);
-          setRotation(e.target.rotation());
-          setWidth(Math.max(5, e.target.width() * scaleX));
-          setHeight(Math.max(e.target.height() * scaleY));
-        }}
-        onTransformEnd={() => {
-          if (!shape.parentId) return;
-          applyLayout({ id: shape.parentId });
-        }}
+        draggable={shape.isSelected}
+        {...shape.events}
       />
     </>
   );

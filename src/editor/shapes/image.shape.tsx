@@ -1,14 +1,9 @@
-import { useAtom, useSetAtom } from "jotai";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Image as KonvaImage } from "react-konva";
 
-import stageAbsolutePosition from "../helpers/position";
-import { SELECTED_SHAPES_BY_IDS_ATOM } from "../states/shape";
-import { RESOLVE_DROP_TARGET } from "../states/shapes";
 import { calculateCoverCrop } from "../utils/crop";
 import { useResolvedShape } from "./frame.shape";
 import { ShapeLabel } from "./label";
-import { flexLayoutAtom } from "./layout-flex";
 import { IShapeEvents } from "./type.shape";
 
 // ============================================================================
@@ -120,21 +115,7 @@ export function useKonvaImage(img: ImageSource): ValidatedImageResult {
 // ============================================================================
 
 export const ShapeImage = ({ shape: item, options }: IShapeEvents) => {
-  // Box state
-
   const shape = useResolvedShape(item);
-  const { setX, setY, setWidth, setHeight, setRotation } = shape;
-  // Selection and layout
-  const [shapeId, setShapeId] = useAtom(SELECTED_SHAPES_BY_IDS_ATOM);
-  const applyLayout = useSetAtom(flexLayoutAtom);
-  const SET_COORDS = useSetAtom(RESOLVE_DROP_TARGET);
-
-  // Computed values
-  const isSelected = useMemo(
-    () => shapeId.some((shape) => shape.id === shape.id),
-    [shapeId, shape.id],
-  );
-
   const IMG = shape.IMG;
   const RENDER_IMAGE = useKonvaImage(IMG);
 
@@ -148,65 +129,6 @@ export const ShapeImage = ({ shape: item, options }: IShapeEvents) => {
       ),
     [RENDER_IMAGE.width, RENDER_IMAGE.height, shape.width, shape.height],
   );
-
-  const cornerRadiusConfig = useMemo(
-    () =>
-      shape.isAllBorderRadius
-        ? [
-            shape.borderTopLeftRadius,
-            shape.borderTopRightRadius,
-            shape.borderBottomRightRadius,
-            shape.borderBottomLeftRadius,
-          ]
-        : shape.borderRadius,
-    [
-      shape.isAllBorderRadius,
-      shape.borderRadius,
-      shape.borderTopLeftRadius,
-      shape.borderTopRightRadius,
-      shape.borderBottomRightRadius,
-      shape.borderBottomLeftRadius,
-    ],
-  );
-
-  // Event handlers
-  const handleClick = useCallback(() => {
-    setShapeId({ id: item?.id, parentId: shape.parentId });
-  }, [shape.id, shape.parentId, setShapeId]);
-
-  const handleDragMove = useCallback(
-    (evt: any) => {
-      setX(evt.target.x());
-      setY(evt.target.y());
-    },
-    [setX, setY],
-  );
-
-  const handleTransform = useCallback(
-    (e: any) => {
-      const node = e.target;
-      const scaleX = node.scaleX();
-      const scaleY = node.scaleY();
-
-      // Reset scale to 1
-      node.scaleX(1);
-      node.scaleY(1);
-
-      // Update dimensions
-      setRotation(node.rotation());
-      setWidth(Math.max(MIN_SHAPE_SIZE, node.width() * scaleX));
-      setHeight(Math.max(MIN_SHAPE_SIZE, node.height() * scaleY));
-    },
-    [setRotation, setWidth, setHeight],
-  );
-
-  const handleTransformEnd = useCallback(() => {
-    if (shape.parentId) {
-      applyLayout({ id: shape.parentId });
-    }
-  }, [shape.parentId, applyLayout]);
-
-  // Early return if not visible
 
   const listening = useMemo(() => {
     if (options?.isLocked) {
@@ -243,7 +165,7 @@ export const ShapeImage = ({ shape: item, options }: IShapeEvents) => {
         rotation={shape.rotation}
         // Interaction
         listening={listening}
-        draggable={isSelected}
+        draggable={shape.isSelected}
         // Fill
         fillEnabled
         fill={shape.fillColor}
@@ -272,17 +194,7 @@ export const ShapeImage = ({ shape: item, options }: IShapeEvents) => {
         shadowEnabled
         // 6. Apariencia y opacidad
         opacity={shape.opacity}
-        // Events
-        onClick={handleClick}
-        onDragMove={handleDragMove}
-        onDragEnd={(e) => {
-          const { x, y } = stageAbsolutePosition(e);
-          SET_COORDS({ x, y }); // o el setter de tu estado de mouse
-          if (!shape.parentId) return;
-          applyLayout({ id: shape.parentId });
-        }}
-        onTransform={handleTransform}
-        onTransformEnd={handleTransformEnd}
+        {...shape.events}
       />
     </>
   );
