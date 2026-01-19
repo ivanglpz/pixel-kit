@@ -5,8 +5,8 @@ import { useAtomValue } from "jotai";
 import { FC } from "react";
 import { SELECTED_SHAPES_BY_IDS_ATOM } from "../states/shape";
 import TOOL_ATOM from "../states/tool";
-import { StageCanvasColor } from "./canvas";
 import { Drawing } from "./drawing";
+import { SidebarRightColorBg } from "./sidebar-right-color-bg";
 import { LayoutShapeConfig } from "./sidebar-right-shape";
 
 const SidebarRight: FC = () => {
@@ -35,7 +35,7 @@ const SidebarRight: FC = () => {
           tool === "MOVE" && shapeIds.length === 0 && config?.show_canvas_config
         }
       >
-        <StageCanvasColor />
+        <SidebarRightColorBg />
       </Valid>
       <Valid isValid={tool === "MOVE" && shapeIds.length > 0}>
         <LayoutShapeConfig />
