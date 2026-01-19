@@ -74,8 +74,10 @@ const cloneShapeRecursive = (shape: SHAPE_BASE_CHILDREN): ALL_SHAPES => {
 
   return {
     id: shape.id,
-    state: atom({
+    state: atom<ShapeState>({
       ...data,
+      sourceShapeId: atom<string | null>(shape.state?.sourceShapeId ?? null),
+      isComponent: atom<boolean>(shape.state?.isComponent ?? false),
       shadowColor: atom(
         shadow?.color ?? shape?.state?.shadowColor ?? "transparent",
       ),
