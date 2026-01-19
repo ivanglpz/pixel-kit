@@ -117,7 +117,9 @@ const PxStage = ({ children }: { children: ReactNode }) => {
         overflow: "hidden",
       })}
     >
-      <Tools />
+      <div>
+        <Tools />
+      </div>
 
       <div
         ref={containerRef}
