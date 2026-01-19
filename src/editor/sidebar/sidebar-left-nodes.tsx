@@ -17,13 +17,8 @@ import { constants } from "../constants/color";
 import { useAutoSave } from "../hooks/useAutoSave";
 import { flexLayoutAtom } from "../shapes/layout-flex";
 import { SELECTED_SHAPES_BY_IDS_ATOM } from "../states/shape";
-import {
-  ALL_SHAPES,
-  DELETE_SHAPES_ATOM,
-  MOVE_SHAPES_BY_ID,
-} from "../states/shapes";
+import { ALL_SHAPES, DELETE_SHAPES_ATOM } from "../states/shapes";
 import TOOL_ATOM, { PAUSE_MODE_ATOM } from "../states/tool";
-import { UPDATE_UNDO_REDO } from "../states/undo-redo";
 
 type NodeProps = {
   shape: ALL_SHAPES;
@@ -105,16 +100,16 @@ export const NodesDefault = ({
   const [isHovered, setIsHovered] = useState(false);
   const [shapeId, setShapeId] = useAtom(SELECTED_SHAPES_BY_IDS_ATOM);
 
-  const setUpdateUndoRedo = useSetAtom(UPDATE_UNDO_REDO);
+  // const setUpdateUndoRedo = useSetAtom(UPDATE_UNDO_REDO);
   const applyLayout = useSetAtom(flexLayoutAtom);
   const DELETE_SHAPE = useSetAtom(DELETE_SHAPES_ATOM);
-  const setMove = useSetAtom(MOVE_SHAPES_BY_ID);
 
   const [isLocked, setIsLocked] = useAtom(shape.isLocked);
   const [visible, setVisible] = useAtom(shape.visible);
   const parentId = useAtomValue(shape.parentId);
   const tool = useAtomValue(shape.tool);
   const [isComponent, setComponent] = useAtom(shape.isComponent);
+  const [sourceShapeId, setSourceShapeId] = useAtom(shape.sourceShapeId);
   // ✅ Usar controles externos si están disponibles, sino crear propios
   const dragControls = externalDragControls;
 
@@ -147,7 +142,7 @@ export const NodesDefault = ({
 
     applyLayout({ id: childOptions.id });
     setChildren(newOrder);
-    setUpdateUndoRedo();
+    // setUpdateUndoRedo();
     debounce.execute();
   };
 
@@ -349,36 +344,27 @@ export const NodesDefault = ({
             </div>
           </div>
         </ContextMenuTrigger>
-        <ContextMenuContent className="p-2 flex flex-col w-[210px] h-[260px]">
-          {tool === "FRAME" ? (
+        <ContextMenuContent className="p-2 flex flex-col w-[210px] h-[260px] text-[12px]">
+          {!sourceShapeId ? (
             <ContextMenuItem
               className="text-[12px]"
               onClick={() => {
-                setMove(shape.id);
-                debounce.execute();
+                setComponent(!isComponent);
               }}
             >
-              Move to
+              {isComponent ? "Detach" : "Create"} component
             </ContextMenuItem>
           ) : null}
-          <ContextMenuItem
-            className="text-[12px]"
-            onClick={() => {
-              setComponent(!isComponent);
-            }}
-          >
-            {isComponent ? "Detach" : "Create"} component
-          </ContextMenuItem>
-          <ContextMenuItem
-            className="text-[12px]"
-            onClick={() => {
-              setTool("MOVE");
-              DELETE_SHAPE();
-              debounce.execute();
-            }}
-          >
-            Detach instance
-          </ContextMenuItem>
+          {sourceShapeId ? (
+            <ContextMenuItem
+              className="text-[12px]"
+              onClick={() => {
+                setSourceShapeId(null);
+              }}
+            >
+              Detach instance
+            </ContextMenuItem>
+          ) : null}
 
           <ContextMenuItem
             className="text-[12px]"

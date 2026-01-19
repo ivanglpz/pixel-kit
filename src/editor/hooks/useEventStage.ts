@@ -42,7 +42,7 @@ import {
   GET_STAGE_BOUNDS_ATOM,
   GROUP_SHAPES_IN_LAYOUT,
 } from "../states/shapes";
-import { REDO_ATOM, UNDO_ATOM } from "../states/undo-redo";
+// import { REDO_ATOM, UNDO_ATOM } from "../states/undo-redo";
 import { SVG } from "../utils/svg";
 import { useAutoSave } from "./useAutoSave";
 import { useConfiguration } from "./useConfiguration";
@@ -69,8 +69,8 @@ export const useEventStage = () => {
   const DELETE_SHAPE = useSetAtom(DELETE_SHAPES_ATOM);
   const SET_CLEAR_CITEM = useSetAtom(CLEAR_CURRENT_ITEM_ATOM);
   const [selection, setSelection] = useAtom(RECTANGLE_SELECTION_ATOM);
-  const setRedo = useSetAtom(REDO_ATOM);
-  const setUndo = useSetAtom(UNDO_ATOM);
+  // const setRedo = useSetAtom(REDO_ATOM);
+  // const setUndo = useSetAtom(UNDO_ATOM);
   const SET_EVENT_GROUP = useSetAtom(GROUP_SHAPES_IN_LAYOUT);
 
   const SET_EVENT_COPY_START_SHAPES = useSetAtom(EVENT_COPY_START_SHAPES);
@@ -299,7 +299,7 @@ export const useEventStage = () => {
       // ✅ Undo (IR HACIA ATRÁS)
       if (meta && !event.shiftKey && key === "z") {
         event.preventDefault();
-        setUndo();
+        // setUndo();
         debounce.execute();
 
         // set(UNDO_ATOM);
@@ -316,7 +316,7 @@ export const useEventStage = () => {
       // ✅ Redo (IR HACIA ADELANTE)
       if (meta && event.shiftKey && key === "z") {
         event.preventDefault();
-        setRedo();
+        // setRedo();
         debounce.execute();
 
         // set(REDO_ATOM);

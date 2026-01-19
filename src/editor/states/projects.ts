@@ -11,7 +11,7 @@ import { IPageBase, IPageState, IShapeId } from "./pages";
 import { ALL_SHAPES, SHAPE_BASE_CHILDREN, WithInitialValue } from "./shapes";
 import { GET_TABS_BY_USER, TABS_PERSIST_ATOM, TabsProps } from "./tabs";
 import { IKeyTool, IShapeTool } from "./tool";
-import { UndoRedoAction } from "./undo-redo";
+// import { UndoRedoAction } from "./undo-redo";
 
 export type IPROJECT = {
   ID: string;
@@ -45,7 +45,7 @@ const cloneShapeRecursive = (shape: SHAPE_BASE_CHILDREN): ALL_SHAPES => {
     ?.filter((e) => e?.visible && e?.type === "shadow")
     .at(0);
   const SHAPE_IMAGE = shape.state.fills?.find(
-    (f) => f.visible && f.type === "image"
+    (f) => f.visible && f.type === "image",
   )?.image;
 
   const theTool = SHAPE_IMAGE?.src
@@ -69,7 +69,7 @@ const cloneShapeRecursive = (shape: SHAPE_BASE_CHILDREN): ALL_SHAPES => {
         return [key, theTool];
       }
       return [key, atom(value as ShapeBase[keyof ShapeBase])];
-    })
+    }),
   );
 
   return {
@@ -77,11 +77,11 @@ const cloneShapeRecursive = (shape: SHAPE_BASE_CHILDREN): ALL_SHAPES => {
     state: atom({
       ...data,
       shadowColor: atom(
-        shadow?.color ?? shape?.state?.shadowColor ?? "transparent"
+        shadow?.color ?? shape?.state?.shadowColor ?? "transparent",
       ),
       fillColor: atom(fill?.color ?? shape?.state?.fillColor ?? "transparent"),
       strokeColor: atom(
-        stroke?.color ?? shape?.state?.strokeColor ?? "transparent"
+        stroke?.color ?? shape?.state?.strokeColor ?? "transparent",
       ),
       image: atom(
         SHAPE_IMAGE ??
@@ -90,7 +90,7 @@ const cloneShapeRecursive = (shape: SHAPE_BASE_CHILDREN): ALL_SHAPES => {
             name: "default.png",
             src: "/placeholder.svg",
             width: 100,
-          }
+          },
       ),
     } as ShapeState),
   };
@@ -118,7 +118,7 @@ export const MOCKUP_PROJECT: IPROJECT = {
           },
           UNDOREDO: {
             COUNT_UNDO_REDO: atom<number>(0),
-            LIST_UNDO_REDO: atom<UndoRedoAction[]>([]),
+            // LIST_UNDO_REDO: atom<UndoRedoAction[]>([]),
           },
           VIEWPORT: {
             SCALE: atom({ x: 1, y: 1 }),
@@ -174,10 +174,10 @@ const buildPagesAtom = (pages: IPageBase[]) =>
         },
         UNDOREDO: {
           COUNT_UNDO_REDO: atom<number>(0),
-          LIST_UNDO_REDO: atom<UndoRedoAction[]>([]),
+          // LIST_UNDO_REDO: atom<UndoRedoAction[]>([]),
         },
       };
-    })
+    }),
   );
 
 const buildProjectAtom = async (item: TabsProps): Promise<IPROJECT | null> => {
@@ -185,7 +185,7 @@ const buildProjectAtom = async (item: TabsProps): Promise<IPROJECT | null> => {
     const project = await fetchProjectById(item._id);
     const { pages, selectedPageId, firstPageId } = parseProjectData(
       project.data,
-      item.mode
+      item.mode,
     );
 
     return {
@@ -212,7 +212,7 @@ export const BUILD_PROJECS_FROM_TABS = atom(null, async (get, set) => {
   const projectsStore = get(GET_TABS_BY_USER);
   const listProjects = get(PROJECTS_ATOM);
   const searchProjectsLoaded = projectsStore.filter((p) =>
-    listProjects.some((lp) => lp.ID === p._id)
+    listProjects.some((lp) => lp.ID === p._id),
   );
 
   if (searchProjectsLoaded.length === projectsStore.length) return;
@@ -222,7 +222,7 @@ export const BUILD_PROJECS_FROM_TABS = atom(null, async (get, set) => {
   const projects = results
     .filter(
       (res): res is PromiseFulfilledResult<IPROJECT> =>
-        res.status === "fulfilled" && res.value !== null
+        res.status === "fulfilled" && res.value !== null,
     )
     .map((res) => res.value);
 
@@ -258,7 +258,7 @@ export const GET_JSON_PROJECTS_ATOM = atom(null, (get, set) => {
           return [key, value];
         }
         return [key, get(value as PrimitiveAtom<ShapeBase[keyof ShapeBase]>)];
-      })
+      }),
     );
 
     return {
@@ -282,7 +282,7 @@ export const GET_JSON_PROJECTS_ATOM = atom(null, (get, set) => {
           POSITION: get(element.VIEWPORT.POSITION),
         },
       };
-    }
+    },
   );
 
   return {
