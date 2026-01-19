@@ -1,18 +1,11 @@
 import { Text } from "react-konva";
 import { IShapeEvents } from "./type.shape";
 
-import { useMemo } from "react";
 import { useResolvedShape } from "./frame.shape";
 import { ShapeLabel } from "./label";
 export const ShapeText = (props: IShapeEvents) => {
-  const shape = useResolvedShape(props.shape);
+  const shape = useResolvedShape(props);
 
-  const listening = useMemo(() => {
-    if (props?.options?.isLocked) {
-      return false;
-    }
-    return !shape.isLocked;
-  }, [props?.options?.isLocked, shape.isLocked]);
   if (!shape.visible) return null;
 
   return (
@@ -41,7 +34,7 @@ export const ShapeText = (props: IShapeEvents) => {
         text={shape.text}
         fontSize={shape.fontSize}
         lineHeight={1.45}
-        listening={listening}
+        listening={shape.listening}
         fillEnabled
         fill={shape.fillColor}
         stroke={shape.strokeColor}

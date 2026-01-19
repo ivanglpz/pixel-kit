@@ -4,19 +4,11 @@ import { IShapeEvents } from "./type.shape";
 
 /* eslint-disable react/display-name */
 
-import { useMemo } from "react";
 import { useResolvedShape } from "./frame.shape";
 import { ShapeLabel } from "./label";
 
 export const ShapeDraw = (props: IShapeEvents) => {
-  const shape = useResolvedShape(props.shape);
-
-  const listening = useMemo(() => {
-    if (props?.options?.isLocked) {
-      return false;
-    }
-    return !shape.isLocked;
-  }, [props?.options?.isLocked, shape.isLocked]);
+  const shape = useResolvedShape(props);
 
   if (!shape.visible) return null;
 
@@ -41,7 +33,7 @@ export const ShapeDraw = (props: IShapeEvents) => {
         points={shape.points}
         rotation={shape.rotation}
         globalCompositeOperation="source-over"
-        listening={listening}
+        listening={shape.listening}
         fillEnabled
         fill={shape.fillColor}
         stroke={shape.strokeColor}
