@@ -1,17 +1,15 @@
 import { MODE } from "@/editor/states/mode";
+import { IUser } from "./users";
 
 export type Role = "admin" | "member";
 
 export type RoleProject = "developer" | "designer" | "viewer" | "commenter";
 
-export type IUser = {
-  email: string;
-  fullName: string;
-  photoUrl: string;
-};
-
 export type IMembers<role> = {
-  user: IUser;
+  user: Omit<
+    IUser,
+    "password" | "passwordUpdatedAt" | "createdAt" | "updatedAt"
+  >;
   role: role;
 };
 
@@ -26,7 +24,10 @@ export type IProject = {
   name: string;
   organization: IOrganization;
   previewUrl: string;
-  createdBy: IUser;
+  createdBy: Omit<
+    IUser,
+    "password" | "passwordUpdatedAt" | "createdAt" | "updatedAt"
+  >;
   data: string;
   version: number;
   mode: MODE;

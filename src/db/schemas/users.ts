@@ -1,10 +1,15 @@
 import mongoose, { Schema } from "mongoose";
 
 // Define la interfaz para el usuario
-type IUser = {
+export type IUser = {
+  userId: string;
   email: string;
   password: string;
-  fullName: string; // Campo para el nombre completo
+  fullName: string;
+  photoUrl?: string;
+  passwordUpdatedAt: Date;
+  createdAt: Date;
+  updatedAt: Date;
 };
 
 // Crea el esquema de Mongoose
@@ -33,7 +38,7 @@ const NewUserSchema: Schema = new Schema(
   },
   {
     timestamps: true, // Agrega campos `createdAt` y `updatedAt`
-  }
+  },
 );
 
 // Crea el modelo de Mongoose
