@@ -6,7 +6,6 @@ type ComponentProps = {
 
 export function ThemeComponent({ children }: ComponentProps): JSX.Element {
   const theme = useTheme();
-  console.log(theme);
 
   return children({ theme });
 }

@@ -58,7 +58,7 @@ const truncateListAtIndex = <T>(list: T[], index: number): T[] =>
 
 const findShapeById = (
   shapes: ALL_SHAPES[],
-  id: string
+  id: string,
 ): ALL_SHAPES | undefined => shapes.find((s) => s.id === id);
 
 /* ============================================================
@@ -159,7 +159,7 @@ const deserializeShape = (snapshot: ShapeSnapshot): ALL_SHAPES => {
   // id/tool quedan como valores directos (coincide con tu ShapeState actual).
   // parentId y children deben ser atoms.
   const restoredEntries = Object.entries(snapshot.state).filter(
-    ([k]) => k !== "children" && k !== "parentId" && k !== "id" && k !== "tool"
+    ([k]) => k !== "children" && k !== "parentId" && k !== "id" && k !== "tool",
   );
 
   const restoredAtoms = restoredEntries.reduce<
@@ -207,7 +207,7 @@ const removeShapeCompletely =
 
       set(
         childrenAtom,
-        get(childrenAtom).filter((c) => c.id !== shapeId)
+        get(childrenAtom).filter((c) => c.id !== shapeId),
       );
       set(flexLayoutAtom, { id: parentId });
       return;
@@ -215,7 +215,7 @@ const removeShapeCompletely =
 
     set(
       ALL_SHAPES_ATOM,
-      get(ALL_SHAPES_ATOM).filter((s) => s.id !== shapeId)
+      get(ALL_SHAPES_ATOM).filter((s) => s.id !== shapeId),
     );
   };
 
@@ -352,13 +352,13 @@ const handleUndoGrouping =
 export const COUNT_UNDO_REDO = atom(
   (get) => get(get(CURRENT_PAGE).UNDOREDO.COUNT_UNDO_REDO),
   (get, set, value: number) =>
-    set(get(CURRENT_PAGE).UNDOREDO.COUNT_UNDO_REDO, value)
+    set(get(CURRENT_PAGE).UNDOREDO.COUNT_UNDO_REDO, value),
 );
 
 export const LIST_UNDO_REDO = atom(
   (get) => get(get(CURRENT_PAGE).UNDOREDO.LIST_UNDO_REDO),
   (get, set, list: UndoRedoAction[]) =>
-    set(get(CURRENT_PAGE).UNDOREDO.LIST_UNDO_REDO, list)
+    set(get(CURRENT_PAGE).UNDOREDO.LIST_UNDO_REDO, list),
 );
 
 export const NEW_UNDO_REDO = atom(null, (get, set, args: UndoShapeValues) => {
@@ -375,7 +375,6 @@ export const NEW_UNDO_REDO = atom(null, (get, set, args: UndoShapeValues) => {
       ? captureSnapshots(get)(args.prevShapes)
       : undefined,
   };
-  console.log(action);
 
   set(LIST_UNDO_REDO, [...truncated, action]);
   set(COUNT_UNDO_REDO, truncated.length + 1);

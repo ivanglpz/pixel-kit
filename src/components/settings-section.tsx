@@ -1,6 +1,6 @@
 import { css } from "@stylespixelkit/css";
 import { User } from "lucide-react";
-import { AccountSettings } from "./Tabs/account";
+import { AccountSettings } from "./settings-account";
 
 export const SettingsSection = () => {
   return (

@@ -17,7 +17,7 @@ import { LogOut, Settings, Twitter } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useState } from "react";
-import { SettingsSection } from "./Settings";
+import { SettingsSection } from "./settings-section";
 
 export const Profile = () => {
   const router = useRouter();
