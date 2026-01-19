@@ -1,4 +1,4 @@
-import { useAtomValue, useSetAtom } from "jotai";
+import { useAtomValue } from "jotai";
 import Konva from "konva";
 import { useEffect, useRef } from "react";
 import { Layer, Transformer } from "react-konva";
@@ -9,7 +9,7 @@ import { IShapeEvents } from "../shapes/type.shape";
 import STAGE_CANVAS_BACKGROUND from "../states/canvas";
 import { SELECTED_SHAPES_BY_IDS_ATOM } from "../states/shape";
 import ALL_SHAPES_ATOM, { ALL_SHAPES } from "../states/shapes";
-import { UPDATE_UNDO_REDO } from "../states/undo-redo";
+// import { UPDATE_UNDO_REDO } from "../states/undo-redo";
 
 const getAllShapes = (node: Konva.Layer | Konva.Group): Konva.Shape[] => {
   const children = Array.from(node.getChildren());
@@ -38,7 +38,7 @@ export const LayerShapes = () => {
   const trRef = useRef<Konva.Transformer>(null);
   const lyRef = useRef<Konva.Layer>(null);
   const selectedIds = useAtomValue(SELECTED_SHAPES_BY_IDS_ATOM);
-  const setUpdateUndoRedo = useSetAtom(UPDATE_UNDO_REDO);
+  // const setUpdateUndoRedo = useSetAtom(UPDATE_UNDO_REDO);
   const { debounce } = useAutoSave();
   const background = useAtomValue(STAGE_CANVAS_BACKGROUND);
 

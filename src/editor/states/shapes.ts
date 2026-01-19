@@ -34,7 +34,6 @@ import {
   UPDATE_SHAPES_IDS_ATOM,
 } from "./shape";
 import TOOL_ATOM, { IKeyTool, IShapeTool } from "./tool";
-import { NEW_UNDO_REDO } from "./undo-redo";
 
 // =====================================
 // Public types
@@ -365,15 +364,15 @@ export const DELETE_SHAPES_ATOM = atom(null, (get, set) => {
   });
 
   const SHAPE_IDS_ = get(CURRENT_PAGE).SHAPES.ID;
-  const selectedShapes = plane.filter((e) =>
-    selected.some((w) => w.id === e.id),
-  );
+  // const selectedShapes = plane.filter((e) =>
+  //   selected.some((w) => w.id === e.id),
+  // );
 
   set(SHAPE_IDS_, []);
-  set(NEW_UNDO_REDO, {
-    type: "DELETE",
-    shapes: selectedShapes,
-  });
+  // set(NEW_UNDO_REDO, {
+  //   type: "DELETE",
+  //   shapes: selectedShapes,
+  // });
 });
 
 /**
@@ -384,10 +383,10 @@ export const DELETE_ALL_SHAPES_ATOM = atom(null, (get, set) => {
   const currentShapes = get(PLANE_SHAPES_ATOM);
   set(SHAPE_IDS_, []);
   set(ALL_SHAPES_ATOM, []);
-  set(NEW_UNDO_REDO, {
-    type: "DELETE",
-    shapes: currentShapes,
-  });
+  // set(NEW_UNDO_REDO, {
+  //   type: "DELETE",
+  //   shapes: currentShapes,
+  // });
 });
 
 // =====================================
@@ -718,11 +717,11 @@ export const GROUP_SHAPES_IN_LAYOUT = atom(null, (get, set) => {
   // Reset selection and select only the new layout.
   set(RESET_SHAPES_IDS_ATOM);
   set(UPDATE_SHAPES_IDS_ATOM, [{ id: newLayoutId, parentId: firstParentId }]);
-  set(NEW_UNDO_REDO, {
-    type: "GROUPING",
-    shapes: [newLayoutShape], // Estado DESPUÉS (el layout con los hijos)
-    prevShapes: prevSelectedShapes, // Estado ANTES (los elementos individuales)
-  });
+  // set(NEW_UNDO_REDO, {
+  //   type: "GROUPING",
+  //   shapes: [newLayoutShape], // Estado DESPUÉS (el layout con los hijos)
+  //   prevShapes: prevSelectedShapes, // Estado ANTES (los elementos individuales)
+  // });
 });
 
 // =====================================
@@ -1124,15 +1123,15 @@ export const CREATE_SHAPE_ATOM = atom(null, (get, set, args: ShapeState) => {
 
     // Trigger flex re-layout for the parent container.
     set(flexLayoutAtom, { id: FIND_SHAPE.id });
-    set(NEW_UNDO_REDO, {
-      shapes: [
-        {
-          ...FIND_SHAPE,
-          state: atom(args),
-        },
-      ],
-      type: "CREATE",
-    });
+    // set(NEW_UNDO_REDO, {
+    //   shapes: [
+    //     {
+    //       ...FIND_SHAPE,
+    //       state: atom(args),
+    //     },
+    //   ],
+    //   type: "CREATE",
+    // });
 
     return;
   }
@@ -1145,10 +1144,10 @@ export const CREATE_SHAPE_ATOM = atom(null, (get, set, args: ShapeState) => {
   };
 
   set(ALL_SHAPES_ATOM, [...get(ALL_SHAPES_ATOM), newAllShape]);
-  set(NEW_UNDO_REDO, {
-    shapes: [newAllShape],
-    type: "CREATE",
-  });
+  // set(NEW_UNDO_REDO, {
+  //   shapes: [newAllShape],
+  //   type: "CREATE",
+  // });
 });
 
 export default ALL_SHAPES_ATOM;

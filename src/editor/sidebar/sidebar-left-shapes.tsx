@@ -10,7 +10,7 @@ import ALL_SHAPES_ATOM, {
   DELETE_ALL_SHAPES_ATOM,
   MOVE_SHAPES_TO_ROOT,
 } from "@/editor/states/shapes";
-import { UPDATE_UNDO_REDO } from "@/editor/states/undo-redo";
+// import { UPDATE_UNDO_REDO } from "@/editor/states/undo-redo";
 import { css } from "@stylespixelkit/css";
 import { Reorder, useDragControls } from "framer-motion";
 import { useAtom, useSetAtom } from "jotai";
@@ -44,13 +44,13 @@ const DraggableRootItem = withStableMemo(({ item }: { item: ALL_SHAPES }) => {
 
 export const SidebarLeftShapes = () => {
   const [ALL_SHAPES, SET_ALL_SHAPES] = useAtom(ALL_SHAPES_ATOM);
-  const setUpdateUndoRedo = useSetAtom(UPDATE_UNDO_REDO);
+  // const setUpdateUndoRedo = useSetAtom(UPDATE_UNDO_REDO);
   const setmove = useSetAtom(MOVE_SHAPES_TO_ROOT);
   const { debounce } = useAutoSave();
 
   const handleReorder = (newOrder: typeof ALL_SHAPES) => {
     SET_ALL_SHAPES(newOrder);
-    setUpdateUndoRedo();
+    // setUpdateUndoRedo();
     debounce.execute();
   };
   const clearAll = useSetAtom(DELETE_ALL_SHAPES_ATOM);
@@ -78,15 +78,6 @@ export const SidebarLeftShapes = () => {
           </header>
         </ContextMenuTrigger>
         <ContextMenuContent>
-          <ContextMenuItem
-            className="text-[12px]"
-            onClick={() => {
-              setmove();
-              debounce.execute();
-            }}
-          >
-            Move to
-          </ContextMenuItem>
           <ContextMenuItem
             className="text-[12px]"
             onClick={() => {

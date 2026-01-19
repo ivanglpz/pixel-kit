@@ -66,7 +66,7 @@ import { Loading } from "../components/loading";
 import { ThemeComponent } from "../components/ThemeComponent";
 import { useDelayedExecutor } from "../hooks/useDelayExecutor";
 import { IShapeTool } from "../states/tool";
-import { UPDATE_UNDO_REDO } from "../states/undo-redo";
+// import { UPDATE_UNDO_REDO } from "../states/undo-redo";
 import { SVG } from "../utils/svg";
 import { ExportShape } from "./export-shape";
 
@@ -74,7 +74,7 @@ export const calculateScale = (
   originalWidth: number,
   originalHeight: number,
   containerWidth: number,
-  containerHeight: number
+  containerHeight: number,
 ): number => {
   const widthScale: number = containerWidth / originalWidth;
   const heightScale: number = containerHeight / originalHeight;
@@ -298,11 +298,11 @@ export const SectionHeader = ({
 export const useShapeUpdate = () => {
   const update = useSetAtom(SHAPE_UPDATE_ATOM);
   const { debounce } = useAutoSave();
-  const setUpdateUndoRedo = useSetAtom(UPDATE_UNDO_REDO);
+  // const setUpdateUndoRedo = useSetAtom(UPDATE_UNDO_REDO);
 
   const debounceControl = useDelayedExecutor({
     callback: () => {
-      setUpdateUndoRedo();
+      // setUpdateUndoRedo();
       debounce.execute();
     },
     timer: 500, // opcional
@@ -310,7 +310,7 @@ export const useShapeUpdate = () => {
 
   return <K extends keyof ShapeState>(
     type: UpdatableKeys,
-    value: Omit<ShapeBase[K], "id" | "tool" | "children" | "parentId">
+    value: Omit<ShapeBase[K], "id" | "tool" | "children" | "parentId">,
   ) => {
     update({ type, value });
     debounceControl.execute();
@@ -707,7 +707,7 @@ export const LayoutShapeConfig = () => {
 
   const mutation = useMutation({
     mutationFn: async (
-      newPhoto: File
+      newPhoto: File,
     ): Promise<Pick<IPhoto, "name" | "width" | "height" | "url">> => {
       const formData = new FormData();
       const optimizedFile = await optimizeImageFile({
@@ -755,7 +755,7 @@ export const LayoutShapeConfig = () => {
 
   const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []).filter((file) =>
-      file.type.startsWith("image/")
+      file.type.startsWith("image/"),
     );
     const file = files.at(0);
     if (!file) return;
@@ -776,7 +776,7 @@ export const LayoutShapeConfig = () => {
     setSelectedPhotos((prev) =>
       prev.some((p) => p._id === photo._id)
         ? prev.filter((p) => p._id !== photo._id)
-        : [...prev, photo]
+        : [...prev, photo],
     );
   };
 
