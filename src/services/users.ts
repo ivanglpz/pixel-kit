@@ -1,3 +1,4 @@
+import { IUser } from "@/db/schemas/users";
 import { AxiosResponse } from "axios";
 import Cookies from "js-cookie";
 import { api } from "./axios";
@@ -5,10 +6,7 @@ import { api } from "./axios";
 export const loginUser = ({
   email,
   password,
-}: {
-  email: string;
-  password: string;
-}) => {
+}: Pick<IUser, "email" | "password">) => {
   return api.post("/users/login", {
     email,
     password,
@@ -18,11 +16,7 @@ export const createUser = async ({
   fullName,
   email,
   password,
-}: {
-  fullName: string;
-  email: string;
-  password: string;
-}) => {
+}: Pick<IUser, "fullName" | "email" | "password">) => {
   return api.post("/users/create", {
     fullName,
     email,
@@ -32,12 +26,10 @@ export const createUser = async ({
 
 type ResponseMe = {
   message: string;
-  user: {
-    email: string;
-    fullName: string;
-    userId: string;
-    photoUrl: string | null;
-  };
+  user: Omit<
+    IUser,
+    "password" | "passwordUpdatedAt" | "createdAt" | "updatedAt"
+  >;
 };
 export const meUser = async (): Promise<ResponseMe> => {
   const accessToken = Cookies.get("accessToken");
@@ -71,7 +63,7 @@ export const changePassword = async ({
       headers: {
         authorization: accessToken,
       },
-    }
+    },
   );
 };
 
