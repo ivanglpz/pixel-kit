@@ -11,6 +11,8 @@ import {
 } from "@/components/ui/context-menu";
 import * as Luicde from "lucide-react";
 import { useMemo, useState } from "react";
+import { Input } from "../components/input";
+import { withStableMemo } from "../components/withStableMemo";
 import { constants } from "../constants/color";
 import { useAutoSave } from "../hooks/useAutoSave";
 import { flexLayoutAtom } from "../shapes/layout-flex";
@@ -22,8 +24,6 @@ import {
 } from "../states/shapes";
 import TOOL_ATOM, { PAUSE_MODE_ATOM } from "../states/tool";
 import { UPDATE_UNDO_REDO } from "../states/undo-redo";
-import { withStableMemo } from "../utils/withStableMemo";
-import { Input } from "./input";
 
 type NodeProps = {
   shape: ALL_SHAPES;

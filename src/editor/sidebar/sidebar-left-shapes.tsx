@@ -4,7 +4,7 @@ import {
   ContextMenuItem,
   ContextMenuTrigger,
 } from "@/components/ui/context-menu";
-import { Nodes } from "@/editor/components/Nodes";
+import { Nodes } from "@/editor/sidebar/sidebar-left-nodes";
 import ALL_SHAPES_ATOM, {
   ALL_SHAPES,
   DELETE_ALL_SHAPES_ATOM,
@@ -15,8 +15,8 @@ import { css } from "@stylespixelkit/css";
 import { Reorder, useDragControls } from "framer-motion";
 import { useAtom, useSetAtom } from "jotai";
 import { Trash } from "lucide-react";
+import { withStableMemo } from "../components/withStableMemo";
 import { useAutoSave } from "../hooks/useAutoSave";
-import { withStableMemo } from "../utils/withStableMemo";
 // ✅ Componente wrapper para elementos de nivel superior
 const DraggableRootItem = withStableMemo(({ item }: { item: ALL_SHAPES }) => {
   const rootDragControls = useDragControls();
