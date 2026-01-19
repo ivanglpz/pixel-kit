@@ -1,4 +1,4 @@
-import { IUser } from "@/db/schemas/users";
+import { IUser } from "@/db/schemas/types";
 import { AxiosResponse } from "axios";
 import Cookies from "js-cookie";
 import { api } from "./axios";
@@ -81,10 +81,7 @@ export const uploadUserPhoto = async (values: FormData) => {
 export const updateUserProfile = async ({
   fullName,
   photoUrl,
-}: {
-  fullName: string;
-  photoUrl: string;
-}) => {
+}: Pick<IUser, "fullName" | "photoUrl">) => {
   const response = await api.put<{ message: string }>(`/users/update`, {
     fullName,
     photoUrl,
