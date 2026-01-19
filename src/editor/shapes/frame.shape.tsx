@@ -121,8 +121,6 @@ export const useResolvedShape = (props: IShapeEvents) => {
   const SHAPE = useAtomValue(instance.state);
   const sourceShapeId = useAtomValue(SHAPE.sourceShapeId);
   const PLANE = useAtomValue(PLANE_SHAPES_ATOM);
-
-  // Propiedades del shape principal (siempre necesarias)
   const principalParentId = useAtomValue(SHAPE.parentId);
   const principalX = useAtomValue(SHAPE.x);
   const principalY = useAtomValue(SHAPE.y);
@@ -197,44 +195,8 @@ export const useResolvedShape = (props: IShapeEvents) => {
     return PLANE.find((e) => e.id === sourceShapeId);
   }, [sourceShapeId, PLANE]);
 
-  // Si existe shape espejo, combinar propiedades
-  if (sourceShapeId && SHAPE_MIRROR) {
-    // Obtener todas las propiedades del shape espejo
-    const mirrorProps = usePropertiesShape(SHAPE_MIRROR);
+  const mirrorProps = usePropertiesShape(SHAPE_MIRROR ?? instance);
 
-    // Sobrescribir con las propiedades del principal
-    return {
-      ...mirrorProps,
-      id: SHAPE.id, // Mantener el ID original
-      parentId: principalParentId,
-      x: principalX,
-      y: principalY,
-      width: principalWidth,
-      height: principalHeight,
-      isLocked: principalIsLocked,
-      setRotation,
-      setY,
-      setX,
-      setWidth,
-      setHeight,
-      sourceShapeId,
-      isComponent,
-      label,
-      isSelected,
-      listening,
-      events: {
-        onDragMove,
-        onDragEnd,
-        onTransform,
-        onTransformEnd,
-        onClick,
-      },
-    };
-  }
-
-  const mirrorProps = usePropertiesShape(instance);
-
-  // Sobrescribir con las propiedades del principal
   return {
     ...mirrorProps,
     id: SHAPE.id, // Mantener el ID original
@@ -245,6 +207,8 @@ export const useResolvedShape = (props: IShapeEvents) => {
     height: principalHeight,
     isLocked: principalIsLocked,
     setRotation,
+    isComponent,
+    label,
     setY,
     setX,
     setWidth,
