@@ -452,6 +452,8 @@ export const RESOLVE_DROP_TARGET = atom(null, (get, set, COORDS: Point) => {
 
   const candidates = plane
     .filter((shape) => !selected.some((e) => e?.id === shape.id))
+    .filter((e) => get(get(e.state).tool) === "FRAME")
+
     .map((shape) => {
       const st = get(shape.state);
       const localX = get(st.x);
@@ -480,10 +482,6 @@ export const RESOLVE_DROP_TARGET = atom(null, (get, set, COORDS: Point) => {
   const target = candidates.length > 0 ? candidates[0].shape : null;
 
   if (!target) {
-    set(MOVE_SHAPES_TO_ROOT);
-    return;
-  }
-  if (get(get(target?.state).tool) !== "FRAME") {
     set(MOVE_SHAPES_TO_ROOT);
     return;
   }
