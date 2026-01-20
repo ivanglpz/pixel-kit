@@ -4,15 +4,20 @@ export type Role = "admin" | "member";
 
 export type RoleProject = "developer" | "designer" | "viewer" | "commenter";
 
-export type IUser = {
-  email: string;
-  fullName: string;
-  photoUrl: string;
+export type IMembers<role> = {
+  user: Omit<
+    IUser,
+    "password" | "passwordUpdatedAt" | "createdAt" | "updatedAt"
+  >;
+  role: role;
 };
 
-export type IMembers<role> = {
-  user: IUser;
-  role: role;
+export type IUser = {
+  userId: string;
+  email: string;
+  password: string;
+  fullName: string;
+  photoUrl: string | null;
 };
 
 export type IOrganization = {
@@ -26,7 +31,10 @@ export type IProject = {
   name: string;
   organization: IOrganization;
   previewUrl: string;
-  createdBy: IUser;
+  createdBy: Omit<
+    IUser,
+    "password" | "passwordUpdatedAt" | "createdAt" | "updatedAt"
+  >;
   data: string;
   version: number;
   mode: MODE;

@@ -4,7 +4,7 @@ import { ShapeState } from "../shapes/types/shape.state";
 import { EVENT_ATOM } from "./event";
 import { CURRENT_PAGE, IShapeId } from "./pages";
 import { PLANE_SHAPES_ATOM } from "./shapes";
-import { ShapeSnapshot } from "./undo-redo";
+// import { ShapeSnapshot } from "./undo-redo";
 
 const filterListId = (id: string, parentId: string | null) => {
   return (e: IShapeId) => e?.id === id && e?.parentId === parentId;
@@ -30,14 +30,14 @@ export const SELECTED_SHAPES_BY_IDS_ATOM = atom(
       return;
     }
     _set(ids, [shape]);
-  }
+  },
 );
 export const UPDATE_SHAPES_IDS_ATOM = atom(
   null,
   (get, set, args: IShapeId[]) => {
     const ids = get(CURRENT_PAGE).SHAPES.ID;
     set(ids, args);
-  }
+  },
 );
 
 export const RESET_SHAPES_IDS_ATOM = atom(null, (get, set) => {
@@ -55,8 +55,8 @@ export const SHAPE_SELECTED_ATOM = atom((get) => {
       selectedIds.some(
         (selected) =>
           shape.id === selected.id &&
-          get(get(shape.state).parentId) === selected.parentId
-      )
+          get(get(shape.state).parentId) === selected.parentId,
+      ),
     )
     .map((shape) => get(shape.state));
 
@@ -81,7 +81,7 @@ export const SHAPE_UPDATE_ATOM = atom(
   <K extends UpdatableKeys>(
     get: Getter,
     set: Setter,
-    args: ShapeUpdateAtomProps<K>
+    args: ShapeUpdateAtomProps<K>,
   ) => {
     const { type, value } = args;
 
@@ -91,14 +91,5 @@ export const SHAPE_UPDATE_ATOM = atom(
       if (!target) continue;
       set(target as any, value);
     }
-  }
+  },
 );
-
-export const SHAPE_XD_DATA = atom(null, (get, set, args: ShapeSnapshot[]) => {
-  const planeShapes = get(PLANE_SHAPES_ATOM);
-  for (const element of args) {
-    const find_shape = planeShapes.find((e) => e.id === element.id);
-
-    if (!find_shape) continue;
-  }
-});

@@ -1,131 +1,66 @@
-import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { Text } from "react-konva";
-import { SELECTED_SHAPES_BY_IDS_ATOM } from "../states/shape";
 import { IShapeEvents } from "./type.shape";
 
-import { useMemo } from "react";
-import { flexLayoutAtom } from "./layout-flex";
+import { useResolvedShape } from "./frame.shape";
+import { ShapeLabel } from "./label";
 export const ShapeText = (props: IShapeEvents) => {
-  const { shape: item } = props;
-  const box = useAtomValue(item.state);
-  const [rotation, setRotation] = useAtom(box.rotation);
-  const [x, setX] = useAtom(box.x);
-  const [y, setY] = useAtom(box.y);
-  const [width, setWidth] = useAtom(box.width);
-  const [height, setHeight] = useAtom(box.height);
-  const visible = useAtomValue(box.visible);
-  const applyLayout = useSetAtom(flexLayoutAtom);
-  const isLocked = useAtomValue(box.isLocked);
-  const parentId = useAtomValue(box.parentId);
-  const shadowColor = useAtomValue(box.shadowColor);
-  const strokeColor = useAtomValue(box.strokeColor);
-  const fillColor = useAtomValue(box.fillColor);
-  const strokeWidth = useAtomValue(box.strokeWidth);
-  const dash = useAtomValue(box.dash);
-  const isAllBorderRadius = useAtomValue(box.isAllBorderRadius);
-  const borderTopLeftRadius = useAtomValue(box.borderTopLeftRadius);
-  const borderTopRightRadius = useAtomValue(box.borderTopRightRadius);
-  const borderBottomRightRadius = useAtomValue(box.borderBottomRightRadius);
-  const borderBottomLeftRadius = useAtomValue(box.borderBottomLeftRadius);
-  const borderRadius = useAtomValue(box.borderRadius);
-  const shadowOpacity = useAtomValue(box.shadowOpacity);
-  const shadowOffsetX = useAtomValue(box.shadowOffsetX);
-  const shadowOffsetY = useAtomValue(box.shadowOffsetY);
-  const shadowBlur = useAtomValue(box.shadowBlur);
-  const opacity = useAtomValue(box.opacity);
-  const fontFamily = useAtomValue(box.fontFamily);
-  const fontVariant = useAtomValue(box.fontWeight);
-  const text = useAtomValue(box.text);
-  const fontSize = useAtomValue(box.fontSize);
-  const [shapeId, setShapeId] = useAtom(SELECTED_SHAPES_BY_IDS_ATOM);
-  const isSelected = useMemo(
-    () => shapeId.some((w) => w.id === box.id),
-    [shapeId, box.id]
-  );
+  const shape = useResolvedShape(props);
 
-  if (!visible) return null;
+  if (!shape.visible) return null;
 
   return (
     <>
+      {props?.options?.showLabel ? (
+        <ShapeLabel
+          x={shape.x}
+          y={shape.y}
+          label={shape.label}
+          color={props?.options?.background}
+          isComponent={shape.isComponent}
+        />
+      ) : null}
       <Text
         // 1. Identificación y referencia
-        id={box?.id}
-        parentId={parentId}
+        id={props?.options?.isLocked ? "" : shape?.id}
+        parentId={shape.parentId}
         // 2. Posición y tamaño - calculada manualmente para rotación
-        x={x}
-        y={y}
-        width={width}
-        height={height}
-        rotation={rotation}
-        fontFamily={fontFamily}
-        fontVariant={fontVariant}
-        text={text}
-        fontSize={fontSize}
+        x={shape.x}
+        y={shape.y}
+        width={shape.width}
+        height={shape.height}
+        rotation={shape.rotation}
+        fontFamily={shape.fontFamily}
+        fontVariant={shape.fontVariant}
+        text={shape.text}
+        fontSize={shape.fontSize}
         lineHeight={1.45}
-        // Sin offset - calculamos todo manualmente
-        // offsetX={width / 2}
-        // offsetY={height / 2}
-        // Sin offset - calculamos todo manualmente
-        listening={!isLocked}
-        // 3. Relleno y color
+        listening={shape.listening}
         fillEnabled
-        fill={fillColor}
-        // 4. Bordes y trazos
-        stroke={strokeColor}
-        strokeWidth={strokeWidth}
+        fill={shape.fillColor}
+        stroke={shape.strokeColor}
+        strokeWidth={shape.strokeWidth}
         strokeEnabled={false}
-        // dash={[dash, dash, dash, dash]}
-        dash={[dash]}
-        dashEnabled={dash > 0}
+        dash={[shape.dash]}
+        dashEnabled={shape.dash > 0}
         cornerRadius={
-          !isAllBorderRadius
+          !shape.isAllBorderRadius
             ? [
-                borderTopLeftRadius,
-                borderTopRightRadius,
-                borderBottomRightRadius,
-                borderBottomLeftRadius,
+                shape.borderTopLeftRadius,
+                shape.borderTopRightRadius,
+                shape.borderBottomRightRadius,
+                shape.borderBottomLeftRadius,
               ]
-            : borderRadius
+            : shape.borderRadius
         }
-        // 5. Sombras
-        shadowColor={shadowColor}
-        shadowOpacity={shadowOpacity}
-        shadowOffsetX={shadowOffsetX}
-        shadowOffsetY={shadowOffsetY}
-        shadowBlur={shadowBlur}
+        shadowColor={shape.shadowColor}
+        shadowOpacity={shape.shadowOpacity}
+        shadowOffsetX={shape.shadowOffsetX}
+        shadowOffsetY={shape.shadowOffsetY}
+        shadowBlur={shape.shadowBlur}
         shadowEnabled
-        // 6. Apariencia y opacidad
-        opacity={opacity}
-        // 7. Interactividad y arrastre
-        draggable={isSelected}
-        // 8. Eventos
-        onClick={() => {
-          setShapeId({
-            id: box?.id,
-            parentId: parentId,
-          });
-        }}
-        onDragMove={(evt) => {
-          setX(evt.target.x());
-          setY(evt.target.y());
-        }}
-        onDragEnd={() => {
-          if (!parentId) return;
-          applyLayout({ id: parentId });
-        }}
-        onTransform={(e) => {
-          const scaleX = e.target.scaleX();
-          const scaleY = e.target.scaleY();
-          e.target.scaleX(1);
-          e.target.scaleY(1);
-          setRotation(e.target.rotation());
-          setWidth(Math.max(5, e.target.width() * scaleX));
-          setHeight(Math.max(e.target.height() * scaleY));
-        }}
-        onTransformEnd={() => {
-          if (!parentId) return;
-          applyLayout({ id: parentId });
-        }}
+        opacity={shape.opacity}
+        draggable={shape.isSelected}
+        {...shape.events}
       />
     </>
   );

@@ -17,7 +17,7 @@ const stageAbsolutePosition = (event: KonvaEventObject<MouseEvent>) => {
   return transform?.point?.(pos);
 };
 const groupAbsolutePosition = (
-  node: Group
+  node: Group,
 ): {
   x: number;
   y: number;

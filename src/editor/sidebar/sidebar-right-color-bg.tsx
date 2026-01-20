@@ -5,7 +5,7 @@ import { FC } from "react";
 import { Input } from "../components/input";
 import STAGE_CANVAS_BACKGROUND from "../states/canvas";
 
-export const StageCanvasColor: FC = () => {
+export const SidebarRightColorBg: FC = () => {
   const [config, setConfig] = useAtom(STAGE_CANVAS_BACKGROUND);
 
   return (

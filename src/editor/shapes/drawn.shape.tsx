@@ -1,131 +1,68 @@
 /* eslint-disable react/display-name */
-import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { Line } from "react-konva";
 import { IShapeEvents } from "./type.shape";
 
 /* eslint-disable react/display-name */
-import { SELECTED_SHAPES_BY_IDS_ATOM } from "../states/shape";
 
-import { useMemo } from "react";
-import { flexLayoutAtom } from "./layout-flex";
+import { useResolvedShape } from "./frame.shape";
+import { ShapeLabel } from "./label";
 
 export const ShapeDraw = (props: IShapeEvents) => {
-  const { shape: item } = props;
-  const box = useAtomValue(item.state);
-  const [rotation, setRotation] = useAtom(box.rotation);
-  const [x, setX] = useAtom(box.x);
-  const [y, setY] = useAtom(box.y);
-  const [width, setWidth] = useAtom(box.width);
-  const [height, setHeight] = useAtom(box.height);
-  const visible = useAtomValue(box.visible);
-  const applyLayout = useSetAtom(flexLayoutAtom);
-  const isLocked = useAtomValue(box.isLocked);
-  const shadowColor = useAtomValue(box.shadowColor);
-  const strokeColor = useAtomValue(box.strokeColor);
-  const fillColor = useAtomValue(box.fillColor);
-  const parentId = useAtomValue(box.parentId);
-  const points = useAtomValue(box.points);
-  const strokeWidth = useAtomValue(box.strokeWidth);
-  const dash = useAtomValue(box.dash);
-  const isAllBorderRadius = useAtomValue(box.isAllBorderRadius);
-  const borderTopLeftRadius = useAtomValue(box.borderTopLeftRadius);
-  const borderTopRightRadius = useAtomValue(box.borderTopRightRadius);
-  const borderBottomRightRadius = useAtomValue(box.borderBottomRightRadius);
-  const borderBottomLeftRadius = useAtomValue(box.borderBottomLeftRadius);
-  const borderRadius = useAtomValue(box.borderRadius);
-  const shadowOpacity = useAtomValue(box.shadowOpacity);
-  const shadowOffsetX = useAtomValue(box.shadowOffsetX);
-  const shadowOffsetY = useAtomValue(box.shadowOffsetY);
-  const shadowBlur = useAtomValue(box.shadowBlur);
-  const opacity = useAtomValue(box.opacity);
+  const shape = useResolvedShape(props);
 
-  // const shadow = useAtomValue(effects.at(0)?.color)
-  const [shapeId, setShapeId] = useAtom(SELECTED_SHAPES_BY_IDS_ATOM);
-  const isSelected = useMemo(
-    () => shapeId.some((w) => w.id === box.id),
-    [shapeId, box.id]
-  );
-
-  if (!visible) return null;
+  if (!shape.visible) return null;
 
   return (
     <>
+      {props?.options?.showLabel ? (
+        <ShapeLabel
+          x={shape.x}
+          y={shape.y}
+          label={shape.label}
+          color={props?.options?.background}
+          isComponent={shape.isComponent}
+        />
+      ) : null}
       <Line
-        // 1. Identificación y referencia
-        id={box?.id}
-        parentId={parentId}
-        // 2. Posición y tamaño - calculada manualmente para rotación
-        x={x}
-        y={y}
-        width={width}
-        height={height}
-        points={points}
-        rotation={rotation}
+        id={props?.options?.isLocked ? "" : shape?.id}
+        parentId={shape.parentId}
+        x={shape.x}
+        y={shape.y}
+        width={shape.width}
+        height={shape.height}
+        points={shape.points}
+        rotation={shape.rotation}
         globalCompositeOperation="source-over"
-        // Sin offset - calculamos todo manualmente
-        // offsetX={width / 2}
-        // offsetY={height / 2}
-        // Sin offset - calculamos todo manualmente
-        listening={!isLocked}
-        // 3. Relleno y color
+        listening={shape.listening}
         fillEnabled
-        fill={fillColor}
-        // 4. Bordes y trazos
-        stroke={strokeColor}
-        strokeWidth={strokeWidth}
-        strokeEnabled={strokeWidth > 0}
-        // dash={[dash, dash, dash, dash]}
-        dash={[dash]}
-        dashEnabled={dash > 0}
+        fill={shape.fillColor}
+        stroke={shape.strokeColor}
+        strokeWidth={shape.strokeWidth}
+        strokeEnabled={shape.strokeWidth > 0}
+        dash={[shape.dash]}
+        dashEnabled={shape.dash > 0}
         cornerRadius={
-          !isAllBorderRadius
+          !shape.isAllBorderRadius
             ? [
-                borderTopLeftRadius,
-                borderTopRightRadius,
-                borderBottomRightRadius,
-                borderBottomLeftRadius,
+                shape.borderTopLeftRadius,
+                shape.borderTopRightRadius,
+                shape.borderBottomRightRadius,
+                shape.borderBottomLeftRadius,
               ]
-            : borderRadius
+            : shape.borderRadius
         }
         // 5. Sombras
-        shadowColor={shadowColor}
-        shadowOpacity={shadowOpacity}
-        shadowOffsetX={shadowOffsetX}
-        shadowOffsetY={shadowOffsetY}
-        shadowBlur={shadowBlur}
+        shadowColor={shape.shadowColor}
+        shadowOpacity={shape.shadowOpacity}
+        shadowOffsetX={shape.shadowOffsetX}
+        shadowOffsetY={shape.shadowOffsetY}
+        shadowBlur={shape.shadowBlur}
         shadowEnabled
         // 6. Apariencia y opacidad
-        opacity={opacity}
+        opacity={shape.opacity}
         // 7. Interactividad y arrastre
-        draggable={isSelected}
-        // 8. Eventos
-        onClick={() => {
-          setShapeId({
-            id: box?.id,
-            parentId: parentId,
-          });
-        }}
-        onDragMove={(evt) => {
-          setX(evt.target.x());
-          setY(evt.target.y());
-        }}
-        onDragEnd={() => {
-          if (!parentId) return;
-          applyLayout({ id: parentId });
-        }}
-        onTransform={(e) => {
-          const scaleX = e.target.scaleX();
-          const scaleY = e.target.scaleY();
-          e.target.scaleX(1);
-          e.target.scaleY(1);
-          setRotation(e.target.rotation());
-          setWidth(Math.max(5, e.target.width() * scaleX));
-          setHeight(Math.max(e.target.height() * scaleY));
-        }}
-        onTransformEnd={() => {
-          if (!parentId) return;
-          applyLayout({ id: parentId });
-        }}
+        draggable={shape.isSelected}
+        {...shape.events}
       />
     </>
   );

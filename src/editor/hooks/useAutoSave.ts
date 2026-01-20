@@ -6,13 +6,13 @@ import { optimizeImageFile } from "@/utils/opt-img";
 import { useMutation } from "@tanstack/react-query";
 import { useSetAtom } from "jotai";
 import { toast } from "sonner";
-import { GET_EXPORT_ALLSHAPES_ATOM } from "../states/mode";
+import { GENERATE_PREVIEW_ATOM } from "../states/export";
 import { GET_JSON_PROJECTS_ATOM } from "../states/projects";
 import { useDelayedExecutor } from "./useDelayExecutor";
 
 export const useAutoSave = () => {
   const GET_JSON = useSetAtom(GET_JSON_PROJECTS_ATOM);
-  const GET_PREVIEW = useSetAtom(GET_EXPORT_ALLSHAPES_ATOM);
+  const GET_PREVIEW = useSetAtom(GENERATE_PREVIEW_ATOM);
 
   const mutation = useMutation({
     mutationFn: async () => {
@@ -24,7 +24,7 @@ export const useAutoSave = () => {
         await optimizeImageFile({
           file: base64ToFile(PREVIEW, "preview.png"),
           quality: 25,
-        })
+        }),
       ); // usar el mismo nombre 'images'
       formData.append("projectId", `${JSON_.projectId}`); // usar el mismo nombre 'images'
 

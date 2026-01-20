@@ -1,6 +1,5 @@
 /* eslint-disable @next/next/no-img-element */
 /* eslint-disable jsx-a11y/alt-text */
-import { Valid } from "@/components/valid";
 import { IPhoto } from "@/db/schemas/types";
 import {
   SHAPE_SELECTED_ATOM,
@@ -66,7 +65,8 @@ import { Button } from "../components/button";
 import { Loading } from "../components/loading";
 import { ThemeComponent } from "../components/ThemeComponent";
 import { useDelayedExecutor } from "../hooks/useDelayExecutor";
-import { UPDATE_UNDO_REDO } from "../states/undo-redo";
+import { IShapeTool } from "../states/tool";
+// import { UPDATE_UNDO_REDO } from "../states/undo-redo";
 import { SVG } from "../utils/svg";
 import { ExportShape } from "./export-shape";
 
@@ -74,7 +74,7 @@ export const calculateScale = (
   originalWidth: number,
   originalHeight: number,
   containerWidth: number,
-  containerHeight: number
+  containerHeight: number,
 ): number => {
   const widthScale: number = containerWidth / originalWidth;
   const heightScale: number = containerHeight / originalHeight;
@@ -298,11 +298,11 @@ export const SectionHeader = ({
 export const useShapeUpdate = () => {
   const update = useSetAtom(SHAPE_UPDATE_ATOM);
   const { debounce } = useAutoSave();
-  const setUpdateUndoRedo = useSetAtom(UPDATE_UNDO_REDO);
+  // const setUpdateUndoRedo = useSetAtom(UPDATE_UNDO_REDO);
 
   const debounceControl = useDelayedExecutor({
     callback: () => {
-      setUpdateUndoRedo();
+      // setUpdateUndoRedo();
       debounce.execute();
     },
     timer: 500, // opcional
@@ -310,7 +310,7 @@ export const useShapeUpdate = () => {
 
   return <K extends keyof ShapeState>(
     type: UpdatableKeys,
-    value: Omit<ShapeBase[K], "id" | "tool" | "children" | "parentId">
+    value: Omit<ShapeBase[K], "id" | "tool" | "children" | "parentId">,
   ) => {
     update({ type, value });
     debounceControl.execute();
@@ -651,7 +651,10 @@ const ShapeIsAllPadding = ({ shape }: ShapeIsAllPaddingProps) => {
         <Input.IconContainer>
           <Expand size={constants.icon.size} />
         </Input.IconContainer>
-        <ShapeShowAtomProvider atomo={shape.isAllPadding} ctx={(e) => e}>
+        <ShapeShowAtomProvider
+          atomo={shape.isAllPadding}
+          ctx={(e) => e as boolean}
+        >
           <Input.withPause>
             <Input.withChange shape={shape} type="padding">
               <Input.Number min={0} max={9999} step={1} />
@@ -667,9 +670,9 @@ const ShapeIsAllPadding = ({ shape }: ShapeIsAllPaddingProps) => {
 };
 
 type ShapeShowAtomProviderProps = {
-  atomo: ShapeAtomButtonProps["atomo"];
+  atomo: PrimitiveAtom<boolean> | PrimitiveAtom<IShapeTool>;
   children: ReactNode;
-  ctx: (value: boolean) => boolean;
+  ctx: (value: boolean | IShapeTool) => boolean;
 };
 
 const ShapeShowAtomProvider = ({
@@ -692,7 +695,6 @@ export const LayoutShapeConfig = () => {
   const PROJECT_ID = useAtomValue(PROJECT_ID_ATOM);
   const [selectedPhotos, setSelectedPhotos] = useState<SelectablePhoto[]>([]);
   const [dialogDelete, setDialogDelete] = useState(false);
-
   const QueryListPhotos = useQuery({
     queryKey: ["list_photos_project", PROJECT_ID],
     queryFn: async () => {
@@ -705,7 +707,7 @@ export const LayoutShapeConfig = () => {
 
   const mutation = useMutation({
     mutationFn: async (
-      newPhoto: File
+      newPhoto: File,
     ): Promise<Pick<IPhoto, "name" | "width" | "height" | "url">> => {
       const formData = new FormData();
       const optimizedFile = await optimizeImageFile({
@@ -753,7 +755,7 @@ export const LayoutShapeConfig = () => {
 
   const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []).filter((file) =>
-      file.type.startsWith("image/")
+      file.type.startsWith("image/"),
     );
     const file = files.at(0);
     if (!file) return;
@@ -774,7 +776,7 @@ export const LayoutShapeConfig = () => {
     setSelectedPhotos((prev) =>
       prev.some((p) => p._id === photo._id)
         ? prev.filter((p) => p._id !== photo._id)
-        : [...prev, photo]
+        : [...prev, photo],
     );
   };
 
@@ -1157,107 +1159,104 @@ export const LayoutShapeConfig = () => {
       </section>
 
       <Separator />
-
-      {shape.tool === "FRAME" ? (
-        <>
-          <section className={commonStyles.container}>
-            <SectionHeader title="Layouts">
-              <ShapeAtomButton
-                iconType="isLayout"
-                type="isLayout"
-                atomo={shape.isLayout}
-              />
-            </SectionHeader>
-            <ShapeShowAtomProvider atomo={shape.isLayout} ctx={(e) => !e}>
-              <div
-                className={css({
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: "md",
-                })}
-              >
-                <div className={commonStyles.twoColumnGrid}>
-                  <LayoutGrid shape={shape} />
-                  <section
-                    className={css({
-                      display: "flex",
-                      flexDirection: "column",
-                      gap: "lg",
-                    })}
-                  >
-                    <div
-                      className={css({
-                        display: "flex",
-                        flexDirection: "row",
-                        gap: "sm",
-                      })}
-                    >
-                      <ShapeAtomButtonFlex
-                        atomo={shape.flexDirection}
-                        iconType="ArrowDown"
-                        type="flexDirection"
-                        direction="column"
-                      />
-                      <ShapeAtomButtonFlex
-                        atomo={shape.flexDirection}
-                        iconType="ArrowRight"
-                        type="flexDirection"
-                        direction="row"
-                      />
-                      <ShapeAtomButtonFlexWrap
-                        atomo={shape.flexWrap}
-                        iconType="CornerRightDown"
-                      />
-                    </div>
-
-                    <Input.Container>
-                      <Input.Grid>
-                        <Input.IconContainer>
-                          <Columns size={constants.icon.size} />
-                        </Input.IconContainer>
-                        <Input.withPause>
-                          <Input.withChange shape={shape} type="gap">
-                            <Input.Number min={0} max={9999} step={1} />
-                          </Input.withChange>
-                        </Input.withPause>
-                      </Input.Grid>
-                    </Input.Container>
-                  </section>
-                </div>
-              </div>
-              {/* NEW: Padding Section */}
-              <div
-                className={css({
-                  display: "flex",
-                  flexDir: "column",
-                  gap: "md",
-                })}
-              >
-                <Input.Label text="Padding" />
-                <div
+      <ShapeShowAtomProvider atomo={shape.tool} ctx={(e) => e !== "FRAME"}>
+        <section className={commonStyles.container}>
+          <SectionHeader title="Layouts">
+            <ShapeAtomButton
+              iconType="isLayout"
+              type="isLayout"
+              atomo={shape.isLayout}
+            />
+          </SectionHeader>
+          <ShapeShowAtomProvider atomo={shape.isLayout} ctx={(e) => !e}>
+            <div
+              className={css({
+                display: "flex",
+                flexDirection: "column",
+                gap: "md",
+              })}
+            >
+              <div className={commonStyles.twoColumnGrid}>
+                <LayoutGrid shape={shape} />
+                <section
                   className={css({
-                    display: "grid",
-                    gridTemplateColumns: "1fr 30px",
-                    gap: "md",
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "lg",
                   })}
                 >
-                  <ShapeIsAllPadding shape={shape} />
-                  <ShapeAtomButton
-                    atomo={shape.isAllPadding}
-                    iconType="isAllPadding"
-                    type="isAllPadding"
-                  />
-                </div>
-                {/* Botón toggle para padding individual */}
-              </div>
+                  <div
+                    className={css({
+                      display: "flex",
+                      flexDirection: "row",
+                      gap: "sm",
+                    })}
+                  >
+                    <ShapeAtomButtonFlex
+                      atomo={shape.flexDirection}
+                      iconType="ArrowDown"
+                      type="flexDirection"
+                      direction="column"
+                    />
+                    <ShapeAtomButtonFlex
+                      atomo={shape.flexDirection}
+                      iconType="ArrowRight"
+                      type="flexDirection"
+                      direction="row"
+                    />
+                    <ShapeAtomButtonFlexWrap
+                      atomo={shape.flexWrap}
+                      iconType="CornerRightDown"
+                    />
+                  </div>
 
-              {/* Individual Padding Controls */}
-              <ShapePaddings shape={shape} />
-            </ShapeShowAtomProvider>
-          </section>
-          <Separator />
-        </>
-      ) : null}
+                  <Input.Container>
+                    <Input.Grid>
+                      <Input.IconContainer>
+                        <Columns size={constants.icon.size} />
+                      </Input.IconContainer>
+                      <Input.withPause>
+                        <Input.withChange shape={shape} type="gap">
+                          <Input.Number min={0} max={9999} step={1} />
+                        </Input.withChange>
+                      </Input.withPause>
+                    </Input.Grid>
+                  </Input.Container>
+                </section>
+              </div>
+            </div>
+            {/* NEW: Padding Section */}
+            <div
+              className={css({
+                display: "flex",
+                flexDir: "column",
+                gap: "md",
+              })}
+            >
+              <Input.Label text="Padding" />
+              <div
+                className={css({
+                  display: "grid",
+                  gridTemplateColumns: "1fr 30px",
+                  gap: "md",
+                })}
+              >
+                <ShapeIsAllPadding shape={shape} />
+                <ShapeAtomButton
+                  atomo={shape.isAllPadding}
+                  iconType="isAllPadding"
+                  type="isAllPadding"
+                />
+              </div>
+              {/* Botón toggle para padding individual */}
+            </div>
+
+            {/* Individual Padding Controls */}
+            <ShapePaddings shape={shape} />
+          </ShapeShowAtomProvider>
+        </section>
+        <Separator />
+      </ShapeShowAtomProvider>
 
       <section className={commonStyles.container}>
         <p className={commonStyles.sectionTitle}>Appearance</p>
@@ -1275,132 +1274,127 @@ export const LayoutShapeConfig = () => {
             </Input.Grid>
           </Input.Container>
         </div>
-        {!["TEXT", "ICON", "DRAW"].includes(shape.tool) ? (
-          <>
+        <ShapeShowAtomProvider
+          atomo={shape.tool}
+          ctx={(e) => ["TEXT", "ICON", "DRAW"].includes(e as IShapeTool)}
+        >
+          <div
+            className={css({
+              display: "flex",
+              flexDir: "column",
+              gap: "md",
+            })}
+          >
+            <Input.Label text="Corner Radius" />
             <div
               className={css({
-                display: "flex",
-                flexDir: "column",
+                display: "grid",
+                gridTemplateColumns: "1fr 30px",
                 gap: "md",
               })}
             >
-              <Input.Label text="Corner Radius" />
-              <div
-                className={css({
-                  display: "grid",
-                  gridTemplateColumns: "1fr 30px",
-                  gap: "md",
-                })}
-              >
-                <Input.Container>
-                  <Input.Grid>
-                    <Input.IconContainer>
-                      <Expand size={constants.icon.size} />
-                    </Input.IconContainer>
-                    <ShapeShowAtomProvider
-                      atomo={shape.isAllBorderRadius}
-                      ctx={(e) => e}
-                    >
-                      <Input.withChange shape={shape} type="borderRadius">
-                        <Input.Number min={0} max={9999} step={1} />
-                      </Input.withChange>
-                    </ShapeShowAtomProvider>
-                    <ShapeShowAtomProvider
-                      atomo={shape.isAllBorderRadius}
-                      ctx={(e) => !e}
-                    >
-                      <Input.Label text="Mixed" />
-                    </ShapeShowAtomProvider>
-                  </Input.Grid>
-                </Input.Container>
-                <ShapeAtomButton
-                  iconType="isAllBorderRadius"
-                  type="isAllBorderRadius"
-                  atomo={shape.isAllBorderRadius}
-                />
-              </div>
+              <Input.Container>
+                <Input.Grid>
+                  <Input.IconContainer>
+                    <Expand size={constants.icon.size} />
+                  </Input.IconContainer>
+                  <ShapeShowAtomProvider
+                    atomo={shape.isAllBorderRadius}
+                    ctx={(e) => e as boolean}
+                  >
+                    <Input.withChange shape={shape} type="borderRadius">
+                      <Input.Number min={0} max={9999} step={1} />
+                    </Input.withChange>
+                  </ShapeShowAtomProvider>
+                  <ShapeShowAtomProvider
+                    atomo={shape.isAllBorderRadius}
+                    ctx={(e) => !e}
+                  >
+                    <Input.Label text="Mixed" />
+                  </ShapeShowAtomProvider>
+                </Input.Grid>
+              </Input.Container>
+              <ShapeAtomButton
+                iconType="isAllBorderRadius"
+                type="isAllBorderRadius"
+                atomo={shape.isAllBorderRadius}
+              />
             </div>
-            <ShapeShowAtomProvider
-              atomo={shape.isAllBorderRadius}
-              ctx={(value) => !value}
+          </div>
+          <ShapeShowAtomProvider
+            atomo={shape.isAllBorderRadius}
+            ctx={(value) => !value}
+          >
+            <div
+              className={css({
+                display: "grid",
+                flexDirection: "column",
+                gap: "md",
+                gridTemplateColumns: "2",
+              })}
             >
-              <div
-                className={css({
-                  display: "grid",
-                  flexDirection: "column",
-                  gap: "md",
-                  gridTemplateColumns: "2",
-                })}
-              >
-                <Input.Container>
-                  <Input.Grid>
-                    <Input.IconContainer>
-                      <CornerUpLeft size={constants.icon.size} />
-                    </Input.IconContainer>
-                    <Input.withPause>
-                      <Input.withChange
-                        shape={shape}
-                        type="borderTopLeftRadius"
-                      >
-                        <Input.Number min={0} max={9999} step={1} />
-                      </Input.withChange>
-                    </Input.withPause>
-                  </Input.Grid>
-                </Input.Container>
-                <Input.Container>
-                  <Input.Grid>
-                    <Input.IconContainer>
-                      <CornerUpRight size={constants.icon.size} />
-                    </Input.IconContainer>
-                    <Input.withPause>
-                      <Input.withChange
-                        shape={shape}
-                        type="borderTopRightRadius"
-                      >
-                        <Input.Number min={0} max={9999} step={1} />
-                      </Input.withChange>
-                    </Input.withPause>
-                  </Input.Grid>
-                </Input.Container>
-                <Input.Container>
-                  <Input.Grid>
-                    <Input.IconContainer>
-                      <CornerDownLeft size={constants.icon.size} />
-                    </Input.IconContainer>
-                    <Input.withPause>
-                      <Input.withChange
-                        shape={shape}
-                        type="borderBottomLeftRadius"
-                      >
-                        <Input.Number min={0} max={9999} step={1} />
-                      </Input.withChange>
-                    </Input.withPause>
-                  </Input.Grid>
-                </Input.Container>
-                <Input.Container>
-                  <Input.Grid>
-                    <Input.IconContainer>
-                      <CornerDownRight size={constants.icon.size} />
-                    </Input.IconContainer>
-                    <Input.withPause>
-                      <Input.withChange
-                        shape={shape}
-                        type="borderBottomRightRadius"
-                      >
-                        <Input.Number min={0} max={9999} step={1} />
-                      </Input.withChange>
-                    </Input.withPause>
-                  </Input.Grid>
-                </Input.Container>
-              </div>
-            </ShapeShowAtomProvider>
-          </>
-        ) : null}
+              <Input.Container>
+                <Input.Grid>
+                  <Input.IconContainer>
+                    <CornerUpLeft size={constants.icon.size} />
+                  </Input.IconContainer>
+                  <Input.withPause>
+                    <Input.withChange shape={shape} type="borderTopLeftRadius">
+                      <Input.Number min={0} max={9999} step={1} />
+                    </Input.withChange>
+                  </Input.withPause>
+                </Input.Grid>
+              </Input.Container>
+              <Input.Container>
+                <Input.Grid>
+                  <Input.IconContainer>
+                    <CornerUpRight size={constants.icon.size} />
+                  </Input.IconContainer>
+                  <Input.withPause>
+                    <Input.withChange shape={shape} type="borderTopRightRadius">
+                      <Input.Number min={0} max={9999} step={1} />
+                    </Input.withChange>
+                  </Input.withPause>
+                </Input.Grid>
+              </Input.Container>
+              <Input.Container>
+                <Input.Grid>
+                  <Input.IconContainer>
+                    <CornerDownLeft size={constants.icon.size} />
+                  </Input.IconContainer>
+                  <Input.withPause>
+                    <Input.withChange
+                      shape={shape}
+                      type="borderBottomLeftRadius"
+                    >
+                      <Input.Number min={0} max={9999} step={1} />
+                    </Input.withChange>
+                  </Input.withPause>
+                </Input.Grid>
+              </Input.Container>
+              <Input.Container>
+                <Input.Grid>
+                  <Input.IconContainer>
+                    <CornerDownRight size={constants.icon.size} />
+                  </Input.IconContainer>
+                  <Input.withPause>
+                    <Input.withChange
+                      shape={shape}
+                      type="borderBottomRightRadius"
+                    >
+                      <Input.Number min={0} max={9999} step={1} />
+                    </Input.withChange>
+                  </Input.withPause>
+                </Input.Grid>
+              </Input.Container>
+            </div>
+          </ShapeShowAtomProvider>
+        </ShapeShowAtomProvider>
       </section>
 
       <Separator />
 
-      <Valid isValid={shape.tool === "TEXT"}>
+      <ShapeShowAtomProvider atomo={shape.tool} ctx={(e) => e !== "TEXT"}>
         <section className={commonStyles.container}>
           <SectionHeader title="Typography" />
 
@@ -1440,19 +1434,19 @@ export const LayoutShapeConfig = () => {
           </div>
         </section>
         <Separator />
-      </Valid>
+      </ShapeShowAtomProvider>
 
       <section className={commonStyles.container}>
         <SectionHeader title="Fill">
-          {shape.tool === "ICON" ? (
+          <ShapeShowAtomProvider atomo={shape.tool} ctx={(e) => e !== "ICON"}>
             <button
               className={commonStyles.addButton}
               onClick={() => setshowIcons(true)}
             >
               <Smile size={14} />
             </button>
-          ) : null}
-          {shape.tool === "IMAGE" ? (
+          </ShapeShowAtomProvider>
+          <ShapeShowAtomProvider atomo={shape.tool} ctx={(e) => e !== "IMAGE"}>
             <button
               className={commonStyles.addButton}
               onClick={() => {
@@ -1461,86 +1455,99 @@ export const LayoutShapeConfig = () => {
             >
               <ImageIcon size={14} />
             </button>
-          ) : null}
+          </ShapeShowAtomProvider>
         </SectionHeader>
-        {shape.tool !== "ICON" ? (
+        <ShapeShowAtomProvider atomo={shape.tool} ctx={(e) => e === "ICON"}>
           <ShapeInputColor shape={shape} type="fillColor" />
-        ) : null}
+        </ShapeShowAtomProvider>
       </section>
 
-      {shape.tool !== "TEXT" ? (
-        <>
-          <Separator />
+      <ShapeShowAtomProvider atomo={shape.tool} ctx={(e) => e === "TEXT"}>
+        <Separator />
 
-          <SectionHeader title="Stroke"></SectionHeader>
+        <SectionHeader title="Stroke"></SectionHeader>
 
-          <section className={commonStyles.container}>
-            <ShapeInputColor shape={shape} type="strokeColor" />
-            <div className={commonStyles.twoColumnGrid}>
-              <Input.Container>
-                <Input.Grid>
-                  <Input.IconContainer>
-                    <p
-                      className={css({
-                        fontWeight: 600,
-                        fontSize: "x-small",
-                      })}
+        <section className={commonStyles.container}>
+          <ShapeInputColor shape={shape} type="strokeColor" />
+          <div className={commonStyles.twoColumnGrid}>
+            <Input.Container>
+              <Input.Grid>
+                <Input.IconContainer>
+                  <p
+                    className={css({
+                      fontWeight: 600,
+                      fontSize: "x-small",
+                    })}
+                  >
+                    W
+                  </p>
+                </Input.IconContainer>
+                <Input.withPause>
+                  <Input.withChange shape={shape} type="strokeWidth">
+                    <Input.Number min={0} max={9999} step={0.1} />
+
+                    {/* <ShapeShowAtomProvider
+                      atomo={shape.tool}
+                      ctx={(e) => ["DRAW", "ICON"].includes(e as IShapeTool)}
+                    ></ShapeShowAtomProvider>
+                    <ShapeShowAtomProvider
+                      atomo={shape.tool}
+                      ctx={(e) => !["DRAW", "ICON"].includes(e as IShapeTool)}
                     >
-                      W
-                    </p>
-                  </Input.IconContainer>
-                  <Input.withPause>
-                    <Input.withChange shape={shape} type="strokeWidth">
-                      <Input.Number
-                        min={0}
-                        max={9999}
-                        step={["DRAW", "ICON"].includes(shape.tool) ? 0.1 : 1}
-                      />
-                    </Input.withChange>
-                  </Input.withPause>
-                </Input.Grid>
-              </Input.Container>
-              <div
-                className={css({
-                  alignItems: "flex-end",
-                  display: "grid",
-                  gridTemplateColumns: "3",
-                })}
-              >
-                <ShapeAtomButtonStroke
-                  values={["round", "round"]}
-                  shape={shape}
-                  type="brush"
-                />
-                <ShapeAtomButtonStroke
-                  values={["miter", "round"]}
-                  shape={shape}
-                  type="penTool"
-                />
-                <ShapeAtomButtonStroke
-                  values={["miter", "butt"]}
-                  shape={shape}
-                  type="ruler"
-                />
-              </div>
+                      <Input.Number min={0} max={9999} step={1} />
+                    </ShapeShowAtomProvider> */}
+                    {/* <Input.Number
+                      min={0}
+                      max={9999}
+                      step={["DRAW", "ICON"].includes(shape.tool) ? 0.1 : 1}
+                    /> */}
+                  </Input.withChange>
+                </Input.withPause>
+              </Input.Grid>
+            </Input.Container>
+            <div
+              className={css({
+                alignItems: "flex-end",
+                display: "grid",
+                gridTemplateColumns: "3",
+              })}
+            >
+              <ShapeAtomButtonStroke
+                values={["round", "round"]}
+                shape={shape}
+                type="brush"
+              />
+              <ShapeAtomButtonStroke
+                values={["miter", "round"]}
+                shape={shape}
+                type="penTool"
+              />
+              <ShapeAtomButtonStroke
+                values={["miter", "butt"]}
+                shape={shape}
+                type="ruler"
+              />
             </div>
-            {["FRAME", "IMAGE", "DRAW"].includes(shape.tool) ? (
-              <Input.Container>
-                <Input.Grid>
-                  <Input.IconContainer>
-                    <SquareDashed size={constants.icon.size} />
-                  </Input.IconContainer>
-                  <Input.withPause>
-                    <Input.withChange shape={shape} type="dash">
-                      <Input.Number min={0} step={1} />
-                    </Input.withChange>
-                  </Input.withPause>
-                </Input.Grid>
-              </Input.Container>
-            ) : null}
-          </section>
-        </>
-      ) : null}
+          </div>
+          <ShapeShowAtomProvider
+            atomo={shape.tool}
+            ctx={(e) => !["FRAME", "IMAGE", "DRAW"].includes(e as IShapeTool)}
+          >
+            <Input.Container>
+              <Input.Grid>
+                <Input.IconContainer>
+                  <SquareDashed size={constants.icon.size} />
+                </Input.IconContainer>
+                <Input.withPause>
+                  <Input.withChange shape={shape} type="dash">
+                    <Input.Number min={0} step={1} />
+                  </Input.withChange>
+                </Input.withPause>
+              </Input.Grid>
+            </Input.Container>
+          </ShapeShowAtomProvider>
+        </section>
+      </ShapeShowAtomProvider>
 
       <Separator />
 

@@ -12,6 +12,7 @@ import {
 import { ShapeImage } from "../shapes/types/shape.base";
 import { ShapeState } from "../shapes/types/shape.state";
 import { ALL_SHAPES } from "../states/shapes";
+import { IShapeTool } from "../states/tool";
 import { CTX_EXP } from "../utils/export";
 
 export const cloneDeep = (value: Object) => {
@@ -29,7 +30,9 @@ export const CreateShapeSchema = (props?: Partial<ShapeState>): ShapeState => {
     id: uuidv4(),
     x: atom(0),
     y: atom(0),
-    tool: "FRAME",
+    tool: atom<IShapeTool>("FRAME"),
+    sourceShapeId: atom<string | null>(null),
+    isComponent: atom<boolean>(false),
     align: atom<Align>("left"),
     fillColor: atom("#ffffff"),
     strokeColor: atom("#ffffff"),
@@ -46,8 +49,8 @@ export const CreateShapeSchema = (props?: Partial<ShapeState>): ShapeState => {
       src: "/placeholder.svg",
     } as ShapeImage),
     verticalAlign: atom<VerticalAlign>("top"),
-    paddingBottom: atom(10),
-    paddingTop: atom(10),
+    paddingBottom: atom(0),
+    paddingTop: atom(0),
     borderBottomLeftRadius: atom(0),
     isAllPadding: atom(false),
     borderBottomRightRadius: atom(0),
@@ -110,7 +113,7 @@ export const getCommonShapeProps = (shape: ShapeState, ctx: CTX_EXP) => {
     stroke: ctx.get(shape.strokeColor),
     strokeWidth: ctx.get(shape.strokeWidth),
     strokeEnabled:
-      shape.tool !== "TEXT" ? ctx.get(shape.strokeWidth) > 0 : false,
+      ctx.get(shape.tool) !== "TEXT" ? ctx.get(shape.strokeWidth) > 0 : false,
     dash: [ctx.get(shape.dash)],
     dashEnabled: ctx.get(shape.dash) > 0,
     cornerRadius: !ctx.get(shape.isAllBorderRadius)

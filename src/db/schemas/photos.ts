@@ -1,9 +1,9 @@
-import mongoose, { Document, model, Schema, Types } from "mongoose";
+import mongoose, { model, Schema, Types } from "mongoose";
 
 export type PhotoType = "PUBLIC" | "PREVIEW";
 export type CloudinaryResourceType = "image" | "video" | "raw" | "auto";
 
-interface Photo extends Document {
+interface PhotoSchema {
   projectId: Types.ObjectId;
 
   name: string;
@@ -23,7 +23,6 @@ interface Photo extends Document {
   createdAt: Date;
 
   type: PhotoType;
-
   // Cloudinary
   cloudinaryPublicId: string;
   cloudinaryAssetId?: string;
@@ -39,7 +38,7 @@ interface Photo extends Document {
   metadata?: Record<string, unknown>;
   context?: Record<string, unknown>;
 }
-const PSchema = new Schema<Photo>(
+const PSchema = new Schema(
   {
     projectId: {
       type: Schema.Types.ObjectId,
@@ -173,8 +172,8 @@ const PSchema = new Schema<Photo>(
       type: Schema.Types.Mixed,
     },
   },
-  { versionKey: false }
+  { versionKey: false },
 );
 
 export const PhotoSchema =
-  mongoose.models.photos || model<Photo>("photos", PSchema);
+  mongoose.models.photos || model<PhotoSchema>("photos", PSchema);

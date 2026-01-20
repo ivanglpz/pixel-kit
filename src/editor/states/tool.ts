@@ -11,6 +11,8 @@ export type IKeyTool =
   | "FRAME"
   | "DRAW"
   | "ICON";
+// | "INSTANCE"
+// | "COMPONENT";
 // | "CODE"
 // | "GROUP"
 // | "CLIP";

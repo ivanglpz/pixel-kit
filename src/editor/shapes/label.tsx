@@ -1,0 +1,71 @@
+import { atom } from "jotai";
+import { Boxes } from "lucide-static";
+import { useMemo } from "react";
+import { Text } from "react-konva";
+import { CreateShapeSchema } from "../helpers/shape-schema";
+import { chooseColor } from "../utils/chooseColor";
+import { SVG } from "../utils/svg";
+import { SHAPE_ICON } from "./icon.shape";
+
+type ShapeLabelProps = {
+  x: number;
+  y: number;
+  label: string;
+  color: string;
+  isComponent: boolean;
+};
+
+export const ShapeLabel = ({
+  x,
+  y,
+  label,
+  color,
+  isComponent,
+}: ShapeLabelProps) => {
+  const lab = useMemo(() => label.slice(0, 25), [label]);
+  const colorBackground = useMemo(() => chooseColor(color), [color]);
+  const state = useMemo(
+    () =>
+      atom(
+        CreateShapeSchema({
+          x: atom(x),
+          y: atom(y - 18),
+          image: atom({
+            src: SVG.Encode(Boxes),
+            width: 24,
+            height: 24,
+            name: "icon",
+          }),
+          width: atom(14),
+          height: atom(14),
+          strokeColor: atom<string>(colorBackground),
+          strokeWidth: atom(1),
+        })
+      ),
+    [x, y, color]
+  );
+  return (
+    <>
+      {isComponent ? (
+        <SHAPE_ICON
+          shape={{
+            id: "label-icon",
+            state: state,
+          }}
+          options={{
+            background: color,
+            isLocked: true,
+            showLabel: false,
+          }}
+        />
+      ) : null}
+      <Text
+        x={isComponent ? x + 18 : x}
+        y={y - 22}
+        text={lab}
+        fill={colorBackground}
+        fontStyle="semibold"
+      ></Text>
+    </>
+  );
+};

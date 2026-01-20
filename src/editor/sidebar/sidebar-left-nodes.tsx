@@ -11,19 +11,14 @@ import {
 } from "@/components/ui/context-menu";
 import * as Luicde from "lucide-react";
 import { useMemo, useState } from "react";
+import { Input } from "../components/input";
+import { withStableMemo } from "../components/withStableMemo";
 import { constants } from "../constants/color";
 import { useAutoSave } from "../hooks/useAutoSave";
 import { flexLayoutAtom } from "../shapes/layout-flex";
 import { SELECTED_SHAPES_BY_IDS_ATOM } from "../states/shape";
-import {
-  ALL_SHAPES,
-  DELETE_SHAPES_ATOM,
-  MOVE_SHAPES_BY_ID,
-} from "../states/shapes";
+import { ALL_SHAPES, DELETE_SHAPES_ATOM } from "../states/shapes";
 import TOOL_ATOM, { PAUSE_MODE_ATOM } from "../states/tool";
-import { UPDATE_UNDO_REDO } from "../states/undo-redo";
-import { withStableMemo } from "../utils/withStableMemo";
-import { Input } from "./input";
 
 type NodeProps = {
   shape: ALL_SHAPES;
@@ -41,48 +36,6 @@ type DraggableNodeItemProps = {
     isHiddenByParent?: boolean;
   };
 };
-
-export const DraggableNodeItem = ({
-  childItem,
-  childOptions,
-}: DraggableNodeItemProps) => {
-  const childDragControls = useDragControls();
-
-  return (
-    <Reorder.Item
-      key={childItem.id}
-      value={childItem}
-      dragListener={false} // Deshabilitamos el listener automático
-      dragControls={childDragControls} // Usamos controles manuales
-      style={{
-        borderRadius: "6px",
-        userSelect: "none",
-      }}
-      whileDrag={{
-        scale: 1.02,
-        boxShadow: "0px 3px 10px rgba(0,0,0,0.15)",
-        zIndex: 1000,
-        cursor: "grabbing",
-      }}
-    >
-      <Nodes
-        shape={childItem}
-        options={childOptions}
-        dragControls={childDragControls} // ✅ Pasamos los controles específicos
-      />
-    </Reorder.Item>
-  );
-};
-const ChevronDown = withStableMemo(Luicde.ChevronDown);
-const ChevronRight = withStableMemo(Luicde.ChevronRight);
-const DotIcon = withStableMemo(Luicde.Circle);
-const Eye = withStableMemo(Luicde.Eye);
-const EyeClosed = withStableMemo(Luicde.EyeOff);
-const FolderCog = withStableMemo(Luicde.FolderCog);
-const GripVertical = withStableMemo(Luicde.GripVertical);
-const Lock = withStableMemo(Luicde.Lock);
-const Trash = withStableMemo(Luicde.Trash);
-const Unlock = withStableMemo(Luicde.Unlock);
 
 const NodeInput = ({
   atomo,
@@ -147,14 +100,16 @@ export const NodesDefault = ({
   const [isHovered, setIsHovered] = useState(false);
   const [shapeId, setShapeId] = useAtom(SELECTED_SHAPES_BY_IDS_ATOM);
 
-  const setUpdateUndoRedo = useSetAtom(UPDATE_UNDO_REDO);
+  // const setUpdateUndoRedo = useSetAtom(UPDATE_UNDO_REDO);
   const applyLayout = useSetAtom(flexLayoutAtom);
   const DELETE_SHAPE = useSetAtom(DELETE_SHAPES_ATOM);
-  const setMove = useSetAtom(MOVE_SHAPES_BY_ID);
 
   const [isLocked, setIsLocked] = useAtom(shape.isLocked);
   const [visible, setVisible] = useAtom(shape.visible);
   const parentId = useAtomValue(shape.parentId);
+  const tool = useAtomValue(shape.tool);
+  const [isComponent, setComponent] = useAtom(shape.isComponent);
+  const [sourceShapeId, setSourceShapeId] = useAtom(shape.sourceShapeId);
   // ✅ Usar controles externos si están disponibles, sino crear propios
   const dragControls = externalDragControls;
 
@@ -187,7 +142,7 @@ export const NodesDefault = ({
 
     applyLayout({ id: childOptions.id });
     setChildren(newOrder);
-    setUpdateUndoRedo();
+    // setUpdateUndoRedo();
     debounce.execute();
   };
 
@@ -218,7 +173,7 @@ export const NodesDefault = ({
       <ContextMenu>
         <ContextMenuTrigger>
           <div
-            id={shape.id + ` ${shape.tool}`}
+            id={shape.id + ` ${tool}`}
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
             className={css({
@@ -277,7 +232,7 @@ export const NodesDefault = ({
               <GripVertical size={14} opacity={isHovered ? 1 : 0.3} />
             </div>
 
-            {shape.tool === "FRAME" && children.length > 0 ? (
+            {tool === "FRAME" && children.length > 0 ? (
               <button
                 onClick={(e) => {
                   e.stopPropagation();
@@ -301,7 +256,7 @@ export const NodesDefault = ({
               <div></div>
             )}
 
-            {iconsWithTools[shape.tool]}
+            {iconsWithTools[tool]}
             <NodeInput atomo={shape.label} />
 
             <div
@@ -389,26 +344,28 @@ export const NodesDefault = ({
             </div>
           </div>
         </ContextMenuTrigger>
-        <ContextMenuContent>
-          {shape.tool === "FRAME" ? (
+        <ContextMenuContent className="p-2 flex flex-col w-[210px] h-[260px] text-[12px]">
+          {!sourceShapeId ? (
             <ContextMenuItem
               className="text-[12px]"
               onClick={() => {
-                setMove(shape.id);
-                debounce.execute();
+                setComponent(!isComponent);
               }}
             >
-              <Luicde.Move size={14} />
-              Move to
+              {isComponent ? "Detach" : "Create"} component
             </ContextMenuItem>
           ) : null}
-          {/* <ContextMenuItem
-            className="text-[12px]"
-            onClick={() => setShow(true)}
-          >
-            <FolderCog size={14} />
-            Rename
-          </ContextMenuItem> */}
+          {sourceShapeId ? (
+            <ContextMenuItem
+              className="text-[12px]"
+              onClick={() => {
+                setSourceShapeId(null);
+              }}
+            >
+              Detach instance
+            </ContextMenuItem>
+          ) : null}
+
           <ContextMenuItem
             className="text-[12px]"
             onClick={() => {
@@ -417,7 +374,6 @@ export const NodesDefault = ({
               debounce.execute();
             }}
           >
-            <Trash size={14} />
             Delete
           </ContextMenuItem>
         </ContextMenuContent>
@@ -451,4 +407,44 @@ export const NodesDefault = ({
     </>
   );
 };
+export const DraggableNodeItem = ({
+  childItem,
+  childOptions,
+}: DraggableNodeItemProps) => {
+  const childDragControls = useDragControls();
+
+  return (
+    <Reorder.Item
+      key={childItem.id}
+      value={childItem}
+      dragListener={false} // Deshabilitamos el listener automático
+      dragControls={childDragControls} // Usamos controles manuales
+      style={{
+        borderRadius: "6px",
+        userSelect: "none",
+      }}
+      whileDrag={{
+        scale: 1.02,
+        boxShadow: "0px 3px 10px rgba(0,0,0,0.15)",
+        zIndex: 1000,
+        cursor: "grabbing",
+      }}
+    >
+      <Nodes
+        shape={childItem}
+        options={childOptions}
+        dragControls={childDragControls} // ✅ Pasamos los controles específicos
+      />
+    </Reorder.Item>
+  );
+};
+const ChevronDown = withStableMemo(Luicde.ChevronDown);
+const ChevronRight = withStableMemo(Luicde.ChevronRight);
+const DotIcon = withStableMemo(Luicde.Circle);
+const Eye = withStableMemo(Luicde.Eye);
+const EyeClosed = withStableMemo(Luicde.EyeOff);
+const GripVertical = withStableMemo(Luicde.GripVertical);
+const Lock = withStableMemo(Luicde.Lock);
+const Unlock = withStableMemo(Luicde.Unlock);
+
 export const Nodes = withStableMemo(NodesDefault);

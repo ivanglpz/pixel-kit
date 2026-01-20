@@ -1,23 +1,9 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { icons } from "@/editor/icons/tool-icons";
 import { atom } from "jotai";
-import Konva from "konva";
-import { formats } from "../constants/formats";
 import { IStageEvents } from "../states/event";
 import { PROJECT_ATOM } from "../states/projects";
 import { IKeyTool } from "../states/tool";
-import {
-  attachShapeRecursively,
-  createStagesFromShapes,
-  exportAndDownloadStages,
-} from "../utils/export";
-import { typeExportAtom } from "./export";
-import { SELECTED_SHAPES_BY_IDS_ATOM } from "./shape";
-import ALL_SHAPES_ATOM, {
-  computeStageBounds,
-  PLANE_SHAPES_ATOM,
-} from "./shapes";
-import { serializeShape } from "./undo-redo";
 
 export type MODE = "DESIGN_MODE";
 
@@ -134,88 +120,8 @@ export const MODE_ATOM = atom(
   (_get, _set, newTool: MODE) => {
     const toolAtom = _get(PROJECT_ATOM).MODE_ATOM;
     _set(toolAtom, newTool);
-  }
+  },
 );
 export const CONFIG_ATOM = atom(
-  (get) => configs[get(MODE_ATOM)] || configs.DESIGN_MODE
-);
-
-export const GET_EXPORT_JSON = atom(null, (get) => {
-  const selectedIds = get(SELECTED_SHAPES_BY_IDS_ATOM);
-  const planeShapes = get(PLANE_SHAPES_ATOM);
-  const cloner = serializeShape(get);
-  const shapes = planeShapes
-    .filter((shape) =>
-      selectedIds.some(
-        (selected) =>
-          shape.id === selected.id &&
-          get(get(shape.state).parentId) === selected.parentId
-      )
-    )
-    .map(cloner);
-
-  return {
-    shapes,
-  };
-});
-
-export const GET_EXPORT_SHAPES = atom(null, async (get, set) => {
-  const selectedIds = get(SELECTED_SHAPES_BY_IDS_ATOM);
-  const planeShapes = get(PLANE_SHAPES_ATOM);
-  const format = get(typeExportAtom);
-  const shapes = planeShapes.filter((shape) =>
-    selectedIds.some(
-      (selected) =>
-        shape.id === selected.id &&
-        get(get(shape.state).parentId) === selected.parentId
-    )
-  );
-  const stagesWithContainers = await createStagesFromShapes(shapes, { get });
-  await new Promise((resolve) => setTimeout(resolve, 5000));
-  const stages = stagesWithContainers.map((s) => s.stage);
-
-  exportAndDownloadStages(
-    stages,
-    "png",
-    formats[format as keyof typeof formats]
-  );
-});
-export const GET_EXPORT_ALLSHAPES_ATOM = atom(
-  null,
-  async (get): Promise<string> => {
-    const roots = get(ALL_SHAPES_ATOM);
-    // if (roots.length === 0) return;
-
-    const bounds = computeStageBounds(get)(roots);
-    const container = document.createElement("div");
-    const MARGIN = 40; // px
-
-    const width = bounds.width + MARGIN * 2;
-    const height = bounds.height + MARGIN * 2;
-
-    container.style.width = `${width}px`;
-    container.style.height = `${height}px`;
-
-    const stage = new Konva.Stage({
-      container,
-      width: Math.max(1, Math.round(width)),
-      height: Math.max(1, Math.round(height)),
-    });
-
-    const layer = new Konva.Layer();
-    layer.x(-bounds.startX + MARGIN);
-    layer.y(-bounds.startY + MARGIN);
-
-    stage.add(layer);
-    for (const element of roots) {
-      await attachShapeRecursively(element, layer, { get }, false);
-    }
-    layer.draw();
-
-    const dataURL = stage.toDataURL({
-      mimeType: "image/png",
-      pixelRatio: 0.3,
-    });
-    return dataURL;
-  }
+  (get) => configs[get(MODE_ATOM)] || configs.DESIGN_MODE,
 );

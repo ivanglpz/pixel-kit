@@ -1,6 +1,10 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { IPhoto } from "@/db/schemas/types";
-import TOOL_ATOM, { IKeyTool, PAUSE_MODE_ATOM } from "@/editor/states/tool";
+import TOOL_ATOM, {
+  IKeyTool,
+  IShapeTool,
+  PAUSE_MODE_ATOM,
+} from "@/editor/states/tool";
 import { uploadPhoto } from "@/services/photo";
 import { optimizeImageFile } from "@/utils/opt-img";
 import { useMutation } from "@tanstack/react-query";
@@ -38,7 +42,7 @@ import {
   GET_STAGE_BOUNDS_ATOM,
   GROUP_SHAPES_IN_LAYOUT,
 } from "../states/shapes";
-import { REDO_ATOM, UNDO_ATOM } from "../states/undo-redo";
+// import { REDO_ATOM, UNDO_ATOM } from "../states/undo-redo";
 import { SVG } from "../utils/svg";
 import { useAutoSave } from "./useAutoSave";
 import { useConfiguration } from "./useConfiguration";
@@ -65,8 +69,8 @@ export const useEventStage = () => {
   const DELETE_SHAPE = useSetAtom(DELETE_SHAPES_ATOM);
   const SET_CLEAR_CITEM = useSetAtom(CLEAR_CURRENT_ITEM_ATOM);
   const [selection, setSelection] = useAtom(RECTANGLE_SELECTION_ATOM);
-  const setRedo = useSetAtom(REDO_ATOM);
-  const setUndo = useSetAtom(UNDO_ATOM);
+  // const setRedo = useSetAtom(REDO_ATOM);
+  // const setUndo = useSetAtom(UNDO_ATOM);
   const SET_EVENT_GROUP = useSetAtom(GROUP_SHAPES_IN_LAYOUT);
 
   const SET_EVENT_COPY_START_SHAPES = useSetAtom(EVENT_COPY_START_SHAPES);
@@ -156,7 +160,7 @@ export const useEventStage = () => {
   const mutation = useMutation({
     mutationKey: ["upload_event_image", PROJECT_ID],
     mutationFn: async (
-      photoUpload: File
+      photoUpload: File,
     ): Promise<Pick<IPhoto, "name" | "width" | "height" | "url">> => {
       const myImage = photoUpload;
 
@@ -174,7 +178,7 @@ export const useEventStage = () => {
     onSuccess: (values) => {
       const createStartElement = CreateShapeSchema({
         id: uuidv4(),
-        tool: "IMAGE",
+        tool: atom<IShapeTool>("IMAGE"),
         x: atom(0),
         y: atom(0),
         width: atom(values.width / 3),
@@ -199,7 +203,7 @@ export const useEventStage = () => {
   const createImageFromFile = async (file: File): Promise<void> => {
     if (
       !["IMAGE/JPEG", "IMAGE/PNG", "IMAGE/GIF", "IMAGE/SVG+XML"].includes(
-        file.type.toUpperCase()
+        file.type.toUpperCase(),
       )
     ) {
       toast.error("Invalid image format");
@@ -219,7 +223,7 @@ export const useEventStage = () => {
   const createTextFromClipboard = (text: string) => {
     const createStartElement = CreateShapeSchema({
       id: uuidv4(),
-      tool: "TEXT",
+      tool: atom<IShapeTool>("TEXT"),
       x: atom(0),
       y: atom(0),
       text: atom(text),
@@ -239,7 +243,7 @@ export const useEventStage = () => {
 
       const createStartElement = CreateShapeSchema({
         id: uuidv4(),
-        tool: "ICON",
+        tool: atom<IShapeTool>("ICON"),
         x: atom(0),
         y: atom(0),
         image: atom({
@@ -295,7 +299,7 @@ export const useEventStage = () => {
       // ✅ Undo (IR HACIA ATRÁS)
       if (meta && !event.shiftKey && key === "z") {
         event.preventDefault();
-        setUndo();
+        // setUndo();
         debounce.execute();
 
         // set(UNDO_ATOM);
@@ -312,7 +316,7 @@ export const useEventStage = () => {
       // ✅ Redo (IR HACIA ADELANTE)
       if (meta && event.shiftKey && key === "z") {
         event.preventDefault();
-        setRedo();
+        // setRedo();
         debounce.execute();
 
         // set(REDO_ATOM);
@@ -344,7 +348,7 @@ export const useEventStage = () => {
             eventStage: item.eventStage,
             showClip: Boolean(item?.showClip),
           },
-        ])
+        ]),
       );
 
       if (keysActions[KEY]) {
