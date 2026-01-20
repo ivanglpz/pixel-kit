@@ -137,6 +137,11 @@ export type IShape = {
 
 export type IShapeEvents = {
   shape: ALL_SHAPES;
+  options: {
+    isLocked: boolean;
+    background: string;
+    showLabel: boolean;
+  };
 };
 
 export type FCShapeWEvents = FC<IShapeEvents>;

@@ -10,7 +10,7 @@ type ResponseData = { message: string; data: IProject[] } | { error: string };
 
 async function handler(
   req: NextApiRequest & { userId: string },
-  res: NextApiResponse<ResponseData>
+  res: NextApiResponse<ResponseData>,
 ) {
   if (req.method !== "GET") {
     return res.status(405).json({ error: "Method not allowed" });
@@ -30,7 +30,7 @@ async function handler(
 
     // Verificar que el usuario sea miembro de la organización
     const isMember = org.members.some(
-      (m: IOrganizationMember) => m.user.toString() === req.userId
+      (m: IOrganizationMember) => m.user.toString() === req.userId,
     );
 
     if (!isMember) {
@@ -46,7 +46,7 @@ async function handler(
       },
       {
         data: 0,
-      }
+      },
     );
 
     return res.status(200).json({

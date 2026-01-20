@@ -1,14 +1,18 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { AUTH_TOKEN } from "@/utils/token";
+import jwt from "jsonwebtoken";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { DB_CONNECT } from "../mongodb";
 
 type NextHandler<T = any> = (
   req: NextApiRequest & { userId: string },
-  res: NextApiResponse<T>
+  res: NextApiResponse<T>,
 ) => Promise<void>;
-
+type Response = {
+  email: string;
+  fullName: string;
+  userId: string;
+};
 export function withAuth<T>(handler: NextHandler<T>) {
   return async (req: NextApiRequest, res: NextApiResponse<T>) => {
     try {
@@ -17,7 +21,7 @@ export function withAuth<T>(handler: NextHandler<T>) {
         return res.status(401).json({ error: "Unauthorized" } as any);
       }
 
-      const decoded = AUTH_TOKEN(token);
+      const decoded = jwt.verify(token, process.env.JWT_SECRET!) as Response;
 
       await DB_CONNECT();
 

@@ -6,7 +6,6 @@ export type IStageEvents =
   | "COPY"
   | "IDLE"
   | "CREATING"
-  // | "CLIPING"
   | "COPYING"
   | "COPY"
   | "MULTI_SELECT"
@@ -17,5 +16,5 @@ export const EVENT_ATOM = atom(
   (_get, _set, newTool: IStageEvents) => {
     const toolAtom = _get(PROJECT_ATOM).EVENT;
     _set(toolAtom, newTool);
-  }
+  },
 );

@@ -10,15 +10,13 @@ import { Input } from "../components/input";
 import { Loading } from "../components/loading";
 import { constants } from "../constants/color";
 import { formats } from "../constants/formats";
-import { typeExportAtom } from "../states/export";
-
-import { GET_EXPORT_SHAPES } from "../states/mode";
+import { EXPORT_SHAPES, TYPE_EXPORT_ATOM } from "../states/export";
 
 export const ExportShape = () => {
   const [loading, setLoading] = useState(false);
-  const [format, setFormat] = useAtom(typeExportAtom);
+  const [format, setFormat] = useAtom(TYPE_EXPORT_ATOM);
   const [showExportDialog, setShowExportDialog] = useState(false);
-  const EXPORT = useSetAtom(GET_EXPORT_SHAPES);
+  const EXPORT = useSetAtom(EXPORT_SHAPES);
   const handleExport = async () => {
     setLoading(true);
 

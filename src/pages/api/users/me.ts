@@ -1,6 +1,5 @@
-import { DB_CONNECT } from "@/db/mongodb";
+import { withAuth } from "@/db/middleware/auth";
 import { UserSchema } from "@/db/schemas/users";
-import { AUTH_TOKEN } from "@/utils/token";
 import jwt from "jsonwebtoken";
 import type { NextApiRequest, NextApiResponse } from "next";
 
@@ -17,36 +16,21 @@ type ResponseData =
   | {
       error: string;
     };
+type AuthenticatedRequest = NextApiRequest & { userId: string };
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse<ResponseData>
+async function handler(
+  req: AuthenticatedRequest,
+  res: NextApiResponse<ResponseData>,
 ) {
   if (req.method !== "GET") {
     return res.status(405).json({ error: "Method not allowed" });
   }
-  const token = req.headers.authorization;
-  if (!token) {
-    return res.status(401).json({ error: "Unauthorized" });
-  }
-
-  // Validar que se haya enviado un token
-  if (!token) {
-    return res.status(400).json({ error: "Token is required" });
-  }
 
   try {
-    // Verificar el token
-
-    const decoded = AUTH_TOKEN(token); // Implementa esta función para verificar el JWT
-
-    // Conectar a la base de datos
-    await DB_CONNECT();
-
     // Buscar al usuario en la base de datos
     const user = await UserSchema.findById(
-      decoded.userId,
-      { password: 0, passwordUpdatedAt: 0, userId: 0 } // 0 significa excluir esta propiedad
+      req.userId,
+      { password: 0, passwordUpdatedAt: 0, userId: 0 }, // 0 significa excluir esta propiedad
     );
     if (!user) {
       return res.status(404).json({ error: "User not found" });
@@ -54,7 +38,7 @@ export default async function handler(
 
     // Retornar la información del usuario
     return res.status(200).json({
-      message: "Token is valid",
+      message: "User retrieved successfully",
       user: {
         email: user.email,
         fullName: user.fullName,
@@ -73,3 +57,4 @@ export default async function handler(
     return res.status(500).json({ error: "Internal Server Error" });
   }
 }
+export default withAuth(handler);

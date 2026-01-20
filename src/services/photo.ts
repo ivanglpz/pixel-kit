@@ -1,28 +1,40 @@
 import { IPhoto } from "@/db/schemas/types";
 import { api } from "./axios";
 
-export const uploadPhoto = async (
-  values: FormData
-): Promise<Pick<IPhoto, "name" | "width" | "height" | "url">> => {
-  const response = await api.post<{
-    data: Pick<IPhoto, "name" | "width" | "height" | "url">;
-  }>(`/projects/upload`, values, {
-    headers: {
-      "Content-Type": "multipart/form-data",
-    },
-  });
-  return response?.data?.data;
+type PhotoUploadResponse = Pick<IPhoto, "name" | "width" | "height" | "url">;
+
+type UploadPhotoParams = {
+  endpoint: "/projects/upload" | "/projects/preview";
+  values: FormData;
 };
 
-export const uploadPhotoPreview = async (
-  values: FormData
-): Promise<Pick<IPhoto, "name" | "width" | "height" | "url">> => {
-  const response = await api.post<{
-    data: Pick<IPhoto, "name" | "width" | "height" | "url">;
-  }>(`/projects/preview`, values, {
-    headers: {
-      "Content-Type": "multipart/form-data",
+const uploadPhotoBase = async ({
+  endpoint,
+  values,
+}: UploadPhotoParams): Promise<PhotoUploadResponse> => {
+  const response = await api.post<{ data: PhotoUploadResponse }>(
+    endpoint,
+    values,
+    {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
     },
-  });
-  return response?.data?.data;
+  );
+
+  return response.data.data;
 };
+
+export const uploadPhoto = (values: FormData): Promise<PhotoUploadResponse> =>
+  uploadPhotoBase({
+    endpoint: "/projects/upload",
+    values,
+  });
+
+export const uploadPhotoPreview = (
+  values: FormData,
+): Promise<PhotoUploadResponse> =>
+  uploadPhotoBase({
+    endpoint: "/projects/preview",
+    values,
+  });

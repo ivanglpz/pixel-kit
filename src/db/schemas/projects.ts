@@ -1,5 +1,5 @@
 import { MODE } from "@/editor/states/mode";
-import mongoose, { Document, Schema, Types } from "mongoose";
+import mongoose, { Schema, Types } from "mongoose";
 
 export type ProjectRole = "developer" | "designer" | "qa" | "viewer";
 
@@ -8,7 +8,8 @@ export interface IProjectMember {
   role: ProjectRole;
 }
 
-export interface IProject extends Document {
+type ProjectSchema = {
+  _id: string;
   name: string;
   organization: Types.ObjectId;
   createdBy: Types.ObjectId;
@@ -18,9 +19,9 @@ export interface IProject extends Document {
   updatedAt: Date;
   version: number;
   mode: MODE;
-}
+};
 
-const ProjectSchema: Schema<IProject> = new Schema(
+const ProjectSchema = new Schema(
   {
     name: { type: String, required: true },
     organization: {
@@ -41,9 +42,9 @@ const ProjectSchema: Schema<IProject> = new Schema(
     version: { type: Number, default: 1 },
     mode: { type: String, default: "DESIGN_MODE" },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 export const Project =
   mongoose.models.projects ||
-  mongoose.model<IProject>("projects", ProjectSchema);
+  mongoose.model<ProjectSchema>("projects", ProjectSchema);
