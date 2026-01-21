@@ -1,5 +1,5 @@
 import { Rect } from "react-konva";
-import { useResolvedShape } from "./frame.shape";
+import { useResolvedShape } from "../hooks/useResolvedShape";
 import { ShapeLabel } from "./label";
 import { IShapeEvents } from "./type.shape";
 
