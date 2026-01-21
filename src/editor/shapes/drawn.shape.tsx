@@ -2,9 +2,7 @@
 import { Line } from "react-konva";
 import { IShapeEvents } from "./type.shape";
 
-/* eslint-disable react/display-name */
-
-import { useResolvedShape } from "./frame.shape";
+import { useResolvedShape } from "../hooks/useResolvedShape";
 import { ShapeLabel } from "./label";
 
 export const ShapeDraw = (props: IShapeEvents) => {

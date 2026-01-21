@@ -1,7 +1,7 @@
 import { Text } from "react-konva";
 import { IShapeEvents } from "./type.shape";
 
-import { useResolvedShape } from "./frame.shape";
+import { useResolvedShape } from "../hooks/useResolvedShape";
 import { ShapeLabel } from "./label";
 export const ShapeText = (props: IShapeEvents) => {
   const shape = useResolvedShape(props);
