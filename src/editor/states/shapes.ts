@@ -666,6 +666,7 @@ export const GROUP_SHAPES_IN_LAYOUT = atom(null, (get, set) => {
     isLayout: atom(false),
     id: newLayoutId,
     parentId: atom(firstParentId),
+    fillColor: atom("transparent"),
   });
 
   // Re-parent each selected shape into the new layout; translate into layout-local coordinates.

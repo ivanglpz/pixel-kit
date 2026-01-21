@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Image as KonvaImage } from "react-konva";
 
+import { useResolvedShape } from "../hooks/useResolvedShape";
 import { calculateCoverCrop } from "../utils/crop";
-import { useResolvedShape } from "./frame.shape";
 import { ShapeLabel } from "./label";
 import { IShapeEvents } from "./type.shape";
 
