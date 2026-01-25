@@ -17,14 +17,20 @@
     "paths": {
       "@/*": ["./src/*"],
       "@stylespixelkit/*": ["./styled-system/*"]
-    }
+    },
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ]
   },
   "include": [
-    "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx",
+    "global.d.ts",
+    "next-env.d.ts",
     "styled-system",
-    "global.d.ts"
+    ".next/types/**/*.ts"
   ],
   "exclude": ["node_modules"]
 }

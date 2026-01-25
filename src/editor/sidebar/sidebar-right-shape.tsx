@@ -48,10 +48,10 @@ import { Input } from "../components/input";
 import { ListIcons } from "../components/list-icons";
 import { constants } from "../constants/color";
 import { fontFamilyOptions, fontWeightOptions } from "../constants/fonts";
-import { useAutoSave } from "../hooks/useAutoSave";
 import {
   AlignItems,
   FlexDirection,
+  flexLayoutAtom,
   FlexWrap,
   JustifyContent,
 } from "../shapes/layout-flex";
@@ -64,9 +64,9 @@ import { optimizeImageFile } from "@/utils/opt-img";
 import { Button } from "../components/button";
 import { Loading } from "../components/loading";
 import { ThemeComponent } from "../components/ThemeComponent";
-import { useDelayedExecutor } from "../hooks/useDelayExecutor";
 import { IShapeTool } from "../states/tool";
 // import { UPDATE_UNDO_REDO } from "../states/undo-redo";
+import { START_TIMER_ATOM } from "../states/timer";
 import { SVG } from "../utils/svg";
 import { ExportShape } from "./export-shape";
 
@@ -297,23 +297,16 @@ export const SectionHeader = ({
 
 export const useShapeUpdate = () => {
   const update = useSetAtom(SHAPE_UPDATE_ATOM);
-  const { debounce } = useAutoSave();
-  // const setUpdateUndoRedo = useSetAtom(UPDATE_UNDO_REDO);
+  const START = useSetAtom(START_TIMER_ATOM);
 
-  const debounceControl = useDelayedExecutor({
-    callback: () => {
-      // setUpdateUndoRedo();
-      debounce.execute();
-    },
-    timer: 500, // opcional
-  });
+  // const setUpdateUndoRedo = useSetAtom(UPDATE_UNDO_REDO);
 
   return <K extends keyof ShapeState>(
     type: UpdatableKeys,
     value: Omit<ShapeBase[K], "id" | "tool" | "children" | "parentId">,
   ) => {
     update({ type, value });
-    debounceControl.execute();
+    START();
   };
 };
 
@@ -331,16 +324,27 @@ type ShapeAtomButtonProps = {
   atomo: PrimitiveAtom<boolean>;
   iconType: keyof typeof ICON_SHAPE;
   type: UpdatableKeys;
+  parentId: PrimitiveAtom<string | null>;
 };
-const ShapeAtomButton = ({ atomo, type, iconType }: ShapeAtomButtonProps) => {
+const ShapeAtomButton = ({
+  atomo,
+  type,
+  iconType,
+  parentId,
+}: ShapeAtomButtonProps) => {
   const value = useAtomValue(atomo);
   const spHook = useShapeUpdate();
+  const applyLayout = useSetAtom(flexLayoutAtom);
+  const parent = useAtomValue(parentId);
 
   const Icon = ICON_SHAPE[iconType];
   return (
     <button
       onClick={() => {
         spHook(type, !value);
+        if (parent) {
+          applyLayout({ id: parent });
+        }
       }}
       className={css({
         cursor: "pointer",
@@ -1104,11 +1108,13 @@ export const LayoutShapeConfig = () => {
 
           <div className="flex flex-row gap-2">
             <ShapeAtomButton
+              parentId={shape.parentId}
               iconType="width"
               type="fillContainerWidth"
               atomo={shape.fillContainerWidth}
             />
             <ShapeAtomButton
+              parentId={shape.parentId}
               iconType="height"
               type="fillContainerHeight"
               atomo={shape.fillContainerHeight}
@@ -1163,6 +1169,7 @@ export const LayoutShapeConfig = () => {
         <section className={commonStyles.container}>
           <SectionHeader title="Layouts">
             <ShapeAtomButton
+              parentId={shape.parentId}
               iconType="isLayout"
               type="isLayout"
               atomo={shape.isLayout}
@@ -1243,6 +1250,7 @@ export const LayoutShapeConfig = () => {
               >
                 <ShapeIsAllPadding shape={shape} />
                 <ShapeAtomButton
+                  parentId={shape.parentId}
                   atomo={shape.isAllPadding}
                   iconType="isAllPadding"
                   type="isAllPadding"
@@ -1315,6 +1323,7 @@ export const LayoutShapeConfig = () => {
                 </Input.Grid>
               </Input.Container>
               <ShapeAtomButton
+                parentId={shape.parentId}
                 iconType="isAllBorderRadius"
                 type="isAllBorderRadius"
                 atomo={shape.isAllBorderRadius}
