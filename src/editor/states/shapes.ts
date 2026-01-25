@@ -451,9 +451,13 @@ export const RESOLVE_DROP_TARGET = atom(null, (get, set, COORDS: Point) => {
   const offsetOf = computeAncestorOffset(get)(lookup);
 
   const candidates = plane
-    .filter((shape) => !selected.some((e) => e?.id === shape.id))
+    .filter(
+      (shape) =>
+        !selected.some(
+          (e) => shape.id === e?.id || get(get(shape?.state).parentId) === e.id,
+        ),
+    )
     .filter((e) => get(get(e.state).tool) === "FRAME")
-
     .map((shape) => {
       const st = get(shape.state);
       const localX = get(st.x);
@@ -478,6 +482,7 @@ export const RESOLVE_DROP_TARGET = atom(null, (get, set, COORDS: Point) => {
     })
     .filter((c) => isPointInsideBounds(COORDS, c.bounds))
     .sort((a, b) => b.depth - a.depth);
+  console.log(candidates, "candidates");
 
   const target = candidates.length > 0 ? candidates[0].shape : null;
 
