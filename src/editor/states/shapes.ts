@@ -457,7 +457,12 @@ export const RESOLVE_DROP_TARGET = atom(null, (get, set, COORDS: Point) => {
           (e) => shape.id === e?.id || get(get(shape?.state).parentId) === e.id,
         ),
     )
-    .filter((e) => get(get(e.state).tool) === "FRAME")
+    .filter(
+      (e) =>
+        get(get(e.state).tool) === "FRAME" &&
+        get(get(e.state).visible) &&
+        !get(get(e.state).isLocked),
+    )
     .map((shape) => {
       const st = get(shape.state);
       const localX = get(st.x);
