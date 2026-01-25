@@ -44,7 +44,8 @@ import {
 } from "../states/shapes";
 // import { REDO_ATOM, UNDO_ATOM } from "../states/undo-redo";
 import { SVG } from "../utils/svg";
-import { useAutoSave } from "./useAutoSave";
+
+import { START_TIMER_ATOM } from "../states/timer";
 import { useConfiguration } from "./useConfiguration";
 
 // ===== CONSTANTS =====
@@ -60,7 +61,8 @@ export const useEventStage = () => {
   const setScale = useSetAtom(POSITION_SCALE_ATOM);
   const setPosition = useSetAtom(POSITION_PAGE_ATOM);
   const { config } = useConfiguration();
-  const { debounce } = useAutoSave();
+  const START = useSetAtom(START_TIMER_ATOM);
+
   const PROJECT_ID = useAtomValue(PROJECT_ID_ATOM);
   const stageRef = useRef<Konva.Stage>(null);
   const GET_BOUNDS = useSetAtom(GET_STAGE_BOUNDS_ATOM);
@@ -142,11 +144,11 @@ export const useEventStage = () => {
     }
     if (EVENT_STAGE === "COPYING") {
       SET_EVENT_COPY_FINISH_SHAPES();
-      debounce.execute();
+      START();
     }
     if (EVENT_STAGE === "CREATING") {
       SET_EVENT_DOWN_FINISH_SHAPES();
-      debounce.execute();
+      START();
     }
     SET_MOVING(true);
   };
@@ -192,7 +194,8 @@ export const useEventStage = () => {
       });
       SET_CREATE(createStartElement);
 
-      debounce.execute();
+      START();
+
       toast.success("Image uploaded successfully!");
     },
     onError: (error) => {
@@ -300,7 +303,7 @@ export const useEventStage = () => {
       if (meta && !event.shiftKey && key === "z") {
         event.preventDefault();
         // setUndo();
-        debounce.execute();
+        START();
 
         // set(UNDO_ATOM);
         return;
@@ -309,7 +312,8 @@ export const useEventStage = () => {
       if (shift && key === "a" && shapeId?.length > 0) {
         event.preventDefault();
         SET_EVENT_GROUP();
-        debounce.execute();
+        START();
+
         return;
       }
 
@@ -317,7 +321,7 @@ export const useEventStage = () => {
       if (meta && event.shiftKey && key === "z") {
         event.preventDefault();
         // setRedo();
-        debounce.execute();
+        START();
 
         // set(REDO_ATOM);
         return;
@@ -329,7 +333,7 @@ export const useEventStage = () => {
       if (DELETE_KEYS.includes(KEY)) {
         DELETE_SHAPE();
         setTool("MOVE");
-        debounce.execute();
+        START();
       }
 
       // Handle Alt key for copy mode

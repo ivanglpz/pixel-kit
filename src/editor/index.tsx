@@ -3,6 +3,7 @@ import { css } from "@stylespixelkit/css";
 import dynamic from "next/dynamic";
 import useBrowser from "./hooks/useBrowser";
 import useStopZoom from "./hooks/useStopZoom";
+import { useTimerAutoSave } from "./hooks/useTimerAutoSave";
 import { AllLayers } from "./layers/root.layers";
 import { SidebarLeft } from "./sidebar/sidebar.left";
 import SidebarRight from "./sidebar/sidebar.right";
@@ -11,6 +12,7 @@ import PxStage from "./stage";
 const PixelEditor = () => {
   useStopZoom();
   useBrowser();
+  useTimerAutoSave();
   return (
     <div
       id="pixel-app"
