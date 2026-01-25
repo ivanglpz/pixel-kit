@@ -1,14 +1,14 @@
-import { useAtomValue } from "jotai";
+import { useAtomValue, useSetAtom } from "jotai";
 import Konva from "konva";
 import { useEffect, useRef } from "react";
 import { Layer, Transformer } from "react-konva";
 import { constants } from "../constants/color";
-import { useAutoSave } from "../hooks/useAutoSave";
 import { Shapes } from "../shapes/shapes";
 import { IShapeEvents } from "../shapes/type.shape";
 import STAGE_CANVAS_BACKGROUND from "../states/canvas";
 import { SELECTED_SHAPES_BY_IDS_ATOM } from "../states/shape";
 import ALL_SHAPES_ATOM, { ALL_SHAPES } from "../states/shapes";
+import { START_TIMER_ATOM } from "../states/timer";
 // import { UPDATE_UNDO_REDO } from "../states/undo-redo";
 
 const getAllShapes = (node: Konva.Layer | Konva.Group): Konva.Shape[] => {
@@ -39,7 +39,8 @@ export const LayerShapes = () => {
   const lyRef = useRef<Konva.Layer>(null);
   const selectedIds = useAtomValue(SELECTED_SHAPES_BY_IDS_ATOM);
   // const setUpdateUndoRedo = useSetAtom(UPDATE_UNDO_REDO);
-  const { debounce } = useAutoSave();
+  const START = useSetAtom(START_TIMER_ATOM);
+
   const background = useAtomValue(STAGE_CANVAS_BACKGROUND);
 
   useEffect(() => {
@@ -82,11 +83,11 @@ export const LayerShapes = () => {
           keepRatio={false}
           onTransformEnd={() => {
             // setUpdateUndoRedo();
-            debounce.execute();
+            START();
           }}
           onDragEnd={() => {
             // setUpdateUndoRedo();
-            debounce.execute();
+            START();
           }}
           anchorStroke={constants.theme.colors.primary}
           boundBoxFunc={(oldBox, newBox) => {

@@ -14,10 +14,10 @@ import { useMemo, useState } from "react";
 import { Input } from "../components/input";
 import { withStableMemo } from "../components/withStableMemo";
 import { constants } from "../constants/color";
-import { useAutoSave } from "../hooks/useAutoSave";
 import { flexLayoutAtom } from "../shapes/layout-flex";
 import { SELECTED_SHAPES_BY_IDS_ATOM } from "../states/shape";
 import { ALL_SHAPES, DELETE_SHAPES_ATOM } from "../states/shapes";
+import { START_TIMER_ATOM } from "../states/timer";
 import TOOL_ATOM, { PAUSE_MODE_ATOM } from "../states/tool";
 
 type NodeProps = {
@@ -77,7 +77,6 @@ const NodeInput = ({
       ) : (
         <p
           className={css({
-            textTransform: "capitalize",
             fontSize: "x-small",
             lineClamp: 1,
           })}
@@ -135,7 +134,7 @@ export const NodesDefault = ({
   ]);
 
   const [children, setChildren] = useAtom(shape.children);
-  const { debounce } = useAutoSave();
+  const START = useSetAtom(START_TIMER_ATOM);
 
   const handleReorder = (newOrder: typeof children) => {
     if (!childOptions.id) return;
@@ -143,7 +142,7 @@ export const NodesDefault = ({
     applyLayout({ id: childOptions.id });
     setChildren(newOrder);
     // setUpdateUndoRedo();
-    debounce.execute();
+    START();
   };
 
   // Función para manejar el toggle de isLocked
@@ -151,6 +150,7 @@ export const NodesDefault = ({
     e.stopPropagation(); // ✅ Prevenir propagación
     if (!isLockedByParent) {
       setIsLocked((e) => !e);
+      START();
     }
   };
 
@@ -159,6 +159,7 @@ export const NodesDefault = ({
     e.stopPropagation(); // ✅ Prevenir propagación
     if (!isHiddenByParent) {
       setVisible((e) => !e);
+      START();
     }
   };
 
@@ -350,6 +351,7 @@ export const NodesDefault = ({
               className="text-[12px]"
               onClick={() => {
                 setComponent(!isComponent);
+                START();
               }}
             >
               {isComponent ? "Detach" : "Create"} component
@@ -360,6 +362,7 @@ export const NodesDefault = ({
               className="text-[12px]"
               onClick={() => {
                 setSourceShapeId(null);
+                START();
               }}
             >
               Detach instance
@@ -371,7 +374,7 @@ export const NodesDefault = ({
             onClick={() => {
               setTool("MOVE");
               DELETE_SHAPE();
-              debounce.execute();
+              START();
             }}
           >
             Delete

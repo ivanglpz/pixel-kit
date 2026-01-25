@@ -17,7 +17,7 @@ import { useAtom, useSetAtom } from "jotai";
 import { File, FolderCog, GripVertical, Plus, Trash } from "lucide-react";
 import { useRef, useState } from "react";
 import { Input } from "../components/input";
-import { useAutoSave } from "../hooks/useAutoSave";
+import { START_TIMER_ATOM } from "../states/timer";
 const DraggableRootItem = ({
   page,
   isSelected,
@@ -39,7 +39,6 @@ const DraggableRootItem = ({
     rootDragControls.start(e);
   };
   const [isHovered, setIsHovered] = useState(false);
-  const { debounce } = useAutoSave();
 
   return (
     <Reorder.Item
@@ -152,7 +151,7 @@ const DraggableRootItem = ({
             className="text-[12px]"
             onClick={() => {
               SET(page.id);
-              debounce.execute();
+              onDebounce();
             }}
           >
             <Trash size={14} />
@@ -169,11 +168,11 @@ export const SidebarLeftPages = () => {
   const newPage = useSetAtom(NEW_PAGE);
   const [selectedPage, setSelectedPage] = useAtom(PAGE_ID_ATOM);
   const ListRef = useRef<HTMLDivElement>(null);
-  const { debounce } = useAutoSave();
+  const START = useSetAtom(START_TIMER_ATOM);
 
   const handleReorder = (newOrder: typeof pages) => {
     setPages(newOrder);
-    debounce.execute();
+    START();
   };
 
   return (
@@ -204,7 +203,7 @@ export const SidebarLeftPages = () => {
             setTimeout(() => {
               ListRef.current?.scrollIntoView({ behavior: "smooth" });
             }, 100);
-            debounce.execute();
+            START();
           }}
         >
           <Plus size={14} />
@@ -232,7 +231,7 @@ export const SidebarLeftPages = () => {
             page={item}
             isSelected={selectedPage === item.id}
             onClick={() => setSelectedPage(item.id)}
-            onDebounce={() => debounce.execute()}
+            onDebounce={() => START()}
             lengthPage={pages.length}
           />
         ))}

@@ -8,7 +8,6 @@ import { Nodes } from "@/editor/sidebar/sidebar-left-nodes";
 import ALL_SHAPES_ATOM, {
   ALL_SHAPES,
   DELETE_ALL_SHAPES_ATOM,
-  MOVE_SHAPES_TO_ROOT,
 } from "@/editor/states/shapes";
 // import { UPDATE_UNDO_REDO } from "@/editor/states/undo-redo";
 import { css } from "@stylespixelkit/css";
@@ -16,7 +15,7 @@ import { Reorder, useDragControls } from "framer-motion";
 import { useAtom, useSetAtom } from "jotai";
 import { Trash } from "lucide-react";
 import { withStableMemo } from "../components/withStableMemo";
-import { useAutoSave } from "../hooks/useAutoSave";
+import { START_TIMER_ATOM } from "../states/timer";
 // ✅ Componente wrapper para elementos de nivel superior
 const DraggableRootItem = withStableMemo(({ item }: { item: ALL_SHAPES }) => {
   const rootDragControls = useDragControls();
@@ -45,13 +44,12 @@ const DraggableRootItem = withStableMemo(({ item }: { item: ALL_SHAPES }) => {
 export const SidebarLeftShapes = () => {
   const [ALL_SHAPES, SET_ALL_SHAPES] = useAtom(ALL_SHAPES_ATOM);
   // const setUpdateUndoRedo = useSetAtom(UPDATE_UNDO_REDO);
-  const setmove = useSetAtom(MOVE_SHAPES_TO_ROOT);
-  const { debounce } = useAutoSave();
+  const START = useSetAtom(START_TIMER_ATOM);
 
   const handleReorder = (newOrder: typeof ALL_SHAPES) => {
     SET_ALL_SHAPES(newOrder);
     // setUpdateUndoRedo();
-    debounce.execute();
+    START();
   };
   const clearAll = useSetAtom(DELETE_ALL_SHAPES_ATOM);
 
@@ -82,7 +80,7 @@ export const SidebarLeftShapes = () => {
             className="text-[12px]"
             onClick={() => {
               clearAll();
-              debounce.execute();
+              START();
             }}
           >
             <Trash size={14} />

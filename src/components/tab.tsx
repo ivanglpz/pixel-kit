@@ -1,9 +1,9 @@
 import { Input } from "@/editor/components/input";
-import { useAutoSave } from "@/editor/hooks/useAutoSave";
 import { ICON_MODES_TABS } from "@/editor/icons/mode";
 import { IPROJECT } from "@/editor/states/projects";
+import { START_TIMER_ATOM } from "@/editor/states/timer";
 import { css } from "@stylespixelkit/css";
-import { useAtom, useAtomValue } from "jotai";
+import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { X } from "lucide-react";
 import { useState } from "react";
 
@@ -18,8 +18,7 @@ export const Tab = ({ project, onClick, onDelete, isSelected }: TabProps) => {
   const [text, setText] = useAtom(project.name);
   const mode = useAtomValue(project.MODE_ATOM);
   const [show, setShow] = useState(false);
-  const { debounce } = useAutoSave();
-
+  const START = useSetAtom(START_TIMER_ATOM);
   return (
     <div
       className={css({
@@ -63,7 +62,7 @@ export const Tab = ({ project, onClick, onDelete, isSelected }: TabProps) => {
             value={text}
             onChange={(e) => {
               setText(e);
-              debounce.execute();
+              START();
             }}
             style={{
               width: "auto",
