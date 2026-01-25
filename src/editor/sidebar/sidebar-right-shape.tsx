@@ -52,6 +52,7 @@ import { useAutoSave } from "../hooks/useAutoSave";
 import {
   AlignItems,
   FlexDirection,
+  flexLayoutAtom,
   FlexWrap,
   JustifyContent,
 } from "../shapes/layout-flex";
@@ -331,16 +332,27 @@ type ShapeAtomButtonProps = {
   atomo: PrimitiveAtom<boolean>;
   iconType: keyof typeof ICON_SHAPE;
   type: UpdatableKeys;
+  parentId: PrimitiveAtom<string | null>;
 };
-const ShapeAtomButton = ({ atomo, type, iconType }: ShapeAtomButtonProps) => {
+const ShapeAtomButton = ({
+  atomo,
+  type,
+  iconType,
+  parentId,
+}: ShapeAtomButtonProps) => {
   const value = useAtomValue(atomo);
   const spHook = useShapeUpdate();
+  const applyLayout = useSetAtom(flexLayoutAtom);
+  const parent = useAtomValue(parentId);
 
   const Icon = ICON_SHAPE[iconType];
   return (
     <button
       onClick={() => {
         spHook(type, !value);
+        if (parent) {
+          applyLayout({ id: parent });
+        }
       }}
       className={css({
         cursor: "pointer",
@@ -1104,11 +1116,13 @@ export const LayoutShapeConfig = () => {
 
           <div className="flex flex-row gap-2">
             <ShapeAtomButton
+              parentId={shape.parentId}
               iconType="width"
               type="fillContainerWidth"
               atomo={shape.fillContainerWidth}
             />
             <ShapeAtomButton
+              parentId={shape.parentId}
               iconType="height"
               type="fillContainerHeight"
               atomo={shape.fillContainerHeight}
@@ -1163,6 +1177,7 @@ export const LayoutShapeConfig = () => {
         <section className={commonStyles.container}>
           <SectionHeader title="Layouts">
             <ShapeAtomButton
+              parentId={shape.parentId}
               iconType="isLayout"
               type="isLayout"
               atomo={shape.isLayout}
@@ -1243,6 +1258,7 @@ export const LayoutShapeConfig = () => {
               >
                 <ShapeIsAllPadding shape={shape} />
                 <ShapeAtomButton
+                  parentId={shape.parentId}
                   atomo={shape.isAllPadding}
                   iconType="isAllPadding"
                   type="isAllPadding"
@@ -1315,6 +1331,7 @@ export const LayoutShapeConfig = () => {
                 </Input.Grid>
               </Input.Container>
               <ShapeAtomButton
+                parentId={shape.parentId}
                 iconType="isAllBorderRadius"
                 type="isAllBorderRadius"
                 atomo={shape.isAllBorderRadius}
