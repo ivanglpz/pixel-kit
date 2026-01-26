@@ -9,7 +9,7 @@ import {
   ContextMenuItem,
   ContextMenuTrigger,
 } from "@/components/ui/context-menu";
-import * as Luicde from "lucide-react";
+import * as Lucide from "lucide-react";
 import { useMemo, useState } from "react";
 import { Input } from "../components/input";
 import { withStableMemo } from "../components/withStableMemo";
@@ -354,6 +354,7 @@ export const NodesDefault = ({
                 START();
               }}
             >
+              <Lucide.Boxes size={14} />
               {isComponent ? "Detach" : "Create"} component
             </ContextMenuItem>
           ) : null}
@@ -365,6 +366,7 @@ export const NodesDefault = ({
                 START();
               }}
             >
+              <Lucide.Unlink size={14} />
               Detach instance
             </ContextMenuItem>
           ) : null}
@@ -377,6 +379,7 @@ export const NodesDefault = ({
               START();
             }}
           >
+            <Lucide.Trash size={14} />
             Delete
           </ContextMenuItem>
         </ContextMenuContent>
@@ -441,13 +444,13 @@ export const DraggableNodeItem = ({
     </Reorder.Item>
   );
 };
-const ChevronDown = withStableMemo(Luicde.ChevronDown);
-const ChevronRight = withStableMemo(Luicde.ChevronRight);
-const DotIcon = withStableMemo(Luicde.Circle);
-const Eye = withStableMemo(Luicde.Eye);
-const EyeClosed = withStableMemo(Luicde.EyeOff);
-const GripVertical = withStableMemo(Luicde.GripVertical);
-const Lock = withStableMemo(Luicde.Lock);
-const Unlock = withStableMemo(Luicde.Unlock);
+const ChevronDown = withStableMemo(Lucide.ChevronDown);
+const ChevronRight = withStableMemo(Lucide.ChevronRight);
+const DotIcon = withStableMemo(Lucide.Circle);
+const Eye = withStableMemo(Lucide.Eye);
+const EyeClosed = withStableMemo(Lucide.EyeOff);
+const GripVertical = withStableMemo(Lucide.GripVertical);
+const Lock = withStableMemo(Lucide.Lock);
+const Unlock = withStableMemo(Lucide.Unlock);
 
 export const Nodes = withStableMemo(NodesDefault);
