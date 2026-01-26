@@ -71,7 +71,7 @@ export const SHAPE_ICON = (props: IShapeEvents) => {
         dash={[shape.dash]}
         dashEnabled={shape.dash > 0}
         cornerRadius={
-          !shape.isAllBorderRadius
+          shape.isAllBorderRadius
             ? [
                 shape.borderTopLeftRadius,
                 shape.borderTopRightRadius,
