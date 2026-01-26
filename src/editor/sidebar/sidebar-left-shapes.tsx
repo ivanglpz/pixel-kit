@@ -75,7 +75,7 @@ export const SidebarLeftShapes = () => {
             </p>
           </header>
         </ContextMenuTrigger>
-        <ContextMenuContent>
+        <ContextMenuContent className="p-2 flex flex-col w-[210px] h-[260px] text-[12px]">
           <ContextMenuItem
             className="text-[12px]"
             onClick={() => {
@@ -84,7 +84,7 @@ export const SidebarLeftShapes = () => {
             }}
           >
             <Trash size={14} />
-            Clear All
+            Delete All
           </ContextMenuItem>
         </ContextMenuContent>
       </ContextMenu>
