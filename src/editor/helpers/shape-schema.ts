@@ -1,6 +1,5 @@
 import { Align, FontWeight, VerticalAlign } from "@/editor/shapes/type.shape";
 import { atom } from "jotai";
-import Konva from "konva";
 import { LineCap, LineJoin } from "konva/lib/Shape";
 import { v4 as uuidv4 } from "uuid";
 import {
@@ -13,7 +12,6 @@ import { ShapeImage } from "../shapes/types/shape.base";
 import { ShapeState } from "../shapes/types/shape.state";
 import { ALL_SHAPES } from "../states/shapes";
 import { IShapeTool } from "../states/tool";
-import { CTX_EXP } from "../utils/export";
 
 export const cloneDeep = (value: Object) => {
   if (!value) {
@@ -104,40 +102,4 @@ export const CreateShapeSchema = (props?: Partial<ShapeState>): ShapeState => {
 
 export const isNotNegative = (value: number) => {
   return value < 1 ? 1 : value;
-};
-export const getCommonShapeProps = (shape: ShapeState, ctx: CTX_EXP) => {
-  return {
-    points: ctx.get(shape.points) ?? [],
-    fillEnabled: true,
-    fill: ctx.get(shape?.fillColor),
-    stroke: ctx.get(shape.strokeColor),
-    strokeWidth: ctx.get(shape.strokeWidth),
-    strokeEnabled:
-      ctx.get(shape.tool) !== "TEXT" ? ctx.get(shape.strokeWidth) > 0 : false,
-    dash: [ctx.get(shape.dash)],
-    dashEnabled: ctx.get(shape.dash) > 0,
-    cornerRadius: !ctx.get(shape.isAllBorderRadius)
-      ? [
-          ctx.get(shape.borderTopLeftRadius),
-          ctx.get(shape.borderTopRightRadius),
-          ctx.get(shape.borderBottomRightRadius),
-          ctx.get(shape.borderBottomLeftRadius),
-        ]
-      : ctx.get(shape.borderRadius),
-    shadowColor: ctx.get(shape.shadowColor),
-    shadowOpacity: ctx.get(shape.shadowOpacity),
-    shadowOffsetX: ctx.get(shape.shadowOffsetX),
-    shadowOffsetY: ctx.get(shape.shadowOffsetY),
-    shadowBlur: ctx.get(shape.shadowBlur),
-    shadowEnabled: true,
-    opacity: ctx.get(shape.opacity) ?? 1,
-    width: ctx.get(shape.width),
-    height: ctx.get(shape.height),
-    text: ctx.get(shape.text) ?? "",
-    fontSize: ctx.get(shape.fontSize),
-    fontFamily: ctx.get(shape.fontFamily),
-    fontVariant: ctx.get(shape.fontWeight),
-    align: ctx.get(shape.align) as Konva.TextConfig["align"],
-    lineHeight: 1.45,
-  };
 };
