@@ -36,39 +36,68 @@ export type CTX_EXP = {
 const PLACEHOLDER_SRC = "/placeholder.svg";
 const PLACEHOLDER_SIZE = 1200;
 
+/**
+ * Resuelve el shape espejo si existe sourceShapeId
+ * Retorna el shape original o el espejo según corresponda
+ */
+const resolveShapeWithMirror = (
+  shape: ShapeState,
+  ctx: CTX_EXP,
+): ShapeState => {
+  const sourceShapeId = ctx.get(shape.sourceShapeId);
+
+  if (!sourceShapeId) {
+    return shape;
+  }
+
+  // Buscar el shape espejo en PLANE_SHAPES_ATOM
+  const planeShapes = ctx.get(PLANE_SHAPES_ATOM);
+  const mirrorShape = planeShapes.find((s) => s.id === sourceShapeId);
+
+  if (!mirrorShape) {
+    return shape;
+  }
+  return ctx.get(mirrorShape.state);
+};
+
 export const getCommonShapeProps = (shape: ShapeState, ctx: CTX_EXP) => {
+  // Resolver el shape espejo si existe
+  const resolvedShape = resolveShapeWithMirror(shape, ctx);
+
   return {
-    points: ctx.get(shape.points) ?? [],
+    points: ctx.get(resolvedShape.points) ?? [],
     fillEnabled: true,
-    fill: ctx.get(shape?.fillColor),
-    stroke: ctx.get(shape.strokeColor),
-    strokeWidth: ctx.get(shape.strokeWidth),
+    fill: ctx.get(resolvedShape?.fillColor),
+    stroke: ctx.get(resolvedShape.strokeColor),
+    strokeWidth: ctx.get(resolvedShape.strokeWidth),
     strokeEnabled:
-      ctx.get(shape.tool) !== "TEXT" ? ctx.get(shape.strokeWidth) > 0 : false,
-    dash: [ctx.get(shape.dash)],
-    dashEnabled: ctx.get(shape.dash) > 0,
-    cornerRadius: !ctx.get(shape.isAllBorderRadius)
+      ctx.get(resolvedShape.tool) !== "TEXT"
+        ? ctx.get(resolvedShape.strokeWidth) > 0
+        : false,
+    dash: [ctx.get(resolvedShape.dash)],
+    dashEnabled: ctx.get(resolvedShape.dash) > 0,
+    cornerRadius: ctx.get(resolvedShape.isAllBorderRadius)
       ? [
-          ctx.get(shape.borderTopLeftRadius),
-          ctx.get(shape.borderTopRightRadius),
-          ctx.get(shape.borderBottomRightRadius),
-          ctx.get(shape.borderBottomLeftRadius),
+          ctx.get(resolvedShape.borderTopLeftRadius),
+          ctx.get(resolvedShape.borderTopRightRadius),
+          ctx.get(resolvedShape.borderBottomRightRadius),
+          ctx.get(resolvedShape.borderBottomLeftRadius),
         ]
-      : ctx.get(shape.borderRadius),
-    shadowColor: ctx.get(shape.shadowColor),
-    shadowOpacity: ctx.get(shape.shadowOpacity),
-    shadowOffsetX: ctx.get(shape.shadowOffsetX),
-    shadowOffsetY: ctx.get(shape.shadowOffsetY),
-    shadowBlur: ctx.get(shape.shadowBlur),
+      : ctx.get(resolvedShape.borderRadius),
+    shadowColor: ctx.get(resolvedShape.shadowColor),
+    shadowOpacity: ctx.get(resolvedShape.shadowOpacity),
+    shadowOffsetX: ctx.get(resolvedShape.shadowOffsetX),
+    shadowOffsetY: ctx.get(resolvedShape.shadowOffsetY),
+    shadowBlur: ctx.get(resolvedShape.shadowBlur),
     shadowEnabled: true,
-    opacity: ctx.get(shape.opacity) ?? 1,
-    width: ctx.get(shape.width),
-    height: ctx.get(shape.height),
-    text: ctx.get(shape.text) ?? "",
-    fontSize: ctx.get(shape.fontSize),
-    fontFamily: ctx.get(shape.fontFamily),
-    fontVariant: ctx.get(shape.fontWeight),
-    align: ctx.get(shape.align) as Konva.TextConfig["align"],
+    opacity: ctx.get(resolvedShape.opacity) ?? 1,
+    width: ctx.get(shape.width), // Mantener dimensiones originales
+    height: ctx.get(shape.height), // Mantener dimensiones originales
+    text: ctx.get(resolvedShape.text) ?? "",
+    fontSize: ctx.get(resolvedShape.fontSize),
+    fontFamily: ctx.get(resolvedShape.fontFamily),
+    fontVariant: ctx.get(resolvedShape.fontWeight),
+    align: ctx.get(resolvedShape.align) as Konva.TextConfig["align"],
     lineHeight: 1.45,
   };
 };
@@ -159,7 +188,10 @@ const createNodeFromShape = async (
   ctx: CTX_EXP,
   IS_ROOT = false,
 ): Promise<Konva.Node> => {
-  const tool = ctx.get(shape.tool);
+  // Resolver el shape espejo para obtener el tool correcto
+  const resolvedShape = resolveShapeWithMirror(shape, ctx);
+  const tool = ctx.get(resolvedShape.tool);
+
   if (tool === "FRAME" && parent) {
     return createFrameNodes(shape, parent, ctx, IS_ROOT);
   }
@@ -181,7 +213,7 @@ const createNodeFromShape = async (
       const width = ctx.get(shape.width);
       const height = ctx.get(shape.height);
 
-      const imageFill = ctx.get(shape.image);
+      const imageFill = ctx.get(resolvedShape.image);
       if (!imageFill) {
         return new Konva.Image({
           width: width,
@@ -194,10 +226,13 @@ const createNodeFromShape = async (
       const CONTENT = "data:image/svg+xml;charset=utf-8,";
       const svgText = decodeURIComponent(imageFill.src.replace(CONTENT, ""));
       const newSvg = svgText
-        .replace(/stroke-width="[^"]*"/g, `stroke-width="${shape.strokeWidth}"`)
+        .replace(
+          /stroke-width="[^"]*"/g,
+          `stroke-width="${resolvedShape.strokeWidth}"`,
+        )
         .replace(
           /stroke="currentColor"/g,
-          `stroke="${ctx.get(shape.strokeColor) || "#000000"}"`,
+          `stroke="${ctx.get(resolvedShape.strokeColor) || "#000000"}"`,
         );
 
       const src = CONTENT + encodeURIComponent(newSvg);
@@ -225,7 +260,7 @@ const createNodeFromShape = async (
 
     case "IMAGE": {
       try {
-        const imageFill = ctx.get(shape.image);
+        const imageFill = ctx.get(resolvedShape.image);
 
         if (!imageFill) {
           throw new Error("Image not found");
@@ -288,8 +323,8 @@ const createNodeFromShape = async (
       return new Konva.Line({
         ...commonProps,
         ...getCommonShapeProps(shape, ctx),
-        lineCap: ctx.get(shape.lineCap),
-        lineJoin: ctx.get(shape.lineJoin),
+        lineCap: ctx.get(resolvedShape.lineCap),
+        lineJoin: ctx.get(resolvedShape.lineJoin),
       });
 
     default:
@@ -314,7 +349,8 @@ export const attachShapeRecursively = async (
   isRoot = false,
 ): Promise<Konva.Node> => {
   const shape = ctx.get(item.state);
-  const tool = ctx.get(shape.tool);
+  const resolvedShape = resolveShapeWithMirror(shape, ctx);
+  const tool = ctx.get(resolvedShape.tool);
 
   if (tool === "FRAME") {
     return createFrameNodes(ctx.get(item.state), parent, ctx, isRoot);
@@ -415,6 +451,7 @@ export const EXPORT_SHAPES = atom(null, async (get, set) => {
     formats[format as keyof typeof formats],
   );
 });
+
 export const GENERATE_PREVIEW_ATOM = atom(
   null,
   async (get): Promise<string> => {
