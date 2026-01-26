@@ -372,6 +372,29 @@ export const NodesDefault = ({
           ) : null}
 
           <ContextMenuItem
+            disabled={isLockedByParent}
+            onClick={() => {
+              if (isLockedByParent) return;
+              setIsLocked((prev) => !prev);
+              START();
+            }}
+          >
+            {isLocked ? <Lucide.Unlock size={14} /> : <Lucide.Lock size={14} />}
+            {isLocked ? "Unlock" : "Lock"}
+          </ContextMenuItem>
+          <ContextMenuItem
+            disabled={isHiddenByParent}
+            onClick={() => {
+              if (isHiddenByParent) return;
+              setVisible((prev) => !prev);
+              START();
+            }}
+          >
+            {visible ? <Lucide.EyeOff size={14} /> : <Lucide.Eye size={14} />}
+            {visible ? "Hide" : "Show"}
+          </ContextMenuItem>
+
+          <ContextMenuItem
             className="text-[12px]"
             onClick={() => {
               setTool("MOVE");
