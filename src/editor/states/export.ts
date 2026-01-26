@@ -102,8 +102,19 @@ export const getCommonShapeProps = (shape: ShapeState, ctx: CTX_EXP) => {
   };
 };
 
-const getChildren = (shape: ShapeState, ctx: CTX_EXP): ALL_SHAPES[] =>
-  Array.isArray(ctx.get(shape.children)) ? ctx.get(shape.children) : [];
+/**
+ * Obtiene los children del shape, considerando si tiene sourceShapeId
+ * Si tiene sourceShapeId, retorna los children del shape espejo
+ */
+const getChildren = (shape: ShapeState, ctx: CTX_EXP): ALL_SHAPES[] => {
+  // Resolver el shape espejo si existe
+  const resolvedShape = resolveShapeWithMirror(shape, ctx);
+
+  // Obtener los children del shape resuelto (espejo o original)
+  const children = ctx.get(resolvedShape.children);
+
+  return Array.isArray(children) ? children : [];
+};
 
 const fetchAsBase64 = async (url: string): Promise<string> => {
   const response = await fetch(url, { mode: "cors" });
@@ -169,6 +180,7 @@ const createFrameNodes = async (
 
   parent.add(group);
 
+  // getChildren ahora retorna los children del espejo si existe sourceShapeId
   await Promise.all(
     getChildren(shape, ctx).map((child) =>
       attachShapeRecursively(child, group, ctx),
@@ -366,6 +378,7 @@ export const attachShapeRecursively = async (
 
   const container = node instanceof Konva.Group ? node : parent;
 
+  // getChildren ahora retorna los children del espejo si existe sourceShapeId
   await Promise.all(
     getChildren(ctx.get(item.state), ctx).map((child) =>
       attachShapeRecursively(child, container, ctx),
