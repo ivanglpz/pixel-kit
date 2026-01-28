@@ -68,6 +68,9 @@ export const useResolvedShape = (props: IShapeEvents) => {
     setRotation(node.rotation());
     setWidth(Math.max(MIN_SHAPE_SIZE, node.width() * scaleX));
     setHeight(Math.max(MIN_SHAPE_SIZE, node.height() * scaleY));
+    if (parentId) {
+      applyLayout({ id: parentId });
+    }
   };
 
   const onTransformEnd = () => {
