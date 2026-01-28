@@ -1,11 +1,12 @@
 import { css } from "@stylespixelkit/css";
-import { SetStateAction, useAtom, useSetAtom } from "jotai";
+import { SetStateAction, useAtom, useAtomValue, useSetAtom } from "jotai";
 import React, {
   CSSProperties,
   FocusEvent,
   ReactElement,
   ReactNode,
 } from "react";
+import { flexLayoutAtom } from "../shapes/layout-flex";
 import { ShapeBase } from "../shapes/types/shape.base";
 import { ShapeState } from "../shapes/types/shape.state";
 import { useShapeUpdate } from "../sidebar/sidebar-right-shape";
@@ -19,7 +20,7 @@ type PauseWrapperProps = {
 
 type ChangeWrapperProps = {
   children: JSX.Element;
-  shape: Omit<ShapeState, "children" | "parentId">;
+  shape: Omit<ShapeState, "children">;
   type: keyof Omit<ShapeState, "id" | "tool" | "children" | "parentId">;
   isGlobalUpdate?: boolean;
 };
@@ -29,7 +30,7 @@ type SetActionVariants<T> = {
 }[keyof T];
 
 export const ChangeWrapper = <K extends keyof ShapeState>(
-  props: ChangeWrapperProps
+  props: ChangeWrapperProps,
 ): ReactElement => {
   const { children, shape, type, isGlobalUpdate = true } = props;
   if (!shape[type]) return children;
@@ -41,6 +42,8 @@ export const ChangeWrapper = <K extends keyof ShapeState>(
   const [shapeValue, setShapeValue] = useAtom(atom);
 
   const spHook = useShapeUpdate();
+  const parent = useAtomValue(shape.parentId);
+  const applyLayout = useSetAtom(flexLayoutAtom);
 
   const enhanceChild = (child: ReactNode): ReactNode => {
     if (!React.isValidElement(child)) return child;
@@ -50,10 +53,13 @@ export const ChangeWrapper = <K extends keyof ShapeState>(
       onBlur: () => setPause(false),
       value: shapeValue,
       onChange: (
-        value: Omit<ShapeBase[K], "id" | "tool" | "children" | "parentId">
+        value: Omit<ShapeBase[K], "id" | "tool" | "children" | "parentId">,
       ) => {
         if (isGlobalUpdate) {
           spHook(type, value);
+          if (parent) {
+            applyLayout({ id: parent });
+          }
           return;
         }
         setShapeValue(value as SetActionVariants<typeof shapeValue>);
@@ -68,7 +74,7 @@ export const PauseWrapper = ({ children }: PauseWrapperProps): ReactElement => {
 
   const handleFocus = (
     event: FocusEvent<HTMLElement>,
-    original?: (e: FocusEvent<HTMLElement>) => void
+    original?: (e: FocusEvent<HTMLElement>) => void,
   ) => {
     setPause(true);
     original?.(event);
@@ -76,7 +82,7 @@ export const PauseWrapper = ({ children }: PauseWrapperProps): ReactElement => {
 
   const handleBlur = (
     event: FocusEvent<HTMLElement>,
-    original?: (e: FocusEvent<HTMLElement>) => void
+    original?: (e: FocusEvent<HTMLElement>) => void,
   ) => {
     setPause(false);
     original?.(event);
