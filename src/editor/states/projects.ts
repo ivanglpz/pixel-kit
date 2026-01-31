@@ -1,6 +1,6 @@
 import { IProject } from "@/db/schemas/types";
 import { api } from "@/services/axios";
-import { atom, PrimitiveAtom } from "jotai";
+import { atom, Getter, PrimitiveAtom } from "jotai";
 import { atomWithDefault } from "jotai/utils";
 import { ShapeBase } from "../shapes/types/shape.base";
 import { ShapeState } from "../shapes/types/shape.state";
@@ -38,7 +38,10 @@ export const PROJECT_ID_ATOM = atomWithDefault<string | null>(() => {
 
   return ID ?? null;
 });
-const cloneShapeRecursive = (shape: SHAPE_BASE_CHILDREN): ALL_SHAPES => {
+export const cloneShapeRecursive = (
+  shape: SHAPE_BASE_CHILDREN,
+  options?: { parentIdNull?: boolean },
+): ALL_SHAPES => {
   const fill = shape.state.fills?.find((f) => f.visible && f.type === "fill");
   const stroke = shape.state?.strokes?.filter((e) => e?.visible)?.at(0);
   const shadow = shape.state?.effects
@@ -67,6 +70,9 @@ const cloneShapeRecursive = (shape: SHAPE_BASE_CHILDREN): ALL_SHAPES => {
       }
       if (key === "tool") {
         return [key, theTool];
+      }
+      if (key === "parentId" && options?.parentIdNull) {
+        return [key, atom(null)];
       }
       return [key, atom(value as ShapeBase[keyof ShapeBase])];
     }),
@@ -159,7 +165,8 @@ const parseProjectData = (rawData: string, mode: MODE) => {
 const buildPagesAtom = (pages: IPageBase[]) =>
   atom(
     pages.map((page) => {
-      const shapes = page.SHAPES?.LIST?.map(cloneShapeRecursive) ?? [];
+      const shapes =
+        page.SHAPES?.LIST?.map((e) => cloneShapeRecursive(e)) ?? [];
 
       return {
         id: page.id,
@@ -244,17 +251,16 @@ export type UpdatableKeys = keyof Omit<
   "id" | "tool" | "children" | "parentId"
 >;
 
-export const GET_JSON_PROJECTS_ATOM = atom(null, (get, set) => {
-  const project = get(PROJECT_ATOM);
-
-  const cloneShapeJson = (shape: ALL_SHAPES): SHAPE_BASE_CHILDREN => {
+export const cloneShapeJson =
+  (get: Getter) =>
+  (shape: ALL_SHAPES): SHAPE_BASE_CHILDREN => {
     const state = get(shape.state);
     const data: ShapeBase = Object.fromEntries(
       Object.entries(state).map(([key, value]) => {
         if (key === "children")
           return [
             key,
-            get(get(shape.state).children).map((c) => cloneShapeJson(c)),
+            get(get(shape.state).children).map((c) => cloneShapeJson(get)(c)),
           ];
         if (key === "id") {
           return [key, value];
@@ -268,6 +274,8 @@ export const GET_JSON_PROJECTS_ATOM = atom(null, (get, set) => {
       state: data,
     };
   };
+export const GET_JSON_PROJECTS_ATOM = atom(null, (get, set) => {
+  const project = get(PROJECT_ATOM);
 
   const LIST = get(project.MODE[get(project.MODE_ATOM)].LIST)?.map(
     (element) => {
@@ -277,7 +285,7 @@ export const GET_JSON_PROJECTS_ATOM = atom(null, (get, set) => {
         color: get(element.color),
         isVisible: get(element.isVisible),
         SHAPES: {
-          LIST: get(element.SHAPES.LIST).map((e) => cloneShapeJson(e)),
+          LIST: get(element.SHAPES.LIST).map((e) => cloneShapeJson(get)(e)),
         },
         VIEWPORT: {
           SCALE: get(element.VIEWPORT.SCALE),
