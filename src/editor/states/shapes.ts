@@ -166,14 +166,14 @@ export const computeStageBounds =
 /**
  * Creates an O(1) lookup map from shape id -> shape reference.
  */
-const buildLookup = (shapes: ALL_SHAPES[]) =>
+export const buildLookup = (shapes: ALL_SHAPES[]) =>
   new Map(shapes.map((s) => [s.id, s] as const));
 
 /**
  * Sums x/y offsets from a node up through all ancestors.
  * Used to translate between local coordinates and global-like coordinates.
  */
-const computeAncestorOffset =
+export const computeAncestorOffset =
   (get: Getter) =>
   (lookup: Map<string, ALL_SHAPES>) =>
   (id: string | null | undefined): XY => {
@@ -487,7 +487,6 @@ export const RESOLVE_DROP_TARGET = atom(null, (get, set, COORDS: Point) => {
     })
     .filter((c) => isPointInsideBounds(COORDS, c.bounds))
     .sort((a, b) => b.depth - a.depth);
-  console.log(candidates, "candidates");
 
   const target = candidates.length > 0 ? candidates[0].shape : null;
 
@@ -744,6 +743,94 @@ export const GROUP_SHAPES_IN_LAYOUT = atom(null, (get, set) => {
  * - Stores cloned shapes in CURRENT_ITEM_ATOM (via CREATE_CURRENT_ITEM_ATOM)
  * - Switches tool/event into "COPYING" state
  */
+
+export const cloneStateRecursive =
+  (
+    get: Getter,
+    offsetOf: (id: string | null | undefined) => XY,
+    initial_args: { x: number; y: number },
+  ) =>
+  (
+    shape: ALL_SHAPES,
+    parentId: string | null,
+    IS_ROOT: boolean,
+  ): ShapeState => {
+    const state = get(shape.state);
+    const newId = uuidv4();
+
+    // Clone children first so we can link them to the new parent id.
+    const originalChildren = get(state.children) ?? [];
+    const clonedChildren: ALL_SHAPES[] = originalChildren.map((child) => {
+      const childState = cloneStateRecursive(get, offsetOf, initial_args)(
+        child,
+        newId,
+        false,
+      );
+      return {
+        ...child,
+        id: childState.id,
+        // tool: childState.tool as IShapeTool,
+        pageId: get(PAGE_ID_ATOM),
+        state: atom(childState),
+      } as ALL_SHAPES;
+    });
+
+    // Root shapes get special offsets so they follow the cursor position.
+    const x = get(state.x);
+    const y = get(state.y);
+    const inherited = offsetOf(parentId);
+
+    const rootX = initial_args.x - x - inherited.x;
+    const rootY = initial_args.y - y - inherited.y;
+
+    const offsetX = initial_args.x - x;
+    const offsetY = initial_args.y - y;
+
+    const data: ShapeState = Object.fromEntries(
+      Object.entries(state).map(([key, value]) => {
+        if (
+          typeof value === "string" ||
+          typeof value === "number" ||
+          typeof value === "boolean"
+        ) {
+          return [key, value];
+        }
+        if (key === "children") {
+          return [key, asAtom<ALL_SHAPES[]>(clonedChildren)];
+        }
+        if (key === "id") {
+          return [key, newId];
+        }
+        if (key === "tool") {
+          return [key, value];
+        }
+        if (key === "parentId") {
+          return [key, asAtom<string | null>(parentId)];
+        }
+        return [
+          key,
+          asAtom(get(value as PrimitiveAtom<ShapeBase[keyof ShapeBase]>)),
+        ];
+      }),
+    );
+
+    return {
+      ...data,
+      id: newId,
+      x: asAtom(IS_ROOT ? rootX : x),
+      y: asAtom(IS_ROOT ? rootY : y),
+      offsetX: asAtom(IS_ROOT ? offsetX : 0),
+      offsetY: asAtom(IS_ROOT ? offsetY : 0),
+      offsetCopyX: asAtom(IS_ROOT ? rootX : 0),
+      offsetCopyY: asAtom(IS_ROOT ? rootY : 0),
+      sourceShapeId: atom(
+        get(get(shape.state).isComponent)
+          ? get(shape.state).id
+          : get(get(shape.state).sourceShapeId),
+      ),
+      isComponent: atom(false),
+    };
+  };
 export const EVENT_COPY_START_SHAPES = atom(
   null,
   (get, set, initial_args: { x: number; y: number }) => {
@@ -758,86 +845,12 @@ export const EVENT_COPY_START_SHAPES = atom(
 
     const shapesSelected = plane.filter((s) => selectedSet.has(s.id));
 
-    const cloneStateRecursive = (
-      shape: ALL_SHAPES,
-      parentId: string | null,
-      IS_ROOT: boolean,
-    ): ShapeState => {
-      const state = get(shape.state);
-      const newId = uuidv4();
-
-      // Clone children first so we can link them to the new parent id.
-      const originalChildren = get(state.children) ?? [];
-      const clonedChildren: ALL_SHAPES[] = originalChildren.map((child) => {
-        const childState = cloneStateRecursive(child, newId, false);
-        return {
-          ...child,
-          id: childState.id,
-          // tool: childState.tool as IShapeTool,
-          pageId: get(PAGE_ID_ATOM),
-          state: atom(childState),
-        } as ALL_SHAPES;
-      });
-
-      // Root shapes get special offsets so they follow the cursor position.
-      const x = get(state.x);
-      const y = get(state.y);
-      const inherited = offsetOf(parentId);
-
-      const rootX = initial_args.x - x - inherited.x;
-      const rootY = initial_args.y - y - inherited.y;
-
-      const offsetX = initial_args.x - x;
-      const offsetY = initial_args.y - y;
-
-      const data: ShapeState = Object.fromEntries(
-        Object.entries(state).map(([key, value]) => {
-          if (
-            typeof value === "string" ||
-            typeof value === "number" ||
-            typeof value === "boolean"
-          ) {
-            return [key, value];
-          }
-          if (key === "children") {
-            return [key, asAtom<ALL_SHAPES[]>(clonedChildren)];
-          }
-          if (key === "id") {
-            return [key, newId];
-          }
-          if (key === "tool") {
-            return [key, value];
-          }
-          if (key === "parentId") {
-            return [key, asAtom<string | null>(parentId)];
-          }
-          return [
-            key,
-            asAtom(get(value as PrimitiveAtom<ShapeBase[keyof ShapeBase]>)),
-          ];
-        }),
-      );
-
-      return {
-        ...data,
-        id: newId,
-        x: asAtom(IS_ROOT ? rootX : x),
-        y: asAtom(IS_ROOT ? rootY : y),
-        offsetX: asAtom(IS_ROOT ? offsetX : 0),
-        offsetY: asAtom(IS_ROOT ? offsetY : 0),
-        offsetCopyX: asAtom(IS_ROOT ? rootX : 0),
-        offsetCopyY: asAtom(IS_ROOT ? rootY : 0),
-        sourceShapeId: atom(
-          get(get(shape.state).isComponent)
-            ? get(shape.state).id
-            : get(get(shape.state).sourceShapeId),
-        ),
-        isComponent: atom(false),
-      };
-    };
-
     const newShapes = shapesSelected.map((shape) =>
-      cloneStateRecursive(shape, get(get(shape.state).parentId), true),
+      cloneStateRecursive(get, offsetOf, initial_args)(
+        shape,
+        get(get(shape.state).parentId),
+        true,
+      ),
     );
 
     set(RESET_SHAPES_IDS_ATOM);
