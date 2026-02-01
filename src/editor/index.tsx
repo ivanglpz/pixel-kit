@@ -12,7 +12,7 @@ import { SidebarLeft } from "./sidebar/sidebar.left";
 import SidebarRight from "./sidebar/sidebar.right";
 import PxStage from "./stage";
 
-const PixelKitPublic = (props: { project: IProject }) => {
+export const PixelKitPublic = (props: { project: IProject }) => {
   useStopZoom();
 
   return (
@@ -45,9 +45,6 @@ const PixelKitPublic = (props: { project: IProject }) => {
     </div>
   );
 };
-export const PixelKitPublicApp = dynamic(Promise.resolve(PixelKitPublic), {
-  ssr: false,
-});
 
 const PixelEditor = () => {
   useStopZoom();
