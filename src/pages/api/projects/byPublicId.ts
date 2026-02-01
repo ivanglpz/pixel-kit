@@ -1,3 +1,4 @@
+import { DB_CONNECT } from "@/db/mongodb";
 import { Project } from "@/db/schemas/projects";
 import type { IProject } from "@/db/schemas/types";
 import "@/db/schemas/users";
@@ -32,6 +33,7 @@ export default async function handler(
   }
 
   try {
+    await DB_CONNECT();
     const project = await Project.findOne({
       _id: id,
       isPublic: true,
