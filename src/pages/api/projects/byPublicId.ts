@@ -1,5 +1,6 @@
 import { Project } from "@/db/schemas/projects";
 import type { IProject } from "@/db/schemas/types";
+import "@/db/schemas/users";
 import { sanitizeInput } from "@/utils/sanitize";
 import type { NextApiRequest, NextApiResponse } from "next";
 
