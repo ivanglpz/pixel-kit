@@ -1,10 +1,8 @@
 import SeoComponent from "@/components/seo";
-import { DB_CONNECT } from "@/db/mongodb";
-import { Project } from "@/db/schemas/projects";
 import type { IProject } from "@/db/schemas/types";
 import "@/db/schemas/users";
 import { PixelKitPublicApp } from "@/editor";
-import type { GetServerSideProps, NextPage } from "next";
+import type { NextPage } from "next";
 
 type PageProps = {
   project: IProject | null;
@@ -34,41 +32,41 @@ const PageEditor: NextPage<PageProps> = ({ project }) => {
   );
 };
 
-export const getServerSideProps: GetServerSideProps<PageProps> = async (
-  context,
-) => {
-  const { id } = context.query;
+// export const getServerSideProps: GetServerSideProps<PageProps> = async (
+//   context,
+// ) => {
+//   const { id } = context.query;
 
-  if (typeof id !== "string") {
-    return { props: { project: null } };
-  }
+//   if (typeof id !== "string") {
+//     return { props: { project: null } };
+//   }
 
-  await DB_CONNECT();
+//   await DB_CONNECT();
 
-  const project = await Project.findOne(
-    {
-      _id: id,
-      isPublic: true,
-    },
-    {
-      data: 0,
-    },
-  )
-    .populate({
-      path: "createdBy",
-      select: "fullName photoUrl -_id",
-    })
-    .lean<IProject | null>();
+//   const project = await Project.findOne(
+//     {
+//       _id: id,
+//       isPublic: true,
+//     },
+//     {
+//       data: 0,
+//     },
+//   )
+//     .populate({
+//       path: "createdBy",
+//       select: "fullName photoUrl -_id",
+//     })
+//     .lean<IProject | null>();
 
-  if (project === null) {
-    return { props: { project: null } };
-  }
+//   if (project === null) {
+//     return { props: { project: null } };
+//   }
 
-  return {
-    props: {
-      project: JSON.parse(JSON.stringify(project)),
-    },
-  };
-};
+//   return {
+//     props: {
+//       project: JSON.parse(JSON.stringify(project)),
+//     },
+//   };
+// };
 
 export default PageEditor;
