@@ -2,6 +2,7 @@ import SeoComponent from "@/components/seo";
 import { DB_CONNECT } from "@/db/mongodb";
 import { Project } from "@/db/schemas/projects";
 import type { IProject } from "@/db/schemas/types";
+import "@/db/schemas/users";
 import { UserSchema } from "@/db/schemas/users";
 import { PixelKitPublicApp } from "@/editor";
 import type { GetServerSideProps, NextPage } from "next";
@@ -25,7 +26,7 @@ const PageEditor: NextPage<PageProps> = ({ project }) => {
         title={`Pixel Kit - ${project?.name}`}
         content="Pixel Kit, Image Editing Mode, Transform, Refine, Photos, Powerful Editing Tools, Elevate Images"
         description="Transform and refine your photos effortlessly with Pixel Kit's Image Editing Mode. Unlock a range of powerful editing tools and elevate your images to the next level. Try it now!"
-        url="https://pixel-kit.vercel.app/editor"
+        url="https://pixel-kit.vercel.app/"
       />
       <main className="p-6 flex flex-col h-full w-full overflow-hidden">
         <PixelKitPublicApp project={project} />
