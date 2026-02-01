@@ -14,6 +14,7 @@ const PageEditor: NextPage<PageProps> = ({ project }) => {
   if (project === null) {
     return null;
   }
+  console.log(project, "project");
 
   return (
     <>
@@ -45,10 +46,15 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async (
 
   await DB_CONNECT();
 
-  const project = await Project.findOne({
-    _id: id,
-    isPublic: true,
-  })
+  const project = await Project.findOne(
+    {
+      _id: id,
+      isPublic: true,
+    },
+    {
+      data: 0,
+    },
+  )
     .populate({
       path: "createdBy",
       select: "fullName photoUrl -_id",

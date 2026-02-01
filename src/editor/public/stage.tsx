@@ -123,8 +123,8 @@ export const PixelKitStagePublic = ({
   };
 
   useEffect(() => {
-    SET_PUBLIC_PROJECT({ project, autoZoom: zoomToFitAllShapes });
-  }, [project]);
+    SET_PUBLIC_PROJECT({ id: ID, autoZoom: zoomToFitAllShapes });
+  }, [ID]);
 
   return (
     <section
