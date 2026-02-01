@@ -1,11 +1,11 @@
+import { LayerPublicShapes } from "../public/layers/shapes";
 import { LayerPipe } from "./layer.pipe";
 import { LayerSaelection } from "./layer.selection";
-import { LayerShapes } from "./layer.shapes";
 
 export const AllLayers = () => {
   return (
     <>
-      <LayerShapes />
+      <LayerPublicShapes />
       <LayerSaelection />
       <LayerPipe />
     </>

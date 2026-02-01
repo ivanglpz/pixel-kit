@@ -1,5 +1,6 @@
 import { IProject } from "@/db/schemas/types";
 import { api } from "@/services/axios";
+import { fetchProjectPublicById } from "@/services/projects";
 import { atom, Getter, PrimitiveAtom } from "jotai";
 import { atomWithDefault } from "jotai/utils";
 import { ShapeBase } from "../shapes/types/shape.base";
@@ -219,6 +220,45 @@ const buildProjectAtom = async (item: TabsProps): Promise<IPROJECT | null> => {
     return null;
   }
 };
+const buildPublicProjectAtom = async (id: string): Promise<IPROJECT | null> => {
+  try {
+    const project = await fetchProjectPublicById(id);
+    const { pages, selectedPageId, firstPageId } = parseProjectData(
+      project.data,
+      "DESIGN_MODE",
+    );
+
+    return {
+      ID: id,
+      name: atom(project.name),
+      ISPUBLIC: atom<boolean>(Boolean(project?.isPublic)),
+      MODE_ATOM: atom<MODE>("DESIGN_MODE"),
+      TOOL: atom<IKeyTool>("MOVE"),
+      PREVIEW_URL: project.previewUrl ?? "./default_bg.png",
+      PAUSE_MODE: atom<boolean>(false),
+      MODE: {
+        DESIGN_MODE: {
+          LIST: buildPagesAtom(pages),
+          ID: atom<string | null>(selectedPageId ?? firstPageId ?? null),
+        },
+      },
+      EVENT: atom<IStageEvents>("IDLE"),
+    };
+  } catch {
+    return null;
+  }
+};
+
+export const BUILD_PROJET_PUBLIC = atom(
+  null,
+  async (get, set, args: { id: string; autoZoom: VoidFunction }) => {
+    const project = await buildPublicProjectAtom(args.id);
+    if (!project) return;
+
+    set(PROJECTS_ATOM, [project]);
+    args.autoZoom();
+  },
+);
 
 export const BUILD_PROJECS_FROM_TABS = atom(null, async (get, set) => {
   const projectsStore = get(GET_TABS_BY_USER);
