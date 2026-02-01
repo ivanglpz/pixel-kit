@@ -19,13 +19,13 @@ export const config = {
 
 async function handler(
   req: NextApiRequest & { userId: string },
-  res: NextApiResponse<ResponseData>
+  res: NextApiResponse<ResponseData>,
 ) {
   if (req.method !== "PUT") {
     return res.status(405).json({ error: "Method not allowed" });
   }
 
-  const { _id, name, previewUrl } = sanitizeInput(req.body);
+  const { _id, name, previewUrl, isPublic } = sanitizeInput(req.body);
   const { data } = req.body;
 
   if (!_id || typeof _id !== "string") {
@@ -48,7 +48,7 @@ async function handler(
     // Verificar que el usuario sea owner o admin de la organización
     const actingMember = org.members.find(
       (m: IOrganizationMember) =>
-        m.user.toString() === req.userId && ["owner", "admin"].includes(m.role)
+        m.user.toString() === req.userId && ["owner", "admin"].includes(m.role),
     );
 
     if (!actingMember) {
@@ -64,8 +64,9 @@ async function handler(
         ...(name && { name }),
         ...(previewUrl && { previewUrl }),
         ...(data && { data }),
+        isPublic: Boolean(isPublic),
       },
-      { new: true }
+      { new: true },
     );
 
     if (!updatedProject) {

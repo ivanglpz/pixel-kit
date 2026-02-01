@@ -19,6 +19,7 @@ type ProjectSchema = {
   updatedAt: Date;
   version: number;
   mode: MODE;
+  isPublic: boolean;
 };
 
 const ProjectSchema = new Schema(
@@ -29,6 +30,7 @@ const ProjectSchema = new Schema(
       ref: "organizations",
       required: true,
     },
+    isPublic: { type: Boolean, required: false },
     createdBy: { type: Schema.Types.ObjectId, ref: "users", required: true },
     data: {
       type: String,

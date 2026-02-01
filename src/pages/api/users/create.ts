@@ -24,7 +24,7 @@ type ResponseData =
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<ResponseData>
+  res: NextApiResponse<ResponseData>,
 ) {
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method not allowed" });
@@ -90,6 +90,7 @@ export default async function handler(
       previewUrl: template?.previewUrl,
       version: 1,
       mode: "DESIGN_MODE",
+      isPublic: false,
     });
     // Generar el JWT token
     const token = jwt.sign(
@@ -99,7 +100,7 @@ export default async function handler(
         userId: newUser?._id?.toString(),
       }, // Payload del token
       process.env.JWT_SECRET!, // Clave secreta para firmar el token (debe ser configurada en .env)
-      { expiresIn: "24h" }
+      { expiresIn: "24h" },
     );
 
     return res.status(201).json({

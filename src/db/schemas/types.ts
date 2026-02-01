@@ -29,6 +29,7 @@ export type IOrganization = {
 export type IProject = {
   _id: string;
   name: string;
+  isPublic: boolean;
   organization: IOrganization;
   previewUrl: string;
   createdBy: Omit<
