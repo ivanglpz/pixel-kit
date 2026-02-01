@@ -59,35 +59,38 @@ type ChildCache = Pick<
   state: ShapeState;
 };
 
-export const flexLayoutAtom = atom(null, (get, set, { id }: { id: string }) => {
-  const FIND_SHAPE = get(PLANE_SHAPES_ATOM).find((s) => s.id === id);
-  if (!FIND_SHAPE) return;
+export const flexLayoutAtom = atom(
+  null,
+  (get, set, { id }: { id: string | null }) => {
+    const FIND_SHAPE = get(PLANE_SHAPES_ATOM).find((s) => s.id === id);
+    if (!FIND_SHAPE) return;
 
-  const shape = get(FIND_SHAPE.state);
-  if (!get(shape.isLayout)) return;
+    const shape = get(FIND_SHAPE.state);
+    if (!get(shape.isLayout)) return;
 
-  const children = get(shape.children);
-  if (children.length === 0) return;
+    const children = get(shape.children);
+    if (children.length === 0) return;
 
-  // Cachear todos los valores del contenedor de una vez
-  const containerCache = buildContainerCache(get, shape);
-  if (!containerCache) return;
+    // Cachear todos los valores del contenedor de una vez
+    const containerCache = buildContainerCache(get, shape);
+    if (!containerCache) return;
 
-  // Cachear todos los valores de los hijos de una vez
-  const childrenCache = buildChildrenCache(get, children);
+    // Cachear todos los valores de los hijos de una vez
+    const childrenCache = buildChildrenCache(get, children);
 
-  // Agrupar en líneas (wrap)
-  const lines = groupIntoLines(childrenCache, containerCache);
+    // Agrupar en líneas (wrap)
+    const lines = groupIntoLines(childrenCache, containerCache);
 
-  // Calcular layout y aplicar posiciones
-  applyFlexLayout(set, lines, childrenCache, containerCache);
-});
+    // Calcular layout y aplicar posiciones
+    applyFlexLayout(set, lines, childrenCache, containerCache);
+  },
+);
 
 // --- FUNCIONES DE CACHE ---
 
 function buildContainerCache(
   get: Getter,
-  shape: ShapeState
+  shape: ShapeState,
 ): ShapeCache | null {
   const containerWidth = get(shape.width);
   const containerHeight = get(shape.height);
@@ -137,7 +140,7 @@ function buildChildrenCache(get: Getter, children: ALL_SHAPES[]): ChildCache[] {
 
 function groupIntoLines(
   children: ChildCache[],
-  cache: ShapeCache
+  cache: ShapeCache,
 ): ChildCache[][] {
   if (cache.flexWrap === "nowrap") return [children];
 
@@ -175,7 +178,7 @@ function applyFlexLayout(
   set: Setter,
   lines: ChildCache[][],
   childrenCache: ChildCache[],
-  cache: ShapeCache
+  cache: ShapeCache,
 ): void {
   const isRow = cache.flexDirection === "row";
 
@@ -195,7 +198,7 @@ function applyFlexLayout(
         child,
         cache,
         lines.length > 1,
-        isRow
+        isRow,
       );
       const { width, height } = calculateChildDimensions(child, line, cache);
 
@@ -222,7 +225,7 @@ function applyFlexLayout(
 
 function calculateInitialCrossOffset(
   lines: ChildCache[][],
-  cache: ShapeCache
+  cache: ShapeCache,
 ): number {
   if (cache.flexWrap !== "wrap" || lines.length <= 1) return 0;
 
@@ -260,7 +263,7 @@ function calculateCrossPosition(
   child: ChildCache,
   cache: ShapeCache,
   isWrapped: boolean,
-  isRow: boolean
+  isRow: boolean,
 ): number {
   const alignItems = isWrapped ? "flex-start" : cache.alignItems;
   const crossContainerSize = isRow
@@ -281,7 +284,7 @@ function calculateCrossPosition(
 function calculateChildDimensions(
   child: ChildCache,
   line: ChildCache[],
-  cache: ShapeCache
+  cache: ShapeCache,
 ): { width: number; height: number } {
   const isRow = cache.flexDirection === "row";
 
@@ -308,7 +311,7 @@ function calculateChildDimensions(
 
 function computeMainLayout(
   line: ChildCache[],
-  cache: ShapeCache
+  cache: ShapeCache,
 ): { startMain: number; spacing: number } {
   const isRow = cache.flexDirection === "row";
   const mainContainerSize = isRow
@@ -353,7 +356,7 @@ function updateChildPosition(
   x: number,
   y: number,
   width: number,
-  height: number
+  height: number,
 ): void {
   const shp = child.state;
   set(shp.x, x);

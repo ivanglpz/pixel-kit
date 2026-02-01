@@ -45,6 +45,10 @@ import {
 // import { REDO_ATOM, UNDO_ATOM } from "../states/undo-redo";
 import { SVG } from "../utils/svg";
 
+import {
+  PASTE_FROM_CLIPBOARD_ATOM,
+  SET_CLIPBOARD_ATOM,
+} from "../states/clipboard";
 import { START_TIMER_ATOM } from "../states/timer";
 import { useConfiguration } from "./useConfiguration";
 
@@ -81,7 +85,8 @@ export const useEventStage = () => {
   const SET_EVENT_DOWN_START_SHAPES = useSetAtom(EVENT_DOWN_START_SHAPES);
   const SET_EVENT_DOWN_CREATING_SHAPE = useSetAtom(EVENT_DOWN_CREATING_SHAPES);
   const SET_EVENT_DOWN_FINISH_SHAPES = useSetAtom(EVENT_DOWN_FINISH_SHAPES);
-
+  const SET_CLIPBOARD = useSetAtom(SET_CLIPBOARD_ATOM);
+  const PASTE_CLIPBOARD = useSetAtom(PASTE_FROM_CLIPBOARD_ATOM);
   const SET_SELECTION = useSetAtom(SELECT_AREA_SHAPES_ATOM);
 
   // ===== MOUSE EVENT HANDLERS =====
@@ -293,6 +298,31 @@ export const useEventStage = () => {
       const key = event.key.toLowerCase();
 
       // ✅ Zoom to all shapes (Shift + 1)
+
+      if (meta && key === "c" && shapeId.length > 0) {
+        event.preventDefault();
+        SET_CLIPBOARD("COPY");
+
+        return;
+      }
+      if (meta && key === "x" && shapeId.length > 0) {
+        event.preventDefault();
+
+        SET_CLIPBOARD("CUT");
+
+        DELETE_SHAPE();
+        START();
+
+        return;
+      }
+      if (meta && key === "v") {
+        event.preventDefault();
+        PASTE_CLIPBOARD();
+        START();
+
+        return;
+      }
+
       if (shift && event.code === "Digit1") {
         event.preventDefault();
         zoomToFitAllShapes();
