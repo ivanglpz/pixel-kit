@@ -5,9 +5,49 @@ import useBrowser from "./hooks/useBrowser";
 import useStopZoom from "./hooks/useStopZoom";
 import { useTimerAutoSave } from "./hooks/useTimerAutoSave";
 import { AllLayers } from "./layers/root.layers";
+import { LayerPublicShapes } from "./public/layers/shapes";
+import { PixelKitStagePublic } from "./public/stage";
 import { SidebarLeft } from "./sidebar/sidebar.left";
 import SidebarRight from "./sidebar/sidebar.right";
 import PxStage from "./stage";
+
+const PixelKitPublic = () => {
+  useStopZoom();
+  useBrowser();
+
+  return (
+    <div
+      id="pixel-app"
+      className={css({
+        backgroundColor: "bg",
+        height: "100%",
+        width: "100%",
+        overflow: "hidden",
+        display: "flex",
+        flexDirection: "column",
+      })}
+    >
+      <div
+        className={css({
+          display: "grid",
+          gridTemplateColumns: "1fr",
+          backgroundColor: "black",
+          width: "100%",
+          overflow: "hidden",
+          position: "relative",
+          height: "100%",
+        })}
+      >
+        <PixelKitStagePublic>
+          <LayerPublicShapes />
+        </PixelKitStagePublic>
+      </div>
+    </div>
+  );
+};
+export const PixelKitPublicApp = dynamic(Promise.resolve(PixelKitPublic), {
+  ssr: false,
+});
 
 const PixelEditor = () => {
   useStopZoom();
