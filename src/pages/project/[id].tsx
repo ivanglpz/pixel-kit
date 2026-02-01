@@ -2,7 +2,7 @@ import SeoComponent from "@/components/seo";
 import type { IProject } from "@/db/schemas/types";
 import "@/db/schemas/users";
 import { PixelKitPublicApp } from "@/editor";
-import type { NextPage } from "next";
+import type { GetServerSideProps, NextPage } from "next";
 
 type PageProps = {
   project: IProject | null;
@@ -32,41 +32,36 @@ const PageEditor: NextPage<PageProps> = ({ project }) => {
   );
 };
 
-// export const getServerSideProps: GetServerSideProps<PageProps> = async (
-//   context,
-// ) => {
-//   const { id } = context.query;
+export const getServerSideProps: GetServerSideProps<PageProps> = async (
+  context,
+) => {
+  const { req, query } = context;
+  const { id } = context.query;
 
-//   if (typeof id !== "string") {
-//     return { props: { project: null } };
-//   }
+  if (typeof id !== "string") {
+    return { props: { project: null } };
+  }
+  const protocol = req.headers["x-forwarded-proto"]?.toString() ?? "http";
 
-//   await DB_CONNECT();
+  const host = req.headers.host;
 
-//   const project = await Project.findOne(
-//     {
-//       _id: id,
-//       isPublic: true,
-//     },
-//     {
-//       data: 0,
-//     },
-//   )
-//     .populate({
-//       path: "createdBy",
-//       select: "fullName photoUrl -_id",
-//     })
-//     .lean<IProject | null>();
+  const baseUrl = `${protocol}://${host}`;
+  console.log(baseUrl, "baseUrl");
 
-//   if (project === null) {
-//     return { props: { project: null } };
-//   }
+  const response = await fetch(`${baseUrl}/api/projects/byPublicId?id=${id}`);
+  const json = await response?.json();
+  const project = json?.data;
 
-//   return {
-//     props: {
-//       project: JSON.parse(JSON.stringify(project)),
-//     },
-//   };
-// };
+  if (project === null) {
+    return { props: { project: null } };
+  }
+
+  return {
+    props: {
+      project: JSON.parse(JSON.stringify(project)),
+      // project: null,
+    },
+  };
+};
 
 export default PageEditor;
