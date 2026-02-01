@@ -10,10 +10,11 @@ import { Input } from "@/editor/components/input";
 import { ICON_MODES_TABS } from "@/editor/icons/mode";
 import { IPROJECT } from "@/editor/states/projects";
 import { START_TIMER_ATOM } from "@/editor/states/timer";
+import { copyToClipboard } from "@/utils/clipboard";
 import { css } from "@stylespixelkit/css";
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { Clipboard, X } from "lucide-react";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 type TabProps = {
   project: IPROJECT;
   onClick: VoidFunction;
@@ -27,6 +28,10 @@ export const Tab = ({ project, onClick, onDelete, isSelected }: TabProps) => {
   const [isPublic, setIsPublic] = useAtom(project.ISPUBLIC);
   const [show, setShow] = useState(false);
   const START = useSetAtom(START_TIMER_ATOM);
+  const URL = useMemo(
+    () => `${window.location.origin}/project/${project.ID}`,
+    [project.ID],
+  );
   return (
     <ContextMenu>
       <ContextMenuTrigger>
@@ -178,7 +183,9 @@ export const Tab = ({ project, onClick, onDelete, isSelected }: TabProps) => {
               <Button
                 variant={"default"}
                 className="w-10 flex items-center justify-center"
-                onClick={() => {}}
+                onClick={() => {
+                  copyToClipboard({ text: URL });
+                }}
               >
                 <Clipboard size={14} />
               </Button>
