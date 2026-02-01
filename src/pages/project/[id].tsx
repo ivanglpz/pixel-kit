@@ -3,6 +3,7 @@ import type { IProject } from "@/db/schemas/types";
 import "@/db/schemas/users";
 import { PixelKitPublicApp } from "@/editor";
 import type { GetServerSideProps, NextPage } from "next";
+import { Suspense } from "react";
 
 type PageProps = {
   project: IProject | null;
@@ -26,7 +27,9 @@ const PageEditor: NextPage<PageProps> = ({ project }) => {
         url="https://pixel-kit.vercel.app/"
       />
       <main className="p-6 flex flex-col h-full w-full overflow-hidden">
-        <PixelKitPublicApp project={project} />
+        <Suspense fallback=".">
+          <PixelKitPublicApp project={project} />
+        </Suspense>
       </main>
     </>
   );
