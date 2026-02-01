@@ -182,7 +182,7 @@ export const Tab = ({ project, onClick, onDelete, isSelected }: TabProps) => {
               </Input.withPause>
               <Button
                 variant={"default"}
-                className="w-10 flex items-center justify-center"
+                className="w-10 flex items-center justify-center cursor-pointer"
                 onClick={() => {
                   copyToClipboard({ text: URL });
                 }}
