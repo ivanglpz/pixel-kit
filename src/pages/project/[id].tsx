@@ -3,7 +3,6 @@ import { DB_CONNECT } from "@/db/mongodb";
 import { Project } from "@/db/schemas/projects";
 import type { IProject } from "@/db/schemas/types";
 import "@/db/schemas/users";
-import { UserSchema } from "@/db/schemas/users";
 import { PixelKitPublicApp } from "@/editor";
 import type { GetServerSideProps, NextPage } from "next";
 
@@ -45,10 +44,6 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async (
   }
 
   await DB_CONNECT();
-
-  // ✅ Esto asegura que el modelo User esté registrado
-  // Solo con importarlo ya debería funcionar, pero si no, usa esto:
-  void UserSchema; // Esto "usa" la variable para que no se elimine en compilación
 
   const project = await Project.findOne({
     _id: id,
