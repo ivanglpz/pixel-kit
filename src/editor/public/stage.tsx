@@ -124,8 +124,11 @@ export const PixelKitStagePublic = ({ children }: { children: ReactNode }) => {
   };
 
   useEffect(() => {
-    SET_PUBLIC_PROJECT({ id: ID, autoZoom: zoomToFitAllShapes });
-  }, [ID]);
+    SET_PUBLIC_PROJECT({
+      project: project?.data,
+      autoZoom: zoomToFitAllShapes,
+    });
+  }, [project?.data]);
 
   return (
     <section
