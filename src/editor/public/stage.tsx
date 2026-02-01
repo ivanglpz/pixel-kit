@@ -139,7 +139,7 @@ export const PixelKitStagePublic = ({ children }: { children: ReactNode }) => {
         overflow: "hidden",
       })}
     >
-      <section className="absolute rounded-lg dark:bg-neutral-900 w-[250px] h-auto top-4 left-4 z-10 p-3 flex flex-col gap-2">
+      <section className="absolute rounded-lg dark:bg-neutral-900 w-[260px] h-auto top-4 left-4 z-10 p-4 flex flex-col gap-3">
         <header className="flex flex-row items-center gap-2">
           <svg
             width="18"
