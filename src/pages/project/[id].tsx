@@ -40,7 +40,7 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async (
   const { id } = context.query;
 
   if (typeof id !== "string") {
-    return { notFound: true };
+    return { props: { project: null } };
   }
 
   await DB_CONNECT();
@@ -56,7 +56,7 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async (
     .lean<IProject | null>();
 
   if (project === null) {
-    return { notFound: true };
+    return { props: { project: null } };
   }
 
   return {
