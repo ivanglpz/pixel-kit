@@ -206,7 +206,7 @@ export const PixelKitStagePublic = ({ children }: { children: ReactNode }) => {
             <Input value={`${window.location.host}/project/${ID}`} />
             <Button
               variant={"default"}
-              className="w-10 flex items-center justify-center"
+              className="w-10 flex items-center justify-center cursor-pointer"
               onClick={() => {
                 copyToClipboard({
                   text: `${window.location.host}/project/${ID}`,
