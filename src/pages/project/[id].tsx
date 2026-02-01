@@ -1,9 +1,9 @@
 import SeoComponent from "@/components/seo";
 import type { IProject } from "@/db/schemas/types";
 import "@/db/schemas/users";
-import { PixelKitPublicApp } from "@/editor";
+import { PixelKitPublicAppClient } from "@/editor/stage-public";
+
 import type { GetServerSideProps, NextPage } from "next";
-import { Suspense } from "react";
 
 type PageProps = {
   project: IProject | null;
@@ -27,9 +27,7 @@ const PageEditor: NextPage<PageProps> = ({ project }) => {
         url="https://pixel-kit.vercel.app/"
       />
       <main className="p-6 flex flex-col h-full w-full overflow-hidden">
-        <Suspense fallback=".">
-          <PixelKitPublicApp project={project} />
-        </Suspense>
+        <PixelKitPublicAppClient project={project}></PixelKitPublicAppClient>
       </main>
     </>
   );
