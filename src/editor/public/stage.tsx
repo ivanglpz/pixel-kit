@@ -1,9 +1,10 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { IProject } from "@/db/schemas/types";
+import { fetchProjectPublicById } from "@/services/projects";
 import { copyToClipboard } from "@/utils/clipboard";
 import { css } from "@stylespixelkit/css";
+import { useQuery } from "@tanstack/react-query";
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import Konva from "konva";
 import { KonvaEventObject } from "konva/lib/Node";
@@ -21,17 +22,17 @@ import { RESET_SHAPES_IDS_ATOM } from "../states/shape";
 import TOOL_ATOM, { PAUSE_MODE_ATOM } from "../states/tool";
 import { useEvents } from "./hooks/useEventStage";
 
-export const PixelKitStagePublic = ({
-  children,
-  project,
-}: {
-  children: ReactNode;
-  project: IProject;
-}) => {
+export const PixelKitStagePublic = ({ children }: { children: ReactNode }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
   const SET_PUBLIC_PROJECT = useSetAtom(BUILD_PROJET_PUBLIC);
   const ID = router.query.id as string | undefined | null;
+
+  const project = useQuery({
+    enabled: Boolean(ID),
+    queryKey: [ID],
+    queryFn: async () => fetchProjectPublicById(ID),
+  });
 
   const [containerSize, setContainerSize] = useState({
     width: 1,
@@ -178,15 +179,15 @@ export const PixelKitStagePublic = ({
           <p className="font-bold">Pixel kit</p>
         </header>
         <p className="font-bold text-sm">Project</p>
-        <p className="text-sm">{project?.name ?? "mockup-project"}</p>
+        <p className="text-sm">{project?.data?.name ?? "mockup-project"}</p>
         <p className="font-bold text-sm">Created by</p>
         <div className="flex flex-row items-center gap-2">
           <img
-            src={project?.createdBy?.photoUrl ?? ""}
+            src={project?.data?.createdBy?.photoUrl ?? ""}
             className="h-8 w-8 rounded-full"
           />
           <p className="text-sm">
-            {project?.createdBy?.fullName ?? "user-001"}
+            {project?.data?.createdBy?.fullName ?? "user-001"}
           </p>
         </div>
         <div className="flex flex-col gap-1">

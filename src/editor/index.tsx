@@ -1,5 +1,4 @@
 /* eslint-disable @next/next/no-img-element */
-import { IProject } from "@/db/schemas/types";
 import { css } from "@stylespixelkit/css";
 import dynamic from "next/dynamic";
 import useBrowser from "./hooks/useBrowser";
@@ -12,7 +11,7 @@ import { SidebarLeft } from "./sidebar/sidebar.left";
 import SidebarRight from "./sidebar/sidebar.right";
 import PxStage from "./stage";
 
-export const PixelKitPublic = (props: { project: IProject }) => {
+const PixelKitPublic = () => {
   useStopZoom();
 
   return (
@@ -38,13 +37,16 @@ export const PixelKitPublic = (props: { project: IProject }) => {
           height: "100%",
         })}
       >
-        <PixelKitStagePublic {...props}>
+        <PixelKitStagePublic>
           <LayerPublicShapes />
         </PixelKitStagePublic>
       </div>
     </div>
   );
 };
+export const PixelKitPublicApp = dynamic(Promise.resolve(PixelKitPublic), {
+  ssr: false,
+});
 
 const PixelEditor = () => {
   useStopZoom();
