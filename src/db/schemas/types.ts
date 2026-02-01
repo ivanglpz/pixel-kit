@@ -1,6 +1,6 @@
 import { MODE } from "@/editor/states/mode";
 
-export type Role = "admin" | "member";
+export type Role = "admin" | "member" | "owner";
 
 export type RoleProject = "developer" | "designer" | "viewer" | "commenter";
 
@@ -29,6 +29,7 @@ export type IOrganization = {
 export type IProject = {
   _id: string;
   name: string;
+  isPublic: boolean;
   organization: IOrganization;
   previewUrl: string;
   createdBy: Omit<

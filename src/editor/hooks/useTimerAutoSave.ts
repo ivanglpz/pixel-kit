@@ -33,10 +33,14 @@ export function useTimerAutoSave() {
 
       const response = await uploadPhotoPreview(formData);
 
-      const PAYLOAD: Pick<IProject, "_id" | "name" | "previewUrl" | "data"> = {
+      const PAYLOAD: Pick<
+        IProject,
+        "_id" | "name" | "previewUrl" | "data" | "isPublic"
+      > = {
         _id: JSON_.projectId,
         data: JSON_.data,
         name: JSON_.projectName,
+        isPublic: JSON_.isPublic,
         previewUrl: response?.url ?? "./default_bg.png",
       };
       updateProject(PAYLOAD);
