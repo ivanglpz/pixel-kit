@@ -16,6 +16,7 @@ import { IKeyTool, IShapeTool } from "./tool";
 export type IPROJECT = {
   ID: string;
   name: PrimitiveAtom<string> & WithInitialValue<string>;
+  ISPUBLIC: PrimitiveAtom<boolean> & WithInitialValue<boolean>;
   MODE_ATOM: PrimitiveAtom<MODE> & WithInitialValue<MODE>;
   TOOL: PrimitiveAtom<IKeyTool> & WithInitialValue<IKeyTool>;
   PAUSE_MODE: PrimitiveAtom<boolean> & WithInitialValue<boolean>;
@@ -109,6 +110,7 @@ export const MOCKUP_PROJECT: IPROJECT = {
   EVENT: atom<IStageEvents>("IDLE"),
   TOOL: atom<IKeyTool>("MOVE"),
   PAUSE_MODE: atom<boolean>(false),
+  ISPUBLIC: atom<boolean>(false),
   name: atom<string>("mockup-project-name"),
   MODE_ATOM: atom<MODE>("DESIGN_MODE"),
   PREVIEW_URL: "./default_bg.png",
@@ -200,6 +202,7 @@ const buildProjectAtom = async (item: TabsProps): Promise<IPROJECT | null> => {
     return {
       ID: item._id,
       name: atom(project.name),
+      ISPUBLIC: atom<boolean>(Boolean(project?.isPublic)),
       MODE_ATOM: atom<MODE>(item.mode),
       TOOL: atom<IKeyTool>("MOVE"),
       PREVIEW_URL: item.previewUrl ?? "./default_bg.png",
@@ -216,6 +219,54 @@ const buildProjectAtom = async (item: TabsProps): Promise<IPROJECT | null> => {
     return null;
   }
 };
+const buildPublicProjectAtom = async (
+  project: IProject,
+): Promise<IPROJECT | null> => {
+  try {
+    const { pages, selectedPageId, firstPageId } = parseProjectData(
+      project.data,
+      "DESIGN_MODE",
+    );
+
+    return {
+      ID: project._id,
+      name: atom(project.name),
+      ISPUBLIC: atom<boolean>(Boolean(project?.isPublic)),
+      MODE_ATOM: atom<MODE>("DESIGN_MODE"),
+      TOOL: atom<IKeyTool>("MOVE"),
+      PREVIEW_URL: project.previewUrl ?? "./default_bg.png",
+      PAUSE_MODE: atom<boolean>(false),
+      MODE: {
+        DESIGN_MODE: {
+          LIST: buildPagesAtom(pages),
+          ID: atom<string | null>(selectedPageId ?? firstPageId ?? null),
+        },
+      },
+      EVENT: atom<IStageEvents>("IDLE"),
+    };
+  } catch {
+    return null;
+  }
+};
+
+export const BUILD_PROJET_PUBLIC = atom(
+  null,
+  async (
+    get,
+    set,
+    args: { project: IProject | undefined; autoZoom: VoidFunction },
+  ) => {
+    if (!args.project) {
+      args.autoZoom();
+      return;
+    }
+    const project = await buildPublicProjectAtom(args?.project);
+    if (!project) return;
+
+    set(PROJECTS_ATOM, [project]);
+    args.autoZoom();
+  },
+);
 
 export const BUILD_PROJECS_FROM_TABS = atom(null, async (get, set) => {
   const projectsStore = get(GET_TABS_BY_USER);
@@ -298,6 +349,7 @@ export const GET_JSON_PROJECTS_ATOM = atom(null, (get, set) => {
   return {
     projectId: project.ID,
     projectName: get(project.name),
+    isPublic: get(project.ISPUBLIC),
     previewUrl: project?.PREVIEW_URL ?? "./default_bg.png",
     data: JSON.stringify({
       [get(project.MODE_ATOM)]: {

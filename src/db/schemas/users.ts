@@ -43,4 +43,4 @@ const NewUserSchema: Schema = new Schema(
 
 // Crea el modelo de Mongoose
 export const UserSchema =
-  mongoose.models.users || mongoose.model<UserSchema>("users", NewUserSchema);
+  mongoose.models?.users || mongoose.model<UserSchema>("users", NewUserSchema);

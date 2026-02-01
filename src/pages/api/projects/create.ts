@@ -10,7 +10,7 @@ type ResponseData = { message: string; data: any | null } | { error: string };
 
 async function handler(
   req: NextApiRequest & { userId: string },
-  res: NextApiResponse<ResponseData>
+  res: NextApiResponse<ResponseData>,
 ) {
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method not allowed" });
@@ -30,7 +30,7 @@ async function handler(
     // Verificar que el usuario sea owner o admin
     const actingMember = org.members.find(
       (m: IOrganizationMember) =>
-        m.user.toString() === req.userId && ["owner", "admin"].includes(m.role)
+        m.user.toString() === req.userId && ["owner", "admin"].includes(m.role),
     );
 
     if (!actingMember) {
@@ -61,6 +61,7 @@ async function handler(
       previewUrl: "./default_bg.png",
       version: 1,
       mode: "DESIGN_MODE",
+      isPublic: false,
     });
 
     return res.status(201).json({

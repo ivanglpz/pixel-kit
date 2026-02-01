@@ -3,7 +3,7 @@
 if (
   process.env.LD_LIBRARY_PATH == null ||
   !process.env.LD_LIBRARY_PATH.includes(
-    `${process.env.PWD}/node_modules/canvas/build/Release:`
+    `${process.env.PWD}/node_modules/canvas/build/Release:`,
     ///
   )
 ) {
@@ -17,6 +17,7 @@ const nextConfig = {
   webpack: (config) => {
     config.resolve.alias.canvas = false;
 
+    config.externals = [...config.externals, { canvas: "canvas" }]; // required to make Konva & react-konva work
     return config;
   },
 };
