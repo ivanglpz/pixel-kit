@@ -2,7 +2,7 @@ import { useSetAtom } from "jotai";
 import { useEffect } from "react";
 import { Group } from "react-konva";
 import { useResolvedShape } from "../hooks/useResolvedShape";
-import { ShapeIterator } from "../public/layers/shapes";
+import { ShapeIterator } from "../layers/layer.shapes";
 import ShapeBox from "./box.shape";
 import { flexLayoutAtom } from "./layout-flex";
 import { IShapeEvents } from "./type.shape";
