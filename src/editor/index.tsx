@@ -24,7 +24,11 @@ const PixelKitPublic = () => {
         overflow: "hidden",
         display: "flex",
         flexDirection: "column",
+        zIndex: 100,
       })}
+      style={{
+        borderRadius: 12,
+      }}
     >
       <div
         className={css({
@@ -35,6 +39,7 @@ const PixelKitPublic = () => {
           overflow: "hidden",
           position: "relative",
           height: "100%",
+          borderRadius: 12,
         })}
       >
         <PixelKitStagePublic>
