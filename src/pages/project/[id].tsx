@@ -14,7 +14,6 @@ const PageEditor: NextPage<PageProps> = ({ project }) => {
   if (project === null) {
     return null;
   }
-  console.log(project, "project");
 
   return (
     <>
