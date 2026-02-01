@@ -1,22 +1,73 @@
 import SeoComponent from "@/components/seo";
+import { DB_CONNECT } from "@/db/mongodb";
+import { Project } from "@/db/schemas/projects";
+import type { IProject } from "@/db/schemas/types";
+import { UserSchema } from "@/db/schemas/users";
 import { PixelKitPublicApp } from "@/editor";
-import { NextOnlyPage } from "next";
+import type { GetServerSideProps, NextPage } from "next";
 
-const PageEditor: NextOnlyPage = () => {
+type PageProps = {
+  project: IProject | null;
+};
+
+const PageEditor: NextPage<PageProps> = ({ project }) => {
+  if (project === null) {
+    return null;
+  }
+
   return (
     <>
       <SeoComponent
-        image="https://res.cloudinary.com/whil/image/upload/v1712288225/app/pixel-kit/images/qvx8i84doj1fgfemx2th.png"
-        title="Pixel Kit Image Editing Mode"
+        image={
+          project?.previewUrl ??
+          "https://res.cloudinary.com/whil/image/upload/v1712288225/app/pixel-kit/images/qvx8i84doj1fgfemx2th.png"
+        }
+        title={`Pixel Kit - ${project?.name}`}
         content="Pixel Kit, Image Editing Mode, Transform, Refine, Photos, Powerful Editing Tools, Elevate Images"
         description="Transform and refine your photos effortlessly with Pixel Kit's Image Editing Mode. Unlock a range of powerful editing tools and elevate your images to the next level. Try it now!"
         url="https://pixel-kit.vercel.app/editor"
       />
       <main className="p-6 flex flex-col h-full w-full overflow-hidden">
-        <PixelKitPublicApp />
+        <PixelKitPublicApp project={project} />
       </main>
     </>
   );
+};
+
+export const getServerSideProps: GetServerSideProps<PageProps> = async (
+  context,
+) => {
+  const { id } = context.query;
+
+  if (typeof id !== "string") {
+    return { notFound: true };
+  }
+
+  await DB_CONNECT();
+
+  // ✅ Esto asegura que el modelo User esté registrado
+  // Solo con importarlo ya debería funcionar, pero si no, usa esto:
+  void UserSchema; // Esto "usa" la variable para que no se elimine en compilación
+
+  const project = await Project.findOne({
+    _id: id,
+    isPublic: true,
+  })
+    .populate({
+      path: "createdBy",
+      select: "fullName photoUrl -_id",
+    })
+    .lean<IProject | null>();
+
+  if (project === null) {
+    return { notFound: true };
+  }
+
+  return {
+    props: {
+      project: JSON.parse(JSON.stringify(project)),
+    },
+  };
 };
 
 export default PageEditor;
