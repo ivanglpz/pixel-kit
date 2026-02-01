@@ -16,6 +16,7 @@ import { IKeyTool, IShapeTool } from "./tool";
 export type IPROJECT = {
   ID: string;
   name: PrimitiveAtom<string> & WithInitialValue<string>;
+  ISPUBLIC: PrimitiveAtom<boolean> & WithInitialValue<boolean>;
   MODE_ATOM: PrimitiveAtom<MODE> & WithInitialValue<MODE>;
   TOOL: PrimitiveAtom<IKeyTool> & WithInitialValue<IKeyTool>;
   PAUSE_MODE: PrimitiveAtom<boolean> & WithInitialValue<boolean>;
@@ -109,6 +110,7 @@ export const MOCKUP_PROJECT: IPROJECT = {
   EVENT: atom<IStageEvents>("IDLE"),
   TOOL: atom<IKeyTool>("MOVE"),
   PAUSE_MODE: atom<boolean>(false),
+  ISPUBLIC: atom<boolean>(false),
   name: atom<string>("mockup-project-name"),
   MODE_ATOM: atom<MODE>("DESIGN_MODE"),
   PREVIEW_URL: "./default_bg.png",
@@ -200,6 +202,7 @@ const buildProjectAtom = async (item: TabsProps): Promise<IPROJECT | null> => {
     return {
       ID: item._id,
       name: atom(project.name),
+      ISPUBLIC: atom<boolean>(Boolean(project?.isPublic)),
       MODE_ATOM: atom<MODE>(item.mode),
       TOOL: atom<IKeyTool>("MOVE"),
       PREVIEW_URL: item.previewUrl ?? "./default_bg.png",
@@ -298,6 +301,7 @@ export const GET_JSON_PROJECTS_ATOM = atom(null, (get, set) => {
   return {
     projectId: project.ID,
     projectName: get(project.name),
+    isPublic: get(project.ISPUBLIC),
     previewUrl: project?.PREVIEW_URL ?? "./default_bg.png",
     data: JSON.stringify({
       [get(project.MODE_ATOM)]: {
