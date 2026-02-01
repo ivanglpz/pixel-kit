@@ -1,46 +1,56 @@
 import { Project } from "@/db/schemas/projects";
-import { IProject } from "@/db/schemas/types";
+import type { IProject } from "@/db/schemas/types";
 import { sanitizeInput } from "@/utils/sanitize";
 import type { NextApiRequest, NextApiResponse } from "next";
 
-type ResponseData =
-  | { message: string; data: IProject | null }
-  | { error: string };
+type SuccessResponse = {
+  message: string;
+  data: IProject;
+};
+
+type ErrorResponse = {
+  error: string;
+};
+
+type ResponseData = SuccessResponse | ErrorResponse;
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<ResponseData>,
-) {
+): Promise<void> {
   if (req.method !== "GET") {
-    return res.status(405).json({ error: "Method not allowed" });
+    res.status(405).json({ error: "Method not allowed" });
+    return;
   }
 
   const { id } = sanitizeInput(req.query);
 
-  if (!id || typeof id !== "string") {
-    return res.status(400).json({ error: "Missing or invalid project id" });
+  if (typeof id !== "string") {
+    res.status(400).json({ error: "Missing or invalid project id" });
+    return;
   }
 
   try {
-    const project = await Project.findById(id).lean<IProject>();
+    const project = await Project.findOne({
+      _id: id,
+      isPublic: true,
+    })
+      .populate({
+        path: "createdBy",
+        select: "fullName photoUrl -_id",
+      })
+      .lean<IProject>();
 
     if (!project) {
-      return res.status(404).json({ error: "Project not found" });
+      res.status(404).json({ error: "Public project not found" });
+      return;
     }
 
-    if (project.isPublic === false) {
-      return res.status(403).json({
-        message: "This project is private",
-        data: null,
-      });
-    }
-
-    return res.status(200).json({
+    res.status(200).json({
       message: "Public project retrieved successfully",
       data: project,
     });
-  } catch (error) {
-    console.error("Error while fetching public project:", error);
-    return res.status(500).json({ error: "Internal Server Error" });
+  } catch {
+    res.status(500).json({ error: "Internal Server Error" });
   }
 }

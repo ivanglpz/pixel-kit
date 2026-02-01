@@ -23,6 +23,8 @@ export const updateProject = async (
 export const deleteProject = async (id: string) => {
   return api.delete(`/projects/delete?id=${id}`).then((e) => e.data?.data);
 };
-export const fetchProjectPublicById = async (id: string): Promise<IProject> => {
+export const fetchProjectPublicById = async (
+  id: string | undefined | null,
+): Promise<IProject> => {
   return api.get(`/projects/byPublicId?id=${id}`).then((e) => e.data?.data);
 };
