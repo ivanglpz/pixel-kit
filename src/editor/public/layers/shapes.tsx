@@ -12,7 +12,7 @@ type ShapeIteratorProps = {
   options: IShapeEvents["options"];
 };
 
-export const ShapeIterator = ({ item, options }: ShapeIteratorProps) => {
+const ShapeIterator = ({ item, options }: ShapeIteratorProps) => {
   const shape = useAtomValue(item.state);
   const tool = useAtomValue(shape.tool);
 
