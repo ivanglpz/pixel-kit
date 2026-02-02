@@ -127,7 +127,7 @@ export const Tab = ({ project, onClick, onDelete, isSelected }: TabProps) => {
           </div>
         </div>
       </ContextMenuTrigger>
-      <ContextMenuContent className="p-3 flex flex-col w-[260px] h-[200px] text-[12px] gap-4">
+      <ContextMenuContent className="p-3 flex flex-col w-[260px] h-auto text-[12px] gap-4">
         <div className="flex flex-col gap-1">
           <p
             className={css({
