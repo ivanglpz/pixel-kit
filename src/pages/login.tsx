@@ -23,7 +23,7 @@ const LoginPage = () => {
     onSuccess: (e) => {
       Cookies.set("accessToken", e?.data?.token); // Expira en 7 días
 
-      router.push("/");
+      router.push("/app");
     },
     onError: (error) => {
       if (error instanceof AxiosError) {
