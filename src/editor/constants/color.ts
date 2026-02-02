@@ -1,7 +1,7 @@
 export const constants = {
   theme: {
     colors: {
-      primary: "#3ea1f2",
+      primary: "#51a2ff",
       white: "white",
       black: "black",
       background: "rgba(75, 172, 252, 0.1)",
