@@ -26,7 +26,7 @@ const LoginPage = () => {
       toast.success("Registration Successful!", {
         description: "Your account has been created successfully.",
       });
-      router.push("/");
+      router.push("/app");
     },
     onError: (error) => {
       if (error instanceof AxiosError) {

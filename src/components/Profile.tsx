@@ -28,7 +28,7 @@ export const Profile = () => {
   const handleLogout = () => {
     CLEAR_PROJECTS([]);
     Cookies.remove("accessToken");
-    router.replace("/login");
+    router.replace("/");
   };
 
   return (
