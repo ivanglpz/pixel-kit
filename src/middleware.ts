@@ -5,8 +5,8 @@ import { NextResponse } from "next/server";
 const SESSION_COOKIE = "accessToken";
 const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET!);
 
-const redirectToLogin = (request: NextRequest): NextResponse => {
-  const response = NextResponse.redirect(new URL("/login", request.url));
+const redirectToHome = (request: NextRequest): NextResponse => {
+  const response = NextResponse.redirect(new URL("/", request.url));
   response.cookies.delete(SESSION_COOKIE);
   return response;
 };
@@ -18,7 +18,7 @@ export async function middleware(request: NextRequest) {
 
   // Sin token: permite acceso a rutas públicas
   if (!token) {
-    return isPrivateRoute ? redirectToLogin(request) : NextResponse.next();
+    return isPrivateRoute ? redirectToHome(request) : NextResponse.next();
   }
 
   try {
@@ -42,7 +42,7 @@ export async function middleware(request: NextRequest) {
     });
   } catch (error) {
     // Token inválido o expirado
-    return redirectToLogin(request);
+    return redirectToHome(request);
   }
 }
 
