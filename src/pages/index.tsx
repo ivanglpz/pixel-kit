@@ -1,4 +1,10 @@
+import { CTA } from "@/components/home-cta";
+import { Customization } from "@/components/home-customization";
+import { Features } from "@/components/home-features";
+import { Footer } from "@/components/home-footer";
+import { Hero } from "@/components/home-hero";
 import SeoComponent from "@/components/seo";
+import { css } from "@stylespixelkit/css";
 import { NextOnlyPage } from "next";
 
 const PageEditor: NextOnlyPage = () => {
@@ -11,17 +17,24 @@ const PageEditor: NextOnlyPage = () => {
         description="Transform and refine your photos effortlessly with Pixel Kit's Image Editing Mode. Unlock a range of powerful editing tools and elevate your images to the next level. Try it now!"
         url="https://pixel-kit.vercel.app/editor"
       />
-      <p>hello world</p>
+      <section
+        className={css({
+          padding: "lg",
+          gap: "xlg",
+          display: "flex",
+          flexDirection: "column",
+        })}
+      >
+        <Hero />
+        <Features />
+        <Customization />
+        <CTA />
+      </section>
+      <Footer />
     </>
   );
 };
+PageEditor.layout = "Default";
 // Redirección con SSR hacia /app
-export const getServerSideProps = async () => {
-  return {
-    redirect: {
-      destination: "/app",
-      permanent: false, // cambiar a true si quieres que sea redirección permanente
-    },
-  };
-};
+
 export default PageEditor;

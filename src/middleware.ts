@@ -26,7 +26,7 @@ export async function middleware(request: NextRequest) {
     const { payload } = await jwtVerify(token, JWT_SECRET);
 
     // Si está logueado y va a /login, redirecciona a /app
-    if (pathname === "/login") {
+    if (pathname === "/login" || pathname === "/") {
       return NextResponse.redirect(new URL("/app", request.url));
     }
 
