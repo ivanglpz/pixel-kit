@@ -689,10 +689,12 @@ const ShapeShowAtomProvider = ({
   return <>{children}</>;
 };
 type SelectablePhoto = Omit<IPhoto, "createdBy" | "folder" | "projectId">;
+const MAX_IMAGE_UPLOAD_SIZE_BYTES = 1 * 1024 * 1024;
 
 export const LayoutShapeConfig = () => {
   const [showIcons, setshowIcons] = useState(false);
   const [dialogImages, setDialogImages] = useState(false);
+  const [isOptimizingImage, setIsOptimizingImage] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const spHook = useShapeUpdate();
   const { shape, count } = useAtomValue(SHAPE_SELECTED_ATOM);
@@ -714,12 +716,8 @@ export const LayoutShapeConfig = () => {
       newPhoto: File,
     ): Promise<Pick<IPhoto, "name" | "width" | "height" | "url">> => {
       const formData = new FormData();
-      const optimizedFile = await optimizeImageFile({
-        file: newPhoto,
-        quality: 25,
-      });
 
-      formData.append("image", optimizedFile); // usar el mismo nombre 'images'
+      formData.append("image", newPhoto); // usar el mismo nombre 'images'
       formData.append("projectId", `${PROJECT_ID}`); // usar el mismo nombre 'images'
 
       const response = await uploadPhoto(formData);
@@ -757,22 +755,42 @@ export const LayoutShapeConfig = () => {
     setDialogImages(false);
   };
 
-  const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileInput = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []).filter((file) =>
       file.type.startsWith("image/"),
     );
     const file = files.at(0);
     if (!file) return;
-    const maxSizeInBytes = 1 * 1024 * 1024;
-    if (file.size > maxSizeInBytes) {
-      toast.error(`The image ${file.name} cannot be larger than 1MB.`);
-      e.target.value = "";
 
-      return;
+    try {
+      if (file.size <= MAX_IMAGE_UPLOAD_SIZE_BYTES) {
+        mutation.mutate(file);
+        return;
+      }
+
+      setIsOptimizingImage(true);
+      toast.info(`Optimizing ${file.name} before upload...`);
+
+      const optimizedFile = await optimizeImageFile({
+        file,
+        quality: 80,
+        maxSizeBytes: MAX_IMAGE_UPLOAD_SIZE_BYTES,
+      });
+
+      mutation.mutate(optimizedFile);
+    } catch (error) {
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : `The image ${file.name} could not be optimized.`,
+      );
+    } finally {
+      setIsOptimizingImage(false);
+      e.target.value = "";
     }
-    e.target.value = "";
-    mutation.mutate(file);
   };
+
+  const isImageUploadBusy = mutation.isPending || isOptimizingImage;
 
   const isSelected = (id: string) => selectedPhotos.some((p) => p._id === id);
 
@@ -849,7 +867,7 @@ export const LayoutShapeConfig = () => {
       <Dialog.Provider
         visible={dialogImages}
         onClose={() => {
-          if (mutation.isPending) return;
+          if (isImageUploadBusy) return;
           handleCloseDialogImages();
         }}
       >
@@ -865,7 +883,7 @@ export const LayoutShapeConfig = () => {
               </p>
               <Dialog.Close
                 onClose={() => {
-                  if (mutation.isPending) return;
+                  if (isImageUploadBusy) return;
                   handleCloseDialogImages();
                 }}
               />
@@ -973,7 +991,7 @@ export const LayoutShapeConfig = () => {
                     onClick={() => {
                       setDialogDelete(true);
                     }}
-                    disabled={mutation.isPending}
+                    disabled={isImageUploadBusy}
                     className="bg-red-600 p-2 w-8 h-8 rounded text-white cursor-pointer"
                   >
                     <Trash size={16} />
@@ -981,7 +999,7 @@ export const LayoutShapeConfig = () => {
                   <section className="flex flex-row gap-2">
                     <Button.Secondary
                       onClick={clearSelection}
-                      disabled={mutation.isPending}
+                      disabled={isImageUploadBusy}
                     >
                       <SquareMenu size={16} />
                       <p className="text-sm font-normal">
@@ -990,7 +1008,7 @@ export const LayoutShapeConfig = () => {
                     </Button.Secondary>
                     {!hasMultipleSelection ? (
                       <Button.Primary
-                        disabled={!hasSingleSelection || mutation.isPending}
+                        disabled={!hasSingleSelection || isImageUploadBusy}
                         onClick={() => {
                           const photo = selectedPhotos[0];
                           spHook("image", {
@@ -1012,18 +1030,25 @@ export const LayoutShapeConfig = () => {
 
               {!hasSelection ? (
                 <footer className="flex flex-row justify-end items-center">
-                  {mutation.isPending ? (
-                    <ThemeComponent>
-                      {({ theme }) => (
-                        <Loading
-                          color={
-                            theme?.systemTheme === "dark"
-                              ? constants.theme.colors.white
-                              : constants.theme.colors.black
-                          }
-                        />
-                      )}
-                    </ThemeComponent>
+                  {isImageUploadBusy ? (
+                    <section className="flex flex-row items-center gap-2 text-sm">
+                      <ThemeComponent>
+                        {({ theme }) => (
+                          <Loading
+                            color={
+                              theme?.systemTheme === "dark"
+                                ? constants.theme.colors.white
+                                : constants.theme.colors.black
+                            }
+                          />
+                        )}
+                      </ThemeComponent>
+                      <span>
+                        {isOptimizingImage
+                          ? "Optimizing image..."
+                          : "Uploading image..."}
+                      </span>
+                    </section>
                   ) : (
                     <Button.Secondary
                       onClick={() => {
