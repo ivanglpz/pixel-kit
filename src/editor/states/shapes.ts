@@ -819,6 +819,8 @@ export const cloneStateRecursive =
       id: newId,
       x: asAtom(IS_ROOT ? rootX : x),
       y: asAtom(IS_ROOT ? rootY : y),
+      copyX: asAtom(IS_ROOT ? x : 0),
+      copyY: asAtom(IS_ROOT ? y : 0),
       offsetX: asAtom(IS_ROOT ? offsetX : 0),
       offsetY: asAtom(IS_ROOT ? offsetY : 0),
       offsetCopyX: asAtom(IS_ROOT ? rootX : 0),
