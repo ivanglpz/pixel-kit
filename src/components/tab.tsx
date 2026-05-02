@@ -34,7 +34,7 @@ export const Tab = ({ project, onClick, onDelete, isSelected }: TabProps) => {
   );
   return (
     <ContextMenu>
-      <ContextMenuTrigger>
+      <ContextMenuTrigger className="h-full">
         <div
           className={css({
             display: "grid",
@@ -50,7 +50,6 @@ export const Tab = ({ project, onClick, onDelete, isSelected }: TabProps) => {
             width: "200px",
             padding: "sm",
             borderRadius: "md",
-            flexShrink: 0,
             cursor: "pointer",
           })}
           onClick={onClick}
