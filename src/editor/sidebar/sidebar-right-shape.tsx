@@ -1,12 +1,12 @@
 /* eslint-disable @next/next/no-img-element */
 /* eslint-disable jsx-a11y/alt-text */
-import { IPhoto } from "@/db/schemas/types";
 import {
   SHAPE_SELECTED_ATOM,
   SHAPE_UPDATE_ATOM,
   UpdatableKeys,
 } from "@/editor/states/shape";
 import { deleteManyPhotos, fetchListPhotosProject } from "@/services/photos";
+import type { PhotoDocument } from "@pixelkit/core";
 import { css } from "@stylespixelkit/css";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { PrimitiveAtom, useAtomValue, useSetAtom } from "jotai";
@@ -688,7 +688,10 @@ const ShapeShowAtomProvider = ({
   if (ctx(value)) return null;
   return <>{children}</>;
 };
-type SelectablePhoto = Omit<IPhoto, "createdBy" | "folder" | "projectId">;
+type SelectablePhoto = Omit<
+  PhotoDocument,
+  "createdBy" | "folder" | "projectId"
+>;
 const MAX_IMAGE_UPLOAD_SIZE_BYTES = 1 * 1024 * 1024;
 
 export const LayoutShapeConfig = () => {
@@ -714,7 +717,7 @@ export const LayoutShapeConfig = () => {
   const mutation = useMutation({
     mutationFn: async (
       newPhoto: File,
-    ): Promise<Pick<IPhoto, "name" | "width" | "height" | "url">> => {
+    ): Promise<Pick<PhotoDocument, "name" | "width" | "height" | "url">> => {
       const formData = new FormData();
 
       formData.append("image", newPhoto); // usar el mismo nombre 'images'

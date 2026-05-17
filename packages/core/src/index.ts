@@ -78,6 +78,12 @@ export type ProjectSnapshot = {
   };
 };
 
+export type ProjectModeSnapshot = {
+  pages: PageDocument[];
+  selectedPageId: string | null;
+  firstPageId: string | null;
+};
+
 export type ProjectPreview = {
   projectId?: string;
   url: string;
@@ -100,6 +106,20 @@ export type ProjectDocument = {
   updatedAt: string;
 };
 
+export type PhotoDocument = {
+  _id: string;
+  projectId: string;
+  url: string;
+  mimeType: string;
+  size: number;
+  createdAt: string;
+  folder: string;
+  createdBy: string;
+  name: string;
+  width: number;
+  height: number;
+};
+
 export type LocalProjectRecord = {
   id: string;
   remoteId: string | null;
@@ -120,4 +140,26 @@ export const parseProjectSnapshot = (data: string): ProjectSnapshot => {
 
 export const serializeProjectSnapshot = (snapshot: ProjectSnapshot): string => {
   return JSON.stringify(snapshot);
+};
+
+export const getProjectModeSnapshot = (
+  snapshot: ProjectSnapshot,
+  mode: EditorMode,
+): ProjectModeSnapshot => {
+  const modeData = snapshot[mode];
+  const pages = modeData?.LIST ?? [];
+  const selectedPageId = modeData?.ID ?? null;
+
+  return {
+    pages,
+    selectedPageId,
+    firstPageId: pages[0]?.id ?? null,
+  };
+};
+
+export const parseProjectDataByMode = (
+  data: string,
+  mode: EditorMode,
+): ProjectModeSnapshot => {
+  return getProjectModeSnapshot(parseProjectSnapshot(data), mode);
 };

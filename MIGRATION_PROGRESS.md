@@ -39,3 +39,56 @@
 - `./node_modules/.bin/tsc -p packages/core/tsconfig.json --noEmit` passed.
 - `./node_modules/.bin/tsc -p packages/platform/tsconfig.json --noEmit` passed.
 - `pnpm --filter ... typecheck` currently attempts an interactive workspace install because `pnpm-workspace.yaml` was just added. Use direct `tsc` checks until the workspace install/lockfile is intentionally refreshed.
+
+## 2026-05-17: Phase 1A Shared Editor Types
+
+### What was done
+
+- Added root TypeScript aliases for `@pixelkit/core` and `@pixelkit/platform`.
+- Added `PhotoDocument`, `ProjectModeSnapshot`, `getProjectModeSnapshot`, and `parseProjectDataByMode` to `@pixelkit/core`.
+- Replaced editor imports of `IProject` and `IPhoto` from `@/db/schemas/types` with shared `ProjectDocument` and `PhotoDocument`.
+- Updated `src/editor/states/projects.ts` to use the pure snapshot parser from `@pixelkit/core`.
+
+### How it was done
+
+- Runtime behavior was kept the same: API calls, uploads, autosave, Jotai hydration, and the current web app remain in place.
+- The editor still uses its existing atoms and state shape; only the serializable document contracts moved outward.
+- `src/db` remains web/backend-owned. This phase only removed the editor's direct type dependency on it.
+
+### Verification
+
+- `./node_modules/.bin/tsc -p packages/core/tsconfig.json --noEmit` passed.
+- `./node_modules/.bin/tsc -p packages/platform/tsconfig.json --noEmit` passed.
+- `./node_modules/.bin/tsc --noEmit --incremental false --pretty false` passed.
+
+### Current status
+
+- `src/editor` no longer imports `@/db/schemas/types`.
+- The next safe step is Phase 1B: add focused tests or type-level checks for `@pixelkit/core` snapshot parsing, then begin isolating `PROJECT_ID_ATOM` from `window.location`.
+
+## 2026-05-17: Project-Local Agent Skills
+
+### What was done
+
+- Installed project-local skills under `.agents/skills`.
+- Added `skills-lock.json` to record sources and content hashes.
+- Added `AGENT_SKILLS.md` to document when each skill should be used during the migration.
+- Added `.agents/` to `.gitignore` so installed skill contents stay local.
+
+### Installed skills
+
+- `vercel-react-best-practices`
+- `react-components`
+- `react-best-practices`
+- `monorepo-management`
+- `next-best-practices`
+- `shadcn-ui`
+- `typescript-advanced-types`
+- `turborepo`
+
+### Notes
+
+- These are repository-local agent skills, not app runtime dependencies.
+- No package dependencies were added to `package.json`.
+- `.agents/` is ignored; `skills-lock.json` is the versioned record.
+- Future agents should prefer these skills when touching React, Next.js, monorepo structure, TypeScript contracts, and shadcn UI.

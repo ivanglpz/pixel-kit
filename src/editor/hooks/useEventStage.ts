@@ -1,5 +1,4 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { IPhoto } from "@/db/schemas/types";
 import TOOL_ATOM, {
   IKeyTool,
   IShapeTool,
@@ -7,6 +6,7 @@ import TOOL_ATOM, {
 } from "@/editor/states/tool";
 import { uploadPhoto } from "@/services/photo";
 import { optimizeImageFile } from "@/utils/opt-img";
+import type { PhotoDocument } from "@pixelkit/core";
 import { useMutation } from "@tanstack/react-query";
 import { atom, useAtom, useAtomValue, useSetAtom } from "jotai";
 import Konva from "konva";
@@ -168,7 +168,7 @@ export const useEventStage = () => {
     mutationKey: ["upload_event_image", PROJECT_ID],
     mutationFn: async (
       photoUpload: File,
-    ): Promise<Pick<IPhoto, "name" | "width" | "height" | "url">> => {
+    ): Promise<Pick<PhotoDocument, "name" | "width" | "height" | "url">> => {
       const myImage = photoUpload;
 
       if (!myImage) {

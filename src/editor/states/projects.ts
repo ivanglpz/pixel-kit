@@ -1,5 +1,8 @@
-import { IProject } from "@/db/schemas/types";
 import { api } from "@/services/axios";
+import {
+  parseProjectDataByMode,
+  type ProjectDocument,
+} from "@pixelkit/core";
 import { atom, Getter, PrimitiveAtom } from "jotai";
 import { atomWithDefault } from "jotai/utils";
 import { ShapeBase } from "../shapes/types/shape.base";
@@ -142,25 +145,24 @@ export const MOCKUP_PROJECT: IPROJECT = {
 };
 export const PROJECTS_ATOM = atom<IPROJECT[]>([]);
 type ProjectApiResponse = {
-  data: IProject;
+  data: ProjectDocument;
 };
 
-const fetchProjectById = async (id: string): Promise<IProject> => {
+const fetchProjectById = async (id: string): Promise<ProjectDocument> => {
   const response = await api.get<ProjectApiResponse>(`/projects/byId?id=${id}`);
   return response.data.data;
 };
 
 const parseProjectData = (rawData: string, mode: MODE) => {
-  const parsed = JSON.parse(rawData);
-  const modeData = parsed[mode] ?? {};
-
-  const pages = (modeData.LIST ?? []) as IPageBase[];
-  const selectedPageId = (modeData.ID ?? null) as string | null;
+  const { pages, selectedPageId, firstPageId } = parseProjectDataByMode(
+    rawData,
+    mode,
+  );
 
   return {
-    pages,
+    pages: pages as unknown as IPageBase[],
     selectedPageId,
-    firstPageId: pages[0]?.id ?? null,
+    firstPageId,
   };
 };
 
@@ -220,7 +222,7 @@ const buildProjectAtom = async (item: TabsProps): Promise<IPROJECT | null> => {
   }
 };
 const buildPublicProjectAtom = async (
-  project: IProject,
+  project: ProjectDocument,
 ): Promise<IPROJECT | null> => {
   try {
     const { pages, selectedPageId, firstPageId } = parseProjectData(
@@ -254,7 +256,7 @@ export const BUILD_PROJET_PUBLIC = atom(
   async (
     get,
     set,
-    args: { project: IProject | undefined; autoZoom: VoidFunction },
+    args: { project: ProjectDocument | undefined; autoZoom: VoidFunction },
   ) => {
     if (!args.project) {
       args.autoZoom();

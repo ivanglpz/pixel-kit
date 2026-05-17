@@ -11,8 +11,8 @@ This file tracks the migration as small phases. Each phase should leave the app 
 
 ## Phase 1: Shared Domain Contracts
 
-- [ ] Replace web-only project type imports in editor-facing code with `@pixelkit/core`.
-- [ ] Move pure project snapshot parsing/building helpers into `@pixelkit/core`.
+- [x] Replace web-only project/photo type imports in editor code with `@pixelkit/core`.
+- [x] Move pure project snapshot parsing/serialization helpers into `@pixelkit/core`.
 - [ ] Add focused tests for snapshot parsing/building.
 - [ ] Keep Jotai atom hydration inside the current editor code until the editor package is extracted.
 
@@ -44,4 +44,3 @@ This file tracks the migration as small phases. Each phase should leave the app 
 - [ ] Detect divergence between local and remote projects.
 - [ ] Create a local copy when conflict is detected.
 - [ ] Record sync status per project.
-

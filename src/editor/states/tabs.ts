@@ -1,12 +1,14 @@
-import { IProject } from "@/db/schemas/types";
 import { userAtom } from "@/jotai/user";
+import type { ProjectDocument } from "@pixelkit/core";
 import { atom } from "jotai";
 import { atomWithStorage } from "jotai/utils";
 import { BUILD_PROJECS_FROM_TABS } from "./projects";
 
 export const TABS_ID = "tabs_app";
 
-export type TabsProps = Omit<IProject, "data" | "name"> & { userId: string };
+export type TabsProps = Omit<ProjectDocument, "data" | "name"> & {
+  userId: string;
+};
 
 export const TABS_PERSIST_ATOM = atomWithStorage<TabsProps[]>(TABS_ID, []);
 
@@ -16,7 +18,7 @@ export const GET_TABS_BY_USER = atom((get) => {
   return tabs.filter((e) => e.userId === user?.data?.user?.userId);
 });
 
-export const ADD_TAB_ATOM = atom(null, (get, set, args: IProject) => {
+export const ADD_TAB_ATOM = atom(null, (get, set, args: ProjectDocument) => {
   const FIND_TAB = get(TABS_PERSIST_ATOM);
   if (FIND_TAB.some((e) => e._id === args?._id)) return;
 

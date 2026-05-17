@@ -1,8 +1,8 @@
-import { IProject } from "@/db/schemas/types";
 import { uploadPhotoPreview } from "@/services/photo";
 import { updateProject } from "@/services/projects";
 import { base64ToFile } from "@/utils/base64toFile";
 import { optimizeImageFile } from "@/utils/opt-img";
+import type { ProjectDocument } from "@pixelkit/core";
 import { useMutation } from "@tanstack/react-query";
 import { useAtom, useSetAtom } from "jotai";
 import { useEffect } from "react";
@@ -34,7 +34,7 @@ export function useTimerAutoSave() {
       const response = await uploadPhotoPreview(formData);
 
       const PAYLOAD: Pick<
-        IProject,
+        ProjectDocument,
         "_id" | "name" | "previewUrl" | "data" | "isPublic"
       > = {
         _id: JSON_.projectId,
