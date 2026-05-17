@@ -15,8 +15,11 @@
     "jsx": "preserve",
     "incremental": true,
     "paths": {
+      "@/editor": ["./packages/editor/src/index.tsx"],
+      "@/editor/*": ["./packages/editor/src/*"],
       "@/*": ["./src/*"],
       "@pixelkit/core": ["./packages/core/src/index.ts"],
+      "@pixelkit/editor": ["./packages/editor/src/index.tsx"],
       "@pixelkit/platform": ["./packages/platform/src/index.ts"],
       "@stylespixelkit/*": ["./styled-system/*"]
     },

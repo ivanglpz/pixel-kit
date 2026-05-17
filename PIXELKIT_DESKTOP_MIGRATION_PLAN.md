@@ -62,24 +62,12 @@
   - If both changed since last sync, create a duplicate local project named like `"{name} local copy"` and preserve both versions.
   - Do not overwrite local or remote data silently in v1.
 
-## Test Plan
-- Web:
-  - `pnpm --filter web typecheck`
-  - `pnpm --filter web build`
-  - Verify existing flows: login, project list, create project, open editor, autosave to API, public project view.
-- Shared packages:
-  - Unit tests for project snapshot parse/build, shape serialization, and platform interface mocks.
-  - Typecheck `packages/core`, `packages/platform`, and `packages/editor`.
-- Desktop:
-  - `pnpm --filter desktop dev` opens the Electron app with the desktop Next.js renderer.
-  - Online login creates cached session.
-  - Relaunch without internet still opens dashboard and editor.
-  - Create project offline, edit canvas, close app, reopen, verify project persists.
-  - Add/import asset, verify asset persists from local filesystem.
-  - Manual sync with no conflict uploads project.
-  - Manual sync with conflict creates a copy.
-- Regression:
-  - Confirm editor behavior stays consistent between web and desktop for page creation, shape editing, selection, export preview, undo/redo where currently supported.
+## Deferred Validation Plan
+- Do not execute this section during migration unless explicitly requested.
+- Future web validation: build/typecheck and manually inspect login, project list, create project, open editor, autosave to API, and public project view.
+- Future shared package validation: project snapshot parse/build behavior, shape serialization, and platform boundaries.
+- Future desktop validation: Electron app launch, online login, cached offline session, local project persistence, local asset persistence, and manual sync conflict behavior.
+- Future regression validation: compare editor behavior between web and desktop for page creation, shape editing, selection, export preview, and current undo/redo behavior.
 
 ## Assumptions
 - Package manager stays `pnpm`.

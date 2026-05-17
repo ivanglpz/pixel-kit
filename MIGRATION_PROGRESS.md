@@ -213,6 +213,93 @@
 - Continue migration work only.
 - Next safe step: Phase 3 editor package extraction, starting with shims or adapter props for remaining Next-only pieces before moving files.
 
+## 2026-05-17: Phase 3A Editor Package Bridge
+
+### What was done
+
+- Added the initial `packages/editor` workspace package.
+- Added an `@pixelkit/editor` TypeScript alias that points to `packages/editor/src/index.ts`.
+- Made `@pixelkit/editor` re-export the current editor entrypoint from `src/editor`.
+- Updated the private editor route and public project route to import from `@pixelkit/editor`.
+- Replaced the editor's internal `@/editor/*` imports with relative imports.
+- Added an editor-local `Valid` component so `SidebarRight` no longer imports it from app-level components.
+- Removed `next/link` from the editor export toast and used a regular external anchor instead.
+
+### How it was done
+
+- This is a bridge phase: the physical editor files are still in `src/editor`, but web routes now depend on the package entrypoint.
+- The package wrapper keeps the current web behavior while allowing the physical move to happen in a smaller follow-up.
+- Internal relative imports make the future `src/editor` to `packages/editor/src` move less dependent on root aliases.
+
+### Current constraints
+
+- No tests, typecheck, or verification commands were run.
+- The remaining editor extraction blockers are `next/dynamic`, `next-themes`, public-stage `next/router`, app UI imports, and web service imports that are already isolated or intentionally web-owned.
+
+### Current status
+
+- Phase 3 package entrypoint exists.
+- Web editor routes now import the editor through `@pixelkit/editor`.
+- Next safe step: continue removing or wrapping remaining Next/app-only editor dependencies before the physical directory move.
+
+## 2026-05-17: Phase 3B Next/App Dependency Cleanup
+
+### What was done
+
+- Removed `next/dynamic` from the editor entrypoint and dialog portal.
+- Replaced dynamic SSR guards with a small React-only `ClientOnly` wrapper and a mounted dialog portal container.
+- Removed `next-themes` from `ThemeComponent` and replaced it with editor-local theme detection.
+- Removed `next/link` from the editor export toast.
+- Removed `next/router` from the public editor stage; the web route now passes the project id into `PixelKitPublicApp`.
+- Added `EditorPublicProjectAdapter` and `webEditorPublicProjectAdapter` for public project loading.
+- Added `EditorProjectAdapter` and `webEditorProjectAdapter` for editor project loading.
+- Added an editor-local context menu component and switched editor sidebars away from app-level `@/components/ui/context-menu`.
+
+### How it was done
+
+- The current web behavior remains routed through web adapters under `src/editor/platform/*`.
+- Editor UI files no longer import Next APIs directly.
+- Editor UI files no longer import app-level components directly.
+- Root web pages remain responsible for Next routing and pass route-derived data into the editor package entrypoint.
+
+### Current constraints
+
+- No tests, typecheck, or verification commands were run.
+- Web service imports still exist inside `src/editor/platform/*` by design.
+- `PixelKitStagePublic` still derives a default browser share URL if no host passes one, but desktop can provide `shareUrl` explicitly.
+
+### Current status
+
+- Phase 3 adapter/shim work is complete enough for the physical editor move.
+- Next safe step: move `src/editor` into `packages/editor/src` and leave temporary compatibility re-exports for old web imports.
+
+## 2026-05-17: Phase 3C Editor Directory Move
+
+### What was done
+
+- Moved the editor source tree from `src/editor` to `packages/editor/src`.
+- Made `packages/editor/src/index.tsx` the real `@pixelkit/editor` entrypoint.
+- Removed the temporary package wrapper that re-exported from `src/editor`.
+- Updated root TypeScript paths so existing `@/editor` and `@/editor/*` imports resolve to `packages/editor/src`.
+- Updated `packages/editor/package.json` and `packages/editor/tsconfig.json` to point at the TSX entrypoint.
+
+### How it was done
+
+- Existing web imports of editor internals are temporarily preserved through path aliases.
+- The current web editor routes continue to import the app entrypoint through `@pixelkit/editor`.
+- Jotai editor hydration and state remain inside the editor package, not in `@pixelkit/core`.
+
+### Current constraints
+
+- No tests, typecheck, or verification commands were run.
+- External web code still imports some editor internals through `@/editor/*`; those aliases now point to the package and can be cleaned up later.
+- Web service implementations for save/assets/project loading remain in `packages/editor/src/platform/*` as web adapters.
+
+### Current status
+
+- Phase 3 physical extraction is complete.
+- Next safe step: begin Phase 4 desktop shell scaffolding while keeping local persistence in Electron IPC/SQLite, not Next.js API routes.
+
 
 ## 2026-05-17: Project-Local Agent Skills
 

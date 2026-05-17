@@ -1,7 +1,11 @@
 import "@/db/schemas/users";
-import { PixelKitPublicApp } from "@/editor";
+import { PixelKitPublicApp } from "@pixelkit/editor";
+import { useRouter } from "next/router";
 
 const PageEditor = () => {
+  const router = useRouter();
+  const projectId = router.isReady ? (router.query.id as string) : undefined;
+
   return (
     <>
       {/* <SeoComponent
@@ -15,7 +19,7 @@ const PageEditor = () => {
         url="https://pixel-kit.vercel.app/"
       /> */}
       <main className="p-6 flex flex-col h-full w-full overflow-hidden">
-        <PixelKitPublicApp />
+        <PixelKitPublicApp projectId={projectId} />
       </main>
     </>
   );

@@ -1,5 +1,5 @@
 import { AuthProjects } from "@/components/AuthProjects";
-import PixelEditor from "@/editor";
+import PixelEditor from "@pixelkit/editor";
 import { NextPageWithLayout } from "@/pages/_app";
 import { useRouter } from "next/router";
 

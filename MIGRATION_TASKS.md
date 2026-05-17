@@ -21,8 +21,8 @@ This file tracks the migration as small phases. Each phase should leave the app 
 - [x] Replace web-only project/photo type imports in editor code with `@pixelkit/core`.
 - [x] Move pure project snapshot parsing/serialization helpers into `@pixelkit/core`.
 - [x] Isolate the active editor project id from `window.location.pathname`.
-- [ ] Add focused tests for snapshot parsing/building.
-- [ ] Keep Jotai atom hydration inside the current editor code until the editor package is extracted.
+- [ ] Add focused tests for snapshot parsing/building. Blocked by migration rule: do not do this unless explicitly requested.
+- [x] Keep Jotai atom hydration inside the editor package instead of moving it into core.
 
 ## Phase 2: Platform Boundary
 
@@ -34,10 +34,13 @@ This file tracks the migration as small phases. Each phase should leave the app 
 
 ## Phase 3: Editor Package Extraction
 
-- [ ] Move `src/editor` into `packages/editor/src`.
-- [ ] Add shims or adapter props for Next-only pieces.
-- [ ] Keep web importing the same editor behavior through the package.
-- [ ] Verify the current web editor still builds and opens.
+- [x] Create the initial `@pixelkit/editor` workspace package.
+- [x] Point web editor routes at `@pixelkit/editor`.
+- [x] Replace `@/editor/*` imports inside the editor with relative imports.
+- [x] Move `src/editor` into `packages/editor/src`.
+- [x] Add shims or adapter props for remaining Next-only pieces.
+- [x] Keep web importing the same editor behavior through the package.
+- [ ] Verify the current web editor still builds and opens. Blocked by migration rule: do not do this unless explicitly requested.
 
 ## Phase 4: Desktop Shell
 

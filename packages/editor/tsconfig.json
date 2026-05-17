@@ -1,0 +1,17 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "composite": true,
+    "noEmit": true,
+    "rootDir": "../..",
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["../../src/*"],
+      "@pixelkit/core": ["../core/src/index.ts"],
+      "@pixelkit/platform": ["../platform/src/index.ts"],
+      "@pixelkit/editor": ["src/index.tsx"],
+      "@stylespixelkit/*": ["../../styled-system/*"]
+    }
+  },
+  "include": ["src/**/*.ts", "src/**/*.tsx"]
+}
