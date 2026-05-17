@@ -9,6 +9,7 @@ import { useTimerAutoSave } from "./hooks/useTimerAutoSave";
 import { AllLayers } from "./layers/root.layers";
 import { LayerPublicShapes } from "./public/layers/shapes";
 import { PixelKitStagePublic } from "./public/stage";
+import type { EditorAssetAdapter } from "./platform/assets";
 import type { EditorSaveAdapter } from "./platform/save";
 import { SidebarLeft } from "./sidebar/sidebar.left";
 import SidebarRight from "./sidebar/sidebar.right";
@@ -18,6 +19,7 @@ import { PROJECT_ID_ATOM } from "./states/projects";
 type PixelEditorProps = {
   projectId?: string | null;
   saveAdapter?: EditorSaveAdapter;
+  assetAdapter?: EditorAssetAdapter;
 };
 
 const PixelKitPublic = () => {
@@ -62,7 +64,11 @@ export const PixelKitPublicApp = dynamic(Promise.resolve(PixelKitPublic), {
   ssr: false,
 });
 
-const PixelEditor = ({ projectId, saveAdapter }: PixelEditorProps) => {
+const PixelEditor = ({
+  projectId,
+  saveAdapter,
+  assetAdapter,
+}: PixelEditorProps) => {
   const setProjectId = useSetAtom(PROJECT_ID_ATOM);
 
   useEffect(() => {
@@ -98,10 +104,10 @@ const PixelEditor = ({ projectId, saveAdapter }: PixelEditorProps) => {
         })}
       >
         <SidebarLeft />
-        <PxStage>
+        <PxStage assetAdapter={assetAdapter}>
           <AllLayers />
         </PxStage>
-        <SidebarRight />
+        <SidebarRight assetAdapter={assetAdapter} />
       </div>
     </div>
   );

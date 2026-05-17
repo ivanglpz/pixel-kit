@@ -1,5 +1,11 @@
 # PixelKit Desktop MVP Monorepo Migration
 
+## Non-Negotiable Migration Rule
+- Do not add tests during this migration unless explicitly requested.
+- Do not add test doubles, mocks, fixtures, fake platforms, or test-only helpers unless explicitly requested.
+- Do not run test commands, typecheck commands, or verification commands unless explicitly requested.
+- Focus only on migration implementation and documentation.
+
 ## Summary
 - Convert the repo into a `pnpm` monorepo with `apps/web`, `apps/desktop`, `packages/editor`, `packages/core`, and `packages/platform`.
 - Keep the current Next.js + MongoDB + Cloudinary backend inside `apps/web`.

@@ -4,9 +4,6 @@ import TOOL_ATOM, {
   IShapeTool,
   PAUSE_MODE_ATOM,
 } from "@/editor/states/tool";
-import { uploadPhoto } from "@/services/photo";
-import { optimizeImageFile } from "@/utils/opt-img";
-import type { PhotoDocument } from "@pixelkit/core";
 import { useMutation } from "@tanstack/react-query";
 import { atom, useAtom, useAtomValue, useSetAtom } from "jotai";
 import Konva from "konva";
@@ -17,6 +14,11 @@ import { v4 as uuidv4 } from "uuid";
 import { MOUSE } from "../constants/mouse";
 import { STAGE_IDS } from "../constants/stage";
 import stageAbsolutePosition from "../helpers/position";
+import {
+  EditorAssetAdapter,
+  UploadedEditorImage,
+  webEditorAssetAdapter,
+} from "../platform/assets";
 import { CreateShapeSchema } from "../helpers/shape-schema";
 import { ShapeImage } from "../shapes/types/shape.base";
 import { CLEAR_CURRENT_ITEM_ATOM } from "../states/currentItem";
@@ -54,7 +56,9 @@ import { useConfiguration } from "./useConfiguration";
 
 // ===== CONSTANTS =====
 
-export const useEventStage = () => {
+export const useEventStage = (
+  assetAdapter: EditorAssetAdapter = webEditorAssetAdapter,
+) => {
   // ===== STATE HOOKS =====
   const [tool, setTool] = useAtom(TOOL_ATOM);
   const shapeId = useAtomValue(SELECTED_SHAPES_BY_IDS_ATOM);
@@ -166,21 +170,17 @@ export const useEventStage = () => {
 
   const mutation = useMutation({
     mutationKey: ["upload_event_image", PROJECT_ID],
-    mutationFn: async (
-      photoUpload: File,
-    ): Promise<Pick<PhotoDocument, "name" | "width" | "height" | "url">> => {
+    mutationFn: async (photoUpload: File): Promise<UploadedEditorImage> => {
       const myImage = photoUpload;
 
       if (!myImage) {
         throw new Error("Please upload a photo from your device");
       }
 
-      const formData = new FormData();
-      formData.append("image", myImage); // usar el mismo nombre 'images'
-      formData.append("projectId", `${PROJECT_ID}`); // usar el mismo nombre 'images'
-
-      const response = await uploadPhoto(formData);
-      return response;
+      return assetAdapter.uploadImage({
+        projectId: PROJECT_ID,
+        file: myImage,
+      });
     },
     onSuccess: (values) => {
       const createStartElement = CreateShapeSchema({
@@ -218,14 +218,9 @@ export const useEventStage = () => {
       return;
     }
 
-    toast.info("Optimizing image...", { duration: 4000 });
+    toast.info("Uploading image...", { duration: 4000 });
 
-    const optimizedFile = await optimizeImageFile({
-      file,
-      quality: 25,
-    });
-
-    mutation.mutate(optimizedFile);
+    mutation.mutate(file);
   };
 
   const createTextFromClipboard = (text: string) => {

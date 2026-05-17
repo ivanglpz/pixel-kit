@@ -1,5 +1,12 @@
 # PixelKit Desktop Migration Progress
 
+## Non-Negotiable Migration Rule
+
+- Do not add tests during this migration unless explicitly requested.
+- Do not add test doubles, mocks, fixtures, fake platforms, or test-only helpers unless explicitly requested.
+- Do not run test commands, typecheck commands, or verification commands unless explicitly requested.
+- Focus only on migration implementation and documentation.
+
 ## 2026-05-17: Phase 0 Started
 
 ### What was done
@@ -133,6 +140,78 @@
 
 - The first platform boundary is in place for autosave.
 - Next safe step: repeat the same adapter pattern for image uploads in `useEventStage` and the right sidebar image browser.
+
+## 2026-05-17: Phase 2B Canvas Image Upload Adapter
+
+### What was done
+
+- Added an `EditorAssetAdapter` boundary for canvas image uploads.
+- Moved current web image optimization/upload behavior into `webEditorAssetAdapter`.
+- Updated `useEventStage` to call the asset adapter instead of importing web upload services directly.
+- Added an optional `assetAdapter` prop to the editor entrypoint and passed it into the stage hook.
+
+### How it was done
+
+- Runtime behavior remains web-compatible: the default adapter still optimizes the image and uploads it through the existing web service.
+- The canvas event hook now depends on an asset contract, not directly on Cloudinary upload helpers.
+- The right sidebar image browser was intentionally left unchanged for a later, separate phase.
+
+### Verification
+
+- `./node_modules/.bin/tsc -p packages/core/tsconfig.json --noEmit` passed.
+- `./node_modules/.bin/tsc -p packages/platform/tsconfig.json --noEmit` passed.
+- `./node_modules/.bin/tsc --noEmit --incremental false --pretty false` passed.
+
+### Current status
+
+- Autosave and canvas image upload now both have host-swappable adapters.
+- Next safe step: apply a similar boundary to the right sidebar image browser/gallery.
+
+## 2026-05-17: Phase 2C Image Gallery Asset Adapter
+
+### What was done
+
+- Expanded `EditorAssetAdapter` with image listing and image deletion methods.
+- Moved right sidebar image gallery list/delete/upload behavior behind the asset adapter.
+- Passed the editor `assetAdapter` prop through `SidebarRight` into `LayoutShapeConfig`.
+- Kept the existing web implementation inside `webEditorAssetAdapter`, where it still wraps the current photo services and image optimizer.
+
+### How it was done
+
+- `src/editor/sidebar/sidebar-right-shape.tsx` no longer imports `uploadPhoto`, `fetchListPhotosProject`, `deleteManyPhotos`, or `optimizeImageFile` directly.
+- The sidebar now works against editor asset contracts, so a future desktop host can provide local filesystem/IPC behavior without changing the panel UI.
+- The adapter supports skipped optimization, preserving the sidebar behavior of uploading images under 1MB as-is.
+- Upload error handling now accepts both Axios-shaped web errors and normal adapter errors for desktop/local implementations.
+
+### Verification
+
+- `rg "services/(photo|photos)|uploadPhoto|fetchListPhotosProject|deleteManyPhotos|optimizeImageFile" src/editor -g '*.ts' -g '*.tsx'` now only reports `src/editor/platform/save.ts` and `src/editor/platform/assets.ts`.
+- `./node_modules/.bin/tsc -p packages/core/tsconfig.json --noEmit` passed.
+- `./node_modules/.bin/tsc -p packages/platform/tsconfig.json --noEmit` passed.
+- `./node_modules/.bin/tsc --noEmit --incremental false --pretty false` passed.
+
+### Current status
+
+- Editor upload/update service calls are now isolated to platform adapter files.
+- MongoDB, Cloudinary, cookies, organizations, and public sharing remain web-owned.
+
+## 2026-05-17: Test Work Deferred
+
+### What changed
+
+- Removed the platform test-double work that had been added prematurely.
+- Removed the `@pixelkit/platform` export for that helper.
+- Marked test doubles as blocked in `MIGRATION_TASKS.md` unless explicitly requested.
+
+### Current instruction
+
+- Do not add tests, test doubles, mocks, fixtures, or test-specific helpers during the migration unless explicitly requested.
+- Do not run test, typecheck, or verification commands as part of migration work unless explicitly requested.
+
+### Current status
+
+- Continue migration work only.
+- Next safe step: Phase 3 editor package extraction, starting with shims or adapter props for remaining Next-only pieces before moving files.
 
 
 ## 2026-05-17: Project-Local Agent Skills

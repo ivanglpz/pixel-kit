@@ -3,13 +3,18 @@ import { useConfiguration } from "@/editor/hooks/useConfiguration";
 import { css } from "@stylespixelkit/css";
 import { useAtomValue } from "jotai";
 import { FC } from "react";
+import type { EditorAssetAdapter } from "../platform/assets";
 import { SELECTED_SHAPES_BY_IDS_ATOM } from "../states/shape";
 import TOOL_ATOM from "../states/tool";
 import { Drawing } from "./drawing";
 import { SidebarRightColorBg } from "./sidebar-right-color-bg";
 import { LayoutShapeConfig } from "./sidebar-right-shape";
 
-const SidebarRight: FC = () => {
+type SidebarRightProps = {
+  assetAdapter?: EditorAssetAdapter;
+};
+
+const SidebarRight: FC<SidebarRightProps> = ({ assetAdapter }) => {
   const { config } = useConfiguration();
 
   const shapeIds = useAtomValue(SELECTED_SHAPES_BY_IDS_ATOM);
@@ -38,7 +43,7 @@ const SidebarRight: FC = () => {
         <SidebarRightColorBg />
       </Valid>
       <Valid isValid={tool === "MOVE" && shapeIds.length > 0}>
-        <LayoutShapeConfig />
+        <LayoutShapeConfig assetAdapter={assetAdapter} />
       </Valid>
       <Valid isValid={tool === "DRAW"}>
         <Drawing />

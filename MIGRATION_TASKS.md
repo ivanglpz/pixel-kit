@@ -2,6 +2,13 @@
 
 This file tracks the migration as small phases. Each phase should leave the app in a understandable state and record what changed in `MIGRATION_PROGRESS.md`.
 
+## Non-Negotiable Migration Rule
+
+- Do not add tests during this migration unless explicitly requested.
+- Do not add test doubles, mocks, fixtures, fake platforms, or test-only helpers unless explicitly requested.
+- Do not run test commands, typecheck commands, or verification commands unless explicitly requested.
+- Focus only on migration implementation and documentation.
+
 ## Phase 0: Migration Control Plane
 
 - [x] Store the desktop migration plan in `PIXELKIT_DESKTOP_MIGRATION_PLAN.md`.
@@ -20,9 +27,10 @@ This file tracks the migration as small phases. Each phase should leave the app 
 ## Phase 2: Platform Boundary
 
 - [x] Introduce a web save adapter that wraps current project preview/update services.
-- [ ] Replace direct editor calls to upload/update services with platform contracts.
-- [ ] Keep MongoDB, Cloudinary, cookies, organizations, and public sharing web-only.
-- [ ] Add test doubles for platform interfaces.
+- [x] Introduce a web asset adapter that wraps current canvas image upload/optimization services.
+- [x] Replace direct editor calls to upload/update services with platform contracts.
+- [x] Keep MongoDB, Cloudinary, cookies, organizations, and public sharing web-only.
+- [ ] Add test doubles for platform interfaces. Blocked by migration rule: do not do this unless explicitly requested.
 
 ## Phase 3: Editor Package Extraction
 

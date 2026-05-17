@@ -5,8 +5,6 @@ import {
   SHAPE_UPDATE_ATOM,
   UpdatableKeys,
 } from "@/editor/states/shape";
-import { deleteManyPhotos, fetchListPhotosProject } from "@/services/photos";
-import type { PhotoDocument } from "@pixelkit/core";
 import { css } from "@stylespixelkit/css";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { PrimitiveAtom, useAtomValue, useSetAtom } from "jotai";
@@ -59,11 +57,15 @@ import { ShapeBase } from "../shapes/types/shape.base";
 import { ShapeState } from "../shapes/types/shape.state";
 import { PROJECT_ID_ATOM } from "../states/projects";
 
-import { uploadPhoto } from "@/services/photo";
-import { optimizeImageFile } from "@/utils/opt-img";
 import { Button } from "../components/button";
 import { Loading } from "../components/loading";
 import { ThemeComponent } from "../components/ThemeComponent";
+import {
+  EditorAssetAdapter,
+  EditorImageAsset,
+  UploadedEditorImage,
+  webEditorAssetAdapter,
+} from "../platform/assets";
 import { IShapeTool } from "../states/tool";
 // import { UPDATE_UNDO_REDO } from "../states/undo-redo";
 import { START_TIMER_ATOM } from "../states/timer";
@@ -688,16 +690,28 @@ const ShapeShowAtomProvider = ({
   if (ctx(value)) return null;
   return <>{children}</>;
 };
-type SelectablePhoto = Omit<
-  PhotoDocument,
-  "createdBy" | "folder" | "projectId"
->;
+type SelectablePhoto = EditorImageAsset;
 const MAX_IMAGE_UPLOAD_SIZE_BYTES = 1 * 1024 * 1024;
 
-export const LayoutShapeConfig = () => {
+const getEditorAssetErrorMessage = (error: unknown, fallback: string) => {
+  const responseError = (
+    error as { response?: { data?: { error?: string } } } | undefined
+  )?.response?.data?.error;
+
+  if (responseError) return responseError;
+  if (error instanceof Error) return error.message;
+  return fallback;
+};
+
+type LayoutShapeConfigProps = {
+  assetAdapter?: EditorAssetAdapter;
+};
+
+export const LayoutShapeConfig = ({
+  assetAdapter = webEditorAssetAdapter,
+}: LayoutShapeConfigProps) => {
   const [showIcons, setshowIcons] = useState(false);
   const [dialogImages, setDialogImages] = useState(false);
-  const [isOptimizingImage, setIsOptimizingImage] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const spHook = useShapeUpdate();
   const { shape, count } = useAtomValue(SHAPE_SELECTED_ATOM);
@@ -707,31 +721,32 @@ export const LayoutShapeConfig = () => {
   const QueryListPhotos = useQuery({
     queryKey: ["list_photos_project", PROJECT_ID],
     queryFn: async () => {
-      if (!PROJECT_ID) {
-        throw new Error("Project ID is require to get List photos");
-      }
-      return fetchListPhotosProject(PROJECT_ID);
+      return assetAdapter.listImages({ projectId: PROJECT_ID });
     },
   });
 
   const mutation = useMutation({
-    mutationFn: async (
-      newPhoto: File,
-    ): Promise<Pick<PhotoDocument, "name" | "width" | "height" | "url">> => {
-      const formData = new FormData();
-
-      formData.append("image", newPhoto); // usar el mismo nombre 'images'
-      formData.append("projectId", `${PROJECT_ID}`); // usar el mismo nombre 'images'
-
-      const response = await uploadPhoto(formData);
-      return response;
+    mutationFn: async (newPhoto: File): Promise<UploadedEditorImage> => {
+      return assetAdapter.uploadImage({
+        projectId: PROJECT_ID,
+        file: newPhoto,
+        optimization:
+          newPhoto.size > MAX_IMAGE_UPLOAD_SIZE_BYTES
+            ? {
+                quality: 80,
+                maxSizeBytes: MAX_IMAGE_UPLOAD_SIZE_BYTES,
+              }
+            : false,
+      });
     },
     onSuccess: () => {
       QueryListPhotos.refetch();
       setSelectedPhotos([]);
     },
-    onError: (error: { response: { data: { error: string } } }) => {
-      toast.error(error.response?.data?.error);
+    onError: (error) => {
+      toast.error(
+        getEditorAssetErrorMessage(error, "The image could not be uploaded."),
+      );
     },
   });
 
@@ -766,34 +781,20 @@ export const LayoutShapeConfig = () => {
     if (!file) return;
 
     try {
-      if (file.size <= MAX_IMAGE_UPLOAD_SIZE_BYTES) {
-        mutation.mutate(file);
-        return;
-      }
-
-      setIsOptimizingImage(true);
-      toast.info(`Optimizing ${file.name} before upload...`);
-
-      const optimizedFile = await optimizeImageFile({
-        file,
-        quality: 80,
-        maxSizeBytes: MAX_IMAGE_UPLOAD_SIZE_BYTES,
-      });
-
-      mutation.mutate(optimizedFile);
+      toast.info(`Preparing ${file.name} for upload...`);
+      mutation.mutate(file);
     } catch (error) {
       toast.error(
         error instanceof Error
           ? error.message
-          : `The image ${file.name} could not be optimized.`,
+          : `The image ${file.name} could not be uploaded.`,
       );
     } finally {
-      setIsOptimizingImage(false);
       e.target.value = "";
     }
   };
 
-  const isImageUploadBusy = mutation.isPending || isOptimizingImage;
+  const isImageUploadBusy = mutation.isPending;
 
   const isSelected = (id: string) => selectedPhotos.some((p) => p._id === id);
 
@@ -814,12 +815,9 @@ export const LayoutShapeConfig = () => {
 
   const mutateDelete = useMutation({
     mutationFn: async () => {
-      if (!PROJECT_ID) {
-        throw new Error("Project ID is require to get List photos");
-      }
-      await deleteManyPhotos({
-        photoIds: selectedPhotos?.map((e) => e._id),
+      await assetAdapter.deleteImages({
         projectId: PROJECT_ID,
+        imageIds: selectedPhotos?.map((e) => e._id),
       });
     },
     onSuccess: () => {
@@ -830,9 +828,10 @@ export const LayoutShapeConfig = () => {
     },
     onError: (error) => {
       toast.error("Failed to delete images", {
-        description:
-          error?.message ||
+        description: getEditorAssetErrorMessage(
+          error,
           "There was an error deleting your images. Please try again.",
+        ),
       });
     },
   });
@@ -1047,9 +1046,7 @@ export const LayoutShapeConfig = () => {
                         )}
                       </ThemeComponent>
                       <span>
-                        {isOptimizingImage
-                          ? "Optimizing image..."
-                          : "Uploading image..."}
+                        Preparing image...
                       </span>
                     </section>
                   ) : (

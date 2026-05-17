@@ -7,6 +7,7 @@ import { ReactNode, useEffect, useRef, useState } from "react";
 import { Stage } from "react-konva";
 import { cursor_event, STAGE_IDS } from "./constants/stage";
 import { useEventStage } from "./hooks/useEventStage";
+import type { EditorAssetAdapter } from "./platform/assets";
 import { Tools } from "./sidebar/Tools";
 import STAGE_CANVAS_BACKGROUND from "./states/canvas";
 import { EVENT_ATOM } from "./states/event";
@@ -15,7 +16,12 @@ import { POSITION_PAGE_ATOM, POSITION_SCALE_ATOM } from "./states/pages";
 import { RESET_SHAPES_IDS_ATOM } from "./states/shape";
 import TOOL_ATOM, { PAUSE_MODE_ATOM } from "./states/tool";
 
-const PxStage = ({ children }: { children: ReactNode }) => {
+type PxStageProps = {
+  children: ReactNode;
+  assetAdapter?: EditorAssetAdapter;
+};
+
+const PxStage = ({ children, assetAdapter }: PxStageProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
 
   const [containerSize, setContainerSize] = useState({
@@ -34,7 +40,7 @@ const PxStage = ({ children }: { children: ReactNode }) => {
   const MOVING = useAtomValue(MOVING_MOUSE_BUTTON_ATOM);
 
   const { handleMouseDown, handleMouseUp, handleMouseMove, stageRef } =
-    useEventStage();
+    useEventStage(assetAdapter);
 
   const MAX_SCALE = 90;
   const MIN_SCALE = 0.1;
