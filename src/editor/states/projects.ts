@@ -4,7 +4,6 @@ import {
   type ProjectDocument,
 } from "@pixelkit/core";
 import { atom, Getter, PrimitiveAtom } from "jotai";
-import { atomWithDefault } from "jotai/utils";
 import { ShapeBase } from "../shapes/types/shape.base";
 import { ShapeState } from "../shapes/types/shape.state";
 import { SVG } from "../utils/svg";
@@ -33,15 +32,7 @@ export type IPROJECT = {
   EVENT: PrimitiveAtom<IStageEvents> & WithInitialValue<IStageEvents>;
 };
 
-export const PROJECT_ID_ATOM = atomWithDefault<string | null>(() => {
-  if (typeof window === "undefined" || !window.location) {
-    return null;
-  }
-
-  const ID = window.location.pathname.split("/").at(-1);
-
-  return ID ?? null;
-});
+export const PROJECT_ID_ATOM = atom<string | null>(null);
 export const cloneShapeRecursive = (
   shape: SHAPE_BASE_CHILDREN,
   options?: { parentIdNull?: boolean },

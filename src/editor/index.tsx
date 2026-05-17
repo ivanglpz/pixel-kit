@@ -1,6 +1,8 @@
 /* eslint-disable @next/next/no-img-element */
 import { css } from "@stylespixelkit/css";
+import { useSetAtom } from "jotai";
 import dynamic from "next/dynamic";
+import { useEffect } from "react";
 import useBrowser from "./hooks/useBrowser";
 import useStopZoom from "./hooks/useStopZoom";
 import { useTimerAutoSave } from "./hooks/useTimerAutoSave";
@@ -10,6 +12,11 @@ import { PixelKitStagePublic } from "./public/stage";
 import { SidebarLeft } from "./sidebar/sidebar.left";
 import SidebarRight from "./sidebar/sidebar.right";
 import PxStage from "./stage";
+import { PROJECT_ID_ATOM } from "./states/projects";
+
+type PixelEditorProps = {
+  projectId?: string | null;
+};
 
 const PixelKitPublic = () => {
   useStopZoom();
@@ -53,7 +60,15 @@ export const PixelKitPublicApp = dynamic(Promise.resolve(PixelKitPublic), {
   ssr: false,
 });
 
-const PixelEditor = () => {
+const PixelEditor = ({ projectId }: PixelEditorProps) => {
+  const setProjectId = useSetAtom(PROJECT_ID_ATOM);
+
+  useEffect(() => {
+    if (typeof projectId === "undefined") return;
+
+    setProjectId(projectId);
+  }, [projectId, setProjectId]);
+
   useStopZoom();
   useBrowser();
   useTimerAutoSave();
@@ -89,7 +104,7 @@ const PixelEditor = () => {
     </div>
   );
 };
-const ComponentApp = dynamic(Promise.resolve(PixelEditor), {
+const ComponentApp = dynamic<PixelEditorProps>(Promise.resolve(PixelEditor), {
   ssr: false,
 });
 

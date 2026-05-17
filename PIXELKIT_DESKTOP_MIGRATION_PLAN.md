@@ -3,7 +3,7 @@
 ## Summary
 - Convert the repo into a `pnpm` monorepo with `apps/web`, `apps/desktop`, `packages/editor`, `packages/core`, and `packages/platform`.
 - Keep the current Next.js + MongoDB + Cloudinary backend inside `apps/web`.
-- Build `apps/desktop` with Electron + React + Vite as a local-first app.
+- Build `apps/desktop` with Electron + Next.js as a local-first app shell.
 - Desktop requires online login once, then allows offline use with cached session.
 - Desktop stores projects locally in SQLite and assets/previews on disk.
 - Cloud sync is manual in v1; conflicts create a copy instead of overwriting data.
@@ -11,7 +11,7 @@
 ## Key Changes
 - Create workspace structure:
   - `apps/web`: current Next.js app, API routes, MongoDB schemas, Cloudinary upload, auth pages, web dashboard.
-  - `apps/desktop`: Electron main/preload + Vite React renderer.
+  - `apps/desktop`: Electron main/preload + Next.js renderer.
   - `packages/editor`: shared React/Konva/Jotai editor UI and editor state.
   - `packages/core`: serializable project/page/shape types, schema helpers, snapshot parsing/building, pure editor/domain logic.
   - `packages/platform`: shared interfaces for auth, project storage, assets, preview/export, navigation, environment, and sync.
@@ -40,7 +40,8 @@
   - Store SQLite DB at `app.getPath("userData")/pixelkit.sqlite`.
   - Store assets/previews at `app.getPath("userData")/assets/{projectId}/`.
   - Cache auth token/session using Electron `safeStorage` or encrypted data in `userData`; require online login only when no valid cached session exists.
-  - Use absolute API base URL for login/manual sync, configured by env such as `VITE_PIXELKIT_API_BASE_URL`.
+  - Use an absolute cloud API base URL for login/manual sync, configured by env such as `NEXT_PUBLIC_PIXELKIT_API_BASE_URL`.
+  - Do not use Next.js API routes as the desktop local backend; desktop local persistence lives in Electron main + SQLite + filesystem.
 - Editor package:
   - Move current `src/editor` into `packages/editor/src`.
   - Remove direct dependencies on `next/router`, `next/dynamic`, `next/link`, `window.location.pathname`, Cloudinary services, Mongo types, and cookie-based auth.
@@ -64,7 +65,7 @@
   - Unit tests for project snapshot parse/build, shape serialization, and platform interface mocks.
   - Typecheck `packages/core`, `packages/platform`, and `packages/editor`.
 - Desktop:
-  - `pnpm --filter desktop dev` opens Electron app.
+  - `pnpm --filter desktop dev` opens the Electron app with the desktop Next.js renderer.
   - Online login creates cached session.
   - Relaunch without internet still opens dashboard and editor.
   - Create project offline, edit canvas, close app, reopen, verify project persists.
@@ -76,7 +77,8 @@
 
 ## Assumptions
 - Package manager stays `pnpm`.
-- Desktop v1 uses Electron + Vite + React, not Next inside Electron.
+- Desktop v1 uses Electron + Next.js for the renderer.
+- Desktop v1 does not use Next.js API routes for local desktop persistence.
 - Desktop local DB is SQLite.
 - Desktop auth is “login online once, then offline with cached session.”
 - Desktop cloud save/sync is manual in v1.

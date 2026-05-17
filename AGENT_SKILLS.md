@@ -5,7 +5,7 @@ These skills are installed locally under `.agents/skills`, but `.agents/` is int
 ## Installed Skills
 
 - `vercel-react-best-practices`: React and Next.js performance rules from Vercel Engineering.
-- `react-components`: Stitch-to-React component workflow for modular Vite/React components.
+- `react-components`: Stitch-to-React component workflow for modular React components.
 - `react-best-practices`: Vercel plugin React best-practices guidance.
 - `monorepo-management`: pnpm/Turborepo/Nx monorepo structure and dependency management.
 - `next-best-practices`: Next.js file conventions, RSC boundaries, async/data patterns, metadata, and runtime guidance.

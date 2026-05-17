@@ -25,7 +25,7 @@
 
 ### Notes
 
-- Desktop is intentionally not scaffolded yet. The next useful milestone is to make the editor less dependent on web-only services before creating a Vite/Electron renderer.
+- Desktop is intentionally not scaffolded yet. The next useful milestone is to make the editor less dependent on web-only services before creating an Electron + Next.js desktop renderer.
 
 ### Agent findings
 
@@ -65,6 +65,46 @@
 
 - `src/editor` no longer imports `@/db/schemas/types`.
 - The next safe step is Phase 1B: add focused tests or type-level checks for `@pixelkit/core` snapshot parsing, then begin isolating `PROJECT_ID_ATOM` from `window.location`.
+
+## 2026-05-17: Phase 1B Active Project Boundary
+
+### What was done
+
+- Changed `PROJECT_ID_ATOM` from a browser-path-derived atom to explicit editor state.
+- Added a `projectId` prop to the main editor entrypoint.
+- Updated the web project route to read `router.query.id` and pass it into the editor.
+
+### How it was done
+
+- The editor no longer reads `window.location.pathname` to decide the active project.
+- The current web host remains responsible for routing and project selection.
+- Existing tab/dashboard flows that set `PROJECT_ID_ATOM` directly are still preserved.
+
+### Verification
+
+- Pending for this phase.
+
+### Current status
+
+- This creates the first real host boundary for desktop: Electron can later set the active project id without emulating a Next route.
+
+## 2026-05-17: Desktop Renderer Direction Clarified
+
+### What changed
+
+- Updated the migration direction from Electron + Vite to Electron + Next.js.
+- Kept the existing principle that desktop local persistence should not depend on Next.js API routes.
+
+### Why
+
+- Next.js can be used inside Electron as the renderer/app shell.
+- The unsafe coupling for desktop is not Next.js UI; it is relying on web-only API routes, MongoDB, Cloudinary, cookies, and server-only web infrastructure for local-first behavior.
+
+### Current decision
+
+- Web and desktop can both use Next.js UI patterns.
+- Web keeps Next.js API routes for cloud/backend behavior.
+- Desktop uses Electron main + IPC + SQLite/filesystem for local-first persistence, and only talks to cloud APIs for login/manual sync.
 
 ## 2026-05-17: Project-Local Agent Skills
 

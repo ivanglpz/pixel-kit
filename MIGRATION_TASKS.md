@@ -13,6 +13,7 @@ This file tracks the migration as small phases. Each phase should leave the app 
 
 - [x] Replace web-only project/photo type imports in editor code with `@pixelkit/core`.
 - [x] Move pure project snapshot parsing/serialization helpers into `@pixelkit/core`.
+- [x] Isolate the active editor project id from `window.location.pathname`.
 - [ ] Add focused tests for snapshot parsing/building.
 - [ ] Keep Jotai atom hydration inside the current editor code until the editor package is extracted.
 
@@ -32,7 +33,8 @@ This file tracks the migration as small phases. Each phase should leave the app 
 
 ## Phase 4: Desktop Shell
 
-- [ ] Create `apps/desktop` with Electron main/preload and Vite React renderer.
+- [ ] Create `apps/desktop` with Electron main/preload and a Next.js renderer.
+- [ ] Keep Next.js API routes out of the desktop local backend; use Electron IPC for local persistence.
 - [ ] Add desktop login with cached session.
 - [ ] Add SQLite-backed local project repository.
 - [ ] Add local assets/previews under Electron `userData`.
