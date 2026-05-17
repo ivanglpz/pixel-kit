@@ -1,0 +1,13 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "composite": true,
+    "noEmit": true,
+    "rootDir": "..",
+    "baseUrl": ".",
+    "paths": {
+      "@pixelkit/core": ["../core/src/index.ts"]
+    }
+  },
+  "include": ["src/**/*.ts", "../core/src/**/*.ts"]
+}
