@@ -82,7 +82,10 @@
 
 ### Verification
 
-- Pending for this phase.
+- `rg "window.location.pathname" src/editor` returns no matches.
+- `./node_modules/.bin/tsc -p packages/core/tsconfig.json --noEmit` passed.
+- `./node_modules/.bin/tsc -p packages/platform/tsconfig.json --noEmit` passed.
+- `./node_modules/.bin/tsc --noEmit --incremental false --pretty false` passed.
 
 ### Current status
 
@@ -105,6 +108,32 @@
 - Web and desktop can both use Next.js UI patterns.
 - Web keeps Next.js API routes for cloud/backend behavior.
 - Desktop uses Electron main + IPC + SQLite/filesystem for local-first persistence, and only talks to cloud APIs for login/manual sync.
+
+## 2026-05-17: Phase 2A Autosave Adapter Boundary
+
+### What was done
+
+- Added an `EditorSaveAdapter` boundary for project autosave.
+- Moved the current web autosave implementation into `webEditorSaveAdapter`.
+- Updated `useTimerAutoSave` to call the adapter instead of importing web services directly.
+- Added an optional `saveAdapter` prop to the editor entrypoint for a future desktop-local implementation.
+
+### How it was done
+
+- Runtime behavior remains web-compatible: the default adapter still uploads the preview and updates the project through the existing web services.
+- The editor hook now depends on a save contract, not directly on Cloudinary preview upload or project API update helpers.
+
+### Verification
+
+- `./node_modules/.bin/tsc -p packages/core/tsconfig.json --noEmit` passed.
+- `./node_modules/.bin/tsc -p packages/platform/tsconfig.json --noEmit` passed.
+- `./node_modules/.bin/tsc --noEmit --incremental false --pretty false` passed.
+
+### Current status
+
+- The first platform boundary is in place for autosave.
+- Next safe step: repeat the same adapter pattern for image uploads in `useEventStage` and the right sidebar image browser.
+
 
 ## 2026-05-17: Project-Local Agent Skills
 

@@ -9,6 +9,7 @@ import { useTimerAutoSave } from "./hooks/useTimerAutoSave";
 import { AllLayers } from "./layers/root.layers";
 import { LayerPublicShapes } from "./public/layers/shapes";
 import { PixelKitStagePublic } from "./public/stage";
+import type { EditorSaveAdapter } from "./platform/save";
 import { SidebarLeft } from "./sidebar/sidebar.left";
 import SidebarRight from "./sidebar/sidebar.right";
 import PxStage from "./stage";
@@ -16,6 +17,7 @@ import { PROJECT_ID_ATOM } from "./states/projects";
 
 type PixelEditorProps = {
   projectId?: string | null;
+  saveAdapter?: EditorSaveAdapter;
 };
 
 const PixelKitPublic = () => {
@@ -60,7 +62,7 @@ export const PixelKitPublicApp = dynamic(Promise.resolve(PixelKitPublic), {
   ssr: false,
 });
 
-const PixelEditor = ({ projectId }: PixelEditorProps) => {
+const PixelEditor = ({ projectId, saveAdapter }: PixelEditorProps) => {
   const setProjectId = useSetAtom(PROJECT_ID_ATOM);
 
   useEffect(() => {
@@ -71,7 +73,7 @@ const PixelEditor = ({ projectId }: PixelEditorProps) => {
 
   useStopZoom();
   useBrowser();
-  useTimerAutoSave();
+  useTimerAutoSave(saveAdapter);
   return (
     <div
       id="pixel-app"

@@ -19,7 +19,7 @@ This file tracks the migration as small phases. Each phase should leave the app 
 
 ## Phase 2: Platform Boundary
 
-- [ ] Introduce a web platform adapter that wraps current `/api/*` services.
+- [x] Introduce a web save adapter that wraps current project preview/update services.
 - [ ] Replace direct editor calls to upload/update services with platform contracts.
 - [ ] Keep MongoDB, Cloudinary, cookies, organizations, and public sharing web-only.
 - [ ] Add test doubles for platform interfaces.

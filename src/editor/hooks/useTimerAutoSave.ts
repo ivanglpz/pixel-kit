@@ -1,17 +1,18 @@
-import { uploadPhotoPreview } from "@/services/photo";
-import { updateProject } from "@/services/projects";
-import { base64ToFile } from "@/utils/base64toFile";
-import { optimizeImageFile } from "@/utils/opt-img";
-import type { ProjectDocument } from "@pixelkit/core";
 import { useMutation } from "@tanstack/react-query";
 import { useAtom, useSetAtom } from "jotai";
 import { useEffect } from "react";
 import { toast } from "sonner";
+import {
+  EditorSaveAdapter,
+  webEditorSaveAdapter,
+} from "../platform/save";
 import { GENERATE_PREVIEW_ATOM } from "../states/export";
 import { GET_JSON_PROJECTS_ATOM } from "../states/projects";
 import { TIMER_ATOM } from "../states/timer";
 
-export function useTimerAutoSave() {
+export function useTimerAutoSave(
+  saveAdapter: EditorSaveAdapter = webEditorSaveAdapter,
+) {
   const [timer, setTimer] = useAtom(TIMER_ATOM);
 
   const GET_JSON = useSetAtom(GET_JSON_PROJECTS_ATOM);
@@ -21,29 +22,11 @@ export function useTimerAutoSave() {
     mutationFn: async () => {
       const JSON_ = GET_JSON();
       const PREVIEW = await GET_PREVIEW();
-      const formData = new FormData();
-      formData.append(
-        "image",
-        await optimizeImageFile({
-          file: base64ToFile(PREVIEW, "preview.png"),
-          quality: 25,
-        }),
-      );
-      formData.append("projectId", `${JSON_.projectId}`);
 
-      const response = await uploadPhotoPreview(formData);
-
-      const PAYLOAD: Pick<
-        ProjectDocument,
-        "_id" | "name" | "previewUrl" | "data" | "isPublic"
-      > = {
-        _id: JSON_.projectId,
-        data: JSON_.data,
-        name: JSON_.projectName,
-        isPublic: JSON_.isPublic,
-        previewUrl: response?.url ?? "./default_bg.png",
-      };
-      updateProject(PAYLOAD);
+      await saveAdapter.saveProject({
+        project: JSON_,
+        previewBase64: PREVIEW,
+      });
     },
     onSuccess: () => {
       toast.success("Project auto-saved");
