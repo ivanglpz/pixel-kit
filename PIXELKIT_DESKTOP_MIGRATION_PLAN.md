@@ -16,9 +16,10 @@
 
 ## Current Migration Status
 - Desktop MVP migration is complete through local macOS packaging.
-- `@pixelkit/desktop` can build the static renderer, compile the Electron main process, launch a local static Electron preview, and generate an unsigned arm64 DMG.
+- `@pixelkit/desktop` can build the static renderer, compile the Electron main process, launch a local static Electron preview, and generate an arm64 DMG for local testing.
 - Current DMG command: `pnpm --filter @pixelkit/desktop run electron:build:mac`.
 - Current DMG output: `apps/desktop/dist/PixelKit-0.0.0-arm64.dmg`.
+- The current DMG is not Developer ID signed or notarized, so macOS Gatekeeper can still require an explicit local-open approval.
 - Generated desktop build folders are intentionally ignored by git.
 
 ## Key Changes

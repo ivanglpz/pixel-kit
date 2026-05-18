@@ -4,6 +4,7 @@ import {
 } from "@pixelkit/core";
 import type { SyncResult } from "@pixelkit/platform";
 import { getSession } from "./auth.js";
+import { getApiBaseUrl } from "./config.js";
 import type { PixelKitDatabase } from "./database.js";
 import {
   duplicateLocalProjectFromConflict,
@@ -17,15 +18,6 @@ import {
 type ApiResponse<T> = {
   data: T;
   error?: string;
-};
-
-const getApiBaseUrl = () => {
-  const apiBaseUrl = process.env.PIXELKIT_API_BASE_URL;
-  if (!apiBaseUrl) {
-    throw new Error("PIXELKIT_API_BASE_URL is required for desktop sync");
-  }
-
-  return apiBaseUrl;
 };
 
 const fetchRemoteProject = async (

@@ -364,7 +364,7 @@
 ### Current constraints
 
 - No tests, typecheck, verification, install, or lockfile refresh commands were run.
-- `PIXELKIT_API_BASE_URL` is required for login and sync.
+- Desktop auth points to the hosted PixelKit web API by default; `PIXELKIT_API_BASE_URL` is only an override for alternate login/sync targets.
 - Cloud project creation from local-only desktop projects is not implemented yet because the current web create endpoint requires organization context.
 
 ### Current status
@@ -469,4 +469,26 @@
 ### Current status
 
 - Phase 7 packaging is complete for local macOS builds.
-- The desktop MVP migration phases are complete through an unsigned local DMG.
+- The desktop MVP migration phases are complete through a local-only macOS DMG.
+
+## 2026-05-18: Phase 7B Local DMG Runability
+
+### What was done
+
+- Investigated the generated DMG after a local run attempt failed.
+- Confirmed the DMG image checksum is valid and the current machine architecture is `arm64`.
+- Mounted the DMG and confirmed `PixelKit.app` is present.
+- Found the app bundle failed `codesign --verify --deep --strict` with `code has no resources but signature indicates they must be present`.
+- Added a custom Electron Builder mac hook that applies macOS' local ad-hoc code marker (`codesign -s -`) to the assembled `.app` before DMG creation.
+- Updated desktop packaging docs to make clear this is a local build without a Developer ID certificate or notarization.
+
+### Why the DMG did not open cleanly
+
+- The DMG file itself was valid, but the app bundle inside it was not structurally codesign-valid.
+- The package is intentionally not Developer ID signed or notarized, so Gatekeeper can still block first launch unless the user explicitly approves opening it.
+- The DMG should be mounted first; the runnable artifact is `PixelKit.app` inside the mounted volume.
+
+### Current status
+
+- Phase 7 now produces a local DMG whose app bundle is structurally valid on macOS.
+- The package is still not ready for broad external distribution until Developer ID signing and notarization are configured.

@@ -77,5 +77,5 @@ This file tracks the migration as small phases. Each phase should leave the app 
 - [x] Configure static Next export for Electron packaging.
 - [x] Add macOS DMG packaging with Electron Builder.
 - [x] Keep generated `.next`, `out`, `dist-electron`, and `dist` artifacts out of git.
-- [x] Decide signing/notarization requirements for this phase: unsigned local DMG, `identity: null`.
+- [x] Decide signing/notarization requirements for this phase: local-only DMG, no Developer ID certificate, no notarization.
 - [x] Document desktop environment variables and release commands.

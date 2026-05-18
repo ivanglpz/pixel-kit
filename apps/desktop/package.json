@@ -9,7 +9,7 @@
     "dev:electron": "PIXELKIT_DESKTOP_RENDERER_URL=http://localhost:4210 electron --import tsx electron/main.ts",
     "rebuild:native": "electron-builder install-app-deps",
     "build:renderer": "PIXELKIT_DESKTOP_EXPORT=1 next build",
-    "build:electron": "tsc -p tsconfig.electron.json && node scripts/prepare-electron-dist.cjs",
+    "build:electron": "node scripts/prepare-electron-dist.cjs",
     "build": "pnpm run build:renderer && pnpm run build:electron",
     "start": "PIXELKIT_DESKTOP_RENDERER_MODE=file electron .",
     "electron:build": "pnpm run build && electron-builder",
@@ -21,7 +21,8 @@
     "files": [
       "out/**/*",
       "dist-electron/**/*",
-      "package.json"
+      "package.json",
+      "!node_modules/@pixelkit/**"
     ],
     "asarUnpack": [
       "**/*.node"
@@ -31,7 +32,8 @@
     },
     "mac": {
       "target": "dmg",
-      "identity": null
+      "sign": "./scripts/sign-mac.cjs",
+      "gatekeeperAssess": false
     }
   },
   "dependencies": {
@@ -52,6 +54,7 @@
     "@types/react-dom": "18.3.7",
     "electron": "39.1.0",
     "electron-builder": "24.13.3",
+    "esbuild": "0.25.10",
     "tsx": "4.19.4",
     "typescript": "5.0.4"
   }

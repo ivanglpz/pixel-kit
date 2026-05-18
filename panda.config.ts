@@ -3,7 +3,12 @@ import { defineConfig } from "@pandacss/dev";
 
 export default defineConfig({
   preflight: true,
-  include: ["./src/**/*.{js,jsx,ts,tsx}", "./pages/**/*.{js,jsx,ts,tsx}"],
+  include: [
+    "./src/**/*.{js,jsx,ts,tsx}",
+    "./pages/**/*.{js,jsx,ts,tsx}",
+    "./packages/editor/src/**/*.{js,jsx,ts,tsx}",
+    "./apps/desktop/src/**/*.{js,jsx,ts,tsx}",
+  ],
   exclude: [],
   importMap: "@stylespixelkit",
 

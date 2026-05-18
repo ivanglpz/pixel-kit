@@ -24,8 +24,8 @@ Desktop local persistence must not use Next.js API routes.
 - Renderer talks to preload.
 - Preload talks to Electron main through IPC.
 - Electron main talks to SQLite/filesystem.
-- Cloud login uses `PIXELKIT_API_BASE_URL` only for the remote login call.
-- Manual cloud sync also uses `PIXELKIT_API_BASE_URL` from Electron main.
+- Cloud login uses `PIXELKIT_API_BASE_URL` for the remote login call, falling back to `https://pixel-kit.vercel.app` for local packaged builds.
+- Manual cloud sync uses the same API base URL from Electron main.
 
 ## Sync Behavior
 
@@ -53,9 +53,13 @@ The renderer and Electron process are separate commands for now:
 
 - `pnpm --filter @pixelkit/desktop run electron:build:mac`
 
-The current package is an unsigned local DMG generated at `apps/desktop/dist/PixelKit-0.0.0-arm64.dmg`.
+The current package is a local-only DMG generated at `apps/desktop/dist/PixelKit-0.0.0-arm64.dmg`.
 Generated build folders are ignored by git.
+
+The DMG is a disk image, not the executable itself. Open/mount it, then open `PixelKit.app` from the mounted volume or drag it to `/Applications`.
+
+This build does not use a Developer ID certificate and is not notarized. The packaging step only applies macOS' local ad-hoc code marker (`codesign -s -`) so the app bundle is structurally valid; Gatekeeper may still require right-clicking `PixelKit.app` and choosing `Open`.
 
 ## Environment
 
-- `PIXELKIT_API_BASE_URL`: required for cloud login and manual sync.
+- `PIXELKIT_API_BASE_URL`: optional override for cloud login and manual sync. Defaults to `https://pixel-kit.vercel.app`.

@@ -5,10 +5,16 @@ import { dirname } from "node:path";
 
 export type PixelKitDatabase = DatabaseType;
 
-export const openPixelKitDatabase = (databasePath: string) => {
+export const openPixelKitDatabase = (
+  databasePath: string,
+  nativeBinding?: string,
+) => {
   mkdirSync(dirname(databasePath), { recursive: true });
 
-  const db = new Database(databasePath);
+  const db = new Database(
+    databasePath,
+    nativeBinding ? { nativeBinding } : undefined,
+  );
   db.pragma("journal_mode = WAL");
   db.pragma("foreign_keys = ON");
 

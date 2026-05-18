@@ -3,6 +3,7 @@ import type { AuthSession, LoginCredentials } from "@pixelkit/platform";
 import type { UserProfile } from "@pixelkit/core";
 import type { PixelKitDatabase } from "./database.js";
 import type { SessionRow } from "../types.js";
+import { getApiBaseUrl } from "./config.js";
 
 type JwtPayload = {
   email?: string;
@@ -79,11 +80,7 @@ export const loginWithCloud = async (
   db: PixelKitDatabase,
   credentials: LoginCredentials,
 ): Promise<AuthSession> => {
-  const apiBaseUrl = process.env.PIXELKIT_API_BASE_URL;
-  if (!apiBaseUrl) {
-    throw new Error("PIXELKIT_API_BASE_URL is required for desktop login");
-  }
-
+  const apiBaseUrl = getApiBaseUrl();
   const response = await fetch(`${apiBaseUrl}/api/users/login`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
