@@ -44,16 +44,18 @@ This file tracks the migration as small phases. Each phase should leave the app 
 
 ## Phase 4: Desktop Shell
 
-- [ ] Create `apps/desktop` with Electron main/preload and a Next.js renderer.
-- [ ] Keep Next.js API routes out of the desktop local backend; use Electron IPC for local persistence.
-- [ ] Add desktop login with cached session.
-- [ ] Add SQLite-backed local project repository.
-- [ ] Add local assets/previews under Electron `userData`.
-- [ ] Add dashboard and editor screens.
+- [x] Create `apps/desktop` with Electron main/preload and a Next.js renderer.
+- [x] Keep Next.js API routes out of the desktop local backend; use Electron IPC for local persistence.
+- [x] Add desktop login with cached session.
+- [x] Add SQLite-backed local project repository.
+- [x] Add local assets/previews under Electron `userData`.
+- [x] Add dashboard and editor screens.
+- [ ] Refresh workspace install/lockfile. Blocked until explicitly requested.
 
 ## Phase 5: Manual Cloud Sync
 
-- [ ] Add manual push/pull sync from desktop.
-- [ ] Detect divergence between local and remote projects.
-- [ ] Create a local copy when conflict is detected.
-- [ ] Record sync status per project.
+- [x] Add manual push/pull sync from desktop.
+- [x] Detect divergence between local and remote projects.
+- [x] Create a local copy when conflict is detected.
+- [x] Record sync status per project.
+- [ ] Refresh workspace install/lockfile. Blocked until explicitly requested.

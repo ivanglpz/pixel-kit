@@ -1,0 +1,20 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "noEmit": true,
+    "paths": {
+      "@/*": ["./src/*"],
+      "@pixelkit/core": ["../../packages/core/src/index.ts"],
+      "@pixelkit/editor": ["../../packages/editor/src/index.tsx"],
+      "@pixelkit/platform": ["../../packages/platform/src/index.ts"],
+      "@stylespixelkit/*": ["../../styled-system/*"]
+    }
+  },
+  "include": [
+    "electron/**/*.ts",
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "next-env.d.ts"
+  ]
+}

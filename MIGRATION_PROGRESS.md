@@ -300,6 +300,79 @@
 - Phase 3 physical extraction is complete.
 - Next safe step: begin Phase 4 desktop shell scaffolding while keeping local persistence in Electron IPC/SQLite, not Next.js API routes.
 
+## 2026-05-17: Phase 4A Desktop Shell And Local Backend
+
+### What was done
+
+- Added the `@pixelkit/desktop` workspace package under `apps/desktop`.
+- Added a Next.js renderer for the desktop app.
+- Added Electron main process startup and a preload IPC bridge exposed as `window.pixelkitDesktop`.
+- Added IPC handlers for auth, projects, assets, and previews.
+- Added SQLite-backed local project storage under Electron `userData`.
+- Added local asset and preview storage under Electron `userData`.
+- Added cached desktop login using the remote login endpoint configured by `PIXELKIT_API_BASE_URL`.
+- Added basic desktop screens:
+  - login
+  - local project dashboard
+  - editor route using `@pixelkit/editor`
+- Added desktop renderer adapters that connect `@pixelkit/editor` save and asset operations to Electron IPC.
+- Added `initialProject` hydration support to `@pixelkit/editor` so desktop can open a local project document directly.
+
+### How it was done
+
+- Desktop local persistence lives in Electron main, not in Next.js API routes.
+- The renderer only talks to `window.pixelkitDesktop`.
+- SQLite database path: `app.getPath("userData")/pixelkit.sqlite`.
+- Asset path: `app.getPath("userData")/assets/{projectId}/`.
+- Preview path: `app.getPath("userData")/previews/{projectId}/`.
+- Login tokens are cached in SQLite and encrypted with Electron `safeStorage` when available.
+
+### Current constraints
+
+- No tests, typecheck, verification, install, or lockfile refresh commands were run.
+- `apps/desktop/package.json` declares new desktop dependencies, but `pnpm-lock.yaml` has not been refreshed.
+- Manual cloud sync is not implemented yet.
+- The desktop dev flow is currently two commands: one for the Next renderer and one for Electron.
+
+### Current status
+
+- Phase 4 shell, local project repository, local assets/previews, cached login, dashboard, and editor route are scaffolded.
+- Next safe step: Phase 5 manual cloud sync, or explicitly refresh/install dependencies if requested.
+
+## 2026-05-17: Phase 5A Manual Cloud Sync
+
+### What was done
+
+- Added desktop IPC handlers for manual project push and pull.
+- Added remote project fetch/update helpers in Electron main.
+- Added local sync metadata through the SQLite `remote_updated_at` column.
+- Added divergence detection between local dirty projects and changed remote projects.
+- Added conflict-copy behavior using the `"{name} local copy"` naming rule.
+- Added dashboard controls to:
+  - pull a remote project by id
+  - push a linked local project
+- Recorded sync status changes on local project records.
+
+### How it was done
+
+- Sync runs in Electron main, not in Next.js API routes.
+- The renderer calls `window.pixelkitDesktop.sync.pullProject` and `window.pixelkitDesktop.sync.pushProject`.
+- Pull creates or updates a local SQLite project linked by `remoteId`.
+- Push requires an existing `remoteId`; local-only projects are not silently created in the cloud.
+- If both local and remote changed, Electron creates a local conflict copy and does not overwrite remote data silently.
+
+### Current constraints
+
+- No tests, typecheck, verification, install, or lockfile refresh commands were run.
+- `PIXELKIT_API_BASE_URL` is required for login and sync.
+- Cloud project creation from local-only desktop projects is not implemented yet because the current web create endpoint requires organization context.
+
+### Current status
+
+- Manual push/pull sync behavior is scaffolded.
+- Desktop MVP implementation phases are now present in code.
+- Next safe step: explicitly refresh/install workspace dependencies and run verification only if requested.
+
 
 ## 2026-05-17: Project-Local Agent Skills
 

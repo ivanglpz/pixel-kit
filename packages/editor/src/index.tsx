@@ -11,13 +11,18 @@ import { PixelKitStagePublic } from "./public/stage";
 import type { EditorAssetAdapter } from "./platform/assets";
 import type { EditorPublicProjectAdapter } from "./platform/public-projects";
 import type { EditorSaveAdapter } from "./platform/save";
+import type { ProjectDocument } from "@pixelkit/core";
 import { SidebarLeft } from "./sidebar/sidebar.left";
 import SidebarRight from "./sidebar/sidebar.right";
 import PxStage from "./stage";
-import { PROJECT_ID_ATOM } from "./states/projects";
+import {
+  BUILD_PROJECT_FROM_DOCUMENT,
+  PROJECT_ID_ATOM,
+} from "./states/projects";
 
 type PixelEditorProps = {
   projectId?: string | null;
+  initialProject?: ProjectDocument | null;
   saveAdapter?: EditorSaveAdapter;
   assetAdapter?: EditorAssetAdapter;
 };
@@ -94,16 +99,22 @@ export const PixelKitPublicApp = (props: PixelPublicEditorProps) => (
 
 const PixelEditor = ({
   projectId,
+  initialProject,
   saveAdapter,
   assetAdapter,
 }: PixelEditorProps) => {
   const setProjectId = useSetAtom(PROJECT_ID_ATOM);
+  const buildProjectFromDocument = useSetAtom(BUILD_PROJECT_FROM_DOCUMENT);
 
   useEffect(() => {
     if (typeof projectId === "undefined") return;
 
     setProjectId(projectId);
   }, [projectId, setProjectId]);
+
+  useEffect(() => {
+    buildProjectFromDocument(initialProject);
+  }, [initialProject, buildProjectFromDocument]);
 
   useStopZoom();
   useBrowser();
@@ -147,3 +158,6 @@ const ComponentApp = (props: PixelEditorProps) => (
 );
 
 export default ComponentApp;
+export type { EditorAssetAdapter } from "./platform/assets";
+export type { EditorSaveAdapter } from "./platform/save";
+export type { EditorPublicProjectAdapter } from "./platform/public-projects";

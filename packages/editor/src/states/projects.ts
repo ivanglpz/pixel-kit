@@ -255,6 +255,18 @@ export const BUILD_PROJET_PUBLIC = atom(
   },
 );
 
+export const BUILD_PROJECT_FROM_DOCUMENT = atom(
+  null,
+  async (get, set, projectDocument: ProjectDocument | undefined | null) => {
+    if (!projectDocument) return;
+
+    const project = await buildPublicProjectAtom(projectDocument);
+    if (!project) return;
+
+    set(PROJECTS_ATOM, [project]);
+  },
+);
+
 export const BUILD_PROJECS_FROM_TABS = atom(null, async (get, set) => {
   const projectsStore = get(GET_TABS_BY_USER);
   const listProjects = get(PROJECTS_ATOM);
