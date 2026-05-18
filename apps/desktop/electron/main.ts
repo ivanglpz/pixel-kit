@@ -1,9 +1,9 @@
 import { app, BrowserWindow } from "electron";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
-import { getDesktopPaths } from "./storage/paths";
-import { openPixelKitDatabase } from "./storage/database";
-import { registerIpcHandlers } from "./ipc/handlers";
+import { getDesktopPaths } from "./storage/paths.js";
+import { openPixelKitDatabase } from "./storage/database.js";
+import { registerIpcHandlers } from "./ipc/handlers.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -25,6 +25,14 @@ const createWindow = () => {
 
   const rendererUrl =
     process.env.PIXELKIT_DESKTOP_RENDERER_URL ?? "http://localhost:4210";
+
+  if (
+    app.isPackaged ||
+    process.env.PIXELKIT_DESKTOP_RENDERER_MODE === "file"
+  ) {
+    void mainWindow.loadFile(join(app.getAppPath(), "out", "index.html"));
+    return;
+  }
 
   void mainWindow.loadURL(rendererUrl);
 };

@@ -11,6 +11,11 @@ node_modules/
 
 # next.js
 /.next/
+.next/
+apps/desktop/.next/
+apps/desktop/out/
+apps/desktop/dist/
+apps/desktop/dist-electron/
 /out/
 
 # production
@@ -39,3 +44,4 @@ styled-system
 
 # local agent skill installs
 .agents/
+.playwright-mcp/

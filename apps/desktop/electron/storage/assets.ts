@@ -7,9 +7,9 @@ import type {
   SaveAssetPayload,
   SavePreviewPayload,
   StoredAssetRecord,
-} from "../types";
-import type { PixelKitDatabase } from "./database";
-import type { DesktopPaths } from "./paths";
+} from "../types.js";
+import type { PixelKitDatabase } from "./database.js";
+import type { DesktopPaths } from "./paths.js";
 
 const nowIso = () => new Date().toISOString();
 

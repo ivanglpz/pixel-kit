@@ -400,3 +400,73 @@
 - No package dependencies were added to `package.json`.
 - `.agents/` is ignored; `skills-lock.json` is the versioned record.
 - Future agents should prefer these skills when touching React, Next.js, monorepo structure, TypeScript contracts, and shadcn UI.
+
+## 2026-05-17: Phase 6A Desktop Stabilization
+
+### What was done
+
+- Refreshed workspace dependencies after explicit approval and added the desktop runtime libraries needed by `@pixelkit/desktop`.
+- Replaced the desktop renderer config with `apps/desktop/next.config.mjs` so Next.js loads the desktop-specific configuration.
+- Configured desktop renderer transpilation for `@pixelkit/core`, `@pixelkit/editor`, and `@pixelkit/platform`.
+- Added desktop renderer aliases for shared workspace imports used by the extracted editor package.
+- Forced the desktop renderer to resolve `react`, `react-dom`, and `react/jsx-runtime` from the workspace root to avoid duplicate React runtime errors.
+- Changed the desktop project editor page to load `@pixelkit/editor` client-side only, avoiding server-side `konva/react-konva` page-data crashes.
+- Added a browser fallback for the desktop login page when the Electron preload bridge is not available.
+- Removed the missing `/cursors/default.png` global cursor reference that caused a desktop renderer 404.
+- Ignored generated local verification folders so they do not enter migration commits.
+
+### Verification
+
+- `pnpm --filter @pixelkit/desktop exec tsc --noEmit` passed after the desktop stabilization fixes.
+- `pnpm --filter @pixelkit/desktop exec next build` passed after the desktop stabilization fixes.
+- The desktop renderer loaded on `http://localhost:4210` and showed the login screen with a clear preload-bridge-unavailable message in normal browser mode.
+
+### Current constraints
+
+- These were verification commands explicitly authorized for this stabilization phase.
+- No tests, test doubles, mocks, fixtures, or test-specific helpers were added.
+- Remaining non-blocking warnings: current Node is `v24.13.1` while the repo declares `22.x`, and Browserslist data is outdated.
+- The actual Electron window and IPC bridge runtime still need a direct launch check.
+
+### Current status
+
+- Phase 6 desktop renderer stabilization is complete.
+- The Electron static preview launched from the exported renderer and initialized the local SQLite bridge after rebuilding native dependencies for Electron.
+- Next safe step: Phase 7 packaging and release prep.
+
+## 2026-05-17: Phase 7A Desktop Packaging
+
+### What was done
+
+- Switched the desktop editor route from dynamic `/project/[id]` to static `/project?id=...` so Next static export can package arbitrary local project ids.
+- Added `output: "export"`, static image handling, and relative asset prefixing for the desktop production renderer build.
+- Added a production Electron build path:
+  - `pnpm --filter @pixelkit/desktop run build`
+  - `pnpm --filter @pixelkit/desktop run start`
+  - `pnpm --filter @pixelkit/desktop run electron:build:mac`
+- Added `tsconfig.electron.json` and a small prepare script to compile Electron main process code into `dist-electron` and copy the preload bridge.
+- Updated Electron main to load the exported `out/index.html` in packaged/static mode and the dev server in development mode.
+- Added Electron Builder configuration for an unsigned local macOS DMG.
+- Updated native runtime dependencies:
+  - `better-sqlite3` moved to `12.10.0` for Electron 39 compatibility.
+  - `electron-builder` added at `24.13.3` because `26.0.12` conflicts with the repo's pnpm exotic subdependency policy.
+- Added generated desktop build outputs to `.gitignore`.
+
+### Verification
+
+- `pnpm --filter @pixelkit/desktop run build` passed and produced a static Next export plus compiled Electron main files.
+- `pnpm --filter @pixelkit/desktop run rebuild:native` completed through Electron Builder's native dependency install path.
+- `pnpm --filter @pixelkit/desktop start` launched Electron against the exported renderer without startup errors after the native SQLite rebuild.
+- `pnpm --filter @pixelkit/desktop run electron:build:mac` passed and generated `apps/desktop/dist/PixelKit-0.0.0-arm64.dmg`.
+
+### Current constraints
+
+- These were build/verification commands explicitly authorized to finish the migration phases.
+- No tests, test doubles, mocks, fixtures, or test-specific helpers were added.
+- The DMG is unsigned and not notarized; this phase intentionally uses `identity: null`.
+- Remaining non-blocking warnings: current Node is `v24.13.1` while the repo declares `22.x`, Browserslist data is outdated, package metadata lacks desktop `description`/`author`, and no custom Electron app icon is configured yet.
+
+### Current status
+
+- Phase 7 packaging is complete for local macOS builds.
+- The desktop MVP migration phases are complete through an unsigned local DMG.

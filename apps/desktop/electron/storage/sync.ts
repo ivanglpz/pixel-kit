@@ -3,8 +3,8 @@ import {
   type ProjectDocument,
 } from "@pixelkit/core";
 import type { SyncResult } from "@pixelkit/platform";
-import { getSession } from "./auth";
-import type { PixelKitDatabase } from "./database";
+import { getSession } from "./auth.js";
+import type { PixelKitDatabase } from "./database.js";
 import {
   duplicateLocalProjectFromConflict,
   getProject,
@@ -12,7 +12,7 @@ import {
   getProjectRow,
   markProjectSynced,
   upsertProjectFromRemote,
-} from "./projects";
+} from "./projects.js";
 
 type ApiResponse<T> = {
   data: T;

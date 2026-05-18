@@ -59,3 +59,23 @@ This file tracks the migration as small phases. Each phase should leave the app 
 - [x] Create a local copy when conflict is detected.
 - [x] Record sync status per project.
 - [ ] Refresh workspace install/lockfile. Blocked until explicitly requested.
+
+## Phase 6: Desktop Stabilization
+
+- [x] Refresh workspace install/lockfile after explicit approval.
+- [x] Add Electron and desktop runtime dependencies after explicit approval.
+- [x] Verify the desktop renderer typecheck/build after explicit approval.
+- [x] Fix desktop renderer package transpilation and module aliases.
+- [x] Fix duplicate React runtime in the desktop renderer.
+- [x] Verify the desktop renderer loads in browser fallback mode.
+- [x] Remove missing cursor asset reference that caused a renderer 404.
+- [x] Verify the Electron window and IPC bridge runtime.
+
+## Phase 7: Packaging And Release Prep
+
+- [x] Add a production desktop build/package path.
+- [x] Configure static Next export for Electron packaging.
+- [x] Add macOS DMG packaging with Electron Builder.
+- [x] Keep generated `.next`, `out`, `dist-electron`, and `dist` artifacts out of git.
+- [x] Decide signing/notarization requirements for this phase: unsigned local DMG, `identity: null`.
+- [x] Document desktop environment variables and release commands.

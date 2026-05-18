@@ -3,6 +3,15 @@ import type { AuthSession } from "@pixelkit/platform";
 import type { LocalProjectRecord } from "@pixelkit/core";
 import { getDesktopApi } from "../lib/desktop-api";
 
+const openProject = (projectId: string) => {
+  const encodedProjectId = encodeURIComponent(projectId);
+
+  window.location.href =
+    window.location.protocol === "file:"
+      ? `./project.html?id=${encodedProjectId}`
+      : `/project?id=${encodedProjectId}`;
+};
+
 export default function DesktopHome() {
   const [session, setSession] = useState<AuthSession | null>(null);
   const [projects, setProjects] = useState<LocalProjectRecord[]>([]);
@@ -22,13 +31,21 @@ export default function DesktopHome() {
   };
 
   useEffect(() => {
-    getDesktopApi()
-      .auth.getSession()
-      .then((cachedSession) => {
-        setSession(cachedSession);
-        return loadProjects(cachedSession);
-      })
-      .catch((error) => setMessage(error.message));
+    try {
+      getDesktopApi()
+        .auth.getSession()
+        .then((cachedSession) => {
+          setSession(cachedSession);
+          return loadProjects(cachedSession);
+        })
+        .catch((error) => setMessage(error.message));
+    } catch (error) {
+      setMessage(
+        error instanceof Error
+          ? error.message
+          : "PixelKit desktop bridge is not available",
+      );
+    }
   }, []);
 
   const handleLogin = async () => {
@@ -50,7 +67,7 @@ export default function DesktopHome() {
       userId: session.user.userId,
     });
     setProjects((current) => [project, ...current]);
-    window.location.href = `/project/${project.id}`;
+    openProject(project.id);
   };
 
   const handlePullRemoteProject = async () => {
@@ -180,7 +197,7 @@ export default function DesktopHome() {
               <button
                 className="flex-1 text-left"
                 onClick={() => {
-                  window.location.href = `/project/${project.id}`;
+                  openProject(project.id);
                 }}
               >
                 <p className="font-medium">{project.name}</p>

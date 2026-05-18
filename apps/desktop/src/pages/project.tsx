@@ -1,13 +1,17 @@
-import PixelEditor from "@pixelkit/editor";
+import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
 import { useEffect, useMemo, useState } from "react";
 import type { LocalProjectRecord, ProjectDocument } from "@pixelkit/core";
-import { getDesktopApi } from "../../lib/desktop-api";
-import { localProjectToDocument } from "../../lib/project-document";
+import { getDesktopApi } from "../lib/desktop-api";
+import { localProjectToDocument } from "../lib/project-document";
 import {
   createDesktopAssetAdapter,
   createDesktopSaveAdapter,
-} from "../../lib/editor-adapters";
+} from "../lib/editor-adapters";
+
+const PixelEditor = dynamic(() => import("@pixelkit/editor"), {
+  ssr: false,
+});
 
 export default function DesktopProjectEditor() {
   const router = useRouter();
@@ -31,7 +35,9 @@ export default function DesktopProjectEditor() {
         setProject(localProjectToDocument(localProject));
       })
       .catch((error) => {
-        setMessage(error instanceof Error ? error.message : "Project failed to load");
+        setMessage(
+          error instanceof Error ? error.message : "Project failed to load",
+        );
       });
   }, [projectId]);
 

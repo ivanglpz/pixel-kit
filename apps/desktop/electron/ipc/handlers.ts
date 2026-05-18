@@ -1,29 +1,29 @@
 import { ipcMain } from "electron";
-import type { PixelKitDatabase } from "../storage/database";
+import type { PixelKitDatabase } from "../storage/database.js";
 import {
   clearSession,
   getSession,
   loginWithCloud,
-} from "../storage/auth";
+} from "../storage/auth.js";
 import {
   createProject,
   deleteProject,
   getProject,
   listProjects,
   updateProjectSnapshot,
-} from "../storage/projects";
+} from "../storage/projects.js";
 import {
   deleteAsset,
   listAssets,
   saveAsset,
   savePreview,
-} from "../storage/assets";
-import { pullProject, pushProject } from "../storage/sync";
-import type { DesktopPaths } from "../storage/paths";
+} from "../storage/assets.js";
+import { pullProject, pushProject } from "../storage/sync.js";
+import type { DesktopPaths } from "../storage/paths.js";
 import type {
   SaveAssetPayload,
   SavePreviewPayload,
-} from "../types";
+} from "../types.js";
 import type {
   CreateProjectInput,
   LoginCredentials,

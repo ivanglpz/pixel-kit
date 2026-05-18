@@ -4,10 +4,14 @@
     "baseUrl": ".",
     "noEmit": true,
     "paths": {
+      "@/db/*": ["../../src/db/*"],
+      "@/editor": ["../../packages/editor/src/index.tsx"],
+      "@/editor/*": ["../../packages/editor/src/*"],
+      "@/jotai/*": ["../../src/jotai/*"],
+      "@/pages/*": ["../../src/pages/*"],
+      "@/services/*": ["../../src/services/*"],
+      "@/utils/*": ["../../src/utils/*"],
       "@/*": ["./src/*"],
-      "@pixelkit/core": ["../../packages/core/src/index.ts"],
-      "@pixelkit/editor": ["../../packages/editor/src/index.tsx"],
-      "@pixelkit/platform": ["../../packages/platform/src/index.ts"],
       "@stylespixelkit/*": ["../../styled-system/*"]
     }
   },

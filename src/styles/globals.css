@@ -1,8 +1,8 @@
 @layer reset, base, tokens, recipes, utilities;
-@import "tailwindcss";
 @import url("./fonts.css");
 @import url("./editor/fonts.css");
 @import url("./effects.css");
+@import "tailwindcss";
 @import "tw-animate-css";
 
 @custom-variant dark (&:is(.dark *));
@@ -26,7 +26,7 @@ body {
   height: 100%;
   display: flex;
   flex-direction: column;
-  cursor: url("/cursors/default.png"), auto;
+  cursor: auto;
   font-family: "Plus Jakarta Sans", sans-serif !important;
   max-width: 100%;
   overscroll-behavior: contain;

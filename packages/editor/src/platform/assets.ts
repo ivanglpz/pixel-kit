@@ -66,7 +66,7 @@ export const webEditorAssetAdapter: EditorAssetAdapter = {
       throw new Error("Project ID is required to list images");
     }
 
-    return fetchListPhotosProject(projectId);
+    return fetchListPhotosProject(projectId) as Promise<EditorImageAsset[]>;
   },
 
   async deleteImages({ projectId, imageIds }) {

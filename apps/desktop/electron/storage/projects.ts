@@ -7,8 +7,8 @@ import type {
   ProjectSnapshot,
 } from "@pixelkit/core";
 import type { CreateProjectInput, UpdateProjectSnapshotInput } from "@pixelkit/platform";
-import type { PixelKitDatabase } from "./database";
-import type { ProjectRow } from "../types";
+import type { PixelKitDatabase } from "./database.js";
+import type { ProjectRow } from "../types.js";
 
 const nowIso = () => new Date().toISOString();
 

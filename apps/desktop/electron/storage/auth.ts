@@ -1,8 +1,8 @@
 import { safeStorage } from "electron";
 import type { AuthSession, LoginCredentials } from "@pixelkit/platform";
 import type { UserProfile } from "@pixelkit/core";
-import type { PixelKitDatabase } from "./database";
-import type { SessionRow } from "../types";
+import type { PixelKitDatabase } from "./database.js";
+import type { SessionRow } from "../types.js";
 
 type JwtPayload = {
   email?: string;

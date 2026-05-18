@@ -3,18 +3,43 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
-  "main": "./electron/main.ts",
+  "main": "./dist-electron/main.js",
   "scripts": {
     "dev:renderer": "next dev -p 4210",
-    "dev:electron": "PIXELKIT_DESKTOP_RENDERER_URL=http://localhost:4210 tsx electron/main.ts"
+    "dev:electron": "PIXELKIT_DESKTOP_RENDERER_URL=http://localhost:4210 electron --import tsx electron/main.ts",
+    "rebuild:native": "electron-builder install-app-deps",
+    "build:renderer": "PIXELKIT_DESKTOP_EXPORT=1 next build",
+    "build:electron": "tsc -p tsconfig.electron.json && node scripts/prepare-electron-dist.cjs",
+    "build": "pnpm run build:renderer && pnpm run build:electron",
+    "start": "PIXELKIT_DESKTOP_RENDERER_MODE=file electron .",
+    "electron:build": "pnpm run build && electron-builder",
+    "electron:build:mac": "pnpm run build && electron-builder --mac"
+  },
+  "build": {
+    "appId": "com.pixelkit.desktop",
+    "productName": "PixelKit",
+    "files": [
+      "out/**/*",
+      "dist-electron/**/*",
+      "package.json"
+    ],
+    "asarUnpack": [
+      "**/*.node"
+    ],
+    "directories": {
+      "output": "dist"
+    },
+    "mac": {
+      "target": "dmg",
+      "identity": null
+    }
   },
   "dependencies": {
     "@pixelkit/core": "workspace:*",
     "@pixelkit/editor": "workspace:*",
     "@pixelkit/platform": "workspace:*",
     "@tanstack/react-query": "5.90.2",
-    "better-sqlite3": "12.2.0",
-    "electron": "39.1.0",
+    "better-sqlite3": "12.10.0",
     "next": "15.5.9",
     "react": "18.3.1",
     "react-dom": "18.3.1",
@@ -25,6 +50,8 @@
     "@types/node": "24.5.2",
     "@types/react": "18.3.24",
     "@types/react-dom": "18.3.7",
+    "electron": "39.1.0",
+    "electron-builder": "24.13.3",
     "tsx": "4.19.4",
     "typescript": "5.0.4"
   }

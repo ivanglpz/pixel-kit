@@ -34,11 +34,28 @@ Desktop local persistence must not use Next.js API routes.
 - Conflict rule: when local dirty data and remote data both changed, the local version is copied as `"{name} local copy"` and remote data is preserved.
 - Local-only project cloud creation is intentionally not wired yet because the current web create endpoint requires organization context.
 
-## Manual Start Shape
+## Development
 
 The renderer and Electron process are separate commands for now:
 
 - `pnpm --filter @pixelkit/desktop dev:renderer`
 - `pnpm --filter @pixelkit/desktop dev:electron`
 
-Dependency installation/lockfile refresh is intentionally left for a later explicit step.
+## Local Production Preview
+
+- `pnpm --filter @pixelkit/desktop run build`
+- `pnpm --filter @pixelkit/desktop run rebuild:native`
+- `pnpm --filter @pixelkit/desktop run start`
+
+`start` loads the static Next export from `out/` through Electron, without a Next dev server.
+
+## macOS Package
+
+- `pnpm --filter @pixelkit/desktop run electron:build:mac`
+
+The current package is an unsigned local DMG generated at `apps/desktop/dist/PixelKit-0.0.0-arm64.dmg`.
+Generated build folders are ignored by git.
+
+## Environment
+
+- `PIXELKIT_API_BASE_URL`: required for cloud login and manual sync.
