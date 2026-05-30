@@ -1,17 +1,17 @@
 /* eslint-disable @next/next/no-img-element */
+import type { ProjectDocument } from "@pixelkit/core";
 import { css } from "@stylespixelkit/css";
 import { useSetAtom } from "jotai";
-import { ReactNode, useEffect, useState } from "react";
+import { useEffect } from "react";
 import useBrowser from "./hooks/useBrowser";
 import useStopZoom from "./hooks/useStopZoom";
 import { useTimerAutoSave } from "./hooks/useTimerAutoSave";
 import { AllLayers } from "./layers/root.layers";
-import { LayerPublicShapes } from "./public/layers/shapes";
-import { PixelKitStagePublic } from "./public/stage";
 import type { EditorAssetAdapter } from "./platform/assets";
 import type { EditorPublicProjectAdapter } from "./platform/public-projects";
 import type { EditorSaveAdapter } from "./platform/save";
-import type { ProjectDocument } from "@pixelkit/core";
+import { LayerPublicShapes } from "./public/layers/shapes";
+import { PixelKitStagePublic } from "./public/stage";
 import { SidebarLeft } from "./sidebar/sidebar.left";
 import SidebarRight from "./sidebar/sidebar.right";
 import PxStage from "./stage";
@@ -31,17 +31,6 @@ type PixelPublicEditorProps = {
   projectId?: string | null;
   shareUrl?: string;
   publicProjectAdapter?: EditorPublicProjectAdapter;
-};
-
-const ClientOnly = ({ children }: { children: ReactNode }) => {
-  const [isClient, setIsClient] = useState(false);
-
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
-
-  if (!isClient) return null;
-  return <>{children}</>;
 };
 
 const PixelKitPublic = ({
@@ -92,9 +81,7 @@ const PixelKitPublic = ({
 };
 
 export const PixelKitPublicApp = (props: PixelPublicEditorProps) => (
-  <ClientOnly>
-    <PixelKitPublic {...props} />
-  </ClientOnly>
+  <PixelKitPublic {...props} />
 );
 
 const PixelEditor = ({
@@ -151,13 +138,9 @@ const PixelEditor = ({
     </div>
   );
 };
-const ComponentApp = (props: PixelEditorProps) => (
-  <ClientOnly>
-    <PixelEditor {...props} />
-  </ClientOnly>
-);
+const ComponentApp = (props: PixelEditorProps) => <PixelEditor {...props} />;
 
 export default ComponentApp;
 export type { EditorAssetAdapter } from "./platform/assets";
-export type { EditorSaveAdapter } from "./platform/save";
 export type { EditorPublicProjectAdapter } from "./platform/public-projects";
+export type { EditorSaveAdapter } from "./platform/save";

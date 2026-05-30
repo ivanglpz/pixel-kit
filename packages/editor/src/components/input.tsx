@@ -116,7 +116,7 @@ const GridComponent = ({ children }: { children: ReactNode }) => {
 };
 const Container = ({ children, id }: { children: ReactNode; id?: string }) => {
   const containerClassName =
-    "min-h-[30px] gap-2 rounded-md border border-neutral-200 bg-neutral-100 p-2 text-sm text-foreground dark:border-neutral-700 dark:bg-neutral-800";
+    "min-h-[30px] gap-2 rounded-md border border-neutral-200 bg-neutral-100 p-2 text-sm text-foreground dark:border-neutral-800 dark:bg-neutral-900";
 
   if (id) {
     return (
@@ -129,7 +129,7 @@ const Container = ({ children, id }: { children: ReactNode; id?: string }) => {
 };
 const IconContainer = ({ children }: { children: ReactNode }) => {
   return (
-    <div className="flex h-5 w-5 items-center justify-center rounded-[4px] bg-neutral-200 dark:bg-neutral-700">
+    <div className="flex h-5 w-5 items-center justify-center rounded-[2px] bg-neutral-200 dark:bg-neutral-900">
       {children}
     </div>
   );
