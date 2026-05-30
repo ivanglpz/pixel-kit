@@ -1,64 +1,135 @@
+import {
+  ProjectTabsShell,
+  type ProjectTabItem,
+} from "@pixelkit/editor";
 import type { LocalProjectRecord } from "@pixelkit/core";
-import { FolderOpen, Home, LogOut } from "lucide-react";
+import { LogOut } from "lucide-react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 type ProjectTabsProps = {
   currentProjectId: string;
+  userId: string;
   projects: LocalProjectRecord[];
   onOpenHome: VoidFunction;
   onOpenProject: (projectId: string) => void;
+  onCreateProject: () => Promise<string | null>;
   onSignOut: VoidFunction;
 };
 
+const parseOpenTabs = (value: string | null): string[] => {
+  if (!value) return [];
+
+  try {
+    const parsed = JSON.parse(value) as unknown;
+    if (!Array.isArray(parsed)) return [];
+
+    return parsed.filter((tabId): tabId is string => typeof tabId === "string");
+  } catch {
+    return [];
+  }
+};
+
+const dedupe = (ids: string[]) => Array.from(new Set(ids));
+
 export const ProjectTabs = ({
   currentProjectId,
+  userId,
   projects,
   onOpenHome,
   onOpenProject,
+  onCreateProject,
   onSignOut,
 }: ProjectTabsProps) => {
+  const [openTabIds, setOpenTabIds] = useState<string[]>([]);
+  const storageKey = useMemo(() => `desktop_open_tabs:${userId}`, [userId]);
+
+  const projectMap = useMemo(
+    () => new Map(projects.map((project) => [project.id, project])),
+    [projects],
+  );
+
+  const sanitizeTabIds = useCallback(
+    (tabIds: string[]) =>
+      dedupe(tabIds).filter((tabId) => projectMap.has(tabId)),
+    [projectMap],
+  );
+
+  useEffect(() => {
+    const storedTabIds = parseOpenTabs(localStorage.getItem(storageKey));
+    const baseTabIds = currentProjectId
+      ? [...storedTabIds, currentProjectId]
+      : storedTabIds;
+    const nextTabIds = sanitizeTabIds(baseTabIds);
+
+    setOpenTabIds(nextTabIds);
+  }, [currentProjectId, sanitizeTabIds, storageKey]);
+
+  useEffect(() => {
+    localStorage.setItem(storageKey, JSON.stringify(openTabIds));
+  }, [openTabIds, storageKey]);
+
+  const tabs = useMemo<ProjectTabItem[]>(
+    () =>
+      openTabIds.map((tabId) => {
+        const project = projectMap.get(tabId);
+        if (!project) return null;
+
+        return {
+          id: project.id,
+          label: project.name,
+        };
+      }).filter((tab): tab is ProjectTabItem => tab !== null),
+    [openTabIds, projectMap],
+  );
+
+  const handleCloseTab = (projectId: string) => {
+    const currentIndex = openTabIds.findIndex((tabId) => tabId === projectId);
+    if (currentIndex < 0) return;
+
+    const nextTabIds = openTabIds.filter((tabId) => tabId !== projectId);
+    setOpenTabIds(nextTabIds);
+
+    if (projectId !== currentProjectId) return;
+
+    const nextProjectId =
+      nextTabIds[currentIndex - 1] ?? nextTabIds[currentIndex] ?? null;
+
+    if (!nextProjectId) {
+      onOpenHome();
+      return;
+    }
+
+    onOpenProject(nextProjectId);
+  };
+
+  const handleCreateTab = async () => {
+    const projectId = await onCreateProject();
+    if (!projectId) return;
+
+    setOpenTabIds((previous) => sanitizeTabIds([...previous, projectId]));
+  };
+
   return (
-    <header className="grid h-12 grid-cols-[40px_1fr_88px] items-center gap-3 border-b border-neutral-800 bg-neutral-950 px-3 text-white">
-      <button
-        type="button"
-        onClick={onOpenHome}
-        className="flex h-8 w-8 items-center justify-center rounded-md bg-white text-neutral-950 transition-colors hover:bg-neutral-200"
-        aria-label="Go to local projects"
-      >
-        <Home size={18} />
-      </button>
-
-      <div className="flex h-full items-center gap-2 overflow-x-auto overflow-y-hidden [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-        {projects.map((project) => {
-          const isCurrent = project.id === currentProjectId;
-
-          return (
-            <button
-              key={project.id}
-              type="button"
-              onClick={() => onOpenProject(project.id)}
-              className={[
-                "grid h-9 min-w-0 max-w-[220px] grid-cols-[16px_1fr] items-center gap-2 rounded-md px-3 text-left text-sm transition-colors",
-                isCurrent
-                  ? "bg-neutral-800 text-white"
-                  : "text-neutral-300 hover:bg-neutral-900 hover:text-white",
-              ].join(" ")}
-              title={project.name}
-            >
-              <FolderOpen size={15} />
-              <span className="truncate">{project.name}</span>
-            </button>
-          );
-        })}
-      </div>
-
-      <button
-        type="button"
-        onClick={onSignOut}
-        className="flex h-8 items-center justify-center gap-2 rounded-md border border-neutral-700 px-3 text-sm text-neutral-200 transition-colors hover:border-neutral-600 hover:bg-neutral-900 hover:text-white"
-      >
-        <LogOut size={14} />
-        <span>Sign out</span>
-      </button>
-    </header>
+    <ProjectTabsShell
+      tabs={tabs}
+      activeTabId={currentProjectId}
+      onGoHome={onOpenHome}
+      onSelectTab={onOpenProject}
+      onCloseTab={handleCloseTab}
+      onCreateTab={() => {
+        void handleCreateTab();
+      }}
+      className="border-neutral-800 bg-neutral-950 text-white"
+      rightSlot={
+        <button
+          type="button"
+          onClick={onSignOut}
+          className="flex h-8 items-center justify-center gap-2 rounded-md border border-neutral-700 px-3 text-sm text-neutral-200 transition-colors hover:border-neutral-600 hover:bg-neutral-900 hover:text-white"
+        >
+          <LogOut size={14} />
+          <span>Sign out</span>
+        </button>
+      }
+    />
   );
 };

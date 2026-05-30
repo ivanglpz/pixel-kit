@@ -39,6 +39,19 @@ export const ProjectEditorScreen = () => {
     },
   });
 
+  const createProjectMutation = useMutation({
+    mutationFn: async () => {
+      if (!userId) {
+        throw new Error("User session is required");
+      }
+
+      return getDesktopApi().projects.create({
+        name: "Untitled project",
+        userId,
+      });
+    },
+  });
+
   if (!id) {
     return <Navigate to={desktopPaths.projects} replace />;
   }
@@ -91,15 +104,26 @@ export const ProjectEditorScreen = () => {
     );
   }
 
+  const currentUserId = sessionQuery.data.user.userId;
   const project: ProjectDocument = localProjectToDocument(projectQuery.data);
 
   return (
     <main className="flex h-screen w-screen flex-col overflow-hidden bg-neutral-950">
       <ProjectTabs
         currentProjectId={id}
+        userId={currentUserId}
         projects={projectsQuery.data ?? []}
         onOpenHome={() => navigate(desktopPaths.projects)}
         onOpenProject={(projectId) => navigate(desktopPaths.projectById(projectId))}
+        onCreateProject={async () => {
+          const project = await createProjectMutation.mutateAsync();
+          await queryClient.invalidateQueries({
+            queryKey: desktopQueryKeys.projects(currentUserId),
+          });
+          navigate(desktopPaths.projectById(project.id));
+
+          return project.id;
+        }}
         onSignOut={() => signOutMutation.mutate()}
       />
       <div className="min-h-0 flex-1">

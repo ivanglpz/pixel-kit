@@ -141,6 +141,11 @@ const PixelEditor = ({
 const ComponentApp = (props: PixelEditorProps) => <PixelEditor {...props} />;
 
 export default ComponentApp;
+export {
+  ProjectTabsShell,
+  type ProjectTabItem,
+  type ProjectTabsShellProps,
+} from "./components/project-tabs-shell";
 export type { EditorAssetAdapter } from "./platform/assets";
 export type { EditorPublicProjectAdapter } from "./platform/public-projects";
 export type { EditorSaveAdapter } from "./platform/save";
