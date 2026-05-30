@@ -1,4 +1,3 @@
-import { css } from "@stylespixelkit/css";
 import { SetStateAction, useAtom, useAtomValue, useSetAtom } from "jotai";
 import React, {
   CSSProperties,
@@ -105,104 +104,32 @@ export const PauseWrapper = ({ children }: PauseWrapperProps): ReactElement => {
 };
 
 const Label = ({ text }: { text: string }) => {
-  return (
-    <p
-      className={css({
-        color: "text",
-        fontWeight: "600",
-        fontSize: "x-small",
-      })}
-    >
-      {text}
-    </p>
-  );
+  return <p className="text-[11px] font-semibold text-foreground">{text}</p>;
 };
 
 const GridComponent = ({ children }: { children: ReactNode }) => {
   return (
-    <div
-      className={css({
-        display: "grid",
-        gridTemplateColumns: "20px 1fr",
-        alignItems: "center",
-        justifyContent: "center",
-        alignContent: "center",
-        gap: "md",
-      })}
-    >
+    <div className="grid grid-cols-[20px_1fr] content-center items-center justify-center gap-2">
       {children}
     </div>
   );
 };
 const Container = ({ children, id }: { children: ReactNode; id?: string }) => {
+  const containerClassName =
+    "min-h-[30px] gap-2 rounded-md border border-neutral-200 bg-neutral-100 p-2 text-sm text-foreground dark:border-neutral-700 dark:bg-neutral-800";
+
   if (id) {
     return (
-      <label
-        htmlFor={id}
-        className={css({
-          // width: "100%",
-          color: "text",
-          fontSize: "sm",
-          _dark: {
-            borderColor: "gray.700", // ← usa el semantic token
-            backgroundColor: "gray.800", // Fondo más claro para el selector
-          },
-          backgroundColor: "gray.100",
-          borderColor: "gray.200", // ← usa el semantic token
-          borderRadius: "md",
-          padding: "sm",
-          borderWidth: "1px",
-          borderStyle: "solid",
-          gap: "md",
-          minHeight: 30,
-        })}
-      >
+      <label htmlFor={id} className={containerClassName}>
         {children}
       </label>
     );
   }
-  return (
-    <div
-      className={css({
-        // width: "100%",
-        color: "text",
-        fontSize: "sm",
-        _dark: {
-          borderColor: "gray.700", // ← usa el semantic token
-          backgroundColor: "gray.800", // Fondo más claro para el selector
-        },
-        backgroundColor: "gray.100",
-        borderColor: "gray.150", // ← usa el semantic token
-
-        borderRadius: "md",
-        padding: "sm",
-        borderWidth: "1px",
-        borderStyle: "solid",
-        gap: "md",
-        minHeight: 30,
-      })}
-    >
-      {children}
-    </div>
-  );
+  return <div className={containerClassName}>{children}</div>;
 };
 const IconContainer = ({ children }: { children: ReactNode }) => {
   return (
-    <div
-      className={css({
-        width: "20px",
-        height: "20px",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        borderRadius: "4px",
-        backgroundColor: "gray.150",
-
-        _dark: {
-          backgroundColor: "gray.700",
-        },
-      })}
-    >
+    <div className="flex h-5 w-5 items-center justify-center rounded-[4px] bg-neutral-200 dark:bg-neutral-700">
       {children}
     </div>
   );
@@ -239,18 +166,7 @@ const NumberComponent = ({
       step={step}
       value={value}
       onChange={handleNumberChange}
-      className={css({
-        color: "text",
-        backgroundColor: "transparent",
-        flex: 1,
-        outline: "none",
-        boxSizing: "border-box",
-        whiteSpace: "nowrap",
-        textOverflow: "ellipsis", // Añade los puntos suspensivos
-        width: "100%",
-        padding: "0 4px",
-        fontSize: "x-small",
-      })}
+      className="w-full flex-1 truncate bg-transparent px-1 text-[11px] text-foreground outline-none"
     />
   );
 };
@@ -270,21 +186,7 @@ const TextComponent = ({ onChange, value, style, ...rest }: InputTextProps) => {
       type="text"
       value={value}
       onChange={(event) => onChange?.(event.target.value)}
-      className={css({
-        width: "auto",
-        borderWidth: 1,
-        borderColor: "gray.150",
-        _dark: {
-          borderWidth: 1,
-          borderColor: "gray.650",
-        },
-        backgroundColor: "transparent",
-        color: "text",
-        padding: "sm",
-        height: "30px",
-        borderRadius: "md",
-        fontSize: "sm",
-      })}
+      className="h-[30px] w-auto rounded-md border border-neutral-200 bg-transparent p-2 text-sm text-foreground outline-none dark:border-neutral-700"
       style={style}
     />
   );
@@ -307,16 +209,7 @@ export const TextArea = ({
       // onFocus={() => setPause(true)} // Inicia pausa al entrar en el input
       // onBlur={() => setPause(false)} // Quita pausa al salir del input
       placeholder={placeholder}
-      className={css({
-        width: "100%",
-        height: "100%",
-        backgroundColor: "transparent",
-        color: "text",
-        padding: "sm",
-        borderRadius: "md",
-        fontSize: "sm",
-        resize: "vertical", // permite ajustar el tamaño vertical
-      })}
+      className="h-full w-full resize-y rounded-md bg-transparent p-2 text-sm text-foreground outline-none"
       style={style}
     />
   );
@@ -337,12 +230,7 @@ const Select = <T,>({ options, value, onChange, ...rest }: Props<T>) => {
     <select
       {...rest}
       value={`${value}`}
-      className={css({
-        width: "100%",
-        color: "text",
-        fontSize: "sm",
-        backgroundColor: "transparent",
-      })}
+      className="w-full bg-transparent text-sm text-foreground outline-none"
       onChange={(event) => onChange?.(event.target.value as T)}
     >
       {options?.map((e) => (
@@ -363,20 +251,7 @@ const ColorComponent = ({
     <>
       <label
         htmlFor={id}
-        className={css({
-          height: "20px",
-          width: "20px",
-          borderRadius: "md",
-          border: "container",
-          display: "flex",
-          padding: "sm",
-          cursor: "pointer",
-          borderWidth: "1px",
-          borderStyle: "solid",
-          borderColor: "border.muted", // ← usa el semantic token
-          alignItems: "center",
-          justifyContent: "center",
-        })}
+        className="flex h-5 w-5 cursor-pointer items-center justify-center rounded-md border border-border p-2"
         style={{
           backgroundColor: value ?? "#ffffff",
         }}
@@ -384,15 +259,7 @@ const ColorComponent = ({
         <input
           type="color"
           id={id}
-          className={css({
-            margin: 0,
-            outline: "none",
-            padding: 0,
-            border: "none",
-            opacity: 0,
-            height: 0,
-            width: 0,
-          })}
+          className="m-0 h-0 w-0 border-0 p-0 opacity-0 outline-none"
           value={value}
           onChange={(event) => onChange?.(event.target.value)}
         />
