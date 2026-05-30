@@ -5,7 +5,16 @@
   fill="none"
   xmlns="http://www.w3.org/2000/svg"
 >
-  <rect width="1024" height="1024" rx="224" fill="#000000" />
+  <rect
+    x="16"
+    y="16"
+    width="992"
+    height="992"
+    rx="216"
+    fill="#000000"
+    stroke="#3F3F46"
+    stroke-width="32"
+  />
   <g transform="translate(272 272) scale(9.6)">
     <g clip-path="url(#clip0_2552_519)">
       <path
