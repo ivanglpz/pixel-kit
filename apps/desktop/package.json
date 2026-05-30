@@ -18,6 +18,7 @@
   "build": {
     "appId": "com.pixelkit.desktop",
     "productName": "PixelKit",
+    "icon": "build/icon.png",
     "files": [
       "out/**/*",
       "dist-electron/**/*",
@@ -32,6 +33,7 @@
     },
     "mac": {
       "target": "dmg",
+      "icon": "build/icon.icns",
       "sign": "./scripts/sign-mac.cjs",
       "gatekeeperAssess": false
     }

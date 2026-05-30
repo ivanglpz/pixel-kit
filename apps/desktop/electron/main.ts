@@ -1,5 +1,6 @@
+import { existsSync } from "node:fs";
 import { readFile } from "node:fs/promises";
-import { app, BrowserWindow, protocol } from "electron";
+import { app, BrowserWindow, nativeImage, protocol } from "electron";
 import { dirname, extname, join, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 import { registerIpcHandlers } from "./ipc/handlers.js";
@@ -23,6 +24,8 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 let mainWindow: BrowserWindow | null = null;
+
+const getAppIconPath = () => resolve(__dirname, "..", "build", "icon.png");
 
 const getMimeType = (fileName: string) => {
   switch (extname(fileName).toLowerCase()) {
@@ -87,6 +90,8 @@ const registerAssetProtocol = () => {
 };
 
 const createWindow = () => {
+  const iconPath = getAppIconPath();
+
   mainWindow = new BrowserWindow({
     width: 1280,
     height: 860,
@@ -94,6 +99,7 @@ const createWindow = () => {
     minHeight: 700,
     title: "Pixel kit",
     show: true,
+    icon: existsSync(iconPath) ? iconPath : undefined,
     webPreferences: {
       preload: join(__dirname, "preload.cjs"),
       contextIsolation: true,
@@ -160,6 +166,12 @@ const initializeLocalBackend = () => {
 };
 
 app.whenReady().then(() => {
+  const iconPath = getAppIconPath();
+
+  if (process.platform === "darwin" && app.dock && existsSync(iconPath)) {
+    app.dock.setIcon(nativeImage.createFromPath(iconPath));
+  }
+
   registerAssetProtocol();
   createWindow();
   initializeLocalBackend();
