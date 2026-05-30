@@ -44,8 +44,6 @@ const ProjectCreate: NextPageWithLayout = () => {
         description: `The project "${data.name}" was added to your organization.`,
       });
       router.push(`/app/project/${data?._id}`);
-      // setShowCreate(false);
-      // QueryProjects.refetch();
     },
     onError: (error) => {
       toast.error("Failed to create project", {

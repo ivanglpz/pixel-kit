@@ -56,9 +56,6 @@ const App: NextPageWithLayout = () => {
       return fetchListProjects(orgId);
     },
     enabled: Boolean(orgId),
-    // staleTime: 1000 * 2,
-    // cacheTime: 1000 * 60 * 60, // 1 hora
-    // staleTime: 1000 * 30,
   });
 
   const mutateNewProject = useMutation({
@@ -80,7 +77,6 @@ const App: NextPageWithLayout = () => {
       toast.success("Project created successfully", {
         description: `The project "${data.name}" was added to your organization.`,
       });
-      // formik.resetForm();
     },
     onError: (error) => {
       toast.error("Failed to create project", {

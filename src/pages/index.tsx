@@ -35,6 +35,5 @@ const PageEditor: NextOnlyPage = () => {
   );
 };
 PageEditor.layout = "Default";
-// Redirección con SSR hacia /app
 
 export default PageEditor;
