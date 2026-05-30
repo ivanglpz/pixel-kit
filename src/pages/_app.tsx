@@ -2,6 +2,7 @@ import { Layout } from "@/layout/layouts";
 import "@/styles/globals.css";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Analytics } from "@vercel/analytics/react";
+import { Provider as JotaiProvider } from "jotai";
 import { NextPage } from "next";
 import { ThemeProvider } from "next-themes";
 import type { AppProps } from "next/app";
@@ -26,22 +27,24 @@ const App = ({ Component, pageProps }: AppPropsWithLayout) => {
 
   return (
     <>
-      <QueryClientProvider client={queryClient}>
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          <Analytics />
+      <JotaiProvider>
+        <QueryClientProvider client={queryClient}>
+          <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+            <Analytics />
 
-          <Toaster
-            richColors
-            expand={true}
-            className={css({
-              zIndex: 99999999999999,
-            })}
-          />
-          <LayoutProvider>
-            <Component {...pageProps} />
-          </LayoutProvider>
-        </ThemeProvider>
-      </QueryClientProvider>
+            <Toaster
+              richColors
+              expand={true}
+              className={css({
+                zIndex: 99999999999999,
+              })}
+            />
+            <LayoutProvider>
+              <Component {...pageProps} />
+            </LayoutProvider>
+          </ThemeProvider>
+        </QueryClientProvider>
+      </JotaiProvider>
     </>
   );
 };

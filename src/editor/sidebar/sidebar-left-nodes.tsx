@@ -10,7 +10,7 @@ import {
   ContextMenuTrigger,
 } from "@/components/ui/context-menu";
 import * as Lucide from "lucide-react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Input } from "../components/input";
 import { withStableMemo } from "../components/withStableMemo";
 import { constants } from "../constants/color";
@@ -20,6 +20,7 @@ import { DELETE_SHAPES_ATOM } from "../states/shapes/store";
 import { ALL_SHAPES } from "../states/shapes/types";
 import { START_TIMER_ATOM } from "../states/timer";
 import TOOL_ATOM, { PAUSE_MODE_ATOM } from "../states/tool";
+import { useStore } from "jotai";
 
 type NodeProps = {
   shape: ALL_SHAPES;
@@ -36,6 +37,29 @@ type DraggableNodeItemProps = {
     isLockedByParent?: boolean;
     isHiddenByParent?: boolean;
   };
+};
+
+const getSelectionKey = (id: string, parentId: string | null) =>
+  `${id}:${parentId ?? "root"}`;
+
+const hasSelectionInTree = (
+  nodes: ALL_SHAPES[],
+  selectedKeys: Set<string>,
+  store: ReturnType<typeof useStore>,
+): boolean => {
+  return nodes.some((node) => {
+    const state = store.get(node.state);
+    const nodeParentId = store.get(state.parentId);
+
+    if (selectedKeys.has(getSelectionKey(node.id, nodeParentId))) {
+      return true;
+    }
+
+    const nestedChildren = store.get(state.children);
+    return nestedChildren.length > 0
+      ? hasSelectionInTree(nestedChildren, selectedKeys, store)
+      : false;
+  });
 };
 
 const NodeInput = ({
@@ -94,11 +118,13 @@ export const NodesDefault = ({
   options = {},
   dragControls: externalDragControls, // ✅ Recibimos controles externos
 }: NodeProps) => {
+  const store = useStore();
   const shape = useAtomValue(item.state);
   const setTool = useSetAtom(TOOL_ATOM);
   const [isExpanded, setIsExpanded] = useState(true);
   const [isHovered, setIsHovered] = useState(false);
-  const [shapeId, setShapeId] = useAtom(SELECTED_SHAPES_BY_IDS_ATOM);
+  const [selectedShapes, setSelectedShapes] = useAtom(SELECTED_SHAPES_BY_IDS_ATOM);
+  const rowRef = useRef<HTMLDivElement>(null);
 
   // const setUpdateUndoRedo = useSetAtom(UPDATE_UNDO_REDO);
   const applyLayout = useSetAtom(flexLayoutAtom);
@@ -136,6 +162,43 @@ export const NodesDefault = ({
 
   const [children, setChildren] = useAtom(shape.children);
   const START = useSetAtom(START_TIMER_ATOM);
+  const selectedKeys = useMemo(
+    () =>
+      new Set(
+        selectedShapes.map((selection) =>
+          getSelectionKey(selection.id, selection.parentId),
+        ),
+      ),
+    [selectedShapes],
+  );
+  const isSelected = useMemo(
+    () => selectedKeys.has(getSelectionKey(shape.id, parentId)),
+    [selectedKeys, shape.id, parentId],
+  );
+  const hasSelectedDescendant = useMemo(
+    () => hasSelectionInTree(children, selectedKeys, store),
+    [children, selectedKeys, store],
+  );
+
+  useEffect(() => {
+    if (hasSelectedDescendant) {
+      setIsExpanded(true);
+    }
+  }, [hasSelectedDescendant]);
+
+  useEffect(() => {
+    if (!isSelected) return;
+
+    const frame = requestAnimationFrame(() => {
+      rowRef.current?.scrollIntoView({
+        behavior: "smooth",
+        block: "nearest",
+        inline: "nearest",
+      });
+    });
+
+    return () => cancelAnimationFrame(frame);
+  }, [isSelected, isExpanded]);
 
   const handleReorder = (newOrder: typeof children) => {
     if (!childOptions.id) return;
@@ -175,6 +238,7 @@ export const NodesDefault = ({
       <ContextMenu>
         <ContextMenuTrigger>
           <div
+            ref={rowRef}
             id={shape.id + ` ${tool}`}
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
@@ -191,13 +255,11 @@ export const NodesDefault = ({
               alignItems: "center",
               borderRadius: "4",
               _dark: {
-                backgroundColor: shapeId.some((w) => w.id === shape.id)
+                backgroundColor: isSelected
                   ? "gray.600"
                   : "transparent",
               },
-              backgroundColor: shapeId.some((w) => w.id === shape.id)
-                ? "gray.150"
-                : "transparent",
+              backgroundColor: isSelected ? "gray.150" : "transparent",
               _hover: {
                 backgroundColor: "gray.100",
                 _dark: {
@@ -212,13 +274,12 @@ export const NodesDefault = ({
               e.preventDefault(); // puedes dejar esto si quieres
               e.stopPropagation();
               setTool("MOVE");
-              setShapeId({
+              setSelectedShapes({
                 id: shape?.id,
                 parentId: parentId,
               });
             }}
           >
-            {/* ✅ Drag Handle mejorado */}
             <div
               className={css({
                 display: "flex",
@@ -229,7 +290,7 @@ export const NodesDefault = ({
                   cursor: "grabbing",
                 },
               })}
-              onPointerDown={handleDragStart} // ✅ Usar el handler mejorado
+              onPointerDown={handleDragStart}
             >
               <GripVertical size={14} opacity={isHovered ? 1 : 0.3} />
             </div>
@@ -269,7 +330,6 @@ export const NodesDefault = ({
                 alignItems: "center",
               })}
             >
-              {/* Lock/Unlock Section */}
               <div
                 className={css({
                   display: "flex",
@@ -305,7 +365,6 @@ export const NodesDefault = ({
                 )}
               </div>
 
-              {/* Visibility Section */}
               <div
                 className={css({
                   display: "flex",
