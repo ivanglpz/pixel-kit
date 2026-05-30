@@ -2,7 +2,7 @@ import { Text } from "react-konva";
 import { IShapeEvents } from "./type.shape";
 
 import { useResolvedShape } from "../hooks/useResolvedShape";
-import { ShapeLabel } from "./label";
+import { ShapeIdentifier } from "./identifier";
 export const ShapeText = (props: IShapeEvents) => {
   const shape = useResolvedShape(props);
 
@@ -10,8 +10,8 @@ export const ShapeText = (props: IShapeEvents) => {
 
   return (
     <>
-      {props?.options?.showLabel ? (
-        <ShapeLabel
+      {props?.options?.showIdentifier ? (
+        <ShapeIdentifier
           x={shape.x}
           y={shape.y}
           label={shape.label}

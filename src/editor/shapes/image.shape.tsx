@@ -4,7 +4,7 @@ import { Image as KonvaImage } from "react-konva";
 import { useKonvaImage } from "../hooks/useKonvaImage";
 import { useResolvedShape } from "../hooks/useResolvedShape";
 import { calculateCoverCrop } from "../utils/crop";
-import { ShapeLabel } from "./label";
+import { ShapeIdentifier } from "./identifier";
 import { IShapeEvents } from "./type.shape";
 
 export const ShapeImage = (props: IShapeEvents) => {
@@ -28,8 +28,8 @@ export const ShapeImage = (props: IShapeEvents) => {
 
   return (
     <>
-      {options?.showLabel ? (
-        <ShapeLabel
+      {options?.showIdentifier ? (
+        <ShapeIdentifier
           x={shape.x}
           y={shape.y}
           label={shape.label}

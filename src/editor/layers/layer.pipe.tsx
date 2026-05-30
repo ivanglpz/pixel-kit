@@ -46,7 +46,7 @@ export const LayerPipe = () => {
               options={{
                 isLocked: false,
                 background,
-                showLabel: true,
+                showIdentifier: true,
               }}
             />
           );

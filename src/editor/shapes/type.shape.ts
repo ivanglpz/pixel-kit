@@ -140,7 +140,7 @@ export type IShapeEvents = {
   options: {
     isLocked: boolean;
     background: string;
-    showLabel: boolean;
+    showIdentifier: boolean;
   };
 };
 

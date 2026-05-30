@@ -1,6 +1,6 @@
 import { Rect } from "react-konva";
 import { useResolvedShape } from "../hooks/useResolvedShape";
-import { ShapeLabel } from "./label";
+import { ShapeIdentifier } from "./identifier";
 import { IShapeEvents } from "./type.shape";
 
 const ShapeBox = (props: IShapeEvents) => {
@@ -10,8 +10,8 @@ const ShapeBox = (props: IShapeEvents) => {
 
   return (
     <>
-      {props?.options?.showLabel ? (
-        <ShapeLabel
+      {props?.options?.showIdentifier ? (
+        <ShapeIdentifier
           x={shape.x}
           y={shape.y}
           label={shape.label}

@@ -67,7 +67,7 @@ export const LayerShapes = () => {
               options={{
                 isLocked: false,
                 background,
-                showLabel: true,
+                showIdentifier: true,
               }}
             />
           );

@@ -3,7 +3,7 @@ import { Line } from "react-konva";
 import { IShapeEvents } from "./type.shape";
 
 import { useResolvedShape } from "../hooks/useResolvedShape";
-import { ShapeLabel } from "./label";
+import { ShapeIdentifier } from "./identifier";
 
 export const ShapeDraw = (props: IShapeEvents) => {
   const shape = useResolvedShape(props);
@@ -12,8 +12,8 @@ export const ShapeDraw = (props: IShapeEvents) => {
 
   return (
     <>
-      {props?.options?.showLabel ? (
-        <ShapeLabel
+      {props?.options?.showIdentifier ? (
+        <ShapeIdentifier
           x={shape.x}
           y={shape.y}
           label={shape.label}

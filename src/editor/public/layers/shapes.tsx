@@ -37,7 +37,7 @@ export const LayerPublicShapes = () => {
               options={{
                 isLocked: true,
                 background,
-                showLabel: false,
+                showIdentifier: false,
               }}
             />
           );
