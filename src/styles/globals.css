@@ -6,6 +6,10 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
+@source "../**/*.{js,jsx,ts,tsx}";
+@source "../../packages/editor/src/**/*.{js,jsx,ts,tsx}";
+@source "../../apps/desktop/src/**/*.{js,jsx,ts,tsx}";
+
 @custom-variant dark (&:is(.dark *));
 
 #__next {

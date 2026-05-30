@@ -1,4 +1,3 @@
-import { css } from "@stylespixelkit/css";
 import { X } from "lucide-react";
 import React, {
   cloneElement,
@@ -41,17 +40,7 @@ const Provider = ({ children, onClose, visible }: DialogProps) => {
   return portalContainer
     ? createPortal(
         <main
-          className={css({
-            position: "absolute",
-            top: 0,
-            zIndex: 9999,
-            width: "100%",
-            height: "100%",
-            backgroundColor: "rgba(0,0,0,0.5)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          })}
+          className="absolute inset-0 z-[9999] flex h-full w-full items-center justify-center bg-black/50"
           onClick={onClose}
         >
           {enhancedChildren}
@@ -72,23 +61,7 @@ const Close = ({ onClose }: CloseProps) => {
         e.stopPropagation();
         onClose();
       }}
-      className={css({
-        width: 30,
-        height: 30,
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        borderRadius: "lg",
-        cursor: "pointer",
-        _hover: {
-          backgroundColor: "gray.150",
-        },
-        _dark: {
-          _hover: {
-            backgroundColor: "gray.600",
-          },
-        },
-      })}
+      className="flex h-[30px] w-[30px] cursor-pointer items-center justify-center rounded-lg hover:bg-neutral-200 dark:hover:bg-neutral-600"
     >
       <X size={constants.icon.size + 10} />
     </button>
@@ -100,22 +73,8 @@ type HeaderProps = {
 };
 const Header = ({ children }: HeaderProps) => {
   return (
-    <header
-      className={css({
-        display: "flex",
-        flexDirection: "column",
-        gap: "lg",
-      })}
-    >
-      <div
-        className={css({
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-        })}
-      >
-        {children}
-      </div>
+    <header className="flex flex-col gap-4">
+      <div className="flex items-center justify-between">{children}</div>
     </header>
   );
 };
@@ -138,29 +97,11 @@ const Area = ({ children }: { children: ReactNode }) => {
 const Container = ({ children, fullWidth, fullHeight }: ContainerProps) => {
   return (
     <div
-      className={css({
-        padding: "lg",
-        gap: "lg",
-        display: "flex",
-        flexDirection: "column",
-        backgroundColor: "bg",
-        borderRadius: "lg",
-        borderWidth: 1,
-        borderColor: "gray.250",
-        maxWidth: 600,
-        maxHeight: 520,
-        minWidth: 450,
-        minHeight: 240,
-        width: fullWidth ? "100%" : "auto",
-        height: fullHeight ? "100%" : "auto",
-        gridAutoRows: "60px",
-        transition: "opacity 0.3s ease, transform 0.3s ease",
-        _dark: {
-          borderWidth: 1,
-          borderColor: "gray.700",
-        },
-      })}
-      style={{}}
+      className={[
+        "flex min-h-[240px] min-w-[450px] max-h-[520px] max-w-[600px] flex-col gap-4 rounded-lg border border-neutral-200 bg-background p-4 transition-[opacity,transform] duration-300 dark:border-neutral-700",
+        fullWidth ? "w-full" : "w-auto",
+        fullHeight ? "h-full" : "h-auto",
+      ].join(" ")}
       onClick={(e) => e?.stopPropagation()}
     >
       {children}
