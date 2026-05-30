@@ -56,7 +56,7 @@ export const saveAsset = (
   writeFileSync(filePath, buffer);
 
   const createdAt = nowIso();
-  const url = `file://${filePath}`;
+  const url = `pixelkit://assets/${input.projectId}/${fileName}`;
 
   db.prepare(
     `INSERT INTO assets (

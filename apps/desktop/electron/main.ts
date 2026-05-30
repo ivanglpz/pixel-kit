@@ -1,14 +1,90 @@
-import { app, BrowserWindow } from "electron";
-import { dirname, join } from "node:path";
+import { readFile } from "node:fs/promises";
+import { app, BrowserWindow, protocol } from "electron";
+import { dirname, extname, join, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 import { registerIpcHandlers } from "./ipc/handlers.js";
 import { openPixelKitDatabase } from "./storage/database.js";
 import { getDesktopPaths } from "./storage/paths.js";
 
+protocol.registerSchemesAsPrivileged([
+  {
+    scheme: "pixelkit",
+    privileges: {
+      standard: true,
+      secure: true,
+      supportFetchAPI: true,
+      corsEnabled: true,
+      stream: true,
+    },
+  },
+]);
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 let mainWindow: BrowserWindow | null = null;
+
+const getMimeType = (fileName: string) => {
+  switch (extname(fileName).toLowerCase()) {
+    case ".png":
+      return "image/png";
+    case ".jpg":
+    case ".jpeg":
+      return "image/jpeg";
+    case ".webp":
+      return "image/webp";
+    case ".gif":
+      return "image/gif";
+    case ".svg":
+      return "image/svg+xml";
+    case ".bmp":
+      return "image/bmp";
+    default:
+      return "application/octet-stream";
+  }
+};
+
+const registerAssetProtocol = () => {
+  const { assetsDir } = getDesktopPaths();
+
+  protocol.handle("pixelkit", async (request) => {
+    try {
+      const url = new URL(request.url);
+
+      if (url.hostname !== "assets") {
+        return new Response("Not found", { status: 404 });
+      }
+
+      const pathParts = url.pathname
+        .split("/")
+        .filter(Boolean)
+        .map((part) => decodeURIComponent(part));
+      const [projectId, fileName] = pathParts;
+
+      if (!projectId || !fileName || pathParts.length !== 2) {
+        return new Response("Invalid asset path", { status: 400 });
+      }
+
+      const projectDir = resolve(assetsDir, projectId);
+      const filePath = resolve(projectDir, fileName);
+
+      if (!filePath.startsWith(`${projectDir}${sep}`)) {
+        return new Response("Invalid asset path", { status: 400 });
+      }
+
+      const buffer = await readFile(filePath);
+
+      return new Response(new Uint8Array(buffer), {
+        headers: {
+          "Content-Type": getMimeType(fileName),
+          "Cache-Control": "no-store",
+        },
+      });
+    } catch (error) {
+      return new Response("Asset not found", { status: 404 });
+    }
+  });
+};
 
 const createWindow = () => {
   mainWindow = new BrowserWindow({
@@ -84,6 +160,7 @@ const initializeLocalBackend = () => {
 };
 
 app.whenReady().then(() => {
+  registerAssetProtocol();
   createWindow();
   initializeLocalBackend();
 
