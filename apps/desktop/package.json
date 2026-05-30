@@ -6,7 +6,7 @@
   "main": "./dist-electron/main.js",
   "scripts": {
     "dev:renderer": "next dev -p 4210",
-    "dev:electron": "PIXELKIT_DESKTOP_RENDERER_URL=http://localhost:4210 electron --import tsx electron/main.ts",
+    "dev:electron": "NODE_OPTIONS='--import=tsx' PIXELKIT_DESKTOP_RENDERER_URL=http://localhost:4210 electron electron/main.ts",
     "rebuild:native": "electron-builder install-app-deps",
     "build:renderer": "PIXELKIT_DESKTOP_EXPORT=1 next build",
     "build:electron": "node scripts/prepare-electron-dist.cjs",

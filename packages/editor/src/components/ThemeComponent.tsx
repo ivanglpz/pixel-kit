@@ -10,7 +10,7 @@ type ComponentProps = {
 
 export function ThemeComponent({ children }: ComponentProps): JSX.Element {
   const [systemTheme, setSystemTheme] =
-    useState<EditorTheme["systemTheme"]>("light");
+    useState<EditorTheme["systemTheme"]>("dark");
 
   useEffect(() => {
     const resolveTheme = () => {

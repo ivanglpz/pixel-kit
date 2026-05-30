@@ -1,9 +1,9 @@
 import { app, BrowserWindow } from "electron";
-import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
-import { getDesktopPaths } from "./storage/paths.js";
-import { openPixelKitDatabase } from "./storage/database.js";
+import { fileURLToPath } from "node:url";
 import { registerIpcHandlers } from "./ipc/handlers.js";
+import { openPixelKitDatabase } from "./storage/database.js";
+import { getDesktopPaths } from "./storage/paths.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -16,7 +16,7 @@ const createWindow = () => {
     height: 860,
     minWidth: 1024,
     minHeight: 700,
-    title: "PixelKit Desktop",
+    title: "Pixel kit",
     show: true,
     webPreferences: {
       preload: join(__dirname, "preload.cjs"),
@@ -25,7 +25,6 @@ const createWindow = () => {
       sandbox: false,
     },
   });
-
   mainWindow.on("closed", () => {
     mainWindow = null;
   });
@@ -49,10 +48,7 @@ const createWindow = () => {
   const rendererUrl =
     process.env.PIXELKIT_DESKTOP_RENDERER_URL ?? "http://localhost:4210";
 
-  if (
-    app.isPackaged ||
-    process.env.PIXELKIT_DESKTOP_RENDERER_MODE === "file"
-  ) {
+  if (app.isPackaged || process.env.PIXELKIT_DESKTOP_RENDERER_MODE === "file") {
     void mainWindow.loadFile(join(app.getAppPath(), "out", "index.html"));
   } else {
     void mainWindow.loadURL(rendererUrl);
