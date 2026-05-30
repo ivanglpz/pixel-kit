@@ -144,6 +144,9 @@ export default ComponentApp;
 export {
   ProjectTabsShell,
   type ProjectTabItem,
+  type ProjectTabContextMenuEntry,
+  type ProjectTabContextMenuItem,
+  type ProjectTabContextMenuSection,
   type ProjectTabsShellProps,
 } from "./components/project-tabs-shell";
 export type { EditorAssetAdapter } from "./platform/assets";
