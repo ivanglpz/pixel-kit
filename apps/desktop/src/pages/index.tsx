@@ -2,15 +2,7 @@ import { useEffect, useState } from "react";
 import type { AuthSession } from "@pixelkit/platform";
 import type { LocalProjectRecord } from "@pixelkit/core";
 import { getDesktopApi } from "../lib/desktop-api";
-
-const openProject = (projectId: string) => {
-  const encodedProjectId = encodeURIComponent(projectId);
-
-  window.location.href =
-    window.location.protocol === "file:"
-      ? `./project.html?id=${encodedProjectId}`
-      : `/project?id=${encodedProjectId}`;
-};
+import { openDesktopProject } from "../lib/navigation";
 
 export default function DesktopHome() {
   const [session, setSession] = useState<AuthSession | null>(null);
@@ -67,7 +59,7 @@ export default function DesktopHome() {
       userId: session.user.userId,
     });
     setProjects((current) => [project, ...current]);
-    openProject(project.id);
+    openDesktopProject(project.id);
   };
 
   const handlePullRemoteProject = async () => {
@@ -197,7 +189,7 @@ export default function DesktopHome() {
               <button
                 className="flex-1 text-left"
                 onClick={() => {
-                  openProject(project.id);
+                  openDesktopProject(project.id);
                 }}
               >
                 <p className="font-medium">{project.name}</p>

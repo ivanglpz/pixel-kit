@@ -1,13 +1,15 @@
+import type { LocalProjectRecord, ProjectDocument } from "@pixelkit/core";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
 import { useEffect, useMemo, useState } from "react";
-import type { LocalProjectRecord, ProjectDocument } from "@pixelkit/core";
+import { ProjectTabs } from "../components/project-tabs";
 import { getDesktopApi } from "../lib/desktop-api";
-import { localProjectToDocument } from "../lib/project-document";
 import {
   createDesktopAssetAdapter,
   createDesktopSaveAdapter,
 } from "../lib/editor-adapters";
+import { openDesktopHome, openDesktopProject } from "../lib/navigation";
+import { localProjectToDocument } from "../lib/project-document";
 
 const PixelEditor = dynamic(() => import("@pixelkit/editor"), {
   ssr: false,
@@ -16,6 +18,7 @@ const PixelEditor = dynamic(() => import("@pixelkit/editor"), {
 export default function DesktopProjectEditor() {
   const router = useRouter();
   const projectId = router.query.id as string | undefined;
+  const [projects, setProjects] = useState<LocalProjectRecord[]>([]);
   const [project, setProject] = useState<ProjectDocument | null>(null);
   const [message, setMessage] = useState("");
   const saveAdapter = useMemo(() => createDesktopSaveAdapter(), []);
@@ -24,15 +27,22 @@ export default function DesktopProjectEditor() {
   useEffect(() => {
     if (!projectId) return;
 
-    getDesktopApi()
-      .projects.get(projectId)
-      .then((localProject: LocalProjectRecord | null) => {
+    Promise.all([
+      getDesktopApi().auth.getSession(),
+      getDesktopApi().projects.get(projectId),
+    ])
+      .then(async ([session, localProject]) => {
         if (!localProject) {
           setMessage("Project not found");
           return;
         }
 
         setProject(localProjectToDocument(localProject));
+        setProjects(
+          await getDesktopApi().projects.list(
+            session?.user.userId ?? localProject.userId,
+          ),
+        );
       })
       .catch((error) => {
         setMessage(
@@ -40,6 +50,12 @@ export default function DesktopProjectEditor() {
         );
       });
   }, [projectId]);
+
+  const handleSignOut = async () => {
+    await getDesktopApi().auth.logout();
+    setProjects([]);
+    openDesktopHome();
+  };
 
   if (message) {
     return (
@@ -58,13 +74,22 @@ export default function DesktopProjectEditor() {
   }
 
   return (
-    <main className="h-screen w-screen overflow-hidden">
-      <PixelEditor
-        projectId={projectId}
-        initialProject={project}
-        saveAdapter={saveAdapter}
-        assetAdapter={assetAdapter}
+    <main className="flex h-screen w-screen flex-col overflow-hidden bg-neutral-950">
+      <ProjectTabs
+        currentProjectId={projectId}
+        projects={projects}
+        onOpenHome={openDesktopHome}
+        onOpenProject={openDesktopProject}
+        onSignOut={handleSignOut}
       />
+      <div className="min-h-0 flex-1">
+        <PixelEditor
+          projectId={projectId}
+          initialProject={project}
+          saveAdapter={saveAdapter}
+          assetAdapter={assetAdapter}
+        />
+      </div>
     </main>
   );
 }
