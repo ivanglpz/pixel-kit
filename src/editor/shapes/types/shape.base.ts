@@ -1,6 +1,6 @@
 // shape.base.ts
 import { LineCap, LineJoin } from "konva/lib/Shape";
-import { SHAPE_BASE_CHILDREN } from "../../states/shapes";
+import { SHAPE_BASE_CHILDREN } from "../../states/shapes/types";
 import { IShapeTool } from "../../states/tool";
 import {
   AlignItems,

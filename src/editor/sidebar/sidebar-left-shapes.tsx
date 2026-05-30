@@ -6,9 +6,9 @@ import {
 } from "@/components/ui/context-menu";
 import { Nodes } from "@/editor/sidebar/sidebar-left-nodes";
 import ALL_SHAPES_ATOM, {
-  ALL_SHAPES,
   DELETE_ALL_SHAPES_ATOM,
-} from "@/editor/states/shapes";
+} from "@/editor/states/shapes/store";
+import { ALL_SHAPES } from "@/editor/states/shapes/types";
 // import { UPDATE_UNDO_REDO } from "@/editor/states/undo-redo";
 import { css } from "@stylespixelkit/css";
 import { Reorder, useDragControls } from "framer-motion";

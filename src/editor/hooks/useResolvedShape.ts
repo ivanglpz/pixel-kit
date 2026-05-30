@@ -6,7 +6,8 @@ import { usePropertiesShape } from "../hooks/usePropertiesShape";
 import { flexLayoutAtom } from "../shapes/layout-flex";
 import { IShapeEvents } from "../shapes/type.shape";
 import { SELECTED_SHAPES_BY_IDS_ATOM } from "../states/shape";
-import { PLANE_SHAPES_ATOM, RESOLVE_DROP_TARGET } from "../states/shapes";
+import { RESOLVE_DROP_TARGET } from "../states/shapes/move";
+import { PLANE_SHAPES_ATOM } from "../states/shapes/store";
 
 const MIN_SHAPE_SIZE = 5;
 

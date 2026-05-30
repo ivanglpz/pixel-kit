@@ -10,7 +10,7 @@ import {
 } from "../shapes/layout-flex";
 import { ShapeImage } from "../shapes/types/shape.base";
 import { ShapeState } from "../shapes/types/shape.state";
-import { ALL_SHAPES } from "../states/shapes";
+import { ALL_SHAPES } from "../states/shapes/types";
 import { IShapeTool } from "../states/tool";
 
 export const cloneDeep = (value: Object) => {

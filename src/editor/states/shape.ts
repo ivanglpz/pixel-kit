@@ -3,7 +3,7 @@ import { ShapeBase } from "../shapes/types/shape.base";
 import { ShapeState } from "../shapes/types/shape.state";
 import { EVENT_ATOM } from "./event";
 import { CURRENT_PAGE, IShapeId } from "./pages";
-import { PLANE_SHAPES_ATOM } from "./shapes";
+import { PLANE_SHAPES_ATOM } from "./shapes/store";
 // import { ShapeSnapshot } from "./undo-redo";
 
 const filterListId = (id: string, parentId: string | null) => {

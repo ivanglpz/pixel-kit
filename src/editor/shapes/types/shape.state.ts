@@ -1,4 +1,4 @@
-import { ALL_SHAPES } from "@/editor/states/shapes";
+import { ALL_SHAPES } from "@/editor/states/shapes/types";
 import { PrimitiveAtom } from "jotai";
 import { ShapeBase } from "./shape.base";
 

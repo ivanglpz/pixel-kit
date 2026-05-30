@@ -5,7 +5,8 @@ import { Layer } from "react-konva";
 import { Shapes } from "../../shapes/shapes";
 import { IShapeEvents } from "../../shapes/type.shape";
 import STAGE_CANVAS_BACKGROUND from "../../states/canvas";
-import ALL_SHAPES_ATOM, { ALL_SHAPES } from "../../states/shapes";
+import ALL_SHAPES_ATOM from "../../states/shapes/store";
+import { ALL_SHAPES } from "../../states/shapes/types";
 
 type ShapeIteratorProps = {
   item: ALL_SHAPES;

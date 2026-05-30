@@ -1,7 +1,7 @@
 import { PrimitiveAtom } from "jotai";
 import { LineCap, LineJoin } from "konva/lib/Shape";
 import { FC } from "react";
-import { ALL_SHAPES } from "../states/shapes";
+import { ALL_SHAPES } from "../states/shapes/types";
 import { IShapeTool } from "../states/tool";
 import {
   AlignItems,

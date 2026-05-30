@@ -5,7 +5,7 @@ import { IShapeEvents } from "../shapes/type.shape";
 import { ShapeState } from "../shapes/types/shape.state";
 import STAGE_CANVAS_BACKGROUND from "../states/canvas";
 import CURRENT_ITEM_ATOM from "../states/currentItem";
-import { ALL_SHAPES } from "../states/shapes";
+import { ALL_SHAPES } from "../states/shapes/types";
 
 type ShapeIteratorProps = {
   item: ShapeState;

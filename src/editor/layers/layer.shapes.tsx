@@ -7,7 +7,8 @@ import { Shapes } from "../shapes/shapes";
 import { IShapeEvents } from "../shapes/type.shape";
 import STAGE_CANVAS_BACKGROUND from "../states/canvas";
 import { SELECTED_SHAPES_BY_IDS_ATOM } from "../states/shape";
-import ALL_SHAPES_ATOM, { ALL_SHAPES } from "../states/shapes";
+import ALL_SHAPES_ATOM from "../states/shapes/store";
+import { ALL_SHAPES } from "../states/shapes/types";
 import { START_TIMER_ATOM } from "../states/timer";
 // import { UPDATE_UNDO_REDO } from "../states/undo-redo";
 
@@ -38,7 +39,6 @@ export const LayerShapes = () => {
   const trRef = useRef<Konva.Transformer>(null);
   const lyRef = useRef<Konva.Layer>(null);
   const selectedIds = useAtomValue(SELECTED_SHAPES_BY_IDS_ATOM);
-  // const setUpdateUndoRedo = useSetAtom(UPDATE_UNDO_REDO);
   const START = useSetAtom(START_TIMER_ATOM);
 
   const background = useAtomValue(STAGE_CANVAS_BACKGROUND);

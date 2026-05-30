@@ -1,5 +1,5 @@
 import { useAtomValue } from "jotai";
-import { ALL_SHAPES } from "../states/shapes";
+import { ALL_SHAPES } from "../states/shapes/types";
 
 export const usePropertiesShape = (props: ALL_SHAPES) => {
   const SHAPE = useAtomValue(props.state);

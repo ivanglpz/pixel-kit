@@ -1,6 +1,7 @@
 import { atom, Getter, PrimitiveAtom, Setter } from "jotai";
 import React from "react";
-import { ALL_SHAPES, PLANE_SHAPES_ATOM } from "../states/shapes";
+import { PLANE_SHAPES_ATOM } from "../states/shapes/store";
+import { ALL_SHAPES } from "../states/shapes/types";
 import { ShapeBase } from "./types/shape.base";
 import { ShapeState } from "./types/shape.state";
 

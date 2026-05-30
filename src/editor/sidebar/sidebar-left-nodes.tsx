@@ -16,7 +16,8 @@ import { withStableMemo } from "../components/withStableMemo";
 import { constants } from "../constants/color";
 import { flexLayoutAtom } from "../shapes/layout-flex";
 import { SELECTED_SHAPES_BY_IDS_ATOM } from "../states/shape";
-import { ALL_SHAPES, DELETE_SHAPES_ATOM } from "../states/shapes";
+import { DELETE_SHAPES_ATOM } from "../states/shapes/store";
+import { ALL_SHAPES } from "../states/shapes/types";
 import { START_TIMER_ATOM } from "../states/timer";
 import TOOL_ATOM, { PAUSE_MODE_ATOM } from "../states/tool";
 

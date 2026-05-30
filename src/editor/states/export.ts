@@ -2,18 +2,16 @@ import { atom } from "jotai";
 /* eslint-disable react-hooks/exhaustive-deps */
 import Konva from "konva";
 import { formats } from "../constants/formats";
+import { computeStageBounds } from "./shapes/helpers";
+import ALL_SHAPES_ATOM, { PLANE_SHAPES_ATOM } from "./shapes/store";
+import { ALL_SHAPES } from "./shapes/types";
 
 import { SELECTED_SHAPES_BY_IDS_ATOM } from "./shape";
-import ALL_SHAPES_ATOM, {
-  computeStageBounds,
-  PLANE_SHAPES_ATOM,
-} from "./shapes";
 
 export const TYPE_EXPORT_ATOM = atom("HIGH");
 
 import { Getter } from "jotai";
 import { ShapeState } from "../shapes/types/shape.state";
-import { ALL_SHAPES } from "../states/shapes";
 import { calculateCoverCrop } from "../utils/crop";
 
 /* =======================
