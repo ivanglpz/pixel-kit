@@ -11,7 +11,7 @@ export const localProjectToDocument = (
     _id: project.id,
     name: project.name,
     isPublic: false,
-    previewUrl: project.preview?.url ?? "./default_bg.png",
+    previewUrl: project.preview?.url ?? "/default_bg.png",
     data: serializeProjectSnapshot(project.snapshot),
     version: project.revision,
     mode: "DESIGN_MODE",

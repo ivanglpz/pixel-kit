@@ -5,13 +5,14 @@
   "type": "module",
   "main": "./dist-electron/main.js",
   "scripts": {
-    "dev:renderer": "next dev -p 4210",
+    "dev:renderer": "vite --host 0.0.0.0 --port 4210",
     "dev:electron": "NODE_OPTIONS='--import=tsx' PIXELKIT_DESKTOP_RENDERER_URL=http://localhost:4210 electron electron/main.ts",
     "rebuild:native": "electron-builder install-app-deps",
-    "build:renderer": "PIXELKIT_DESKTOP_EXPORT=1 next build",
+    "build:renderer": "vite build",
+    "preview:renderer": "vite preview --host 0.0.0.0 --port 4210",
     "build:electron": "node scripts/prepare-electron-dist.cjs",
     "build": "pnpm run build:renderer && pnpm run build:electron",
-    "start": "PIXELKIT_DESKTOP_RENDERER_MODE=file electron .",
+    "start": "PIXELKIT_DESKTOP_RENDERER_MODE=app electron .",
     "electron:build": "pnpm run build && electron-builder",
     "electron:build:mac": "pnpm run build && electron-builder --mac"
   },
@@ -20,8 +21,9 @@
     "productName": "PixelKit",
     "icon": "build/icon.png",
     "files": [
-      "out/**/*",
+      "renderer-dist/**/*",
       "dist-electron/**/*",
+      "build/**/*",
       "package.json",
       "!node_modules/@pixelkit/**"
     ],
@@ -44,12 +46,13 @@
     "@pixelkit/platform": "workspace:*",
     "@tanstack/react-query": "5.90.2",
     "better-sqlite3": "12.10.0",
-    "next": "15.5.9",
     "react": "18.3.1",
     "react-dom": "18.3.1",
+    "react-router-dom": "6.30.1",
     "sonner": "1.2.4"
   },
   "devDependencies": {
+    "@vitejs/plugin-react": "4.3.4",
     "@types/better-sqlite3": "7.6.13",
     "@types/node": "24.5.2",
     "@types/react": "18.3.24",
@@ -58,6 +61,7 @@
     "electron-builder": "24.13.3",
     "esbuild": "0.25.10",
     "tsx": "4.19.4",
+    "vite": "5.4.11",
     "typescript": "5.0.4"
   }
 }

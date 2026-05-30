@@ -2,13 +2,16 @@
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "baseUrl": ".",
+    "jsx": "react-jsx",
+    "moduleResolution": "bundler",
     "noEmit": true,
+    "plugins": [],
+    "types": ["vite/client"],
     "paths": {
       "@/db/*": ["../../src/db/*"],
       "@/editor": ["../../packages/editor/src/index.tsx"],
       "@/editor/*": ["../../packages/editor/src/*"],
       "@/jotai/*": ["../../src/jotai/*"],
-      "@/pages/*": ["../../src/pages/*"],
       "@/services/*": ["../../src/services/*"],
       "@/utils/*": ["../../src/utils/*"],
       "@/*": ["./src/*"],
@@ -16,9 +19,8 @@
     }
   },
   "include": [
-    "electron/**/*.ts",
     "src/**/*.ts",
     "src/**/*.tsx",
-    "next-env.d.ts"
+    "vite.config.ts"
   ]
 }

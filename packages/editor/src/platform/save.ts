@@ -43,7 +43,7 @@ export const webEditorSaveAdapter: EditorSaveAdapter = {
       data: project.data,
       name: project.projectName,
       isPublic: project.isPublic,
-      previewUrl: response?.url ?? "./default_bg.png",
+      previewUrl: response?.url ?? "/default_bg.png",
     };
 
     await updateProject(payload);

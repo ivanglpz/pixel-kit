@@ -1,4 +1,4 @@
-import { existsSync } from "node:fs";
+import { existsSync, statSync } from "node:fs";
 import { readFile } from "node:fs/promises";
 import { app, BrowserWindow, nativeImage, protocol } from "electron";
 import { dirname, extname, join, resolve, sep } from "node:path";
@@ -26,6 +26,7 @@ const __dirname = dirname(__filename);
 let mainWindow: BrowserWindow | null = null;
 
 const getAppIconPath = () => resolve(__dirname, "..", "build", "icon.png");
+const getRendererDistPath = () => resolve(__dirname, "..", "renderer-dist");
 
 const getMimeType = (fileName: string) => {
   switch (extname(fileName).toLowerCase()) {
@@ -42,20 +43,84 @@ const getMimeType = (fileName: string) => {
       return "image/svg+xml";
     case ".bmp":
       return "image/bmp";
+    case ".css":
+      return "text/css; charset=utf-8";
+    case ".html":
+      return "text/html; charset=utf-8";
+    case ".ico":
+      return "image/x-icon";
+    case ".js":
+      return "text/javascript; charset=utf-8";
+    case ".json":
+      return "application/json; charset=utf-8";
+    case ".mjs":
+      return "text/javascript; charset=utf-8";
+    case ".txt":
+      return "text/plain; charset=utf-8";
     default:
       return "application/octet-stream";
   }
 };
 
-const registerAssetProtocol = () => {
+const createFileResponse = async (filePath: string) => {
+  const buffer = await readFile(filePath);
+
+  return new Response(new Uint8Array(buffer), {
+    headers: {
+      "Content-Type": getMimeType(filePath),
+      "Cache-Control": "no-store",
+    },
+  });
+};
+
+const resolveSafePath = (rootDir: string, ...pathParts: string[]) => {
+  const nextPath = resolve(rootDir, ...pathParts);
+
+  if (nextPath === rootDir || nextPath.startsWith(`${rootDir}${sep}`)) {
+    return nextPath;
+  }
+
+  return null;
+};
+
+const serveRendererRoute = async (url: URL) => {
+  const rendererDistDir = getRendererDistPath();
+  const requestedPath = decodeURIComponent(url.pathname);
+  const candidatePath = resolveSafePath(
+    rendererDistDir,
+    `.${requestedPath === "/" ? "/index.html" : requestedPath}`,
+  );
+
+  if (
+    candidatePath &&
+    existsSync(candidatePath) &&
+    statSync(candidatePath).isFile()
+  ) {
+    return createFileResponse(candidatePath);
+  }
+
+  const indexPath = resolveSafePath(rendererDistDir, "index.html");
+
+  if (!indexPath || !existsSync(indexPath)) {
+    return new Response("Renderer entrypoint not found", { status: 500 });
+  }
+
+  return createFileResponse(indexPath);
+};
+
+const registerAppProtocol = () => {
   const { assetsDir } = getDesktopPaths();
 
   protocol.handle("pixelkit", async (request) => {
     try {
       const url = new URL(request.url);
 
+      if (url.hostname === "app") {
+        return serveRendererRoute(url);
+      }
+
       if (url.hostname !== "assets") {
-        return new Response("Not found", { status: 404 });
+        return new Response("Unknown desktop resource", { status: 404 });
       }
 
       const pathParts = url.pathname
@@ -69,22 +134,15 @@ const registerAssetProtocol = () => {
       }
 
       const projectDir = resolve(assetsDir, projectId);
-      const filePath = resolve(projectDir, fileName);
+      const filePath = resolveSafePath(projectDir, fileName);
 
-      if (!filePath.startsWith(`${projectDir}${sep}`)) {
+      if (!filePath) {
         return new Response("Invalid asset path", { status: 400 });
       }
 
-      const buffer = await readFile(filePath);
-
-      return new Response(new Uint8Array(buffer), {
-        headers: {
-          "Content-Type": getMimeType(fileName),
-          "Cache-Control": "no-store",
-        },
-      });
+      return createFileResponse(filePath);
     } catch (error) {
-      return new Response("Asset not found", { status: 404 });
+      return new Response("Desktop resource not found", { status: 404 });
     }
   });
 };
@@ -129,9 +187,11 @@ const createWindow = () => {
 
   const rendererUrl =
     process.env.PIXELKIT_DESKTOP_RENDERER_URL ?? "http://localhost:4210";
+  const useBundledRenderer =
+    app.isPackaged || process.env.PIXELKIT_DESKTOP_RENDERER_MODE === "app";
 
-  if (app.isPackaged || process.env.PIXELKIT_DESKTOP_RENDERER_MODE === "file") {
-    void mainWindow.loadFile(join(app.getAppPath(), "out", "index.html"));
+  if (useBundledRenderer) {
+    void mainWindow.loadURL("pixelkit://app/");
   } else {
     void mainWindow.loadURL(rendererUrl);
   }
@@ -172,7 +232,7 @@ app.whenReady().then(() => {
     app.dock.setIcon(nativeImage.createFromPath(iconPath));
   }
 
-  registerAssetProtocol();
+  registerAppProtocol();
   createWindow();
   initializeLocalBackend();
 

@@ -1,13 +1,16 @@
 # PixelKit Desktop
 
-Electron + Next.js desktop app shell.
+Electron + Vite + React desktop app shell.
 
 ## Current Shape
 
 - `electron/main.ts` owns the Electron app lifecycle.
 - `electron/preload.cjs` exposes a typed IPC bridge as `window.pixelkitDesktop`.
 - `electron/storage/*` owns local persistence.
-- `src/pages/*` is the Next.js renderer.
+- `src/main.tsx` boots the desktop renderer.
+- `src/app.tsx` owns renderer providers.
+- `src/routes/*` defines desktop routes with React Router.
+- `src/screens/*` contains the login, projects, and editor screens.
 - The renderer uses `@pixelkit/editor` for the shared editor UI.
 
 ## Local Persistence
@@ -19,7 +22,7 @@ Electron + Next.js desktop app shell.
 
 ## Backend Boundary
 
-Desktop local persistence must not use Next.js API routes.
+Desktop local persistence must not use web API routes from Next.js.
 
 - Renderer talks to preload.
 - Preload talks to Electron main through IPC.
@@ -36,7 +39,7 @@ Desktop local persistence must not use Next.js API routes.
 
 ## Development
 
-The renderer and Electron process are separate commands for now:
+The renderer and Electron process are separate commands:
 
 - `pnpm --filter @pixelkit/desktop dev:renderer`
 - `pnpm --filter @pixelkit/desktop dev:electron`
@@ -47,7 +50,7 @@ The renderer and Electron process are separate commands for now:
 - `pnpm --filter @pixelkit/desktop run rebuild:native`
 - `pnpm --filter @pixelkit/desktop run start`
 
-`start` loads the static Next export from `out/` through Electron, without a Next dev server.
+`start` loads the static Vite build from `renderer-dist/` through Electron.
 
 ## macOS Package
 

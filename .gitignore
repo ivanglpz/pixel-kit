@@ -16,6 +16,7 @@ apps/desktop/.next/
 apps/desktop/out/
 apps/desktop/dist/
 apps/desktop/dist-electron/
+apps/desktop/renderer-dist/
 /out/
 
 # production
