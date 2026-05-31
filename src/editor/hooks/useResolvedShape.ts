@@ -1,6 +1,6 @@
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import Konva from "konva";
-import { useCallback, useMemo } from "react";
+import { useMemo } from "react";
 import stageAbsolutePosition from "../helpers/position";
 import { usePropertiesShape } from "../hooks/usePropertiesShape";
 import { flexLayoutAtom } from "../shapes/layout-flex";
@@ -38,10 +38,10 @@ export const useResolvedShape = (props: IShapeEvents) => {
     [shapeId, instance.id],
   );
 
-  const onDragMove = useCallback((e: Konva.KonvaEventObject<DragEvent>) => {
+  const onDragMove = (e: Konva.KonvaEventObject<DragEvent>) => {
     setX(e.target.x());
     setY(e.target.y());
-  }, []);
+  };
 
   const onClick = () => {
     setShapeId({
