@@ -7,9 +7,48 @@ import { PLANE_SHAPES_ATOM } from "./shapes/store";
 import type { ALL_SHAPES } from "./shapes/types";
 // import { ShapeSnapshot } from "./undo-redo";
 
+const ROOT_PARENT_KEY = "__root__";
+
 const filterListId = (id: string, parentId: string | null) => {
   return (e: IShapeId) => e?.id === id && e?.parentId === parentId;
 };
+
+const getShapeSelectionKey = ({ id, parentId }: IShapeId) =>
+  `${parentId ?? ROOT_PARENT_KEY}:${id}`;
+
+const getRuntimeShapeSelectionKey = (get: Getter, shape: ALL_SHAPES) =>
+  getShapeSelectionKey({
+    id: shape.id,
+    parentId: get(get(shape.state).parentId),
+  });
+
+const buildShapeSelectionLookup = (get: Getter, shapes: ALL_SHAPES[]) =>
+  new Map(
+    shapes.map((shape) => [getRuntimeShapeSelectionKey(get, shape), shape]),
+  );
+
+const resolveSelectedShapeRefs = (
+  selectedIds: IShapeId[],
+  shapeLookup: Map<string, ALL_SHAPES>,
+) =>
+  selectedIds.reduce<ALL_SHAPES[]>((selectedShapes, selected) => {
+    const shape = shapeLookup.get(getShapeSelectionKey(selected));
+    return shape ? selectedShapes.concat(shape) : selectedShapes;
+  }, []);
+
+const asUpdateList = (args: ShapeUpdateAtomArgs) =>
+  Array.isArray(args) ? args : [args];
+
+const getLatestUpdatesByType = (updates: ShapeUpdateAtomProps[]) =>
+  Array.from(
+    updates
+      .reduce(
+        (latestUpdates, update) => latestUpdates.set(update.type, update),
+        new Map<UpdatableKeys, ShapeUpdateAtomProps>(),
+      )
+      .values(),
+  );
+
 export const SELECTED_SHAPES_BY_IDS_ATOM = atom(
   (get) => {
     return get(get(CURRENT_PAGE).SHAPES.ID);
@@ -46,48 +85,25 @@ export const RESET_SHAPES_IDS_ATOM = atom(null, (get, set) => {
   set(SHAPE_IDS_ATOM, []);
 });
 
+export const PLANE_SHAPE_SELECTION_LOOKUP_ATOM = atom((get) => {
+  return buildShapeSelectionLookup(get, get(PLANE_SHAPES_ATOM));
+});
+
+export const SHAPE_SELECTED_REFS_ATOM = atom((get) => {
+  return resolveSelectedShapeRefs(
+    get(SELECTED_SHAPES_BY_IDS_ATOM),
+    get(PLANE_SHAPE_SELECTION_LOOKUP_ATOM),
+  );
+});
+
 export const SHAPE_SELECTED_ATOM = atom((get) => {
-  const selectedIds = get(SELECTED_SHAPES_BY_IDS_ATOM);
-
-  const planeShapes = get(PLANE_SHAPES_ATOM);
-
-  const shapes = planeShapes
-    .filter((shape) =>
-      selectedIds.some(
-        (selected) =>
-          shape.id === selected.id &&
-          get(get(shape.state).parentId) === selected.parentId,
-      ),
-    )
-    .map((shape) => get(shape.state));
+  const shapes = get(SHAPE_SELECTED_REFS_ATOM).map((shape) => get(shape.state));
 
   return {
     shape: shapes.at(0) || null,
     shapes,
     count: shapes.length,
   };
-});
-
-export const SHAPE_SELECTED_REFS_ATOM = atom((get) => {
-  const selectedIds = get(SELECTED_SHAPES_BY_IDS_ATOM);
-  const planeShapes = get(PLANE_SHAPES_ATOM);
-  const selectedShapes: ALL_SHAPES[] = [];
-
-  for (const shape of planeShapes) {
-    const state = get(shape.state);
-    const parentId = get(state.parentId);
-
-    if (
-      selectedIds.some(
-        (selected) =>
-          shape.id === selected.id && parentId === selected.parentId,
-      )
-    ) {
-      selectedShapes.push(shape);
-    }
-  }
-
-  return selectedShapes;
 });
 
 export type UpdatableKeys = keyof Omit<
@@ -103,9 +119,14 @@ export type ShapeUpdateAtomProps<K extends UpdatableKeys = UpdatableKeys> = {
 export type ShapeUpdateBatchResult = {
   didUpdate: boolean;
   layoutParentIds: string[];
+  updatedCount: number;
 };
 
 type ShapeUpdateAtomArgs = ShapeUpdateAtomProps | ShapeUpdateAtomProps[];
+
+type NormalizedShapeUpdate = ShapeUpdateAtomProps & {
+  affectsParentLayout: boolean;
+};
 
 export const LAYOUT_AFFECTING_CHILD_KEYS = new Set<UpdatableKeys>([
   "x",
@@ -123,14 +144,25 @@ export const LAYOUT_AFFECTING_CHILD_KEYS = new Set<UpdatableKeys>([
 export const shouldApplyParentLayout = (type: UpdatableKeys) =>
   LAYOUT_AFFECTING_CHILD_KEYS.has(type);
 
+const normalizeShapeUpdates = (
+  args: ShapeUpdateAtomArgs,
+): NormalizedShapeUpdate[] =>
+  getLatestUpdatesByType(asUpdateList(args)).map((update) => ({
+    ...update,
+    affectsParentLayout: shouldApplyParentLayout(update.type),
+  }));
+
+const createShapeUpdateResult = (): ShapeUpdateBatchResult => ({
+  didUpdate: false,
+  layoutParentIds: [],
+  updatedCount: 0,
+});
+
 export const SHAPE_UPDATE_BATCH_ATOM = atom(
   null,
   (get: Getter, set: Setter, args: ShapeUpdateAtomArgs) => {
-    const updates = Array.isArray(args) ? args : [args];
-    const result: ShapeUpdateBatchResult = {
-      didUpdate: false,
-      layoutParentIds: [],
-    };
+    const updates = normalizeShapeUpdates(args);
+    const result = createShapeUpdateResult();
 
     if (updates.length === 0) return result;
 
@@ -140,14 +172,15 @@ export const SHAPE_UPDATE_BATCH_ATOM = atom(
     for (const shapeRef of selectedShapes) {
       const shape = get(shapeRef.state);
 
-      for (const { type, value } of updates) {
+      for (const { type, value, affectsParentLayout } of updates) {
         const target = shape[type] as PrimitiveAtom<unknown> | undefined;
         if (!target || Object.is(get(target), value)) continue;
 
         set(target, value);
         result.didUpdate = true;
+        result.updatedCount += 1;
 
-        if (shouldApplyParentLayout(type)) {
+        if (affectsParentLayout) {
           const parentId = get(shape.parentId);
           if (parentId) layoutParentIds.add(parentId);
         }
