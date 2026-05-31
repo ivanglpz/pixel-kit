@@ -9,14 +9,10 @@ import { uploadPhoto } from "@/services/photo";
 import { optimizeImageFile } from "@/utils/opt-img";
 import { useMutation } from "@tanstack/react-query";
 import { atom, useAtom, useAtomValue, useSetAtom } from "jotai";
-import Konva from "konva";
-import { KonvaEventObject } from "konva/lib/Node";
-import { useEffect, useRef } from "react";
+import { RefObject, useEffect } from "react";
 import { toast } from "sonner";
 import { v4 as uuidv4 } from "uuid";
 import { MOUSE } from "../constants/mouse";
-import { STAGE_IDS } from "../constants/stage";
-import stageAbsolutePosition from "../helpers/position";
 import { CreateShapeSchema } from "../helpers/shape-schema";
 import { ShapeImage } from "../shapes/types/shape.base";
 import { CLEAR_CURRENT_ITEM_ATOM } from "../states/currentItem";
@@ -42,43 +38,50 @@ import {
   GET_STAGE_BOUNDS_ATOM,
   GROUP_SHAPES_IN_LAYOUT,
 } from "../states/shapes";
-// import { REDO_ATOM, UNDO_ATOM } from "../states/undo-redo";
-import { SVG } from "../utils/svg";
-
 import {
   PASTE_FROM_CLIPBOARD_ATOM,
   SET_CLIPBOARD_ATOM,
 } from "../states/clipboard";
 import { START_TIMER_ATOM } from "../states/timer";
+import { SVG } from "../utils/svg";
 import { useConfiguration } from "./useConfiguration";
 
-// ===== CONSTANTS =====
+const getStagePoint = (
+  event: Pick<
+    MouseEvent | React.PointerEvent<HTMLElement>,
+    "clientX" | "clientY"
+  >,
+  viewport: HTMLElement | null,
+  position: { x: number; y: number },
+  scale: { x: number; y: number },
+) => {
+  if (!viewport) return { x: 0, y: 0 };
+  const rect = viewport.getBoundingClientRect();
+  return {
+    x: (event.clientX - rect.left - position.x) / scale.x,
+    y: (event.clientY - rect.top - position.y) / scale.y,
+  };
+};
 
-export const useEventStage = () => {
-  // ===== STATE HOOKS =====
+export const useEventStage = (viewportRef: RefObject<HTMLDivElement>) => {
   const [tool, setTool] = useAtom(TOOL_ATOM);
   const shapeId = useAtomValue(SELECTED_SHAPES_BY_IDS_ATOM);
   const [EVENT_STAGE, SET_EVENT_STAGE] = useAtom(EVENT_ATOM);
   const SET_MOVING = useSetAtom(MOVING_MOUSE_BUTTON_ATOM);
-  // ===== READ-ONLY STATE =====
   const PAUSE = useAtomValue(PAUSE_MODE_ATOM);
+  const scale = useAtomValue(POSITION_SCALE_ATOM);
+  const position = useAtomValue(POSITION_PAGE_ATOM);
   const setScale = useSetAtom(POSITION_SCALE_ATOM);
   const setPosition = useSetAtom(POSITION_PAGE_ATOM);
   const { config } = useConfiguration();
   const START = useSetAtom(START_TIMER_ATOM);
-
   const PROJECT_ID = useAtomValue(PROJECT_ID_ATOM);
-  const stageRef = useRef<Konva.Stage>(null);
   const GET_BOUNDS = useSetAtom(GET_STAGE_BOUNDS_ATOM);
-  // ===== SETTERS =====
   const SET_CREATE = useSetAtom(CREATE_SHAPE_ATOM);
   const DELETE_SHAPE = useSetAtom(DELETE_SHAPES_ATOM);
   const SET_CLEAR_CITEM = useSetAtom(CLEAR_CURRENT_ITEM_ATOM);
   const [selection, setSelection] = useAtom(RECTANGLE_SELECTION_ATOM);
-  // const setRedo = useSetAtom(REDO_ATOM);
-  // const setUndo = useSetAtom(UNDO_ATOM);
   const SET_EVENT_GROUP = useSetAtom(GROUP_SHAPES_IN_LAYOUT);
-
   const SET_EVENT_COPY_START_SHAPES = useSetAtom(EVENT_COPY_START_SHAPES);
   const SET_EVENT_COPY_CREATING_SHAPES = useSetAtom(EVENT_COPY_CREATING_SHAPES);
   const SET_EVENT_COPY_FINISH_SHAPES = useSetAtom(EVENT_COPY_FINISH_SHAPES);
@@ -89,28 +92,19 @@ export const useEventStage = () => {
   const PASTE_CLIPBOARD = useSetAtom(PASTE_FROM_CLIPBOARD_ATOM);
   const SET_SELECTION = useSetAtom(SELECT_AREA_SHAPES_ATOM);
 
-  // ===== MOUSE EVENT HANDLERS =====
-  const handleMouseDown = (event: KonvaEventObject<MouseEvent>) => {
-    const mouse_button = event.evt.button;
-    const { x, y } = stageAbsolutePosition(event);
-    const targetId = event?.target?.attrs?.id;
+  const handleMouseDown = (event: React.PointerEvent<HTMLDivElement>) => {
+    const target = event.target as HTMLElement;
+    const targetIsStage =
+      event.currentTarget === event.target ||
+      target.id === "main-image-render-stage";
+    const { x, y } = getStagePoint(event, viewportRef.current, position, scale);
 
-    if (mouse_button === MOUSE.LEFT) {
-      if (
-        EVENT_STAGE === "IDLE" &&
-        tool === "MOVE" &&
-        STAGE_IDS.includes(targetId)
-      ) {
-        setSelection({
-          x,
-          y,
-          width: 0,
-          height: 0,
-          visible: true,
-        });
+    if (event.button === MOUSE.LEFT) {
+      if (EVENT_STAGE === "IDLE" && tool === "MOVE" && targetIsStage) {
+        setSelection({ x, y, width: 0, height: 0, visible: true });
         SET_EVENT_STAGE("SELECT_AREA");
       }
-      if (EVENT_STAGE === "CREATE") {
+      if (EVENT_STAGE === "CREATE" && target.dataset.shapeId == null) {
         SET_EVENT_DOWN_START_SHAPES({ x, y });
       }
       if (EVENT_STAGE === "COPY") {
@@ -120,30 +114,27 @@ export const useEventStage = () => {
     }
   };
 
-  const handleMouseMove = (event: KonvaEventObject<MouseEvent>) => {
-    const mouse_button = event.evt.button;
-    const { x, y } = stageAbsolutePosition(event);
+  const handleMouseMove = (event: React.PointerEvent<HTMLDivElement>) => {
+    const { x, y } = getStagePoint(event, viewportRef.current, position, scale);
 
-    if (mouse_button === MOUSE.LEFT) {
-      if (EVENT_STAGE === "SELECT_AREA") {
-        setSelection({
-          ...selection,
-          width: x - selection.x,
-          height: y - selection.y,
-          visible: true,
-        });
-      }
+    if (EVENT_STAGE === "SELECT_AREA") {
+      setSelection({
+        ...selection,
+        width: x - selection.x,
+        height: y - selection.y,
+        visible: true,
+      });
+    }
 
-      if (EVENT_STAGE === "CREATING") {
-        SET_EVENT_DOWN_CREATING_SHAPE({ x, y });
-      }
-      if (EVENT_STAGE === "COPYING") {
-        SET_EVENT_COPY_CREATING_SHAPES({ x, y });
-      }
+    if (EVENT_STAGE === "CREATING") {
+      SET_EVENT_DOWN_CREATING_SHAPE({ x, y });
+    }
+    if (EVENT_STAGE === "COPYING") {
+      SET_EVENT_COPY_CREATING_SHAPES({ x, y });
     }
   };
 
-  const handleMouseUp = async (event: KonvaEventObject<MouseEvent>) => {
+  const handleMouseUp = () => {
     if (EVENT_STAGE === "SELECT_AREA") {
       SET_SELECTION();
     }
@@ -158,7 +149,6 @@ export const useEventStage = () => {
     SET_MOVING(true);
   };
 
-  // ===== UTILITY FUNCTIONS =====
   const toolKeydown = (kl: IKeyTool) => {
     setTool(kl);
     SET_CLEAR_CITEM();
@@ -169,38 +159,29 @@ export const useEventStage = () => {
     mutationFn: async (
       photoUpload: File,
     ): Promise<Pick<IPhoto, "name" | "width" | "height" | "url">> => {
-      const myImage = photoUpload;
-
-      if (!myImage) {
-        throw new Error("Please upload a photo from your device");
-      }
-
       const formData = new FormData();
-      formData.append("image", myImage); // usar el mismo nombre 'images'
-      formData.append("projectId", `${PROJECT_ID}`); // usar el mismo nombre 'images'
-
-      const response = await uploadPhoto(formData);
-      return response;
+      formData.append("image", photoUpload);
+      formData.append("projectId", `${PROJECT_ID}`);
+      return uploadPhoto(formData);
     },
     onSuccess: (values) => {
-      const createStartElement = CreateShapeSchema({
-        id: uuidv4(),
-        tool: atom<IShapeTool>("IMAGE"),
-        x: atom(0),
-        y: atom(0),
-        width: atom(values.width / 3),
-        height: atom(values.height / 3),
-        image: atom<ShapeImage>({
-          src: values.url,
-          width: values.width,
-          height: values.height,
-          name: values.name,
+      SET_CREATE(
+        CreateShapeSchema({
+          id: uuidv4(),
+          tool: atom<IShapeTool>("IMAGE"),
+          x: atom(0),
+          y: atom(0),
+          width: atom(values.width / 3),
+          height: atom(values.height / 3),
+          image: atom<ShapeImage>({
+            src: values.url,
+            width: values.width,
+            height: values.height,
+            name: values.name,
+          }),
         }),
-      });
-      SET_CREATE(createStartElement);
-
+      );
       START();
-
       toast.success("Image uploaded successfully!");
     },
     onError: (error) => {
@@ -219,76 +200,66 @@ export const useEventStage = () => {
     }
 
     toast.info("Optimizing image...", { duration: 4000 });
-
-    const optimizedFile = await optimizeImageFile({
-      file,
-      quality: 25,
-    });
-
-    mutation.mutate(optimizedFile);
+    mutation.mutate(await optimizeImageFile({ file, quality: 25 }));
   };
 
   const createTextFromClipboard = (text: string) => {
-    const createStartElement = CreateShapeSchema({
-      id: uuidv4(),
-      tool: atom<IShapeTool>("TEXT"),
-      x: atom(0),
-      y: atom(0),
-      text: atom(text),
-    });
-    SET_CREATE(createStartElement);
+    SET_CREATE(
+      CreateShapeSchema({
+        id: uuidv4(),
+        tool: atom<IShapeTool>("TEXT"),
+        x: atom(0),
+        y: atom(0),
+        text: atom(text),
+      }),
+    );
   };
 
   const createImageFromSVG = (svgString: string) => {
     const img = new Image();
     img.onload = function () {
-      const canvas = document.createElement("canvas");
-      const ctx = canvas?.getContext?.("2d");
-
-      canvas.width = img.width;
-      canvas.height = img.height;
-      ctx?.drawImage(img, 0, 0);
-
-      const createStartElement = CreateShapeSchema({
-        id: uuidv4(),
-        tool: atom<IShapeTool>("ICON"),
-        x: atom(0),
-        y: atom(0),
-        image: atom({
-          src: SVG.Encode(svgString),
-          width: img.width,
-          height: img.height,
-          name: `svg ${uuidv4().slice(0, 2)}`,
+      SET_CREATE(
+        CreateShapeSchema({
+          id: uuidv4(),
+          tool: atom<IShapeTool>("ICON"),
+          x: atom(0),
+          y: atom(0),
+          image: atom({
+            src: SVG.Encode(svgString),
+            width: img.width,
+            height: img.height,
+            name: `svg ${uuidv4().slice(0, 2)}`,
+          }),
+          label: atom(`svg ${uuidv4().slice(0, 2)}`),
         }),
-        label: atom(`svg ${uuidv4().slice(0, 2)}`),
-      });
-      SET_CREATE(createStartElement);
+      );
     };
-
-    const dataImage = SVG.Encode(svgString);
-    img.src = dataImage;
+    img.src = SVG.Encode(svgString);
   };
 
   const zoomToFitAllShapes = () => {
-    if (!stageRef.current) return;
+    const viewport = viewportRef.current;
+    if (!viewport) return;
     const bounds = GET_BOUNDS();
     if (!bounds) return;
 
-    const stageWidth = stageRef.current.width();
-    const stageHeight = stageRef.current.height();
-    const scale =
-      Math.min(stageWidth / bounds.width, stageHeight / bounds.height) * 0.9;
+    const nextScale =
+      Math.min(
+        viewport.clientWidth / bounds.width,
+        viewport.clientHeight / bounds.height,
+      ) * 0.9;
 
-    setScale({ x: scale, y: scale });
+    setScale({ x: nextScale, y: nextScale });
     setPosition({
-      x: -bounds.startX * scale + (stageWidth - bounds.width * scale) / 2,
-      y: -bounds.startY * scale + (stageHeight - bounds.height * scale) / 2,
+      x:
+        -bounds.startX * nextScale +
+        (viewport.clientWidth - bounds.width * nextScale) / 2,
+      y:
+        -bounds.startY * nextScale +
+        (viewport.clientHeight - bounds.height * nextScale) / 2,
     });
-
-    stageRef.current.batchDraw();
   };
 
-  // ===== EVENT LISTENERS =====
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       const KEY = event.key?.toUpperCase();
@@ -297,90 +268,65 @@ export const useEventStage = () => {
       const meta = isMac ? event.metaKey : event.ctrlKey;
       const key = event.key.toLowerCase();
 
-      // ✅ Zoom to all shapes (Shift + 1)
-
       if (meta && key === "c" && shapeId.length > 0) {
         event.preventDefault();
         SET_CLIPBOARD("COPY");
-
         return;
       }
       if (meta && key === "x" && shapeId.length > 0) {
         event.preventDefault();
-
         SET_CLIPBOARD("CUT");
-
         DELETE_SHAPE();
         START();
-
         return;
       }
       if (meta && key === "v") {
         event.preventDefault();
         PASTE_CLIPBOARD();
         START();
-
         return;
       }
-
       if (shift && event.code === "Digit1") {
         event.preventDefault();
         zoomToFitAllShapes();
         return;
       }
-
-      // ✅ Undo (IR HACIA ATRÁS)
       if (meta && !event.shiftKey && key === "z") {
         event.preventDefault();
-        // setUndo();
         START();
-
-        // set(UNDO_ATOM);
         return;
       }
-      // ✅ Agrupar en Layout (Shift + A)
       if (shift && key === "a" && shapeId?.length > 0) {
         event.preventDefault();
         SET_EVENT_GROUP();
         START();
-
         return;
       }
-
-      // ✅ Redo (IR HACIA ADELANTE)
       if (meta && event.shiftKey && key === "z") {
         event.preventDefault();
-        // setRedo();
         START();
-
-        // set(REDO_ATOM);
         return;
       }
-
       if (PAUSE) return;
 
-      // Handle delete operations
       if (DELETE_KEYS.includes(KEY)) {
         DELETE_SHAPE();
         setTool("MOVE");
         START();
       }
-
-      // Handle Alt key for copy mode
       if (KEY === "ALT") {
         SET_EVENT_STAGE("COPY");
       }
       if (KEY === "SHIFT") {
         SET_EVENT_STAGE("MULTI_SELECT");
       }
-      // Handle tool shortcuts
+
       const keysActions = Object.fromEntries(
         config.tools.map((item) => [
           item.keyBoard,
           {
             keyMethod: item.keyMethod,
             eventStage: item.eventStage,
-            showClip: Boolean(item?.showClip),
           },
         ]),
       );
@@ -390,62 +336,36 @@ export const useEventStage = () => {
         SET_EVENT_STAGE(keysActions[KEY].eventStage);
       }
     };
+
     const normalizeSvg = (raw: string): string => {
       const parser = new DOMParser();
       const doc = parser.parseFromString(raw, "image/svg+xml");
       const svg = doc.querySelector("svg");
-
-      if (!svg) {
-        throw new Error("Invalid SVG");
-      }
-
+      if (!svg) throw new Error("Invalid SVG");
       if (!svg.getAttribute("xmlns")) {
         svg.setAttribute("xmlns", "http://www.w3.org/2000/svg");
       }
-
-      if (!svg.getAttribute("width")) {
-        svg.setAttribute("width", "32");
-      }
-
-      if (!svg.getAttribute("height")) {
-        svg.setAttribute("height", "32");
-      }
-
+      if (!svg.getAttribute("width")) svg.setAttribute("width", "32");
+      if (!svg.getAttribute("height")) svg.setAttribute("height", "32");
       return new XMLSerializer().serializeToString(svg);
     };
 
-    const handleSVG = (svgText: string): void => {
-      const parser = new DOMParser();
-      const svgDOM = parser
-        .parseFromString(svgText, "image/svg+xml")
-        .querySelector("svg");
-      if (!svgDOM) return;
-
-      const normalizedSvg = normalizeSvg(svgText);
-      createImageFromSVG(normalizedSvg);
-    };
-
     const handlePaste = (event: ClipboardEvent): void => {
-      const clipboardText: string | null =
-        event.clipboardData?.getData("text") ?? null;
-      const file: File | undefined = event.clipboardData?.files[0];
+      const clipboardText = event.clipboardData?.getData("text") ?? null;
+      const file = event.clipboardData?.files[0];
 
       if (file) {
         createImageFromFile(file);
         return;
       }
-
       if (!clipboardText) return;
 
       const trimmed = clipboardText.trim();
       if (trimmed.startsWith("<svg") && trimmed.endsWith("</svg>")) {
-        handleSVG(trimmed);
+        createImageFromSVG(normalizeSvg(trimmed));
         return;
       }
-
-      if (shapeId?.length === 0) {
-        createTextFromClipboard(trimmed);
-      }
+      if (shapeId?.length === 0) createTextFromClipboard(trimmed);
     };
 
     const handleKeyUp = (event: KeyboardEvent): void => {
@@ -455,6 +375,7 @@ export const useEventStage = () => {
         SET_CLEAR_CITEM();
       }
     };
+
     document.addEventListener("keydown", handleKeyDown);
     document.addEventListener("keyup", handleKeyUp);
     document.addEventListener("paste", handlePaste);
@@ -464,12 +385,11 @@ export const useEventStage = () => {
       document.removeEventListener("keyup", handleKeyUp);
       document.removeEventListener("paste", handlePaste);
     };
-  }, [tool, shapeId, config.tools, PAUSE]);
+  }, [tool, shapeId, config.tools, PAUSE, scale, position]);
 
   return {
     handleMouseDown,
     handleMouseMove,
     handleMouseUp,
-    stageRef,
   };
 };
