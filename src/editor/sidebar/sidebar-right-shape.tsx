@@ -3,8 +3,10 @@
 import { IPhoto } from "@/db/schemas/types";
 import {
   SHAPE_SELECTED_ATOM,
-  SHAPE_UPDATE_ATOM,
-  UpdatableKeys,
+  SHAPE_UPDATE_BATCH_ATOM,
+  type ShapeUpdateAtomProps,
+  type ShapeUpdateBatchResult,
+  type UpdatableKeys,
 } from "@/editor/states/shape";
 import { deleteManyPhotos, fetchListPhotosProject } from "@/services/photos";
 import { css } from "@stylespixelkit/css";
@@ -41,7 +43,13 @@ import {
   Trash,
   Upload,
 } from "lucide-react";
-import React, { ReactNode, useRef, useState } from "react";
+import React, {
+  ReactNode,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { toast } from "sonner";
 import { Dialog } from "../components/dialog";
 import { Input } from "../components/input";
@@ -163,11 +171,13 @@ const LayoutGrid: React.FC<LayoutGridProps> = ({ shape }) => {
   const flexDirection = useAtomValue(shape.flexDirection);
   const justifyContent = useAtomValue(shape.justifyContent);
   const alignItems = useAtomValue(shape.alignItems);
-  const spHook = useShapeUpdate();
+  const updateShape = useShapeUpdateMany();
 
   const onLayoutChange = (justify: JustifyContent, align: AlignItems) => {
-    spHook("justifyContent", justify);
-    spHook("alignItems", align);
+    updateShape([
+      { type: "justifyContent", value: justify },
+      { type: "alignItems", value: align },
+    ]);
   };
 
   const justifyContentValues: JustifyContent[] = [
@@ -296,18 +306,152 @@ export const SectionHeader = ({
 );
 
 export const useShapeUpdate = () => {
-  const update = useSetAtom(SHAPE_UPDATE_ATOM);
+  const { updateNow } = useShapeUpdateScheduler();
+
+  return updateNow;
+};
+
+export const useShapeUpdateScheduler = () => {
+  const updateBatch = useSetAtom(SHAPE_UPDATE_BATCH_ATOM);
+  const applyLayout = useSetAtom(flexLayoutAtom);
   const START = useSetAtom(START_TIMER_ATOM);
+  const pendingRef = useRef(new Map<UpdatableKeys, ShapeUpdateAtomProps>());
+  const frameRef = useRef<number | null>(null);
+  const autosaveTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const hasUnsavedChangesRef = useRef(false);
 
-  // const setUpdateUndoRedo = useSetAtom(UPDATE_UNDO_REDO);
+  const startAutosaveNow = useCallback(() => {
+    if (autosaveTimeoutRef.current) {
+      clearTimeout(autosaveTimeoutRef.current);
+      autosaveTimeoutRef.current = null;
+    }
 
-  return <K extends keyof ShapeState>(
-    type: UpdatableKeys,
-    value: Omit<ShapeBase[K], "id" | "tool" | "children" | "parentId">,
-  ) => {
-    update({ type, value });
+    if (!hasUnsavedChangesRef.current) return;
+    hasUnsavedChangesRef.current = false;
     START();
+  }, [START]);
+
+  const queueAutosave = useCallback(() => {
+    hasUnsavedChangesRef.current = true;
+
+    if (autosaveTimeoutRef.current) {
+      clearTimeout(autosaveTimeoutRef.current);
+    }
+
+    autosaveTimeoutRef.current = setTimeout(() => {
+      autosaveTimeoutRef.current = null;
+      startAutosaveNow();
+    }, 250);
+  }, [startAutosaveNow]);
+
+  const applyBatchResult = useCallback(
+    (result: ShapeUpdateBatchResult) => {
+      for (const parentId of result.layoutParentIds) {
+        applyLayout({ id: parentId });
+      }
+    },
+    [applyLayout],
+  );
+
+  const applyUpdates = useCallback(
+    (updates: ShapeUpdateAtomProps[], autosave: "debounced" | "now") => {
+      if (updates.length === 0) return;
+
+      const result = updateBatch(updates);
+      applyBatchResult(result);
+
+      if (!result.didUpdate) return;
+      if (autosave === "now") {
+        hasUnsavedChangesRef.current = true;
+        startAutosaveNow();
+        return;
+      }
+
+      queueAutosave();
+    },
+    [applyBatchResult, queueAutosave, startAutosaveNow, updateBatch],
+  );
+
+  const flush = useCallback(() => {
+    if (frameRef.current !== null) {
+      cancelAnimationFrame(frameRef.current);
+      frameRef.current = null;
+    }
+
+    const updates = Array.from(pendingRef.current.values());
+    pendingRef.current.clear();
+    applyUpdates(updates, "now");
+    startAutosaveNow();
+  }, [applyUpdates, startAutosaveNow]);
+
+  const scheduleMany = useCallback(
+    (updates: ShapeUpdateAtomProps[]) => {
+      for (const update of updates) {
+        pendingRef.current.set(update.type, update);
+      }
+
+      if (frameRef.current !== null) return;
+
+      frameRef.current = requestAnimationFrame(() => {
+        frameRef.current = null;
+        const nextUpdates = Array.from(pendingRef.current.values());
+        pendingRef.current.clear();
+        applyUpdates(nextUpdates, "debounced");
+      });
+    },
+    [applyUpdates],
+  );
+
+  const schedule = useCallback(
+    <K extends UpdatableKeys>(update: ShapeUpdateAtomProps<K>) => {
+      scheduleMany([update]);
+    },
+    [scheduleMany],
+  );
+
+  const updateNow = useCallback(
+    <K extends UpdatableKeys>(type: K, value: ShapeBase[K]) => {
+      flush();
+      applyUpdates([{ type, value }], "now");
+    },
+    [applyUpdates, flush],
+  );
+
+  const updateManyNow = useCallback(
+    (updates: ShapeUpdateAtomProps[]) => {
+      flush();
+      applyUpdates(updates, "now");
+    },
+    [applyUpdates, flush],
+  );
+
+  useEffect(() => {
+    return () => {
+      flush();
+      if (autosaveTimeoutRef.current) {
+        clearTimeout(autosaveTimeoutRef.current);
+      }
+    };
+  }, [flush]);
+
+  return {
+    schedule,
+    scheduleMany,
+    flush,
+    updateNow,
+    updateManyNow,
   };
+};
+
+export const useShapeUpdateMany = () => {
+  const { updateManyNow } = useShapeUpdateScheduler();
+
+  return useCallback(
+    (updates: ShapeUpdateAtomProps[]) => {
+      updateManyNow(updates);
+    },
+    [updateManyNow],
+  );
 };
 
 const ICON_SHAPE = {
@@ -324,27 +468,16 @@ type ShapeAtomButtonProps = {
   atomo: PrimitiveAtom<boolean>;
   iconType: keyof typeof ICON_SHAPE;
   type: UpdatableKeys;
-  parentId: PrimitiveAtom<string | null>;
 };
-const ShapeAtomButton = ({
-  atomo,
-  type,
-  iconType,
-  parentId,
-}: ShapeAtomButtonProps) => {
+const ShapeAtomButton = ({ atomo, type, iconType }: ShapeAtomButtonProps) => {
   const value = useAtomValue(atomo);
   const spHook = useShapeUpdate();
-  const applyLayout = useSetAtom(flexLayoutAtom);
-  const parent = useAtomValue(parentId);
 
   const Icon = ICON_SHAPE[iconType];
   return (
     <button
       onClick={() => {
         spHook(type, !value);
-        if (parent) {
-          applyLayout({ id: parent });
-        }
       }}
       className={css({
         cursor: "pointer",
@@ -496,7 +629,7 @@ export const ShapeAtomButtonStroke = ({
 }: ShapeAtomButtonStrokeProps) => {
   const lineJoin = useAtomValue(shape.lineJoin);
   const lineCap = useAtomValue(shape.lineCap);
-  const spHook = useShapeUpdate();
+  const updateShape = useShapeUpdateMany();
 
   const Icon = ICON_SHAPE[type];
   const isValid = lineJoin === values[0] && lineCap === values[1];
@@ -504,8 +637,10 @@ export const ShapeAtomButtonStroke = ({
     <button
       onClick={() => {
         if (values.length <= 0) return;
-        spHook("lineJoin", values[0]);
-        spHook("lineCap", values[1]);
+        updateShape([
+          { type: "lineJoin", value: values[0] },
+          { type: "lineCap", value: values[1] },
+        ]);
       }}
       className={css({
         cursor: "pointer",
@@ -1133,13 +1268,11 @@ export const LayoutShapeConfig = () => {
 
           <div className="flex flex-row gap-2">
             <ShapeAtomButton
-              parentId={shape.parentId}
               iconType="width"
               type="fillContainerWidth"
               atomo={shape.fillContainerWidth}
             />
             <ShapeAtomButton
-              parentId={shape.parentId}
               iconType="height"
               type="fillContainerHeight"
               atomo={shape.fillContainerHeight}
@@ -1194,7 +1327,6 @@ export const LayoutShapeConfig = () => {
         <section className={commonStyles.container}>
           <SectionHeader title="Layouts">
             <ShapeAtomButton
-              parentId={shape.parentId}
               iconType="isLayout"
               type="isLayout"
               atomo={shape.isLayout}
@@ -1275,7 +1407,6 @@ export const LayoutShapeConfig = () => {
               >
                 <ShapeIsAllPadding shape={shape} />
                 <ShapeAtomButton
-                  parentId={shape.parentId}
                   atomo={shape.isAllPadding}
                   iconType="isAllPadding"
                   type="isAllPadding"
@@ -1348,7 +1479,6 @@ export const LayoutShapeConfig = () => {
                 </Input.Grid>
               </Input.Container>
               <ShapeAtomButton
-                parentId={shape.parentId}
                 iconType="isAllBorderRadius"
                 type="isAllBorderRadius"
                 atomo={shape.isAllBorderRadius}

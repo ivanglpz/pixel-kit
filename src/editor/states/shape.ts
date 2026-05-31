@@ -1,9 +1,10 @@
-import { atom, Getter, Setter } from "jotai";
+import { atom, Getter, PrimitiveAtom, Setter } from "jotai";
 import { ShapeBase } from "../shapes/types/shape.base";
 import { ShapeState } from "../shapes/types/shape.state";
 import { EVENT_ATOM } from "./event";
 import { CURRENT_PAGE, IShapeId } from "./pages";
 import { PLANE_SHAPES_ATOM } from "./shapes/store";
+import type { ALL_SHAPES } from "./shapes/types";
 // import { ShapeSnapshot } from "./undo-redo";
 
 const filterListId = (id: string, parentId: string | null) => {
@@ -67,15 +68,97 @@ export const SHAPE_SELECTED_ATOM = atom((get) => {
   };
 });
 
+export const SHAPE_SELECTED_REFS_ATOM = atom((get) => {
+  const selectedIds = get(SELECTED_SHAPES_BY_IDS_ATOM);
+  const planeShapes = get(PLANE_SHAPES_ATOM);
+  const selectedShapes: ALL_SHAPES[] = [];
+
+  for (const shape of planeShapes) {
+    const state = get(shape.state);
+    const parentId = get(state.parentId);
+
+    if (
+      selectedIds.some(
+        (selected) =>
+          shape.id === selected.id && parentId === selected.parentId,
+      )
+    ) {
+      selectedShapes.push(shape);
+    }
+  }
+
+  return selectedShapes;
+});
+
 export type UpdatableKeys = keyof Omit<
   ShapeState,
   "id" | "tool" | "children" | "parentId"
 >;
 
-export type ShapeUpdateAtomProps<K extends UpdatableKeys> = {
-  type: UpdatableKeys;
-  value: Omit<ShapeBase[K], "id" | "tool" | "children" | "parentId">;
+export type ShapeUpdateAtomProps<K extends UpdatableKeys = UpdatableKeys> = {
+  type: K;
+  value: ShapeBase[K];
 };
+
+export type ShapeUpdateBatchResult = {
+  didUpdate: boolean;
+  layoutParentIds: string[];
+};
+
+type ShapeUpdateAtomArgs = ShapeUpdateAtomProps | ShapeUpdateAtomProps[];
+
+export const LAYOUT_AFFECTING_CHILD_KEYS = new Set<UpdatableKeys>([
+  "x",
+  "y",
+  "width",
+  "height",
+  "minWidth",
+  "minHeight",
+  "maxWidth",
+  "maxHeight",
+  "fillContainerWidth",
+  "fillContainerHeight",
+]);
+
+export const shouldApplyParentLayout = (type: UpdatableKeys) =>
+  LAYOUT_AFFECTING_CHILD_KEYS.has(type);
+
+export const SHAPE_UPDATE_BATCH_ATOM = atom(
+  null,
+  (get: Getter, set: Setter, args: ShapeUpdateAtomArgs) => {
+    const updates = Array.isArray(args) ? args : [args];
+    const result: ShapeUpdateBatchResult = {
+      didUpdate: false,
+      layoutParentIds: [],
+    };
+
+    if (updates.length === 0) return result;
+
+    const layoutParentIds = new Set<string>();
+    const selectedShapes = get(SHAPE_SELECTED_REFS_ATOM);
+
+    for (const shapeRef of selectedShapes) {
+      const shape = get(shapeRef.state);
+
+      for (const { type, value } of updates) {
+        const target = shape[type] as PrimitiveAtom<unknown> | undefined;
+        if (!target || Object.is(get(target), value)) continue;
+
+        set(target, value);
+        result.didUpdate = true;
+
+        if (shouldApplyParentLayout(type)) {
+          const parentId = get(shape.parentId);
+          if (parentId) layoutParentIds.add(parentId);
+        }
+      }
+    }
+
+    result.layoutParentIds = Array.from(layoutParentIds);
+    return result;
+  },
+);
+
 export const SHAPE_UPDATE_ATOM = atom(
   null,
   <K extends UpdatableKeys>(
@@ -83,13 +166,6 @@ export const SHAPE_UPDATE_ATOM = atom(
     set: Setter,
     args: ShapeUpdateAtomProps<K>,
   ) => {
-    const { type, value } = args;
-
-    const selected = get(SHAPE_SELECTED_ATOM);
-    for (const shape of selected.shapes) {
-      const target = shape[type];
-      if (!target) continue;
-      set(target as any, value);
-    }
+    return set(SHAPE_UPDATE_BATCH_ATOM, args);
   },
 );

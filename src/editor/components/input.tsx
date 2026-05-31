@@ -1,15 +1,19 @@
 import { css } from "@stylespixelkit/css";
-import { SetStateAction, useAtom, useAtomValue, useSetAtom } from "jotai";
+import { SetStateAction, useAtom, useSetAtom } from "jotai";
 import React, {
   CSSProperties,
   FocusEvent,
+  KeyboardEvent,
+  PointerEvent,
   ReactElement,
   ReactNode,
+  useEffect,
+  useState,
 } from "react";
-import { flexLayoutAtom } from "../shapes/layout-flex";
 import { ShapeBase } from "../shapes/types/shape.base";
 import { ShapeState } from "../shapes/types/shape.state";
-import { useShapeUpdate } from "../sidebar/sidebar-right-shape";
+import { useShapeUpdateScheduler } from "../sidebar/sidebar-right-shape";
+import type { UpdatableKeys } from "../states/shape";
 import { PAUSE_MODE_ATOM } from "../states/tool";
 
 // HOC para inyectar pausa
@@ -21,7 +25,7 @@ type PauseWrapperProps = {
 type ChangeWrapperProps = {
   children: JSX.Element;
   shape: Omit<ShapeState, "children">;
-  type: keyof Omit<ShapeState, "id" | "tool" | "children" | "parentId">;
+  type: UpdatableKeys;
   isGlobalUpdate?: boolean;
 };
 
@@ -29,7 +33,7 @@ type SetActionVariants<T> = {
   [K in keyof T]: SetStateAction<T[K]>;
 }[keyof T];
 
-export const ChangeWrapper = <K extends keyof ShapeState>(
+export const ChangeWrapper = <K extends UpdatableKeys>(
   props: ChangeWrapperProps,
 ): ReactElement => {
   const { children, shape, type, isGlobalUpdate = true } = props;
@@ -41,25 +45,52 @@ export const ChangeWrapper = <K extends keyof ShapeState>(
 
   const [shapeValue, setShapeValue] = useAtom(atom);
 
-  const spHook = useShapeUpdate();
-  const parent = useAtomValue(shape.parentId);
-  const applyLayout = useSetAtom(flexLayoutAtom);
+  const scheduler = useShapeUpdateScheduler();
+  const [draftValue, setDraftValue] = useState(shapeValue);
+
+  useEffect(() => {
+    setDraftValue(shapeValue);
+  }, [shapeValue]);
 
   const enhanceChild = (child: ReactNode): ReactNode => {
     if (!React.isValidElement(child)) return child;
+
+    const originalOnFocus = child.props.onFocus;
+    const originalOnBlur = child.props.onBlur;
+    const originalOnPointerUp = child.props.onPointerUp;
+    const originalOnMouseUp = child.props.onMouseUp;
+    const originalOnKeyDown = child.props.onKeyDown;
+
     return React.cloneElement(child as ReactElement, {
       ...child.props,
-      onFocus: () => setPause(true),
-      onBlur: () => setPause(false),
-      value: shapeValue,
-      onChange: (
-        value: Omit<ShapeBase[K], "id" | "tool" | "children" | "parentId">,
-      ) => {
+      onFocus: (event: FocusEvent<HTMLElement>) => {
+        setPause(true);
+        originalOnFocus?.(event);
+      },
+      onBlur: (event: FocusEvent<HTMLElement>) => {
+        scheduler.flush();
+        setPause(false);
+        originalOnBlur?.(event);
+      },
+      onPointerUp: (event: PointerEvent<HTMLElement>) => {
+        scheduler.flush();
+        originalOnPointerUp?.(event);
+      },
+      onMouseUp: (event: React.MouseEvent<HTMLElement>) => {
+        scheduler.flush();
+        originalOnMouseUp?.(event);
+      },
+      onKeyDown: (event: KeyboardEvent<HTMLElement>) => {
+        if (event.key === "Enter") {
+          scheduler.flush();
+        }
+        originalOnKeyDown?.(event);
+      },
+      value: isGlobalUpdate ? draftValue : shapeValue,
+      onChange: (value: ShapeBase[K]) => {
         if (isGlobalUpdate) {
-          spHook(type, value);
-          if (parent) {
-            applyLayout({ id: parent });
-          }
+          setDraftValue(value as SetStateAction<typeof shapeValue>);
+          scheduler.schedule({ type, value });
           return;
         }
         setShapeValue(value as SetActionVariants<typeof shapeValue>);
